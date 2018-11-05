@@ -1,6 +1,6 @@
 (function() {
     const scriptNode = document.createElement('script');
-    scriptNode.src = 'https://record-service.jane/main.js';
+    scriptNode.src = 'https://record-service.jane/scraper.bundle.js';
     scriptNode.onload = bootstrapScraper;
 
     document.body.appendChild(scriptNode);
@@ -12,6 +12,7 @@
     <option claue="json">As Data</option>
 </select>
 <button class="start-button">Scrape</button>`;
+        container.screenScrapeIgnore = true;
         container.querySelector('.start-button').addEventListener('click', () => {
             const select = container.querySelector('.export-type');
             scraper.scrape({

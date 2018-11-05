@@ -1,6 +1,7 @@
 import { ScrapedHtmlElement } from "../types/types";
+import { ScrapeMetadata } from "../traverse/extract-metadata";
 
-export function merge(root: ScrapedHtmlElement, styles: string) {
+export function merge(root: ScrapedHtmlElement, styles: string, metadata: ScrapeMetadata): ScrapeData {
     const head = root.children.find(el => el.type === 'element' && el.tag === 'head') as ScrapedHtmlElement;
     if(head === undefined) throw new Error('Cannot find head tag');
     head.children.push({ 
@@ -14,5 +15,10 @@ export function merge(root: ScrapedHtmlElement, styles: string) {
             }
         ]
     })
-    return root;
+    return { root, metadata };
+}
+
+export interface ScrapeData {
+    root: ScrapedHtmlElement;
+    metadata: ScrapeMetadata;
 }

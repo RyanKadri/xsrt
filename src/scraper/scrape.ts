@@ -1,20 +1,21 @@
-import { extractDom } from "./scraper/traverse/traverse-dom";
-import { extractStyles } from "./scraper/traverse/traverse-styles";
-import { transformDom } from "./scraper/transform/transform-dom";
-import { triggerDownload } from "./scraper/utils/utils";
-import { merge } from "./scraper/merge/merge-dom-styles";
-import { serialize } from "./scraper/serialize/serialize";
-import { Globals } from './overrides';
+import { extractDom } from "./traverse/traverse-dom";
+import { extractStyles } from "./traverse/traverse-styles";
+import { transformDom } from "./transform/transform-dom";
+import { triggerDownload } from "./utils/utils";
+import { merge } from "./merge/merge-dom-styles";
+import { serializeToViewer } from "./serialize/serialize";
+import { Globals } from '../overrides';
+import { extractMetadata } from "./traverse/extract-metadata";
 
 (window as Globals).scraper = {/*  */
     async scrape(config: ScraperConfig) {
-        const docType = (document.doctype && document.doctype.name) || 'html';
+        const metadata = extractMetadata(document, location);
         const root = extractDom(document.documentElement as HTMLElement);
         const [cleanDom] = await transformDom(root);
         const styles = await extractStyles(Array.from(document.styleSheets) as CSSStyleSheet[]);
-        const merged = merge(cleanDom, styles);
+        const merged = merge(cleanDom, styles, metadata);
         if(config.output === 'single-page') {
-            const serialized = serialize(cleanDom, docType);
+            const serialized = serializeToViewer(merged);
             triggerDownload(serialized, 'text/html; charset=UTF-8', 'snapshot.html');
         } else {
             const serialized = JSON.stringify(merged);

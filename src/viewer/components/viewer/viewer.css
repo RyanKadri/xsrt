@@ -1,0 +1,28 @@
+.viewer {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    height: 100%;
+}
+header {
+    background-color: #444;
+    padding: 12px;
+    font-size: 2em;
+    color: #fff;
+    display: flex;
+    align-items: center;
+}
+header .date {
+    margin-left: 16px;
+}
+header .url {
+    margin-left: auto;
+    font-size: 1.5rem;
+    color: #fff;
+}
+
+iframe {
+    width: 100%;
+    flex-grow: 1;
+    border: none;
+}

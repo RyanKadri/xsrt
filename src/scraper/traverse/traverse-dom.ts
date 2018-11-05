@@ -10,7 +10,7 @@ export function extractDom(node: Node): ScrapedElement {
             attributes: Array.from(node.attributes).map(attr => ({ name: attr.name, value: attr.value })),
             children: Array.from(node.childNodes)
                 .filter(node => 
-                    (node.nodeType === document.ELEMENT_NODE) || 
+                    (node.nodeType === document.ELEMENT_NODE && !(node['screenScrapeIgnore'] as boolean)) || 
                     (node.nodeType === document.TEXT_NODE && node.textContent !== '')
                 ).map(extractDom)
         };

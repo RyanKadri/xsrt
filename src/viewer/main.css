@@ -1,0 +1,11 @@
+html, body, #viewer-root {
+    height: 100%;
+}
+
+body {
+    margin:0;
+}
+
+#content-target {
+    border: none;
+}
