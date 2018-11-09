@@ -1,34 +1,69 @@
-import { ScrapedElement } from "../types/types";
-import { escapeHtml } from "../utils/utils";
+import { ScrapedHtmlElement, ScrapedTextElement, ScrapedElement } from "../types/types";
+import { isElementNode, isTextNode } from "../utils/utils";
+import { shouldTraverseNode } from "../filter/filter-dom";
+import { transformElement, transformText } from "../transform/transform-dom";
 
-export function extractDom(node: Node): ScrapedElement {
-    if(isElementNode(node)) {
+export class DomTraverser {
+    
+    private idSeq = 0;
+    private nodeMapping = new Map<Node, ScrapedElement>();
+
+    traverseNode = (node: Node): ScrapedElement | undefined => {
+        const cached = this.nodeMapping.get(node);
+        if(cached) {
+            return cached;
+        } else {
+            const result = isElementNode(node) ? this.extractElement(node) 
+                : isTextNode(node) ? this.extractText(node)
+                : undefined;
+            if(result) {
+                this.nodeMapping.set(node, result);
+            }
+            return result;
+        }
+    }
+
+    isManaged(node: Node) {
+        return this.nodeMapping.has(node);
+    }
+
+    // Note that if you start on an invalid object as the root, this will still scrape.
+    private extractElement(node: HTMLElement): ScrapedHtmlElement {
+        return transformElement(
+            this.scrapeBasicElement(node)
+        );
+    }
+    
+    private scrapeBasicElement(node: HTMLElement): ScrapedHtmlElement {
         return {
             type: 'element',
-            el: node,
+            id: this.nextId(),
+            domElement: node,
+            value: 'value' in node ? node['value'] : undefined,
             tag: node.tagName.toLowerCase(),
             attributes: Array.from(node.attributes).map(attr => ({ name: attr.name, value: attr.value })),
             children: Array.from(node.childNodes)
-                .filter(node => 
-                    (node.nodeType === document.ELEMENT_NODE && !(node['screenScrapeIgnore'] as boolean)) || 
-                    (node.nodeType === document.TEXT_NODE && node.textContent !== '')
-                ).map(extractDom)
-        };
-    } else if(isTextNode(node)) {
-        return {
-            el: node,
-            type: 'text',
-            content: escapeHtml(node.textContent || '')
+                .filter(shouldTraverseNode)
+                .map(this.traverseNode) as ScrapedElement[]
         }
-    } else {
-        throw new Error('Unsure how to handle node type: ' + node.nodeType);
+    }
+    
+    private extractText(node: Element): ScrapedTextElement {
+        return transformText(
+            this.scrapeBasicText(node)
+        );
+    }
+    
+    private scrapeBasicText(node: Element): ScrapedTextElement {
+        return {
+            type: 'text',
+            id: this.nextId(),
+            content: node.textContent || '',
+            domElement: node
+        }
     }
 
-    function isElementNode(node: Node): node is HTMLElement {
-        return node.nodeType === document.ELEMENT_NODE;
-    }
-
-    function isTextNode(node: Node): node is Element {
-        return node.nodeType === document.TEXT_NODE
+    private nextId() {
+        return this.idSeq++;
     }
 }

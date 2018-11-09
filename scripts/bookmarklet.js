@@ -9,15 +9,21 @@
         const container = document.createElement('div');
         container.innerHTML = `<select class="export-type">
     <option value="single-page">Single Page</option>
-    <option claue="json">As Data</option>
+    <option value="json">Data Snapshot</option>
+    <option value="record">Record</option>
+    <option value="stop">Stop Recording</option>
 </select>
-<button class="start-button">Scrape</button>`;
+<button class="start-button">Go</button>`;
         container.screenScrapeIgnore = true;
         container.querySelector('.start-button').addEventListener('click', () => {
             const select = container.querySelector('.export-type');
-            scraper.scrape({
-                output: select.value
-            })
+            if(select.value !== 'stop') {
+                scraper.scrape({
+                    output: select.value
+                })
+            } else {
+                scraper.stopRecording();
+            }
         });
 
         container.style.position = 'fixed';

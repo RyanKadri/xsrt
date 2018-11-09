@@ -1,55 +1,91 @@
 import * as React from 'react';
 import { hot } from 'react-hot-loader';
-import { ScrapedHtmlElement } from '../../../scraper/types/types'
-import { serializeToDocument } from '../../../scraper/serialize/serialize'
 import './viewer.css';
-import { ScrapeData } from '../../../scraper/merge/merge-dom-styles';
-import { ScrapeMetadata } from '../../../scraper/traverse/extract-metadata';
+import { DedupedData } from '../../../scraper/scrape';
+import { RecordingHeader } from '../header/viewer-header';
+import { RecordingControls } from '../footer-controls/footer-controls';
+import { RecordingPlayer } from '../player/player';
 
-class Viewer extends React.Component<ViewerData> {
-    private iframe: React.RefObject<HTMLIFrameElement>;
-    private root: ScrapedHtmlElement;
-    private metadata: ScrapeMetadata;
+class Viewer extends React.Component<ViewerData, ViewerState> {
+
+    private data: DedupedData;
+
+    private startTime?: number;
     
     constructor(props: ViewerData) {
         super(props)
-        this.iframe = React.createRef();
-        if(!props.data) throw new Error('No data provided');
-        this.root = props.data.root;
-        this.metadata = props.data.metadata;
+        this.data = props.data!;
+        this.state = { currentTime: 0, isPlaying: false }
     }
+    
     render() {
-        const scrapeDate = new Date(this.metadata.timestamp);
-        const urlInf = this.metadata.url;
-        const portPart = !!urlInf.port ? `:${urlInf.port}`: '';
-        
-        const shortUrl = `${ urlInf.hostname }${ portPart }${ urlInf.path }`;
-        const fullUrl = `${ urlInf.protocol }//${shortUrl}`;
         return <div className="viewer">
-            <header>
-                Viewing screenshot from 
-                <small className="date">{ scrapeDate.toLocaleDateString('en-US') }</small>
-                <a target="_blank" href={ fullUrl } className="url">{ shortUrl }</a>
-            </header>
-            { this.root ? 
-                <iframe ref={this.iframe}></iframe> :
-                undefined 
-            }
+            <RecordingHeader metadata={ this.data.metadata }></RecordingHeader>
+            <RecordingPlayer data={ this.data }></RecordingPlayer>
+            { this.Controls() }
         </div>;
     }
 
-    componentDidMount() {
-        if(this.root) {
-            const content = serializeToDocument(this.root);
-            if(this.iframe.current && this.iframe.current.contentDocument) {
-                this.iframe.current.contentDocument.write(content)
-            }
+    private Controls() {
+        if(this.data.changes.length > 0) {
+            return <RecordingControls 
+                duration={ this.duration() }
+                time={ this.state.currentTime }
+                isPlaying={ this.state.isPlaying }
+                onPlay={ this.play }
+                onPause={ this.stop }
+            ></RecordingControls> 
+        } else {
+            return null;
         }
+    }
+
+    private duration() {
+        const frames = this.data.changes;
+        const firstChange = frames[0].timestamp;
+        const lastChange = frames[frames.length - 1].timestamp;
+        return lastChange - firstChange;
+    }
+
+    play = () => {
+        if(!this.state.isPlaying) {
+            this.setState({ isPlaying: true });
+            this.startTime = Date.now();
+            this.animate();
+        }
+    }
+
+    stop = () => {
+        if(this.state.isPlaying) {
+            this.setState({ isPlaying: false });
+        }
+    }
+
+    private animate() {
+        requestAnimationFrame(() => {
+            const curr = Date.now();
+            const timeDiff = curr - this.startTime!;
+            this.startTime = curr;
+            const currentTime = Math.min(this.state.currentTime + timeDiff, this.duration());
+            this.setState({ currentTime });
+            if(currentTime >= this.duration()) {
+                this.stop();
+            } else {
+                if(this.state.isPlaying) {
+                    this.animate();
+                }
+            }
+        });
     }
 }
 
 export default hot(module)(Viewer);
 
 export interface ViewerData {
-    data?: ScrapeData;
+    data?: DedupedData;
+}
+
+export interface ViewerState {
+    currentTime: number;
+    isPlaying: boolean;
 }

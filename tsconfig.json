@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "target": "es2018",
-    "module": "es6",
-    "lib": ["dom", "es2015"],
+    "module": "es2015",
+    "lib": ["dom", "es2018", "esnext.array"],
     "declaration": true,
     "sourceMap": true,
     "outDir": "./dist/",
@@ -34,7 +34,8 @@
     // "emitDecoratorMetadata": true,         /* Enables experimental support for emitting type metadata for decorators. */
   },
   "include": [
-    "src/module.d.ts"
+    "src/module.d.ts",
+    "src/**/*"
   ],
   "files": [
     "src/module.d.ts"

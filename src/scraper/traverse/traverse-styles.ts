@@ -1,57 +1,52 @@
-import { toDataUrl } from "../utils/utils";
+import { matchesMedia } from "../utils/utils";
+import { ScrapedStyleRule } from "../types/types";
+import { shouldIncludeSheet, shouldIncludeRule } from "../filter/filter-styles";
+import { transformRule } from "../transform/transform-styles";
 
-export async function extractStyles(styleSheets: CSSStyleSheet[]) {
-    styleSheets = styleSheets.filter(sheet => {
-        try { sheet.rules; return true; } catch { return }
-    });
-    const syncRules = Array.from(styleSheets).map((sheet) => 
-        Array.from(sheet.rules)
-            .filter(rule => rule instanceof CSSStyleRule || rule instanceof CSSMediaRule || rule instanceof CSSSupportsRule || rule instanceof CSSKeyframesRule)
-            .map(rule => ({ css: rule.cssText, source: sheet.href }))
-    ).reduce((acc, rules) => acc.concat(rules));
+export function extractStyleInfo(styleSheets: CSSStyleSheet[]): ScrapedStyleRule[] {
+    return extractRules(styleSheets)
+                .map(transformRule)
+}
 
-    const fontRules = Array.from(styleSheets).map(sheet => 
-        Array.from(sheet.rules)
-            .filter(rule => rule instanceof CSSFontFaceRule)
-            .map(rule => ({ css: rule.cssText, source: sheet.href }))
-    ).reduce((acc, rules) => acc.concat(rules));
+function extractRules(styleSheets: CSSStyleSheet[]): ScrapedStyleRule[] {
+    return styleSheets
+        .filter(shouldIncludeSheet)
+        .map(rulesPerSheet)
+        .flat(Infinity);
+}
 
-    const localizedRules = await Promise.all(
-        [...syncRules, ...fontRules].map(async (rule) => {
-            const urls = rule.css.match(/url\(['"].*?['"]\)/);
-            if(urls) {
-                const replacements = await Promise.all(
-                    urls.map(async url => {
-                        let requestUrl;
-                        const urlMatches = url.match(/\(['"](.*?)['"]\)/);
-                        if(urlMatches === null) throw new Error('Assertion error: URL should not be null here');
-                        const ruleUrl = urlMatches[1];
-                        if(ruleUrl.startsWith('data:')) return ruleUrl;
-                        if(ruleUrl.startsWith('/') || !rule.source) {
-                            requestUrl = ruleUrl;
-                        } else {
-                            requestUrl = rule.source.replace(/\/[^\/]*?$/, '/' + ruleUrl);
-                        }
-                        try {
-                            const resp = await fetch(requestUrl);
-                            const blob = await resp.blob();
-                            return await toDataUrl(blob);
-                        } catch(e) {
-                            if(requestUrl.startsWith('//')) {
-                                return requestUrl.replace('//', location.protocol + '//')
-                            }
-                        }
-                    })
-                )
-                for(let urlInd = 0; urlInd < urls.length; urlInd ++) {
-                    if(replacements[urlInd] !== undefined) {
-                        rule.css = rule.css.replace(urls[urlInd], `url('${replacements[urlInd]}')`);
-                    }
-                }
-            }
-            return rule.css;
-        })
-    );
+function rulesPerSheet(sheet: CSSStyleSheet) {
+    return Array.from(sheet.rules)
+        .filter(shouldIncludeRule)
+        .map(rule => rule instanceof CSSImportRule ? unpackImport(rule) : extractRule(rule, sheet))
+}
 
-    return localizedRules.join('\n');
+function unpackImport(rule: CSSImportRule) {
+    return matchesMedia(rule.media) ? extractStyleInfo([ rule.styleSheet ]) : [];
+}
+
+function extractRule(rule: CSSRule, sheet: CSSStyleSheet): ScrapedStyleRule {
+    return { 
+        text: rule.cssText,
+        source: sheet.href,
+        ...extractExtras(rule)
+    } as ScrapedStyleRule;
+}
+
+function extractExtras(rule: CSSRule) {
+    if(rule instanceof CSSStyleRule) {
+        return { type: 'style' };
+    } else if(rule instanceof CSSKeyframeRule || rule instanceof CSSKeyframesRule) {
+        return { type: 'keyframe' };
+    } else if(rule instanceof CSSMediaRule) {
+        return { type: 'media', conditions: Array.from(rule.media) };
+    } else if(rule instanceof CSSSupportsRule) {
+        return { type: 'supports', condition: rule.conditionText };
+    } else if(rule instanceof CSSFontFaceRule) {
+        return { type: 'font-face', src: rule.style['src'] }
+    } else if(rule instanceof CSSImportRule) {
+        return { type: 'import', src: rule.href }
+    } else {
+        throw new Error('Unsure how to handle rule: ' + rule.cssText);
+    }
 }
