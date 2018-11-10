@@ -9,22 +9,25 @@ export class DomTraverser {
     private nodeMapping = new Map<Node, ScrapedElement>();
 
     traverseNode = (node: Node): ScrapedElement | undefined => {
-        const cached = this.nodeMapping.get(node);
-        if(cached) {
-            return cached;
-        } else {
-            const result = isElementNode(node) ? this.extractElement(node) 
-                : isTextNode(node) ? this.extractText(node)
-                : undefined;
-            if(result) {
-                this.nodeMapping.set(node, result);
-            }
-            return result;
+        const result = isElementNode(node) ? this.extractElement(node) 
+            : isTextNode(node) ? this.extractText(node)
+            : undefined;
+        if(result) {
+            this.nodeMapping.set(node, result);
         }
+        return result;
+    }
+
+    fetchManagedNode = (node: Node): ScrapedElement| undefined => {
+        return this.nodeMapping.get(node);
     }
 
     isManaged(node: Node) {
         return this.nodeMapping.has(node);
+    }
+
+    dump() {
+        console.log(this.nodeMapping);
     }
 
     // Note that if you start on an invalid object as the root, this will still scrape.
@@ -35,9 +38,10 @@ export class DomTraverser {
     }
     
     private scrapeBasicElement(node: HTMLElement): ScrapedHtmlElement {
+        const id = this.isManaged(node) ? this.fetchManagedNode(node)!.id : this.nextId();
         return {
             type: 'element',
-            id: this.nextId(),
+            id,
             domElement: node,
             value: 'value' in node ? node['value'] : undefined,
             tag: node.tagName.toLowerCase(),

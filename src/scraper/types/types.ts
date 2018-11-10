@@ -13,6 +13,7 @@ export interface ScrapedHtmlElement {
 export interface ScrapedAttribute {
     name: string;
     value: string;
+    references?: string[];
 }
 
 export interface ScrapedTextElement {

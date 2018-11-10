@@ -30,7 +30,6 @@ module.exports = {
     plugins: [
         //new CleanWebpackPlugin(['dist']),
         new webpack.HotModuleReplacementPlugin(),
-        new CopyWebpackPlugin([{ from: 'src/data.json', to: './'}])
     ],
     resolve: {
         extensions: ['.tsx', '.ts', '.js', '.html']

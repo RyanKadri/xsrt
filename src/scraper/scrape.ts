@@ -51,6 +51,7 @@ import { dedupe } from "./dedupe/dedupe";
         const full = await dedupe({... initSnapshot, changes})
         const serialized = toJson(full);
         triggerDownload(serialized, 'application/json; charset=UTF-8', 'recording.json');
+        domWalker.dump();
     }
 })()
 

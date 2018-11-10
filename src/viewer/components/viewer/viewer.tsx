@@ -21,7 +21,7 @@ class Viewer extends React.Component<ViewerData, ViewerState> {
     render() {
         return <div className="viewer">
             <RecordingHeader metadata={ this.data.metadata }></RecordingHeader>
-            <RecordingPlayer data={ this.data }></RecordingPlayer>
+            <RecordingPlayer data={ this.data } currentSlice={ this.currentSlice() }></RecordingPlayer>
             { this.Controls() }
         </div>;
     }
@@ -45,6 +45,12 @@ class Viewer extends React.Component<ViewerData, ViewerState> {
         const firstChange = frames[0].timestamp;
         const lastChange = frames[frames.length - 1].timestamp;
         return lastChange - firstChange;
+    }
+
+    private currentSlice() {
+        const targetTime = this.data.changes[0].timestamp + this.state.currentTime;
+        const firstLarger = this.data.changes.findIndex(change => change.timestamp > targetTime);
+        return firstLarger !== -1 ? firstLarger - 1 : this.data.changes.length - 1;
     }
 
     play = () => {

@@ -1,11 +1,13 @@
 import React from "react";
 import { DedupedData } from "../../../scraper/scrape";
-import { serializeToDocument } from "../../../scraper/serialize/serialize";
+import { DocumentManager } from "../../../scraper/serialize/document-manager";
 
 export class RecordingPlayer extends React.Component<PlayerInput> {
 
     private iframe: React.RefObject<HTMLIFrameElement>;
     private data: DedupedData;
+    private lastSliceEnd = 0;
+    private documentManager?: DocumentManager;
 
     constructor(props: PlayerInput){
         super(props) 
@@ -14,19 +16,28 @@ export class RecordingPlayer extends React.Component<PlayerInput> {
     }
 
     render() {
-        console.log('render');
         return <iframe ref={this.iframe}></iframe>;
     }
 
     componentDidMount() {
         if(this.data.root && this.iframe.current && this.iframe.current.contentDocument) {
-            const docType = `<!DOCTYPE ${this.data.metadata.docType}>`
-            this.iframe.current.contentDocument.write(docType + '\n<html></html>');
-            serializeToDocument(this.data, this.iframe.current.contentDocument);
+            this.documentManager = new DocumentManager(this.iframe.current.contentDocument);
+            this.documentManager.renderSnapshot(this.data);
+        }
+    }
+
+    componentWillReceiveProps() { 
+        if(this.documentManager && this.props.currentSlice + 1 > this.lastSliceEnd) {
+            const changes = this.data.changes.slice(this.lastSliceEnd, this.props.currentSlice + 1);
+            this.lastSliceEnd = this.props.currentSlice + 1;
+            this.documentManager.applyChanges(changes);
+        } else if(this.props.currentSlice + 1 < this.lastSliceEnd) {
+            throw new Error('Not sure how to rewind yet')
         }
     }
 }
 
 export interface PlayerInput {
     data: DedupedData;
+    currentSlice: number;
 }

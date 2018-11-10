@@ -60,7 +60,7 @@ export const recoverGlobals = (function() {
 
 // At least one site I've seen overwrites JSON (cough cough Facebook). Why????
 export function toJson(data: any) {
-    return recoverGlobals()['JSON'].stringify(data, (key, val) => key === 'el' ? undefined : val);
+    return recoverGlobals()['JSON'].stringify(data, (key, val) => key === 'domElement' ? undefined : val);
 }
 
 export function nodeIsHidden(node) {

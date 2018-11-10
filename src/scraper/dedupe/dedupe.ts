@@ -48,7 +48,8 @@ function dedupeImage(node: ScrapedHtmlElement, assets: UrlReferenceMapping): voi
         if(!ref) {
             ref = assets[url] = '' + refId ++;
         }
-        src.value = ref;
+        src.value = `##${ref}##`;
+        src.references = [ref]
     }
     
     // const image = node.domElement as HTMLImageElement;

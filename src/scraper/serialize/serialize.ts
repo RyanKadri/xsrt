@@ -1,4 +1,4 @@
-import { ScrapedStyleRule, ScrapedElement } from "../types/types";
+import { ScrapedStyleRule, ScrapedElement, ScrapedHtmlElement, ScrapedAttribute } from "../types/types";
 import * as template from '../../viewer/index.html';
 import { ScrapedData, DedupedData } from "../scrape";
 import { toBlobUrl, toJson } from "../utils/utils";
@@ -9,45 +9,51 @@ export function serializeToViewer(data: ScrapedData) {
         `<script id="scraped-data" type="application/json">${ toJson(data) }</script>`);
 }
 
-export async function serializeToDocument(data: DedupedData, document: Document): Promise<void> {
+export async function serializeToDocument(data: DedupedData, document: Document): Promise<Map<number, Node>> {
+    const nodeMapping = new Map<number, Node>();
+
     const assets = await adjustReferences(data.assets);
     const styles = serializeStyles(data.styles, assets);
     const styleElement = document.createElement('style');
     styleElement.innerHTML = styles;
 
-    const rootElement = document.documentElement as HTMLElement;
-    rootElement.removeChild(document.body as HTMLBodyElement);
-    rootElement.removeChild(document.head as HTMLHeadElement);
-    _serializeInto(rootElement, data.root.children);
-    data.root.attributes.forEach(attr => rootElement.setAttribute(attr.name, attr.value))
+    document.removeChild(document.documentElement!);
+    serializeToElement(document, data.root, nodeMapping, assets);
     const head = document.head as HTMLHeadElement;
     head.appendChild(styleElement);
 
-    function _serializeInto(parent: Element, elements: ScrapedElement[], currNS = '') {
-        const domNodes = elements.map(node => {
-            if(node.type === 'element') {
-                let curr: Element;
-                const nsAttr = node.attributes.find(attr => attr.name === 'xmlns');
-                const ns = nsAttr ? nsAttr.value : currNS;
-                if(ns) {
-                    curr = document.createElementNS(ns, node.tag)
-                } else {
-                    curr = document.createElement(node.tag);
-                }
-                node.attributes.forEach(attr => curr.setAttribute(attr.name, attr.value));
-                if(node.children) {
-                    _serializeInto(curr, node.children, ns);
-                }
-                if(node.value && 'value' in curr) {
-                    (curr as HTMLInputElement).value = '' + node.value;
-                }
-                return curr;
-            } else {
-                return document.createTextNode(node.content);
-            }
-        })
-        domNodes.forEach(node => parent.appendChild(node));
+    return nodeMapping;
+
+}
+
+export function serializeToElement(parent: Node, node: ScrapedElement, nodeMapping: Map<number, Node>, assets: string[], currNS = '', before: number | null = null) {
+    const created = node.type === 'element'
+        ? createElement(node, nodeMapping, assets, currNS)
+        : document.createTextNode(node.content);
+    created['debug-scrape-data'] = node;
+    nodeMapping.set(node.id, created);
+    if(before) {
+        if(nodeMapping.has(before)) {
+            parent.insertBefore(created, nodeMapping.get(before)!)
+        }
+    } else {
+        parent.appendChild(created);
     }
+}
+
+function createElement(node: ScrapedHtmlElement, nodeMapping: Map<number, Node>, assets: string[], currNS = '') {
+    const nsAttr = node.attributes.find(attr => attr.name === 'xmlns');
+    const ns = nsAttr ? nsAttr.value : currNS;
+    let created = ns ? document.createElementNS(ns, node.tag): document.createElement(node.tag) as Element;
+    
+    node.attributes.forEach(attr => setAttribute(created, attr, assets));
+    if(node.children) {
+        node.children.forEach(child => serializeToElement(created, child, nodeMapping, assets, ns))
+    }
+    if(node.value && 'value' in created) {
+        (created as HTMLInputElement).value = '' + node.value;
+    }
+    return created;
 }
 
 function serializeStyles(styles: ScrapedStyleRule[], assets: string[]) {
@@ -55,13 +61,26 @@ function serializeStyles(styles: ScrapedStyleRule[], assets: string[]) {
         if(!style.references) {
             return style.text;
         } else {
-            let rule = style.text;
-            style.references.forEach(ref => {
-                rule = rule.replace(`##${ref}##`, assets[ref]);
-            })
-            return rule;
+            return replaceReferences(style.text, style.references, assets);
         }
     }).join('');
+}
+
+function setAttribute(node: Element, attr: ScrapedAttribute, assets: string[]) {
+    let val: string;
+    if(attr.references) {
+        val = replaceReferences(attr.value, attr.references, assets);
+    } else {
+        val = attr.value;
+    }
+    node.setAttribute(attr.name, val);
+}
+
+function replaceReferences(valWithRefs: string, references: string[], assets: string[]) {        
+    references.forEach(ref => {
+        valWithRefs = valWithRefs.replace(`##${ref}##`, assets[ref]);
+    })
+    return valWithRefs;
 }
 
 async function adjustReferences(refs: string[]) {
