@@ -1,7 +1,7 @@
 import React from "react";
-import { DedupedData } from "../../../scraper/scrape";
 import { DocumentManager } from "../../../scraper/playback/mutation-manager";
 import { UserInputPlaybackManager } from "../../../scraper/playback/user-input-manager";
+import { DedupedData } from "../../../scraper/types/types";
 
 export class RecordingPlayer extends React.Component<PlayerInput> {
 

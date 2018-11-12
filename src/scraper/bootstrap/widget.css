@@ -1,0 +1,17 @@
+button, select {
+    border: solid 1px #ccc;
+    background-color: #fff;
+    border-radius: 2px;
+    padding: 8px;
+}
+
+label {
+    display: flex;
+    align-items: center;
+    margin-top: 8px;
+    font-size: 14px;
+}
+
+.hidden {
+    display: none;
+}

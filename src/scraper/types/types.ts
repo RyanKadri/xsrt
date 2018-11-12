@@ -1,26 +1,24 @@
-export type ScrapedElement = ScrapedHtmlElement | ScrapedTextElement;
+import { InitMetadata, RecordingMetadata } from "../traverse/extract-metadata";
+import { RecordedMutationGroup } from "../record/dom-changes/mutation-recorder";
+import { RecordedUserInput } from "../record/user-input/input-recorder";
 
-export interface ScrapedHtmlElement {
-    type: 'element';
-    id: number;
+export type ScrapedElement = ScrapedHtmlElement | ScrapedTextElement;
+export type OptimizedElement = OptimizedHtmlElementInfo | OptimizedTextElementInfo;
+
+export interface ScrapedHtmlElement extends OptimizedHtmlElementInfo {
     domElement: Element;
-    value?: string | number;
-    tag: string;
     attributes: ScrapedAttribute[];
     children: ScrapedElement[];
+}
+
+export interface ScrapedTextElement extends OptimizedTextElementInfo {
+    domElement: Element;
 }
 
 export interface ScrapedAttribute {
     name: string;
     value: string;
     references?: string[];
-}
-
-export interface ScrapedTextElement {
-    type: 'text',
-    id: number;
-    content: string;
-    domElement: Element;
 }
 
 export type ScrapedStyleRule = ScrapedMediaRule | ScrapedFontFaceRule | ScrapedSupportsRule | BasicRule | ImportRule;
@@ -54,4 +52,41 @@ interface BaseScrapedRule {
     text: string;
     source?: string;
     references?: string[];
+}
+
+export interface ScrapedData {
+    root: ScrapedHtmlElement;
+    metadata: InitMetadata;
+    styles: ScrapedStyleRule[];
+    changes: RecordedMutationGroup[];
+    inputs: RecordedUserInput[];
+}
+
+export interface DedupedData {
+    root: OptimizedHtmlElementInfo;
+    metadata: RecordingMetadata;
+    styles: OptimizedStyleRule[];
+    changes: RecordedMutationGroup[];
+    inputs: RecordedUserInput[];
+    assets: string[];
+}
+
+export interface OptimizedStyleRule {
+    text: string;
+    references?: string[];
+}
+
+export interface OptimizedHtmlElementInfo {
+    type: 'element';
+    id: number;
+    value?: string | number;
+    tag: string;
+    attributes?: ScrapedAttribute[];
+    children?: OptimizedElement[];
+}
+
+export interface OptimizedTextElementInfo {
+    type: 'text',
+    id: number;
+    content: string;
 }

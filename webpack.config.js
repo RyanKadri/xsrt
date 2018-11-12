@@ -1,11 +1,11 @@
 const path = require('path');
 const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+const WriteFilePlugin = require('write-file-webpack-plugin');
 
 module.exports = {
     entry: {
-        scraper: './src/scraper/scrape.ts',
+        ['scraper-bootstrap']: './src/scraper/bootstrap/scraper-bootstrap.ts',
         viewer: './src/viewer/index.tsx',
     },
     devtool: 'inline-source-map',
@@ -28,7 +28,8 @@ module.exports = {
         ]
     },
     plugins: [
-        //new CleanWebpackPlugin(['dist']),
+        new CleanWebpackPlugin(['dist']),
+        new WriteFilePlugin(),
         new webpack.HotModuleReplacementPlugin(),
     ],
     resolve: {
@@ -43,7 +44,9 @@ module.exports = {
         contentBase: path.join(__dirname, 'src'),
         port: 3000,
         publicPath: 'http://localhost:3000/dist',
-        hotOnly: true
+        //hotOnly: true
+        hot: false, //Doing this until I have a better approach for the bookmarklet
+        inline: false
     },
     mode: 'development'
 }

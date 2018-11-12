@@ -1,6 +1,5 @@
-import { ScrapedStyleRule, ScrapedElement, ScrapedHtmlElement, ScrapedAttribute } from "../types/types";
+import { ScrapedAttribute, DedupedData, OptimizedElement, OptimizedStyleRule, OptimizedHtmlElementInfo } from "../types/types";
 import { toBlobUrl } from "../utils/utils";
-import { DedupedData } from "../scrape";
 
 export async function serializeToDocument(data: DedupedData, document: Document): Promise<Map<number, Node>> {
     const nodeMapping = new Map<number, Node>();
@@ -22,7 +21,7 @@ export async function serializeToDocument(data: DedupedData, document: Document)
     return nodeMapping;
 }
 
-export function serializeToElement(parent: Node, node: ScrapedElement, nodeMapping: Map<number, Node>, assets: string[], currNS = '', before: number | null = null) {
+export function serializeToElement(parent: Node, node: OptimizedElement, nodeMapping: Map<number, Node>, assets: string[], currNS = '', before: number | null = null) {
     const created = node.type === 'element'
         ? createElement(node, nodeMapping, assets, currNS)
         : document.createTextNode(node.content);
@@ -37,12 +36,13 @@ export function serializeToElement(parent: Node, node: ScrapedElement, nodeMappi
     }
 }
 
-function createElement(node: ScrapedHtmlElement, nodeMapping: Map<number, Node>, assets: string[], currNS = '') {
-    const nsAttr = node.attributes.find(attr => attr.name === 'xmlns');
+function createElement(node: OptimizedHtmlElementInfo, nodeMapping: Map<number, Node>, assets: string[], currNS = '') {
+    const attributes = node.attributes || [];
+    const nsAttr = (attributes).find(attr => attr.name === 'xmlns');
     const ns = nsAttr ? nsAttr.value : currNS;
     let created = ns ? document.createElementNS(ns, node.tag): document.createElement(node.tag) as Element;
     
-    node.attributes.forEach(attr => setAttribute(created, attr, assets));
+    attributes.forEach(attr => setAttribute(created, attr, assets));
     if(node.children) {
         node.children.forEach(child => serializeToElement(created, child, nodeMapping, assets, ns))
     }
@@ -52,7 +52,7 @@ function createElement(node: ScrapedHtmlElement, nodeMapping: Map<number, Node>,
     return created;
 }
 
-function serializeStyles(styles: ScrapedStyleRule[], assets: string[]) {
+function serializeStyles(styles: OptimizedStyleRule[], assets: string[]) {
     return styles.map(style => {
         if(!style.references) {
             return style.text;

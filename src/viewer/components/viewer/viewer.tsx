@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { hot } from 'react-hot-loader';
 import './viewer.css';
-import { DedupedData } from '../../../scraper/scrape';
 import { RecordingHeader } from '../header/viewer-header';
 import { RecordingControls } from '../footer-controls/footer-controls';
 import { RecordingPlayer } from '../player/player';
+import { DedupedData } from '../../../scraper/types/types';
 
 class Viewer extends React.Component<ViewerData, ViewerState> {
 

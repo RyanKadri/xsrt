@@ -16,14 +16,6 @@ export async function toBlobUrl(dataUrl: string) {
     }
 }
 
-export function triggerDownload(content: any, type: string, fileName: string) {
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(new Blob([content], { encoding: 'UTF-8', type,  } as BlobPropertyBag));
-    link.target = '_blank';
-    link.download = fileName;
-    link.click();
-}
-
 export function matchesMedia(media: MediaList | string[]) {
     if(!media || media.length === 0 || (media.length === 1 && !media[0])) return true;
     let conditions: string[];
@@ -63,8 +55,8 @@ export function toJson(data: any) {
     return recoverGlobals()['JSON'].stringify(data, (key, val) => key === 'domElement' ? undefined : val);
 }
 
-export function nodeIsHidden(node) {
-    return (node['screenScrapeIgnore'] as boolean)
+export function nodeIsHidden(node: HTMLElement) {
+    return node.hasAttribute('screen-scrape-ignore');
 }
 
 export function isElementNode(node: Node): node is HTMLElement {

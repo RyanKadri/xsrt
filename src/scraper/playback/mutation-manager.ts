@@ -1,6 +1,6 @@
-import { DedupedData } from "../scrape";
 import { serializeToDocument, serializeToElement } from "./dom-utils";
 import { RecordedMutationGroup, RecordedMutation, AttributeMutation, ChangeTextMutation, ChangeChildrenMutation } from "../record/dom-changes/mutation-recorder";
+import { DedupedData } from "../types/types";
 
 export class DocumentManager {
     
