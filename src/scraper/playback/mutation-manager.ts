@@ -1,6 +1,6 @@
 import { DedupedData } from "../scrape";
-import { serializeToDocument, serializeToElement } from "./serialize";
-import { RecordedMutationGroup, RecordedMutation, AttributeMutation, ChangeTextMutation, ChangeChildrenMutation } from "../record/mutation-recorder";
+import { serializeToDocument, serializeToElement } from "./dom-utils";
+import { RecordedMutationGroup, RecordedMutation, AttributeMutation, ChangeTextMutation, ChangeChildrenMutation } from "../record/dom-changes/mutation-recorder";
 
 export class DocumentManager {
     
@@ -10,8 +10,6 @@ export class DocumentManager {
 
     async renderSnapshot(data: DedupedData) {
         this.assets = data.assets;
-        const docType = `<!DOCTYPE ${ data.metadata.docType }>`
-        this.document.write(docType + '\n<html></html>');
         this.nodeMapping = await serializeToDocument(data, this.document);
     }
 
@@ -25,7 +23,6 @@ export class DocumentManager {
 
     private applyChange(mutation: RecordedMutation) {
         const target = this.nodeMapping.get(mutation.target)!;
-        if(!target) console.log(mutation);
         switch(mutation.type) {
             case 'attribute':
                 return this.attributeChange(mutation, target as HTMLElement);

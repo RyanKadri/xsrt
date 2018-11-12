@@ -1,6 +1,6 @@
-import { DomTraverser } from "../traverse/traverse-dom";
-import { ScrapedElement } from "../types/types";
-import { shouldTraverseNode } from "../filter/filter-dom";
+import { DomTraverser } from "../../traverse/traverse-dom";
+import { ScrapedElement } from "../../types/types";
+import { shouldTraverseNode } from "../../filter/filter-dom";
 
 export class MutationRecorder {
 

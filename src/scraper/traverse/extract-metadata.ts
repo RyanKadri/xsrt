@@ -1,18 +1,30 @@
-export function extractMetadata(document: Document, location: Location): ScrapeMetadata {
+export function extractInitMetadata(document: Document, location: Location): InitMetadata {
     const docType = (document.doctype && document.doctype.name) || 'html';
-    const timestamp = Date.now();
+    const startTime = Date.now();
     const { protocol, hostname, port, pathname } = location;
     const viewportHeight = window.innerHeight, viewportWidth = window.innerWidth;
-    return { docType, timestamp, url: { protocol, hostname, port, path: pathname }, viewportHeight, viewportWidth }
+    return { docType, startTime, url: { protocol, hostname, port, path: pathname }, viewportHeight, viewportWidth }
 }
 
-export interface ScrapeMetadata {
+export function extractEndMetadata(): EndMetadata {
+    return {
+        endTime: Date.now()
+    };
+}
+
+export interface InitMetadata {
     docType: string;
-    timestamp: number;
+    startTime: number;
     url: LocationMetadata;
     viewportHeight: number;
     viewportWidth: number;
 }
+
+export interface EndMetadata {
+    endTime: number;    
+}
+
+export type RecordingMetadata = InitMetadata & EndMetadata;
 
 export interface LocationMetadata {
     protocol: string;

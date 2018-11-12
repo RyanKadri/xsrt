@@ -1,11 +1,11 @@
 import React from "react";
-import { ScrapeMetadata, LocationMetadata } from "../../../scraper/traverse/extract-metadata";
+import { LocationMetadata, InitMetadata } from "../../../scraper/traverse/extract-metadata";
 import './viewer-header.css';
 
-export const RecordingHeader = ({metadata}: {metadata: ScrapeMetadata}) =>
+export const RecordingHeader = ({metadata}: {metadata: InitMetadata}) =>
     <header>
         Viewing snapshot from 
-        <small className="date">{ formatDate(metadata.timestamp) }</small>
+        <small className="date">{ formatDate(metadata.startTime) }</small>
         <a target="_blank" href={ fullUrl(metadata.url) } className="url">{ shortUrl(metadata.url) }</a>
     </header>;
 

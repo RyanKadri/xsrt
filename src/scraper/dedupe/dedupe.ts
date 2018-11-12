@@ -1,4 +1,4 @@
-import { ScrapedData, DedupedData } from "../scrape";
+import { DedupedData, ScrapedData } from "../scrape";
 import { ScrapedHtmlElement, ScrapedStyleRule, ScrapedElement } from "../types/types";
 import { UrlReferenceMapping } from "../transform/transform-styles";
 import { toDataUrl, normalizeUrl } from "../utils/utils";
@@ -13,7 +13,7 @@ export async function dedupe(data: ScrapedData): Promise<DedupedData> {
         root,
         styles,
         assets: resolvedAssets
-    };
+    } as DedupedData;
 }
 
 // Screw this whole functional programming thing!
