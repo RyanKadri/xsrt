@@ -1,20 +1,19 @@
 import { BaseUserInput } from "./input-recorder";
-import { SimpleInputHandler } from "./simple-input-recorder";
+import { ScrapedElement } from "../../types/types";
 
-export const scrollRecorder = new SimpleInputHandler<RecordedScrollEvent, UIEvent>
-    (['scroll'], handleScroll)
-
-function handleScroll(_: UIEvent) {
+export function handleScroll(_: UIEvent, target?: ScrapedElement): RecordedScrollEvent {
     return {
         type: 'scroll' as 'scroll',
+        target: target ? target.id : null,
         timestamp: Date.now(),
-        scrollX: window.scrollX,
-        scrollY: window.scrollY
+        scrollX: target ? target.domElement.scrollLeft : window.scrollX,
+        scrollY: target ? target.domElement.scrollTop : window.scrollY
     };
 }
 
 export interface RecordedScrollEvent extends BaseUserInput {
     type: 'scroll';
+    target: number | null;
     scrollX: number;
     scrollY: number;
 }

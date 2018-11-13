@@ -10,7 +10,7 @@ export const scraper: Scraper = (function () {
 
     const domWalker = new DomTraverser();
     const mutationRecorder = new MutationRecorder(domWalker);
-    const inputRecorder = new CompleteInputRecorder();
+    const inputRecorder = new CompleteInputRecorder(domWalker);
     let initSnapshot: ScrapedData;
     let initConfig: ScraperConfig;
 
@@ -25,7 +25,7 @@ export const scraper: Scraper = (function () {
         const metadata = extractInitMetadata(document, location);
         const root = domWalker.traverseNode(document.documentElement!) as ScrapedHtmlElement;
         const styles = extractStyleInfo(Array.from(document.styleSheets) as CSSStyleSheet[]);
-        initSnapshot = { root, metadata, styles, changes: [], inputs: []};
+        initSnapshot = { root, metadata, styles, changes: [], inputs: {}};
 
         switch(config.output) {
             case 'single-page':

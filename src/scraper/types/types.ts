@@ -59,7 +59,7 @@ export interface ScrapedData {
     metadata: InitMetadata;
     styles: ScrapedStyleRule[];
     changes: RecordedMutationGroup[];
-    inputs: RecordedUserInput[];
+    inputs: RecordedInputChannels;
 }
 
 export interface DedupedData {
@@ -67,8 +67,12 @@ export interface DedupedData {
     metadata: RecordingMetadata;
     styles: OptimizedStyleRule[];
     changes: RecordedMutationGroup[];
-    inputs: RecordedUserInput[];
+    inputs: RecordedInputChannels;
     assets: string[];
+}
+
+export type RecordedInputChannels = {
+    [channel: string]: RecordedUserInput[];
 }
 
 export interface OptimizedStyleRule {

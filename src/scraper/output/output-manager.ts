@@ -21,5 +21,5 @@ export async function outputStandaloneSnapshot(data: ScrapedData) {
 export async function outputDataSnapshot(data: ScrapedData, filename: string, config: ScraperConfig) {
     const fullSnapshot = await optimize(data);
     const serialized = toJson(fullSnapshot);
-    triggerDownload(serialized, 'application/json; charset=UTF-8', 'start-snapshot.json', !config.debugMode);
+    triggerDownload(serialized, 'application/json; charset=UTF-8', filename, !config.debugMode);
 }

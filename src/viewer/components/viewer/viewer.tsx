@@ -21,7 +21,10 @@ class Viewer extends React.Component<ViewerData, ViewerState> {
     render() {
         return <div className="viewer">
             <RecordingHeader metadata={ this.data.metadata }></RecordingHeader>
-            <RecordingPlayer data={ this.data } currentTime={ this.state.currentTime }></RecordingPlayer>
+            <RecordingPlayer 
+                data={ this.data } 
+                currentTime={ this.state.currentTime } 
+                isPlaying={ this.state.isPlaying}></RecordingPlayer>
             { this.Controls() }
         </div>;
     }
@@ -34,7 +37,7 @@ class Viewer extends React.Component<ViewerData, ViewerState> {
                 isPlaying={ this.state.isPlaying }
                 onPlay={ this.play }
                 onPause={ this.stop }
-            ></RecordingControls> 
+                onRestart={ this.restart }></RecordingControls> 
         } else {
             return null;
         }
@@ -56,6 +59,14 @@ class Viewer extends React.Component<ViewerData, ViewerState> {
         if(this.state.isPlaying) {
             this.setState({ isPlaying: false });
         }
+    }
+
+    restart = () => {
+        this.setState({
+            currentTime: 0,
+        }, () => {
+            this.play();
+        });
     }
 
     private animate() {

@@ -1,17 +1,9 @@
-import { serializeToDocument, serializeToElement } from "./dom-utils";
 import { RecordedMutationGroup, RecordedMutation, AttributeMutation, ChangeTextMutation, ChangeChildrenMutation } from "../record/dom-changes/mutation-recorder";
-import { DedupedData } from "../types/types";
+import { DomManager } from "./dom-utils";
 
-export class DocumentManager {
+export class MutationManager {
     
-    private nodeMapping = new Map<number, Node>();
-    private assets: string[] = [];
-    constructor(private document: Document) {}
-
-    async renderSnapshot(data: DedupedData) {
-        this.assets = data.assets;
-        this.nodeMapping = await serializeToDocument(data, this.document);
-    }
+    constructor(private domManager: DomManager) { }
 
     applyChanges(changeGroup: RecordedMutationGroup[]) {
         changeGroup.forEach(group => {
@@ -22,18 +14,17 @@ export class DocumentManager {
     }
 
     private applyChange(mutation: RecordedMutation) {
-        const target = this.nodeMapping.get(mutation.target)!;
         switch(mutation.type) {
             case 'attribute':
-                return this.attributeChange(mutation, target as HTMLElement);
+                return this.attributeChange(mutation, mutation.target);
             case 'change-text':
-                return this.textChange(mutation, target);
+                return this.textChange(mutation, mutation.target);
             case 'children':
                 if(mutation.removals && mutation.removals.length > 0) {
-                    this.removeChildren(mutation, target as HTMLElement);
+                    this.removeChildren(mutation, mutation.target);
                 }
                 if(mutation.additions && mutation.additions.length > 0) {
-                    this.addChildren(mutation, target as HTMLElement);
+                    this.addChildren(mutation, mutation.target);
                 }
                 return;
             default: 
@@ -41,28 +32,28 @@ export class DocumentManager {
         }
     }
 
-    private attributeChange(mutation: AttributeMutation, target: HTMLElement) {
+    private attributeChange(mutation: AttributeMutation, target: number) {
         if(mutation.val !== null) {
-            target.setAttribute(mutation.name, mutation.val);
+            this.domManager.setAttribute(target, mutation.name, mutation.val);
         } else {
-            target.removeAttribute(mutation.name)
+            this.domManager.removeAttribute(target, mutation.name)
         }
     }
 
-    private textChange(mutation: ChangeTextMutation, target: Node) {
-        target.textContent = mutation.update;
+    private textChange(mutation: ChangeTextMutation, target: number) {
+        this.domManager.updateText(target, mutation.update);
     }
 
-    private removeChildren(mutation: ChangeChildrenMutation, target: HTMLElement) {
+    private removeChildren(mutation: ChangeChildrenMutation, target: number) {
         mutation.removals.forEach(id => {
-            target.removeChild(this.nodeMapping.get(id)!);
+            this.domManager.removeChild(target, id);
         })
     }
 
-    private addChildren(mutation: ChangeChildrenMutation, target: HTMLElement) {
+    private addChildren(mutation: ChangeChildrenMutation, target: number) {
         mutation.additions.forEach(add => {
             //TODO - The undefined namespace isn't quite right here
-            serializeToElement(target, add.data, this.nodeMapping, this.assets, undefined, add.before);
+            this.domManager.serializeToElement(target, add.data, add.before);
         })
     }
 }
