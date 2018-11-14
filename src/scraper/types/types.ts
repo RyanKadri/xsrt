@@ -12,7 +12,7 @@ export interface ScrapedHtmlElement extends OptimizedHtmlElementInfo {
 }
 
 export interface ScrapedTextElement extends OptimizedTextElementInfo {
-    domElement: Element;
+    domElement?: Element;
 }
 
 export interface ScrapedAttribute {
@@ -57,7 +57,6 @@ interface BaseScrapedRule {
 export interface ScrapedData {
     root: ScrapedHtmlElement;
     metadata: InitMetadata;
-    styles: ScrapedStyleRule[];
     changes: RecordedMutationGroup[];
     inputs: RecordedInputChannels;
 }
@@ -65,7 +64,6 @@ export interface ScrapedData {
 export interface DedupedData {
     root: OptimizedHtmlElementInfo;
     metadata: RecordingMetadata;
-    styles: OptimizedStyleRule[];
     changes: RecordedMutationGroup[];
     inputs: RecordedInputChannels;
     assets: string[];
@@ -86,7 +84,12 @@ export interface OptimizedHtmlElementInfo {
     value?: string | number;
     tag: string;
     attributes?: ScrapedAttribute[];
-    children?: OptimizedElement[];
+    children: OptimizedElement[];
+}
+
+export interface OptimizedStyleElement extends OptimizedHtmlElementInfo {
+    tag: 'style';
+    rules: OptimizedStyleRule[]
 }
 
 export interface OptimizedTextElementInfo {

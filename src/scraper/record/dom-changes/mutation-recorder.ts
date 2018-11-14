@@ -1,6 +1,7 @@
 import { DomTraverser } from "../../traverse/traverse-dom";
 import { ScrapedElement } from "../../types/types";
 import { shouldTraverseNode } from "../../filter/filter-dom";
+import { optimizeMutationGroup } from "../../optimize/optimize-mutations";
 
 export class MutationRecorder {
 
@@ -36,10 +37,12 @@ export class MutationRecorder {
     }
 
     private recordMutation = (mutations: MutationRecord[]) => {
+        console.log(mutations)
         this.mutations.push({
             timestamp: Date.now(),
             mutations: mutations
                 .map(mutation => this.transformMutation(mutation)).flat(Infinity)
+                .map(recorded => optimizeMutationGroup(recorded))
         })
     }
     
@@ -99,9 +102,9 @@ export class MutationRecorder {
             .filter(shouldTraverseNode)
             .map(addition => {
                 const processed = this.domWalker.traverseNode(addition)!;
-                let before: Node | null = processed.domElement;
+                let before: Node | null | undefined = processed.domElement;
                 do {
-                    before = before.nextSibling;
+                    before = before!.nextSibling;
                 } while(before && !this.domWalker.isManaged(before));
 
                 let beforeId: number | null = null;

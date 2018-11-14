@@ -1,39 +1,61 @@
-import { DedupedData, ScrapedData } from "../types/types";
-import { UrlReferenceMapping } from "../transform/transform-styles";
+import { DedupedData, ScrapedData, OptimizedElement, ScrapedElement } from "../types/types";
 import { toDataUrl } from "../utils/utils";
-import { dedupeStyles } from "./optimize-styles";
-import { optimizeRoot } from "./optimize-dom";
-
-let refId = 0;
-const generateId = () => {
-    return refId ++;
-}
+import { optimizeNode } from "./optimize-dom";
 
 export async function optimize(data: ScrapedData): Promise<DedupedData> {
-    const { root, assets: initAssets } = optimizeRoot(data.root, {}, generateId);
-    const { styles, assets } = dedupeStyles(data.styles, initAssets, generateId);
-    const resolvedAssets = await resolveAssets(assets);
+    const { context, root } = optimizeSubtree(data.root, { assets: [] });
+    const assets = (await Promise.all(context.assets.map(resolveAsset)));
+
     return { 
         ...data,
-        root,
-        styles,
-        assets: resolvedAssets
+        root: await root,
+        assets
     } as DedupedData;
 }
 
-async function resolveAssets(assets: UrlReferenceMapping): Promise<string[]> {
-    const resolved = await Promise.all(
-        Object.entries(assets)
-            .map(async ([url, id]) => {
-                return fetch(url)
-                    .then(resp => resp.blob())
-                    .then(blob => toDataUrl(blob))
-                    .then(dataUrl => ({id, url: dataUrl }))
-                    .catch(() => ({ id, url })) //TODO - How do we want to handle this case? Falling back to old link is probably not the
-            })
-    );
-    return resolved.reduce((acc, el) => {
-        acc[el.id] = el.url;
-        return acc;
-    }, [] as string[])
+function optimizeSubtree(root: ScrapedElement, inContext: OptimizationContext): OptimizationResult {
+    let { nodeTask, context } = optimizeNode(root, inContext);
+    if(root.type === 'element') {
+        const childTasks: (OptimizedElement | Promise<OptimizedElement>)[] = [];
+        for(const child of root.children) {
+            const optimizationResult = optimizeSubtree(child, context);
+            context = optimizationResult.context;
+            childTasks.push(optimizationResult.root);
+        }
+        return {
+            root: Promise.all([nodeTask, ...childTasks])
+                .then(([root, ...children]) => ({
+                    ...root,
+                    children
+                })),
+            context
+        }
+    } else {
+        return {
+            root: nodeTask,
+            context
+        } as OptimizationResult
+    }
+
+} 
+
+async function resolveAsset(asset: string): Promise<string> {
+    return fetch(asset)
+        .then(resp => resp.blob())
+        .then(blob => toDataUrl(blob))
+        .catch(() => asset) //TODO - How do we want to handle this case? Falling back to old link is probably not the
+}
+
+export interface OptimizationContext {
+    assets: string[];
+}
+
+export interface OptimizationResult {
+    root: Promise<OptimizedElement>;
+    context: OptimizationContext;
+}
+
+export interface NodeOptimizationResult { 
+    nodeTask: OptimizedElement | Promise<OptimizedElement>,
+    context: OptimizationContext;
 }

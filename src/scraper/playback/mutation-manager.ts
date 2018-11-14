@@ -3,11 +3,14 @@ import { DomManager } from "./dom-utils";
 
 export class MutationManager {
     
+    private usedMutations = new Set<RecordedMutation>()
     constructor(private domManager: DomManager) { }
 
     applyChanges(changeGroup: RecordedMutationGroup[]) {
         changeGroup.forEach(group => {
             group.mutations.forEach(mutation => {
+                if(this.usedMutations.has(mutation)) console.log(mutation)
+                this.usedMutations.add(mutation);
                 this.applyChange(mutation);
             })
         })

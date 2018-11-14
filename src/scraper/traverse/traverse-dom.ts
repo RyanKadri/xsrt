@@ -26,15 +26,11 @@ export class DomTraverser {
         return this.nodeMapping.has(node);
     }
 
-    dump() {
-        console.log(this.nodeMapping);
-    }
-
-    // Note that if you start on an invalid object as the root, this will still scrape.
     private extractElement(node: HTMLElement): ScrapedHtmlElement {
-        return transformElement(
+        const res = transformElement(
             this.scrapeBasicElement(node)
         );
+        return res;
     }
     
     private scrapeBasicElement(node: HTMLElement): ScrapedHtmlElement {

@@ -1,4 +1,3 @@
-import { extractStyleInfo } from "./traverse/traverse-styles";
 import { extractInitMetadata, extractEndMetadata } from "./traverse/extract-metadata";
 import { ScrapedHtmlElement, ScrapedData } from "./types/types";
 import { MutationRecorder } from "./record/dom-changes/mutation-recorder";
@@ -24,8 +23,7 @@ export const scraper: Scraper = (function () {
         initConfig = config;
         const metadata = extractInitMetadata(document, location);
         const root = domWalker.traverseNode(document.documentElement!) as ScrapedHtmlElement;
-        const styles = extractStyleInfo(Array.from(document.styleSheets) as CSSStyleSheet[]);
-        initSnapshot = { root, metadata, styles, changes: [], inputs: {}};
+        initSnapshot = { root, metadata, changes: [], inputs: {}};
 
         switch(config.output) {
             case 'single-page':
@@ -49,7 +47,6 @@ export const scraper: Scraper = (function () {
         const inputs = inputRecorder.stop();
         const metadata = { ...initSnapshot.metadata, ...extractEndMetadata() }
         outputDataSnapshot({ ...initSnapshot, changes, inputs, metadata }, 'recording.json', initConfig);
-        domWalker.dump();
     }
 })()
 

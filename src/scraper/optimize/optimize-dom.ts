@@ -1,59 +1,56 @@
-import { ScrapedHtmlElement, OptimizedHtmlElementInfo, ScrapedElement, OptimizedElement, ScrapedAttribute } from "../types/types";
-import { UrlReferenceMapping } from "../transform/transform-styles";
+import { ScrapedHtmlElement, ScrapedElement } from "../types/types";
+import { OptimizationContext, NodeOptimizationResult } from "./optimize";
+import { optimizeStyle } from "./optimize-styles";
 
-export function optimizeRoot(root: ScrapedHtmlElement, assets: UrlReferenceMapping, idGen: () => number)
-    :{ root: OptimizedHtmlElementInfo, assets: UrlReferenceMapping } {
-
-    return { 
-        root: processSubtree(root, assets, idGen) as OptimizedHtmlElementInfo,
-        assets
-    };
-}
-
-function processSubtree(node: ScrapedElement, assets: UrlReferenceMapping, idGen: () => number): OptimizedElement {
-    if(node.type === 'element') {
-        return {
-            ...processNode(node, assets, idGen),
-            children: node.children.length > 0 ? node.children.map(child => processSubtree(child, assets, idGen)): undefined
+export function optimizeNode(root: ScrapedElement, context: OptimizationContext): NodeOptimizationResult {
+    if(root.type === 'element') {
+        switch(root.tag) {
+            case 'img': 
+                return optimizeImage(root, context);
+            case 'style':
+            case 'link':
+                return optimizeStyle(root, context);
+            default:
+                //TODO - How do we ensure domElement is removed from all optimized elements (even if they need to resolve a promise)?
+                const { domElement, ...base } = root;
+                return {
+                    nodeTask: base,
+                    context
+                };
         }
     } else {
-        const { domElement, ...others } = node;
-        return others;
-    }
-}
-
-function processNode(node: ScrapedHtmlElement, assets: UrlReferenceMapping, idGen: () => number): OptimizedHtmlElementInfo {
-    const { domElement, ...base } = node;
-    switch(node.tag) {
-        case 'img': 
-            return {
-                ...base,
-                attributes: optimizeImageAttrs(node, assets, idGen)
-            }
-        default:
-            return base;
+        const { domElement, ...others } = root;
+        return {
+            nodeTask: others,
+            context
+        }
     }
 }
 
 // Specifically for images (and maybe some other elements like canvas, video, etc), we can grab the data
 // without a fetch. Maybe assets supports some kind of generic resolver callback rather than just url;
-function optimizeImageAttrs(node: ScrapedHtmlElement, assets: UrlReferenceMapping, idGen: () => number): ScrapedAttribute[] {
-    return node.attributes.map(attr => {
-        if(attr.name === 'src') {
-            const url = attr.value;
-            let ref = assets[url];
-            if(!ref) {
-                ref = assets[url] = '' + idGen();
-            }
-            return {
-                ...attr,
-                value: `##${ref}##`,
-                references: [ref]
-            }
-        } else {
-            return attr;
+function optimizeImage(node: ScrapedHtmlElement, context: OptimizationContext): NodeOptimizationResult {
+    const src = node.attributes.find(attr => attr.name === 'src')!;
+    let assetInd = context.assets.findIndex(asset => asset === src.value);
+    let assets = context.assets;
+
+    if(assetInd === -1) {
+        assetInd = assets.length;
+        assets = assets.concat(src.value);
+    }
+    return {
+        nodeTask: {
+            ...node,
+            attributes: node.attributes.map(attr => 
+                attr.name === 'src'
+                    ? { ...attr, value: `##${assetInd}##`, references: ['' + assetInd]}
+                    : attr
+            )
+        },
+        context: {
+            assets
         }
-    })
+    }
     
     // const image = node.domElement as HTMLImageElement;
     // const canvas = document.createElement('canvas');

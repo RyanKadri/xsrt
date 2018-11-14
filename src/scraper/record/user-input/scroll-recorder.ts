@@ -6,8 +6,8 @@ export function handleScroll(_: UIEvent, target?: ScrapedElement): RecordedScrol
         type: 'scroll' as 'scroll',
         target: target ? target.id : null,
         timestamp: Date.now(),
-        scrollX: target ? target.domElement.scrollLeft : window.scrollX,
-        scrollY: target ? target.domElement.scrollTop : window.scrollY
+        scrollX: target ? target.domElement!.scrollLeft : window.scrollX,
+        scrollY: target ? target.domElement!.scrollTop : window.scrollY
     };
 }
 

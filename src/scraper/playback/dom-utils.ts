@@ -1,4 +1,4 @@
-import { ScrapedAttribute, DedupedData, OptimizedElement, OptimizedStyleRule, OptimizedHtmlElementInfo } from "../types/types";
+import { ScrapedAttribute, DedupedData, OptimizedElement, OptimizedStyleRule, OptimizedHtmlElementInfo, OptimizedStyleElement, OptimizedTextElementInfo } from "../types/types";
 import { toBlobUrl } from "../utils/utils";
 
 export class DomManager {
@@ -18,12 +18,6 @@ export class DomManager {
         
         this.document.removeChild(this.document.documentElement!);
         this._serializeToElement(this.document, data.root);
-        
-        const styles = this.serializeStyles(data.styles);
-        const styleElement = this.document.createElement('style');
-        styleElement.innerHTML = styles;
-    
-        this.document.head!.appendChild(styleElement);
     }
     
     serializeToElement(parent: number, node: OptimizedElement, before: number | null = null) {
@@ -83,6 +77,19 @@ export class DomManager {
         }
         if(node.value && 'value' in created) {
             (created as HTMLInputElement).value = '' + node.value;
+        }
+        if(node.tag === 'style') {
+            const rules = (node as OptimizedStyleElement).rules;
+            let firstChild = created.firstChild;
+            if(!firstChild) {
+                firstChild = this.document.createTextNode('');
+                created.appendChild(firstChild);
+            }
+            if(rules) {
+                firstChild.textContent = this.serializeStyles((node as OptimizedStyleElement).rules)
+            } else {
+                firstChild.textContent = node.children.length > 0 ? (node.children[0] as OptimizedTextElementInfo).content : '';
+            }
         }
         return created;
     }

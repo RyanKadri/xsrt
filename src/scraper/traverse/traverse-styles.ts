@@ -1,17 +1,15 @@
 import { matchesMedia } from "../utils/utils";
 import { ScrapedStyleRule } from "../types/types";
-import { shouldIncludeSheet, shouldIncludeRule } from "../filter/filter-styles";
+import { shouldIncludeRule } from "../filter/filter-styles";
 import { transformRule } from "../transform/transform-styles";
 
-export function extractStyleInfo(styleSheets: CSSStyleSheet[]): ScrapedStyleRule[] {
-    return extractRules(styleSheets)
+export function extractStyleInfo(styleSheet: CSSStyleSheet): ScrapedStyleRule[] {
+    return extractRules(styleSheet)
                 .map(transformRule)
 }
 
-function extractRules(styleSheets: CSSStyleSheet[]): ScrapedStyleRule[] {
-    return styleSheets
-        .filter(shouldIncludeSheet)
-        .map(rulesPerSheet)
+function extractRules(styleSheet: CSSStyleSheet): ScrapedStyleRule[] {
+    return rulesPerSheet(styleSheet)
         .flat(Infinity);
 }
 
@@ -22,7 +20,7 @@ function rulesPerSheet(sheet: CSSStyleSheet) {
 }
 
 function unpackImport(rule: CSSImportRule) {
-    return matchesMedia(rule.media) ? extractStyleInfo([ rule.styleSheet ]) : [];
+    return matchesMedia(rule.media) ? extractStyleInfo(rule.styleSheet) : [];
 }
 
 function extractRule(rule: CSSRule, sheet: CSSStyleSheet): ScrapedStyleRule {

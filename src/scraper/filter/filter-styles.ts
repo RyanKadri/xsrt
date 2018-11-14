@@ -4,7 +4,7 @@ export function shouldIncludeSheet(sheet: CSSStyleSheet) {
     if(matchesMedia(sheet.media)) {
         try { 
             sheet.rules;
-            return true;
+            return sheet.rules.length > 0;
         } catch {
             return false
         }

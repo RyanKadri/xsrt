@@ -1,6 +1,6 @@
 import { ScrapedAttribute, ScrapedHtmlElement, ScrapedTextElement } from "../types/types";
 
-export function transformElement(el: ScrapedHtmlElement) {
+export function transformElement(el: ScrapedHtmlElement):  ScrapedHtmlElement {
     return {
         ...el,
         attributes: el.attributes
