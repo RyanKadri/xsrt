@@ -40,9 +40,8 @@ export class MutationRecorder {
         console.log(mutations)
         this.mutations.push({
             timestamp: Date.now(),
-            mutations: mutations
-                .map(mutation => this.transformMutation(mutation)).flat(Infinity)
-                .map(recorded => optimizeMutationGroup(recorded))
+            mutations: optimizeMutationGroup(mutations
+                .map(mutation => this.transformMutation(mutation)).flat(Infinity))
         })
     }
     
