@@ -27,14 +27,16 @@ describe(`Mutation Observer Expectations`, () => {
     });
 
     it(`Does not optimize synchronous overwriting changes on single elements`, () => {
-        const [div] = el('div');
-    
-        document.body.appendChild(div);
-        div.textContent = 'Test';
-        div.textContent = 'Testing';
-        div.setAttribute('attr', 'thingy')
-        div.setAttribute('attr', 'thingy123')
-        return div;
+        const mutations = generateMutationsFor(() => {
+            const [div] = el('div');
+            document.body.appendChild(div);
+            div.textContent = 'Test';
+            div.textContent = 'Testing';
+            div.setAttribute('attr', 'thingy')
+            div.setAttribute('attr', 'thingy123')
+            return div;
+        })
+        expect(mutations.length).toEqual(5);
     })
 
     function el(...tags: string[]) {

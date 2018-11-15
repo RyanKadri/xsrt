@@ -77,7 +77,6 @@ export function optimizeChildMutations(childMutations: ChangeChildrenMutation[])
                 }
             }
             mutation.additions.forEach(add => {
-                currentlyRemoved.delete(add.data.id);
                 addSubtree(add.data);
             })
         }
@@ -89,8 +88,7 @@ export function optimizeChildMutations(childMutations: ChangeChildrenMutation[])
                 if(topLevelAdditions.has(mutation.target)) {
                     const top = topLevelAdditions.get(mutation.target)!;
                     top.additions = top.additions.filter(add => !mutation.removals.includes(add.data.id))
-                }
-                if(topLevelRemovals.has(mutation.target)) {
+                } else if(topLevelRemovals.has(mutation.target)) {
                     const top = topLevelRemovals.get(mutation.target)!
                     mutation.removals.forEach(removal => {
                         if(!top.removals.includes(removal)) {
@@ -104,7 +102,9 @@ export function optimizeChildMutations(childMutations: ChangeChildrenMutation[])
             mutation.removals.forEach(remove => {
                 if(availableNodes.has(remove)) {
                     clearSubtree(availableNodes.get(remove)!)
-                }
+                } else {
+                    currentlyRemoved.add(remove);
+                };
             })
         }
 
@@ -114,7 +114,8 @@ export function optimizeChildMutations(childMutations: ChangeChildrenMutation[])
         children: [
             ...topLevelAdditions.values(),
             ...topLevelRemovals.values()
-        ].filter(change => change.additions.length > 0 || change.removals.length > 0),
+        ].filter(change => (change.additions && change.additions.length > 0)
+             || (change.removals && change.removals.length > 0)),
         removed: currentlyRemoved
     }
 

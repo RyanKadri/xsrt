@@ -38,7 +38,7 @@ module.exports = function(config: Config) {
     browsers: ['Chrome'],
     singleRun: false,
     concurrency: Infinity,
-    browserNoActivityTimeout: 60000
+    browserNoActivityTimeout: 999999999 // 10 days. That'll do
   };
   config.set(options);
 }
