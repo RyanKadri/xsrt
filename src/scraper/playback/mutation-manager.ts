@@ -48,8 +48,8 @@ export class MutationManager {
     }
 
     private removeChildren(mutation: ChangeChildrenMutation, target: number) {
-        mutation.removals.forEach(id => {
-            this.domManager.removeChild(target, id);
+        mutation.removals.forEach(removal => {
+            this.domManager.removeChild(target, removal.id);
         })
     }
 

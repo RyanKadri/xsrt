@@ -2,7 +2,7 @@ import { RecordedMouseEvent, handleMouseMove } from "./mouse-recorder";
 import { RecordedScrollEvent, handleScroll } from "./scroll-recorder";
 import { RecordedInputChannels } from "../../types/types";
 import { SimpleInputHandler } from "./simple-input-recorder";
-import { DomTraverser } from "../../traverse/traverse-dom";
+import { RecordingDomManager } from "../../traverse/traverse-dom";
 import { handleInputChange, RecordedInputChangeEvent } from "./input-event-recorder";
 
 export class CompleteInputRecorder {
@@ -10,7 +10,7 @@ export class CompleteInputRecorder {
     private recorders: UserInputRecorder<RecordedUserInput>[];
     
     constructor(
-        domWalker: DomTraverser,
+        domWalker: RecordingDomManager,
     ) {
         this.recorders = [
             new SimpleInputHandler<RecordedMouseEvent, MouseEvent>

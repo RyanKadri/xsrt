@@ -1,5 +1,5 @@
-import { RecordedMutation, AttributeMutation, ChangeTextMutation, ChangeChildrenMutation } from "../record/dom-changes/mutation-recorder";
-import { ScrapedElement, ScrapedHtmlElement } from "../types/types";
+import { RecordedMutation, AttributeMutation, ChangeTextMutation, ChangeChildrenMutation, AddDescriptor } from "../record/dom-changes/mutation-recorder";
+import { ScrapedElement } from "../types/types";
 
 export function optimizeMutationGroup(mutationGroup: RecordedMutation[]): RecordedMutation[] {
     const { children, attributes, text } = groupChanges(mutationGroup);
@@ -44,97 +44,83 @@ export function optimizeTextMutations(textMutations: ChangeTextMutation[], remov
 }
 
 export function optimizeChildMutations(childMutations: ChangeChildrenMutation[]) {
-    const topLevelAdditions = new Map<number, ChangeChildrenMutation>();
-    const topLevelRemovals = new Map<number, ChangeChildrenMutation>();
-    const availableNodes = new Map<number, ScrapedHtmlElement>();
-    const currentlyRemoved = new Set<number>();
-
+    const touched = new Set<number>();
+    const topLevelAdditions = new Map<number, AddDescriptor[]>();
+    const removals = new Map<number, ScrapedElement[]>();
     for(const mutation of childMutations) {
-        const target = availableNodes.get(mutation.target);
-        if(mutation.additions && mutation.additions.length > 0) {
-            if(target) {
-                for(const addition of mutation.additions) {
-                    if(addition.before) {
-                        target.children = [
-                            ...target.children.slice(0, addition.before),
-                            addition.data,
-                            ...target.children.slice(addition.before)
-                        ];
-                    } else {
-                        target.children.push(addition.data);
-                    }
-                }
-            } else {
-                if(topLevelRemovals.has(mutation.target)) {
-                    const top = topLevelRemovals.get(mutation.target)!;
-                    top.removals = top.removals.filter(removal => mutation.additions.some(add => add.data.id === removal))
-                }
-                if(topLevelAdditions.has(mutation.target)) {
-                    const top = topLevelAdditions.get(mutation.target)!;
-                    top.additions.push(...mutation.additions);
-                } else {
-                    topLevelAdditions.set(mutation.target, mutation);
-                }
+        for(const addition of mutation.additions) {
+            if(!touched.has(addition.data.id)) {
+                topLevelAdditions.set(mutation.target, (topLevelAdditions.get(mutation.target) || []).concat(addition));
             }
-            mutation.additions.forEach(add => {
-                addSubtree(add.data);
-            })
+            markDescendants(addition.data)
         }
-        if(mutation.removals && mutation.removals.length > 0) {
-            if(target) {
-                const removals = new Set(mutation.removals);
-                target.children = target.children.filter(child => !removals.has(child.id));
-            } else {
-                if(topLevelAdditions.has(mutation.target)) {
-                    const top = topLevelAdditions.get(mutation.target)!;
-                    top.additions = top.additions.filter(add => !mutation.removals.includes(add.data.id))
-                } else if(topLevelRemovals.has(mutation.target)) {
-                    const top = topLevelRemovals.get(mutation.target)!
-                    mutation.removals.forEach(removal => {
-                        if(!top.removals.includes(removal)) {
-                            top.removals.push(removal);
-                        }
-                    })
-                } else {
-                    topLevelRemovals.set(mutation.target, mutation);
-                }
+        for(const removal of mutation.removals) {
+            if(!touched.has(removal.id)) {
+                removals.set(mutation.target, (removals.get(mutation.target) || []).concat(removal))
             }
-            mutation.removals.forEach(remove => {
-                if(availableNodes.has(remove)) {
-                    clearSubtree(availableNodes.get(remove)!)
-                } else {
-                    currentlyRemoved.add(remove);
-                };
-            })
+            markDescendants(removal, (remove) => {
+                if(topLevelAdditions.has(remove.id)) {
+                    topLevelAdditions.delete(remove.id);
+                }
+            });
         }
-
-    }
-    
-    return  {
-        children: [
-            ...topLevelAdditions.values(),
-            ...topLevelRemovals.values()
-        ].filter(change => (change.additions && change.additions.length > 0)
-             || (change.removals && change.removals.length > 0)),
-        removed: currentlyRemoved
+        if(mutation.removals.length > 0 && topLevelAdditions.has(mutation.target)) {
+            const oldAdditions = topLevelAdditions.get(mutation.target)!;
+            const removals = new Set(mutation.removals.map(remove => remove.id));
+            topLevelAdditions.set(mutation.target,
+                oldAdditions.filter(add => !removals.has(add.data.id))
+            );
+        } 
     }
 
-    function addSubtree(subTree: ScrapedElement) {
-        if(subTree.type === 'element') {
-            currentlyRemoved.delete(subTree.id);
-            availableNodes.set(subTree.id, {...subTree});
-            subTree.children.forEach(addSubtree);
-        }
+    return {
+        children: [...reformAdditions(topLevelAdditions), ...reformRemovals(removals)] as ChangeChildrenMutation[],
+        removed: touchedNotAdded()
     }
-    
-    function clearSubtree(subTree: ScrapedElement) {
-        if(subTree.type === 'element') {
-            currentlyRemoved.add(subTree.id);
-            availableNodes.delete(subTree.id);
-            subTree.children.forEach(clearSubtree);
-        }
+
+    function markDescendants(node: ScrapedElement, cb: (el: ScrapedElement) => void = () => {}) {
+        touched.add(node.id);
+        cb(node);
+        if(node.type === 'element') {
+            node.children.forEach(node => markDescendants(node, cb));
+        }    
     }
+
+    function touchedNotAdded() {
+        for(const group of topLevelAdditions.values()) {
+            group.map(item => item.data).forEach(walk);
+        }
+        function walk(element: ScrapedElement) {
+            touched.delete(element.id)
+            if(element.type === 'element') {
+                element.children.forEach(walk)
+            }
+        }
+        return touched;
+    }
+
 }
 
+function reformAdditions(topLevelAdditions: Map<number, AddDescriptor[]>): ChangeChildrenMutation[] {
+    return Array.from(topLevelAdditions.entries()).map(([target, additions]) => {
+        return {
+            type: 'children' as 'children',
+            target,
+            removals: [],
+            additions
+        }
+    }).filter(add => add.additions.length > 0)
+}
+
+function reformRemovals(removalMap: Map<number, ScrapedElement[]>): ChangeChildrenMutation[] {
+    return Array.from(removalMap.entries()).map(([target, removals]) => {
+        return {
+            type: 'children' as 'children',
+            target,
+            removals,
+            additions: []
+        }
+    })
+}
 
 type AttributeMutationHash = string;

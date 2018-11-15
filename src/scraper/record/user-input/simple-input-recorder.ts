@@ -1,5 +1,5 @@
 import { RecordedUserInput, UserInputRecorder } from "./input-recorder";
-import { DomTraverser } from "../../traverse/traverse-dom";
+import { RecordingDomManager } from "../../traverse/traverse-dom";
 import { ScrapedElement } from "../../types/types";
 
 export class SimpleInputHandler<InputType extends RecordedUserInput, EventType extends Event = Event>
@@ -11,7 +11,7 @@ export class SimpleInputHandler<InputType extends RecordedUserInput, EventType e
         private events: string[],
         public channel: string,
         private handler: (evt: EventType, managedEl?: ScrapedElement) => InputType,
-        private domWalker: DomTraverser
+        private domWalker: RecordingDomManager
     ) { }
 
     start() {

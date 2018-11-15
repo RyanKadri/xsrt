@@ -1,13 +1,13 @@
 import { extractInitMetadata, extractEndMetadata } from "./traverse/extract-metadata";
 import { ScrapedHtmlElement, ScrapedData } from "./types/types";
 import { MutationRecorder } from "./record/dom-changes/mutation-recorder";
-import { DomTraverser } from "./traverse/traverse-dom";
+import { RecordingDomManager } from "./traverse/traverse-dom";
 import { CompleteInputRecorder } from "./record/user-input/input-recorder";
 import { outputStandaloneSnapshot, outputDataSnapshot } from "./output/output-manager";
 
 export const scraper: Scraper = (function () {
 
-    const domWalker = new DomTraverser();
+    const domWalker = new RecordingDomManager();
     const mutationRecorder = new MutationRecorder(domWalker);
     const inputRecorder = new CompleteInputRecorder(domWalker);
     let initSnapshot: ScrapedData;

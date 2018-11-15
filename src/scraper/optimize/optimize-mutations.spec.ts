@@ -48,6 +48,7 @@ describe(`optimizeTextMutations`, () => {
 })
 
 describe(`optimizeChildMutations`, () => {
+
     it(`Returns unrelated additions and removals without modification`, () => {
         const { children } = optimizeChildMutations([
             addition(12, textNode(13)),
@@ -59,7 +60,7 @@ describe(`optimizeChildMutations`, () => {
 
     it(`Merges additions when the target is a child of a previous addition`, () => {
         const { children } = optimizeChildMutations([
-            addition(12, elementNode(13)),
+            addition(12, elementNode(13, [textNode(14), textNode(15)])),
             addition(13, textNode(14)),
             addition(13, textNode(15))
         ])
@@ -110,7 +111,7 @@ describe(`optimizeChildMutations`, () => {
     it(`Makes sure not to insert duplicates (because MutationRecords are mutable)`, () => {
         const { children } = optimizeChildMutations([
             addition(12, elementNode(13, 
-                [textNode(14)]
+                [textNode(14), textNode(15)]
             )),
             addition(13, textNode(14), textNode(15)),
         ]);
@@ -133,7 +134,7 @@ describe(`optimizeChildMutations`, () => {
             type: 'children',
             target,
             additions: [],
-            removals
+            removals: removals.map(id => elementNode(id))
         };
     }
 

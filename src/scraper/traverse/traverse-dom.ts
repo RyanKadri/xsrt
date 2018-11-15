@@ -3,10 +3,11 @@ import { isElementNode, isTextNode } from "../utils/utils";
 import { shouldTraverseNode } from "../filter/filter-dom";
 import { transformElement, transformText } from "../transform/transform-dom";
 
-export class DomTraverser {
+export class RecordingDomManager {
     
     private idSeq = 0;
     private nodeMapping = new Map<Node, ScrapedElement>();
+    private idMapping = new Map<number, ScrapedElement>();
 
     traverseNode = (node: Node): ScrapedElement | undefined => {
         const result = isElementNode(node) ? this.extractElement(node) 
@@ -14,12 +15,17 @@ export class DomTraverser {
             : undefined;
         if(result) {
             this.nodeMapping.set(node, result);
+            this.idMapping.set(result.id, result);
         }
         return result;
     }
 
-    fetchManagedNode = (node: Node): ScrapedElement| undefined => {
+    fetchManagedNode = (node: Node): ScrapedElement | undefined => {
         return this.nodeMapping.get(node);
+    }
+
+    fetchScrapedNodeById = (id: number): ScrapedElement | undefined => {
+        return this.idMapping.get(id);
     }
 
     isManaged(node: Node) {

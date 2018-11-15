@@ -1,4 +1,4 @@
-import { DomTraverser } from "../../traverse/traverse-dom";
+import { RecordingDomManager } from "../../traverse/traverse-dom";
 import { ScrapedElement } from "../../types/types";
 import { shouldTraverseNode } from "../../filter/filter-dom";
 import { optimizeMutationGroup } from "../../optimize/optimize-mutations";
@@ -9,7 +9,7 @@ export class MutationRecorder {
     private mutations: RecordedMutationGroup[] = [];
     private running = false;
 
-    constructor(private domWalker: DomTraverser) {
+    constructor(private domWalker: RecordingDomManager) {
         this.observer = new MutationObserver(this.recordMutation);
     }
 
@@ -40,8 +40,10 @@ export class MutationRecorder {
         console.log(mutations)
         this.mutations.push({
             timestamp: Date.now(),
-            mutations: optimizeMutationGroup(mutations
-                .map(mutation => this.transformMutation(mutation)).flat(Infinity))
+            mutations: optimizeMutationGroup(
+                mutations
+                    .map(mutation => this.transformMutation(mutation)).flat(Infinity)
+            )
         })
     }
     
@@ -90,8 +92,7 @@ export class MutationRecorder {
             type: "children",
             target,
             removals: Array.from(mutation.removedNodes)
-                .map(node => this.domWalker.fetchManagedNode(node))
-                .map(node => node!.id),
+                .map(node => this.domWalker.fetchManagedNode(node)!),
             additions: []
         }
     }
@@ -144,11 +145,11 @@ export interface AttributeMutation extends BaseMutation {
 export interface ChangeChildrenMutation extends BaseMutation {
     type: 'children';
     additions: AddDescriptor[];
-    removals: number[];
+    removals: ScrapedElement[];
 
 }
 
-interface AddDescriptor {
+export interface AddDescriptor {
     before: number | null;
     data: ScrapedElement;
 }
