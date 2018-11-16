@@ -32,6 +32,10 @@ export class RecordingDomManager {
         return this.nodeMapping.has(node);
     }
 
+    dump() {
+        return this.nodeMapping;
+    }
+
     private extractElement(node: HTMLElement): ScrapedHtmlElement {
         const res = transformElement(
             this.scrapeBasicElement(node)
@@ -61,9 +65,10 @@ export class RecordingDomManager {
     }
     
     private scrapeBasicText(node: Element): ScrapedTextElement {
+        const id = this.isManaged(node) ? this.fetchManagedNode(node)!.id : this.nextId();
         return {
             type: 'text',
-            id: this.nextId(),
+            id,
             content: node.textContent || '',
             domElement: node
         }

@@ -44,21 +44,30 @@ export function optimizeTextMutations(textMutations: ChangeTextMutation[], remov
 }
 
 export function optimizeChildMutations(childMutations: ChangeChildrenMutation[]) {
-    const touched = new Set<number>();
+    const allAdded = new Set<number>();
+    const allRemoved = new Set<number>();
     const topLevelAdditions = new Map<number, AddDescriptor[]>();
     const removals = new Map<number, ScrapedElement[]>();
     for(const mutation of childMutations) {
         for(const addition of mutation.additions) {
-            if(!touched.has(addition.data.id)) {
+            if(!allAdded.has(addition.data.id) && !allRemoved.has(addition.data.id)) {
                 topLevelAdditions.set(mutation.target, (topLevelAdditions.get(mutation.target) || []).concat(addition));
             }
-            markDescendants(addition.data)
+            markDescendants(addition.data, (add) => {
+                allAdded.add(add.id);
+                allRemoved.delete(add.id);
+                if(removals.has(add.id)) {
+                    removals.delete(add.id);
+                }
+            })
         }
         for(const removal of mutation.removals) {
-            if(!touched.has(removal.id)) {
+            if(!allAdded.has(removal.id)) {
                 removals.set(mutation.target, (removals.get(mutation.target) || []).concat(removal))
             }
             markDescendants(removal, (remove) => {
+                allRemoved.add(remove.id);
+                allAdded.delete(remove.id);
                 if(topLevelAdditions.has(remove.id)) {
                     topLevelAdditions.delete(remove.id);
                 }
@@ -75,28 +84,14 @@ export function optimizeChildMutations(childMutations: ChangeChildrenMutation[])
 
     return {
         children: [...reformAdditions(topLevelAdditions), ...reformRemovals(removals)] as ChangeChildrenMutation[],
-        removed: touchedNotAdded()
+        removed: allRemoved
     }
 
     function markDescendants(node: ScrapedElement, cb: (el: ScrapedElement) => void = () => {}) {
-        touched.add(node.id);
         cb(node);
         if(node.type === 'element') {
             node.children.forEach(node => markDescendants(node, cb));
         }    
-    }
-
-    function touchedNotAdded() {
-        for(const group of topLevelAdditions.values()) {
-            group.map(item => item.data).forEach(walk);
-        }
-        function walk(element: ScrapedElement) {
-            touched.delete(element.id)
-            if(element.type === 'element') {
-                element.children.forEach(walk)
-            }
-        }
-        return touched;
     }
 
 }
