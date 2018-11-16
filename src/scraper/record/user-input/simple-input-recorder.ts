@@ -1,6 +1,7 @@
 import { RecordedUserInput, UserInputRecorder } from "./input-recorder";
 import { RecordingDomManager } from "../../traverse/traverse-dom";
 import { ScrapedElement } from "../../types/types";
+import { TimeManager } from "../../utils/time-manager";
 
 export class SimpleInputHandler<InputType extends RecordedUserInput, EventType extends Event = Event>
     implements UserInputRecorder<InputType> {
@@ -10,8 +11,9 @@ export class SimpleInputHandler<InputType extends RecordedUserInput, EventType e
     constructor(
         private events: string[],
         public channel: string,
-        private handler: (evt: EventType, managedEl?: ScrapedElement) => InputType,
-        private domWalker: RecordingDomManager
+        private handler: (evt: EventType, managedEl?: ScrapedElement) => Partial<InputType>,
+        private domWalker: RecordingDomManager,
+        private timeManager: TimeManager
     ) { }
 
     start() {
@@ -30,6 +32,11 @@ export class SimpleInputHandler<InputType extends RecordedUserInput, EventType e
     }
 
     private recordEvent = (evt: Event) => {
-        this.recordedEvents.push(this.handler(evt as EventType, this.domWalker.fetchManagedNode(evt.target as Node)));
+        const recorded = this.handler(evt as EventType, this.domWalker.fetchManagedNode(evt.target as Node));
+        this.recordedEvents.push({
+            ...recorded as any,
+            timestamp: this.timeManager.currentTime(),
+            type: evt.type
+        } as InputType);
     }
 }

@@ -1,15 +1,17 @@
-import { extractInitMetadata, extractEndMetadata } from "./traverse/extract-metadata";
+import { extractInitMetadata } from "./traverse/extract-metadata";
 import { ScrapedHtmlElement, ScrapedData } from "./types/types";
 import { MutationRecorder } from "./record/dom-changes/mutation-recorder";
 import { RecordingDomManager } from "./traverse/traverse-dom";
 import { CompleteInputRecorder } from "./record/user-input/input-recorder";
 import { outputStandaloneSnapshot, outputDataSnapshot } from "./output/output-manager";
+import { TimeManager } from "./utils/time-manager";
 
 export const scraper: Scraper = (function () {
 
     const domWalker = new RecordingDomManager();
-    const mutationRecorder = new MutationRecorder(domWalker);
-    const inputRecorder = new CompleteInputRecorder(domWalker);
+    const timeManager = new TimeManager();
+    const mutationRecorder = new MutationRecorder(domWalker, timeManager);
+    const inputRecorder = new CompleteInputRecorder(domWalker, timeManager);
     let initSnapshot: ScrapedData;
     let initConfig: ScraperConfig;
 
@@ -21,7 +23,7 @@ export const scraper: Scraper = (function () {
 
     async function scrape(config: ScraperConfig) {
         initConfig = config;
-        const metadata = extractInitMetadata(document, location);
+        const metadata = extractInitMetadata(document, location, timeManager.start());
         const root = domWalker.traverseNode(document.documentElement!) as ScrapedHtmlElement;
         initSnapshot = { root, metadata, changes: [], inputs: {}};
 
@@ -38,14 +40,16 @@ export const scraper: Scraper = (function () {
     }
 
     async function startRecording() {
+        timeManager.start();
         mutationRecorder.start();
         inputRecorder.start();
     }
 
     async function stopRecording() {
+        const stopTime = timeManager.stop();
         const changes = mutationRecorder.stop();
         const inputs = inputRecorder.stop();
-        const metadata = { ...initSnapshot.metadata, ...extractEndMetadata() }
+        const metadata = { ...initSnapshot.metadata, stopTime }
         outputDataSnapshot({ ...initSnapshot, changes, inputs, metadata }, 'recording.json', initConfig);
     }
 })()

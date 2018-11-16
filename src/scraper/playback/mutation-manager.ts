@@ -1,9 +1,9 @@
-import { RecordedMutationGroup, RecordedMutation, AttributeMutation, ChangeTextMutation, ChangeChildrenMutation } from "../record/dom-changes/mutation-recorder";
+import { RecordedMutationGroup, AttributeMutation, ChangeTextMutation, OptimizedMutation, OptimizedChildrenMutation } from "../record/dom-changes/mutation-recorder";
 import { DomManager } from "./dom-utils";
 
 export class MutationManager {
     
-    private usedMutations = new Set<RecordedMutation>()
+    private usedMutations = new Set<OptimizedMutation>()
     constructor(private domManager: DomManager) { }
 
     applyChanges(changeGroup: RecordedMutationGroup[]) {
@@ -16,7 +16,7 @@ export class MutationManager {
         })
     }
 
-    private applyChange(mutation: RecordedMutation) {
+    private applyChange(mutation: OptimizedMutation) {
         switch(mutation.type) {
             case 'attribute':
                 return this.attributeChange(mutation, mutation.target);
@@ -47,14 +47,14 @@ export class MutationManager {
         this.domManager.updateText(target, mutation.update);
     }
 
-    private removeChildren(mutation: ChangeChildrenMutation, target: number) {
-        mutation.removals.forEach(removal => {
-            this.domManager.removeChild(target, removal.id);
+    private removeChildren(mutation: OptimizedChildrenMutation, target: number) {
+        (mutation.removals || []).forEach(removal => {
+            this.domManager.removeChild(target, removal);
         })
     }
 
-    private addChildren(mutation: ChangeChildrenMutation, target: number) {
-        mutation.additions.forEach(add => {
+    private addChildren(mutation: OptimizedChildrenMutation, target: number) {
+        (mutation.additions || []).forEach(add => {
             //TODO - The undefined namespace isn't quite right here
             this.domManager.serializeToElement(target, add.data, add.before);
         })

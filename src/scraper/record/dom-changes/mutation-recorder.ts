@@ -2,6 +2,7 @@ import { RecordingDomManager } from "../../traverse/traverse-dom";
 import { ScrapedElement } from "../../types/types";
 import { shouldTraverseNode } from "../../filter/filter-dom";
 import { optimizeMutationGroup } from "../../optimize/optimize-mutations";
+import { TimeManager } from "../../utils/time-manager";
 
 export class MutationRecorder {
 
@@ -9,7 +10,10 @@ export class MutationRecorder {
     private mutations: RecordedMutationGroup[] = [];
     private running = false;
 
-    constructor(private domWalker: RecordingDomManager) {
+    constructor(
+        private domWalker: RecordingDomManager,
+        private timeManager: TimeManager
+    ) {
         this.observer = new MutationObserver(this.recordMutation);
     }
 
@@ -37,9 +41,8 @@ export class MutationRecorder {
     }
 
     private recordMutation = (mutations: MutationRecord[]) => {
-        console.log(mutations)
         this.mutations.push({
-            timestamp: Date.now(),
+            timestamp: this.timeManager.currentTime(),
             mutations: optimizeMutationGroup(
                 mutations
                     .map(mutation => this.transformMutation(mutation)).flat(Infinity)
@@ -127,10 +130,12 @@ export class MutationRecorder {
 
 export interface RecordedMutationGroup {
     timestamp: number;
-    mutations: RecordedMutation[];
+    mutations: OptimizedMutation[];
 }
 
 export type RecordedMutation = AttributeMutation | ChangeChildrenMutation | ChangeTextMutation;
+
+export type OptimizedMutation = AttributeMutation | OptimizedChildrenMutation | ChangeTextMutation;
 
 export interface BaseMutation {
     target: number;
@@ -142,11 +147,16 @@ export interface AttributeMutation extends BaseMutation {
     val: string;
 }
 
+export interface OptimizedChildrenMutation extends BaseMutation {
+    type: 'children',
+    additions?: AddDescriptor[];
+    removals?: number[];
+}
+
 export interface ChangeChildrenMutation extends BaseMutation {
     type: 'children';
     additions: AddDescriptor[];
     removals: ScrapedElement[];
-
 }
 
 export interface AddDescriptor {

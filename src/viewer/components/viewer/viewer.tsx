@@ -44,7 +44,7 @@ class Viewer extends React.Component<ViewerData, ViewerState> {
     }
 
     private duration() {
-        return this.data.metadata.endTime - this.data.metadata.startTime;
+        return this.data.metadata.stopTime - this.data.metadata.startTime;
     }
 
     play = () => {

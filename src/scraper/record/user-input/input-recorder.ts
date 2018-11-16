@@ -4,6 +4,7 @@ import { RecordedInputChannels } from "../../types/types";
 import { SimpleInputHandler } from "./simple-input-recorder";
 import { RecordingDomManager } from "../../traverse/traverse-dom";
 import { handleInputChange, RecordedInputChangeEvent } from "./input-event-recorder";
+import { TimeManager } from "../../utils/time-manager";
 
 export class CompleteInputRecorder {
 
@@ -11,14 +12,15 @@ export class CompleteInputRecorder {
     
     constructor(
         domWalker: RecordingDomManager,
+        timeManager: TimeManager
     ) {
         this.recorders = [
             new SimpleInputHandler<RecordedMouseEvent, MouseEvent>
-                (['mousemove', 'mousedown', 'mouseup'], 'mouse', handleMouseMove, domWalker),
+                (['mousemove', 'mousedown', 'mouseup'], 'mouse', handleMouseMove, domWalker, timeManager),
             new SimpleInputHandler<RecordedScrollEvent, UIEvent>
-                (['scroll'], 'scroll', handleScroll, domWalker),
+                (['scroll'], 'scroll', handleScroll, domWalker, timeManager),
             new SimpleInputHandler<RecordedInputChangeEvent>
-                (['input', 'change'], 'input', handleInputChange, domWalker)
+                (['input', 'change'], 'input', handleInputChange, domWalker, timeManager)
         ]
     }
 

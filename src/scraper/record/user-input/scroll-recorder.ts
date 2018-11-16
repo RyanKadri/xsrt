@@ -1,11 +1,9 @@
 import { BaseUserInput } from "./input-recorder";
 import { ScrapedElement } from "../../types/types";
 
-export function handleScroll(_: UIEvent, target?: ScrapedElement): RecordedScrollEvent {
+export function handleScroll(_: UIEvent, target?: ScrapedElement): Partial<RecordedScrollEvent> {
     return {
-        type: 'scroll' as 'scroll',
         target: target ? target.id : null,
-        timestamp: Date.now(),
         scrollX: target ? target.domElement!.scrollLeft : window.scrollX,
         scrollY: target ? target.domElement!.scrollTop : window.scrollY
     };

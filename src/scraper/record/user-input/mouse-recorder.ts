@@ -1,21 +1,20 @@
 import { BaseUserInput } from "./input-recorder";
 
-export function handleMouseMove(evt: MouseEvent) {
+export function handleMouseMove(evt: MouseEvent): Partial<RecordedMouseEvent> {
     return {
-        timestamp: Date.now(),
         x: evt.x,
         y: evt.y,
         ...extras(evt)
-    } as RecordedMouseEvent;
+    };
 }
 
 function extras(evt: MouseEvent): Partial<RecordedMouseEvent> {
     switch(evt.type) {
         case 'mousedown':
         case 'mouseup':
-            return { type: evt.type as RecordedMouseButton["type"], button: evt.button, buttonDown: evt.type === 'mousedown' };
+            return { button: evt.button, buttonDown: evt.type === 'mousedown' };
         default:
-            return { type: evt.type as any };
+            return {  };
     }
 }
 

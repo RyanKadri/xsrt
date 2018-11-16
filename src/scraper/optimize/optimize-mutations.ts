@@ -1,14 +1,28 @@
-import { RecordedMutation, AttributeMutation, ChangeTextMutation, ChangeChildrenMutation, AddDescriptor } from "../record/dom-changes/mutation-recorder";
+import { RecordedMutation, AttributeMutation, ChangeTextMutation, ChangeChildrenMutation, AddDescriptor, OptimizedMutation } from "../record/dom-changes/mutation-recorder";
 import { ScrapedElement } from "../types/types";
 
-export function optimizeMutationGroup(mutationGroup: RecordedMutation[]): RecordedMutation[] {
+export function optimizeMutationGroup(mutationGroup: RecordedMutation[]): OptimizedMutation[] {
     const { children, attributes, text } = groupChanges(mutationGroup);
     const { children: optChildren, removed } = optimizeChildMutations(children);
     return [
         ...optChildren,
         ...optimizeAttributeMutations(attributes, removed),
         ...optimizeTextMutations(text, removed)
-    ];
+    ].map(trimMutation);
+}
+
+function trimMutation(mutation: RecordedMutation): OptimizedMutation {
+    switch(mutation.type) {
+        case 'attribute':
+        case 'change-text':
+            return mutation;
+        case 'children':
+            return {
+                ...mutation,
+                additions: mutation.additions.length > 0 ? mutation.additions : undefined,
+                removals: mutation.removals.length > 0 ? mutation.removals.map(el => el.id) : undefined
+            }
+    }
 }
 
 function groupChanges(changes: RecordedMutation[]) {

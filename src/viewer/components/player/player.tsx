@@ -33,13 +33,13 @@ export class RecordingPlayer extends React.Component<PlayerInput> {
     }
 
     componentWillReceiveProps() { 
-        const currentTime = this.data.metadata.startTime + this.props.currentTime; // TODO - Normalize times to durations
+        const currentTime = this.props.currentTime;
         if(currentTime < this.lastTime) {
             this.initializeIframe();
-            this.lastTime = this.data.metadata.startTime;
+            this.lastTime = 0;
         }
 
-        const domChanges = this.data.changes.filter(change => change.timestamp > this.lastTime && change.timestamp < currentTime);
+        const domChanges = this.data.changes.filter(change => change.timestamp > this.lastTime && change.timestamp <= currentTime);
         this.mutationManager!.applyChanges(domChanges);
         
         const userInputs = Object.entries(this.data.inputs)
