@@ -37,6 +37,7 @@
     "src/module.d.ts",
     "src/**/*", "karma.conf.ts"
   ],
+  
   "files": [
     "src/module.d.ts"
   ]

@@ -26,14 +26,14 @@ function unpackImport(rule: CSSImportRule) {
 function extractRule(rule: CSSRule, sheet: CSSStyleSheet): ScrapedStyleRule {
     return { 
         text: rule.cssText,
-        source: sheet.href,
+        source: sheet.href || undefined,
         ...extractExtras(rule)
     } as ScrapedStyleRule;
 }
 
 function extractExtras(rule: CSSRule) {
     if(rule instanceof CSSStyleRule) {
-        return { type: 'style' };
+        return { type: 'style', selector: rule.selectorText };
     } else if(rule instanceof CSSKeyframeRule || rule instanceof CSSKeyframesRule) {
         return { type: 'keyframe' };
     } else if(rule instanceof CSSMediaRule) {

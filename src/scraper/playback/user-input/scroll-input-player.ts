@@ -5,7 +5,8 @@ import { DomManager } from "../dom-utils";
 export class ScrollEventPlayer implements UserInputPlaybackHelper<RecordedScrollEvent> {
 
     constructor(
-        private domManager: DomManager
+        private domManager: DomManager,
+        private document: Document
     ){}
 
     simulateInput(updates: RecordedScrollEvent[]) {
@@ -16,7 +17,7 @@ export class ScrollEventPlayer implements UserInputPlaybackHelper<RecordedScroll
                 node.scrollLeft = lastUpdate.scrollX;
             })
         } else {
-            window.scroll(lastUpdate.scrollX, lastUpdate.scrollY);
+            this.document.documentElement!.scroll(lastUpdate.scrollX, lastUpdate.scrollY);
         }
     }
 }

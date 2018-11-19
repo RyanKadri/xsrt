@@ -1,66 +1,71 @@
 import { extractInitMetadata } from "./traverse/extract-metadata";
-import { ScrapedHtmlElement, ScrapedData } from "./types/types";
+import { ScrapedHtmlElement, ScrapedData, DedupedData } from "./types/types";
 import { MutationRecorder } from "./record/dom-changes/mutation-recorder";
 import { RecordingDomManager } from "./traverse/traverse-dom";
 import { CompleteInputRecorder } from "./record/user-input/input-recorder";
-import { outputStandaloneSnapshot, outputDataSnapshot } from "./output/output-manager";
 import { TimeManager } from "./utils/time-manager";
+import { optimize } from "./optimize/optimize";
 
 export const scraper: Scraper = (function () {
+
+    let onStop: (() => void) | undefined;
 
     const domWalker = new RecordingDomManager();
     const timeManager = new TimeManager();
     const mutationRecorder = new MutationRecorder(domWalker, timeManager);
     const inputRecorder = new CompleteInputRecorder(domWalker, timeManager);
-    let initSnapshot: ScrapedData;
-    let initConfig: ScraperConfig;
 
     return {
-        scrape,
-        startRecording,
+        takeDataSnapshot,
+        record,
         stopRecording
     }
 
-    async function scrape(config: ScraperConfig) {
-        initConfig = config;
-        const metadata = extractInitMetadata(document, location, timeManager.start());
-        const root = domWalker.traverseNode(document.documentElement!) as ScrapedHtmlElement;
-        initSnapshot = { root, metadata, changes: [], inputs: {}};
+    function takeDataSnapshot(): Promise<DedupedData> {
+        return optimize(syncSnapshot());
+    }
 
-        switch(config.output) {
-            case 'single-page':
-                return outputStandaloneSnapshot(initSnapshot);
-            case 'json':
-                return outputDataSnapshot(initSnapshot, 'snapshot.json', config);    
-            case 'record':
-                return startRecording();
-            default: 
-                throw new Error('Unknown output format: ' + config.output)
+    function syncSnapshot(): ScrapedData {
+        return { 
+            root: domWalker.traverseNode(document.documentElement!) as ScrapedHtmlElement,
+            metadata: extractInitMetadata(document, location, timeManager.start()),
+            changes: [],
+            inputs: {}
         }
     }
 
-    async function startRecording() {
+    async function record(config: ScraperConfig) {
+        const initSnapshot = syncSnapshot();
         timeManager.start();
         mutationRecorder.start();
         inputRecorder.start();
+        return new Promise<DedupedData>((resolve, reject) => {
+            onStop = () => {
+                const stopTime = timeManager.stop();
+                const changes = mutationRecorder.stop();
+                const inputs = inputRecorder.stop();
+                const metadata = { ...initSnapshot.metadata, stopTime }
+                optimize({ ...initSnapshot, changes, inputs, metadata })
+                    .then(optimized => resolve(optimized))
+                    .catch(reject)
+            }
+        })
     }
 
-    async function stopRecording() {
-        const stopTime = timeManager.stop();
-        const changes = mutationRecorder.stop();
-        const inputs = inputRecorder.stop();
-        const metadata = { ...initSnapshot.metadata, stopTime }
-        outputDataSnapshot({ ...initSnapshot, changes, inputs, metadata }, 'recording.json', initConfig);
+    function stopRecording() {
+        if(onStop) {
+            onStop();
+        }
     }
+    
 })()
 
 export interface ScraperConfig {
-    output: 'single-page' | 'json' | 'record' | 'stop';
     debugMode: boolean;
 }
 
 export interface Scraper {
-    scrape(config: ScraperConfig): void;
-    startRecording(): void;
+    record(config: ScraperConfig): Promise<DedupedData>;
+    takeDataSnapshot(): Promise<DedupedData>;
     stopRecording(): void;
 }

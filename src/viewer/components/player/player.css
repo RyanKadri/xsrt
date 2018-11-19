@@ -7,6 +7,7 @@ iframe, .player-container {
 .player-container {
     display: flex;
     position: relative;
+    background: #111;
 }
 
 .input-guard {
@@ -15,3 +16,6 @@ iframe, .player-container {
     position: absolute;
 }
 
+iframe {
+    transform-origin: top;
+}

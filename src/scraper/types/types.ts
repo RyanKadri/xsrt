@@ -21,7 +21,7 @@ export interface ScrapedAttribute {
     references?: string[];
 }
 
-export type ScrapedStyleRule = ScrapedMediaRule | ScrapedFontFaceRule | ScrapedSupportsRule | BasicRule | ImportRule;
+export type ScrapedStyleRule = ScrapedMediaRule | ScrapedFontFaceRule | ScrapedSupportsRule | BasicRule | ImportRule | KeyframesRule;
 
 export interface ScrapedMediaRule extends BaseScrapedRule {
     conditions: string[];
@@ -45,7 +45,12 @@ export interface ImportRule extends BaseScrapedRule {
 }
 
 export interface BasicRule extends BaseScrapedRule {
-    type: 'style' | 'keyframe';
+    type: 'style';
+    selector: string;
+}
+
+export interface KeyframesRule extends BaseScrapedRule {
+    type: 'keyframe';
 }
 
 interface BaseScrapedRule {

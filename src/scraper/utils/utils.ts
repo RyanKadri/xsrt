@@ -67,15 +67,13 @@ export function isTextNode(node: Node): node is Element {
     return node.nodeType === document.TEXT_NODE
 }
 
-// TODO - Speaking of normalizing, we should probably normalize relative paths for deduping as well...
-export function normalizeUrl(url: string, source?: string) {
-    return urlIsAbsolute(url) || source === undefined
-        ? url
-        : source.replace(/\/[^\/]*?$/, '/' + url);
-}
-
-function urlIsAbsolute(url) {
-    return url.startsWith('/') || url.startsWith('http://') || url.startsWith('https://')
+export function reverseFind<T>(arr: T[], pred: (item: T) => boolean) {
+    for(let i = arr.length - 1; i >= 0; i--) {
+        const item = arr[i];
+        if(pred(item)) {
+            return item;
+        }
+    }
 }
 
 type StringDict = {[ key: string]: string };

@@ -1,7 +1,16 @@
 import { ScrapedStyleRule } from "../types/types";
+import { hoverReplacementClass } from "../playback/user-input/mouse-input-player";
 
-export function transformRule(rule: ScrapedStyleRule) {
-    return { ...rule, references: extractUrls(rule) }
+export function transformRule(rule: ScrapedStyleRule): ScrapedStyleRule {
+    return { ...rule, references: extractUrls(rule), text: transformContent(rule) }
+}
+
+function transformContent(rule: ScrapedStyleRule) {
+    if(rule.type !== 'style' || !/:hover/.test(rule.selector)) {
+        return rule.text;
+    } else {
+        return rule.text.replace(/:hover/g, '.' + hoverReplacementClass);
+    }
 }
 
 const outerUrlRegex = /url\(['"].*?['"]\)/ig;

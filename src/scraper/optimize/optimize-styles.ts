@@ -1,5 +1,4 @@
 import { ScrapedStyleRule, OptimizedStyleRule, ScrapedHtmlElement, ScrapedTextElement, OptimizedStyleElement } from "../types/types";
-import { normalizeUrl } from "../utils/utils";
 import { OptimizationContext, NodeOptimizationResult } from "./optimize";
 import { extractStyleInfo } from "../traverse/traverse-styles";
 import { shouldIncludeSheet } from "../filter/filter-styles";
@@ -87,4 +86,15 @@ function extractStyleUrls(rules: ScrapedStyleRule[], context: OptimizationContex
     return {
         assets: newContext
     };
+}
+
+// TODO - Speaking of normalizing, we should probably normalize relative paths for deduping as well...
+export function normalizeUrl(url: string, source?: string) {
+    return urlIsAbsolute(url) || source === undefined
+        ? url
+        : source.replace(/\/[^\/]*?$/, '/' + url);
+}
+
+function urlIsAbsolute(url) {
+    return url.startsWith('/') || url.startsWith('http://') || url.startsWith('https://')
 }

@@ -1,9 +1,8 @@
 import * as template from '../../viewer/index.html';
 import { ScraperConfig } from "../scrape";
 import { toJson } from '../utils/utils';
-import { optimize } from '../optimize/optimize';
 import { triggerDownload } from './output-utils';
-import { ScrapedData, DedupedData } from '../types/types';
+import { DedupedData } from '../types/types';
 
 function serializeToViewer(data: DedupedData) {
     return (template as any).replace(
@@ -12,14 +11,12 @@ function serializeToViewer(data: DedupedData) {
 }
 
 // TODO - Does this ever need to support GZIP? If so, what will that look like?
-export async function outputStandaloneSnapshot(data: ScrapedData) {
-    const fullSnapshot = await optimize(data);
-    const serialized = serializeToViewer(fullSnapshot);
+export async function outputStandaloneSnapshot(data: DedupedData) {
+    const serialized = serializeToViewer(data);
     triggerDownload(serialized, 'text/html; charset=UTF-8', 'snapshot.html');
 }
 
-export async function outputDataSnapshot(data: ScrapedData, filename: string, config: ScraperConfig) {
-    const fullSnapshot = await optimize(data);
-    const serialized = toJson(fullSnapshot);
+export async function outputDataSnapshot(data: DedupedData, filename: string, config: ScraperConfig) {
+    const serialized = toJson(data);
     triggerDownload(serialized, 'application/json; charset=UTF-8', filename, !config.debugMode);
 }

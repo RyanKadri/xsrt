@@ -1,52 +1,74 @@
 import { scraper } from "../scrape";
 import containerHTML from './widget.html';
-import widgetCSS from '!raw-loader!./widget.css';
 import containerCSS from '!raw-loader!./container.css';
 import { formatDuration } from "../../viewer/components/utils/format-utils";
-
-const containerId = 'recording-widget-container';
+import { outputStandaloneSnapshot, outputDataSnapshot } from "../output/output-manager";
 
 (function bootstrapScraper() {
+
+    let timerId: number | undefined;
+    const containerId = '_recording-widget-container';
+
     cleanup();
-    const shadow = buildWidget()
-    attachBehavior(shadow);
+    const { startButton, debugCheckbox,
+         modeSelect, setupMode, recordingMode,
+         stopButton, elapsedTime } = buildWidget();
+    attachBehavior();
 
-    function attachBehavior(shadow: ShadowRoot) {
-        shadow.querySelector('.start-button')!.addEventListener('click', () => {
-            const debugMode = (shadow.querySelector('#debug-checkbox')! as HTMLInputElement).checked;
-            const select = shadow.querySelector('.export-type') as HTMLSelectElement;
-            scraper.scrape({
-                output: select.value as any,
-                debugMode
-            });
-            if(select.value === 'record') {
-                toggleMode();
-                const interval = startTimer();
+    function attachBehavior() {
+        startButton.addEventListener('click', handleStart);
+        stopButton.addEventListener('click', handleStop);
+    }
 
-                const stopButton = shadow.querySelector('#stop-button')!;
-                stopButton.addEventListener('click', () => {
-                    scraper.stopRecording()
-                    clearInterval(interval);
-                    cleanup();
-                })
+    async function handleStart() {
+        const debugMode = debugCheckbox.checked;
+        const output = modeSelect.value;
+
+        const config = {
+            debugMode
+        };
+
+        if(output === 'single-page' || output === 'json') {
+            const res = await scraper.takeDataSnapshot();
+            if(output === 'single-page') {
+                outputStandaloneSnapshot(res);
+            } else {
+                outputDataSnapshot(res, 'snapshot.json', config);
             }
-        });
+        } else if(output === 'record') {
+            if(modeSelect.value === 'record') {
+                toggleMode();
+                timerId = startTimer();
+            }
+            scraper.record(config).then(res => {
+                outputDataSnapshot(res, 'recording.json', config);
+            })
+        } else {
+            throw new Error('Unknown output format: ' + output)
+        }
+    }
+
+    function handleStop() {
+        if(timerId !== undefined) {
+            scraper.stopRecording()
+            clearInterval(timerId);
+            cleanup();
+        }
     }
 
     function startTimer() {
-        const elapsedTime = shadow.querySelector('#elapsed-time')!;
         elapsedTime.textContent = formatDuration(0);
 
         const start = Date.now();
-        return setInterval(() => {
+        return window.setInterval(() => {
             const now = Date.now();
             elapsedTime.textContent = formatDuration(now - start);
         }, 500)
     }
 
     function toggleMode() {
-        shadow.querySelector('.init-options')!.classList.add('hidden');
-        shadow.querySelector('.recording-options')!.classList.remove('hidden');
+        setupMode.classList.add('hidden');
+        recordingMode.classList.remove('hidden');
     }
     
     function buildWidget() {
@@ -56,17 +78,26 @@ const containerId = 'recording-widget-container';
         container.setAttribute('screen-scrape-ignore', 'true'); //TODO - Ignore this too
         document.body.appendChild(container);
         
-        const shadow = container!.attachShadow({ mode: 'open' });
+        const shadow = container.attachShadow({ mode: 'open' });
         shadow.innerHTML = containerHTML;
-        shadow.appendChild(el('style', widgetCSS));
 
-        return shadow;
+        return {
+            widgetContainer: container,
+            startButton: shadow.querySelector('.start-button') as HTMLButtonElement,
+            debugCheckbox: shadow.querySelector('#debug-checkbox') as HTMLInputElement,
+            modeSelect: shadow.querySelector('.export-type') as HTMLSelectElement,
+            setupMode: shadow.querySelector('.init-options') as HTMLElement,
+            recordingMode: shadow.querySelector('.recording-options') as HTMLElement,
+            stopButton: shadow.querySelector('#stop-button') as HTMLButtonElement,
+            elapsedTime: shadow.querySelector('#elapsed-time') as HTMLElement
+        };
     }
 
     function cleanup() {
-        const existingContainer = document.querySelector(`#${containerId}`)
-        if(existingContainer) {
-            existingContainer.parentElement!.removeChild(existingContainer);
+        const container = document.querySelector(`#${containerId}`);
+
+        if(container && container.parentElement) {
+            container.parentElement.removeChild(container);
         }
     }
 

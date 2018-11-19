@@ -13,8 +13,8 @@ export class UserInputPlaybackManager {
         domManager: DomManager
     ) {
         this.channelHandlers = {
-            mouse: new MouseEventPlayer(document),
-            scroll: new ScrollEventPlayer(domManager),
+            mouse: new MouseEventPlayer(domManager),
+            scroll: new ScrollEventPlayer(domManager, document),
             input: new InputChangePlayer(domManager),
         }
     }
@@ -22,7 +22,7 @@ export class UserInputPlaybackManager {
     simulateUserInputs(updates: UserInputSimulationRequest[]) {
         updates.forEach(update => {
             const handler = this.channelHandlers[update.channel]
-            handler.simulateInput(update.updates, update.preview);
+            handler.simulateInput(update.updates, update.upcoming, update.time);
         })
     }
 
@@ -31,11 +31,12 @@ export class UserInputPlaybackManager {
 export interface UserInputSimulationRequest {
     channel: string;
     updates: RecordedUserInput[]; // New inputs since the last frame
-    preview?: RecordedUserInput;  // The next upcoming input (used for animations)
+    upcoming: RecordedUserInput[];  // The next upcoming input (used for animations)
+    time: number;
 }
 
 export interface UserInputPlaybackHelper<InputType extends RecordedUserInput = RecordedUserInput> {
-    simulateInput(input: InputType[], preview?: InputType): void;
+    simulateInput(input: InputType[], upcoming: InputType[], time: number): void;
 }
 
 type ChannelHandlers = {

@@ -1,0 +1,26 @@
+<style>
+    :host {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        top: 0px;
+        left: 0px;
+        z-index: 99999;
+        transform: translateZ(0)
+    }
+    .mouse {
+        border-radius: 4px;
+        background-color: green;
+        display: block;
+        width: 8px;
+        height: 8px;
+        border: solid 1px white;
+        animation: transform 1s ease;
+    }
+    :host(.clicked) .mouse {
+        transform: scale(2);
+        animation: tranform none;
+        background-color: red;
+    }
+</style>
+<i class="mouse"></i>

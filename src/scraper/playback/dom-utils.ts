@@ -44,6 +44,14 @@ export class DomManager {
     mutateElement(target: number, cb: (node: HTMLElement) => void) {
         cb(this.fetchNode(target) as HTMLElement);
     }
+
+    insertExternalFragment(fragment: string) {
+        const el = this.document.createElement('div');
+        const shadow = el.attachShadow({ mode: 'open' });
+        shadow.innerHTML = fragment;
+        this.document.body.appendChild(el);
+        return { host: el }
+    }
     
     private _serializeToElement(parent: Node, node: OptimizedElement, currNS = '', before: number | null = null) {
         const created = node.type === 'element'

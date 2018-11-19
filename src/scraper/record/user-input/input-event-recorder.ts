@@ -1,9 +1,14 @@
-import { BaseUserInput } from "./input-recorder";
-import { ScrapedElement } from "../../types/types";
+import { BaseUserInput, UserInputRecorder, RecordedEventContext } from "./input-recorder";
 
-export function handleInputChange(evt: Event, managedNode?: ScrapedElement): Partial<RecordedInputChangeEvent> {
+export const inputRecorder: UserInputRecorder<Event, RecordedInputChangeEvent> = {
+    channel: 'input',
+    events: ['input', 'change'],
+    handle: handleInputChange
+}
+
+export function handleInputChange(evt: Event, { target }: RecordedEventContext) {
     return {
-        target: managedNode!.id,
+        target: target!.id,
         value: (evt.target as HTMLInputElement).value,
     }
 }
