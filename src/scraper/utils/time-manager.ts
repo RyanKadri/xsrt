@@ -1,3 +1,6 @@
+import { injectable } from "inversify";
+
+@injectable()
 export class TimeManager {
 
     private startTime?: number;

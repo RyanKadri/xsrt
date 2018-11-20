@@ -55,8 +55,10 @@ export function toJson(data: any) {
     return recoverGlobals()['JSON'].stringify(data, (key, val) => key === 'domElement' ? undefined : val);
 }
 
-export function nodeIsHidden(node: HTMLElement) {
-    return node.hasAttribute('screen-scrape-ignore');
+export function nodeIsHidden(node: Node) {
+    return isElementNode(node) 
+        ? node.hasAttribute('screen-scrape-ignore')
+        : false;
 }
 
 export function isElementNode(node: Node): node is HTMLElement {
@@ -74,6 +76,7 @@ export function reverseFind<T>(arr: T[], pred: (item: T) => boolean) {
             return item;
         }
     }
+    return undefined;
 }
 
 type StringDict = {[ key: string]: string };

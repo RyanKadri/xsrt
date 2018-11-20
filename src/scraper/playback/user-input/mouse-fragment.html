@@ -6,7 +6,6 @@
         top: 0px;
         left: 0px;
         z-index: 99999;
-        transform: translateZ(0)
     }
     .mouse {
         border-radius: 4px;
@@ -15,11 +14,11 @@
         width: 8px;
         height: 8px;
         border: solid 1px white;
-        animation: transform 1s ease;
+        transition: transform 1s ease;
     }
     :host(.clicked) .mouse {
         transform: scale(2);
-        animation: tranform none;
+        transition: tranform none;
         background-color: red;
     }
 </style>

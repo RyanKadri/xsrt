@@ -1,6 +1,6 @@
-import { InitMetadata, RecordingMetadata } from "../traverse/extract-metadata";
 import { RecordedMutationGroup } from "../record/dom-changes/mutation-recorder";
 import { RecordedUserInput } from "../record/user-input/input-recorder";
+import { SnapshotMetadata } from "../traverse/extract-metadata";
 
 export type ScrapedElement = ScrapedHtmlElement | ScrapedTextElement;
 export type OptimizedElement = OptimizedHtmlElementInfo | OptimizedTextElementInfo;
@@ -61,14 +61,14 @@ interface BaseScrapedRule {
 
 export interface ScrapedData {
     root: ScrapedHtmlElement;
-    metadata: InitMetadata;
+    metadata: SnapshotMetadata;
     changes: RecordedMutationGroup[];
     inputs: RecordedInputChannels;
 }
 
 export interface DedupedData {
     root: OptimizedHtmlElementInfo;
-    metadata: RecordingMetadata;
+    metadata: SnapshotMetadata;
     changes: RecordedMutationGroup[];
     inputs: RecordedInputChannels;
     assets: string[];

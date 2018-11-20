@@ -1,17 +1,20 @@
 import { BaseUserInput, UserInputRecorder, RecordedEventContext } from "./input-recorder";
+import { injectable } from "inversify";
 
-export const scrollRecorder: UserInputRecorder<UIEvent, RecordedScrollEvent> = {
-    channel: 'scroll',
-    events: ['scroll'],
-    handle: handleScroll
-}
+@injectable()
+export class ScrollRecorder implements UserInputRecorder<UIEvent, RecordedScrollEvent> {
+    readonly channel = 'scroll';
+    readonly events = ['scroll'];
 
-export function handleScroll(_: UIEvent, { target }: RecordedEventContext): Partial<RecordedScrollEvent> {
-    return {
-        target: target ? target.id : null,
-        scrollX: target ? target.domElement!.scrollLeft : window.scrollX,
-        scrollY: target ? target.domElement!.scrollTop : window.scrollY
-    };
+    handle(_: UIEvent, { target }: RecordedEventContext): Partial<RecordedScrollEvent> {
+        const domElement = target ? target.domElement : undefined;
+        if(target && !domElement) throw new Error(`Could not read scroll pos from ${target}`);
+        return {
+            target: target ? target.id : null,
+            scrollX: domElement ? domElement.scrollLeft : window.scrollX,
+            scrollY: domElement ? domElement.scrollTop : window.scrollY
+        };
+    }
 }
 
 export interface RecordedScrollEvent extends BaseUserInput {

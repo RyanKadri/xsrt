@@ -2,10 +2,13 @@ import { ScrapedHtmlElement, ScrapedTextElement, ScrapedElement } from "../types
 import { isElementNode, isTextNode } from "../utils/utils";
 import { shouldTraverseNode } from "../filter/filter-dom";
 import { transformElement, transformText } from "../transform/transform-dom";
+import { injectable } from "inversify";
 
+@injectable()
 export class RecordingDomManager {
     
     private idSeq = 0;
+
     private nodeMapping = new Map<Node, ScrapedElement>();
     private idMapping = new Map<number, ScrapedElement>();
 
@@ -20,16 +23,18 @@ export class RecordingDomManager {
         return result;
     }
 
-    fetchManagedNode = (node: Node): ScrapedElement | undefined => {
-        return this.nodeMapping.get(node);
+    fetchManagedNode = (node: Node): ScrapedElement => {
+        const res = this.nodeMapping.get(node);
+        if(!res) throw new Error('Could not find managed node for: ' + node.textContent); //TODO - Make this less bad
+        return res;
     }
 
     fetchScrapedNodeById = (id: number): ScrapedElement | undefined => {
         return this.idMapping.get(id);
     }
 
-    isManaged(node: Node) {
-        return this.nodeMapping.has(node);
+    isManaged(node: Node | null | undefined) {
+        return node && this.nodeMapping.has(node);
     }
 
     dump() {
@@ -44,7 +49,7 @@ export class RecordingDomManager {
     }
     
     private scrapeBasicElement(node: HTMLElement): ScrapedHtmlElement {
-        const id = this.isManaged(node) ? this.fetchManagedNode(node)!.id : this.nextId();
+        const id = this.isManaged(node) ? this.fetchManagedNode(node).id : this.nextId();
         return {
             type: 'element',
             id,
@@ -65,7 +70,7 @@ export class RecordingDomManager {
     }
     
     private scrapeBasicText(node: Element): ScrapedTextElement {
-        const id = this.isManaged(node) ? this.fetchManagedNode(node)!.id : this.nextId();
+        const id = this.isManaged(node) ? this.fetchManagedNode(node).id : this.nextId();
         return {
             type: 'text',
             id,

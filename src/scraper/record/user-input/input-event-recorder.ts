@@ -1,15 +1,16 @@
 import { BaseUserInput, UserInputRecorder, RecordedEventContext } from "./input-recorder";
+import { injectable } from "inversify";
 
-export const inputRecorder: UserInputRecorder<Event, RecordedInputChangeEvent> = {
-    channel: 'input',
-    events: ['input', 'change'],
-    handle: handleInputChange
-}
-
-export function handleInputChange(evt: Event, { target }: RecordedEventContext) {
-    return {
-        target: target!.id,
-        value: (evt.target as HTMLInputElement).value,
+@injectable()
+export class HtmlInputRecorder implements UserInputRecorder<Event, RecordedInputChangeEvent> {
+    readonly channel = 'input';
+    readonly events = ['input', 'change'];
+    handle(evt: Event, { target }: RecordedEventContext) {
+        if(!target) throw new Error('Could not replay input to undefined target');
+        return {
+            target: target.id,
+            value: (evt.target as HTMLInputElement).value,
+        }
     }
 }
 

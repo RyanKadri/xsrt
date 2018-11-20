@@ -1,9 +1,9 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import Viewer from "./components/viewer/viewer";
 import './main.css';
 import pako from "pako";
 import { DedupedData } from "../scraper/types/types";
+import { Viewer } from "./components/viewer/viewer";
 
 (async function(){
     const data = await fetchRecordingData();

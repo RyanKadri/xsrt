@@ -44,10 +44,13 @@
     "@types/react-dom": "^16.0.9",
     "@types/webpack": "^4.4.17",
     "buffer": "^5.2.1",
+    "inversify": "^5.0.1",
+    "inversify-binding-decorators": "^4.0.0",
     "pako": "^1.0.6",
     "react": "^16.6.0",
     "react-dom": "^16.6.0",
     "react-hot-loader": "^4.3.12",
+    "reflect-metadata": "^0.1.12",
     "typescript": "^3.1.6"
   }
 }

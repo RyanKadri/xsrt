@@ -3,7 +3,9 @@ import { ScrapedElement } from "../../types/types";
 import { shouldTraverseNode } from "../../filter/filter-dom";
 import { optimizeMutationGroup } from "../../optimize/optimize-mutations";
 import { TimeManager } from "../../utils/time-manager";
+import { injectable } from "inversify";
 
+@injectable()
 export class MutationRecorder {
 
     private observer: MutationObserver;
@@ -51,13 +53,16 @@ export class MutationRecorder {
     }
     
     private transformMutation(mutation: MutationRecord): RecordedMutation[] {
-        if(!this.domWalker.isManaged(mutation.target)) console.log(mutation)
-        const target = this.domWalker.fetchManagedNode(mutation.target)!.id;
+        const targetNode = this.domWalker.fetchManagedNode(mutation.target);
+        if(!targetNode) {
+            throw new Error('Expected mutation target: ' + mutation.target + ' to be a managed node');
+        }
+        const target = targetNode.id;
 
         if(mutation.type === 'attributes') {
-            return [this.attributeMutation(mutation, target)];
+            return [ this.attributeMutation(mutation, target) ];
         } else if(mutation.type === 'characterData') {
-            return [this.textMutation(mutation, target)];
+            return [ this.textMutation(mutation, target) ];
         } else {
             const res: RecordedMutation[] = [];
             if(mutation.removedNodes && mutation.removedNodes.length > 0) {
@@ -70,8 +75,7 @@ export class MutationRecorder {
         }
     }
 
-    private attributeMutation(mutation: MutationRecord, target
-        : number): AttributeMutation {
+    private attributeMutation(mutation: MutationRecord, target: number): AttributeMutation {
         const name = mutation.attributeName!;
         const val = (mutation.target as HTMLElement).getAttribute(name)!;
         return {
@@ -106,13 +110,13 @@ export class MutationRecorder {
             .map(addition => {
                 const processed = this.domWalker.traverseNode(addition)!;
                 let before: Node | null | undefined = processed.domElement;
-                do {
-                    before = before!.nextSibling;
-                } while(before && !this.domWalker.isManaged(before));
+                while(before && this.domWalker.isManaged(before.nextSibling)) {
+                    before = before.nextSibling;
+                }
 
                 let beforeId: number | null = null;
                 if(before) {
-                    beforeId = this.domWalker.fetchManagedNode(before)!.id;
+                    beforeId = this.domWalker.fetchManagedNode(before).id;
                 }
                 return {
                     before: beforeId,

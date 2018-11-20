@@ -1,11 +1,13 @@
-import { scraper } from "../scrape";
 import containerHTML from './widget.html';
 import containerCSS from '!raw-loader!./container.css';
 import { formatDuration } from "../../viewer/components/utils/format-utils";
 import { outputStandaloneSnapshot, outputDataSnapshot } from "../output/output-manager";
+import { AppContainer } from '../inversify.conf';
+import { Scraper } from '../scrape';
 
 (function bootstrapScraper() {
 
+    const scraper = AppContainer.get(Scraper);
     let timerId: number | undefined;
     const containerId = '_recording-widget-container';
 

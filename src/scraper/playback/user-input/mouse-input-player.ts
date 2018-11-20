@@ -9,7 +9,7 @@ export const hoverReplacementClass = '__hover';
 export class MouseEventPlayer implements UserInputPlaybackHelper<RecordedMouseEvent> {
 
     private mouse?: HTMLElement;
-    private hovered: HTMLElement[] = [];
+    private hovered = new Set<HTMLElement>();
     private movingTo?: RecordedMouseEvent;
 
     constructor(
@@ -24,8 +24,8 @@ export class MouseEventPlayer implements UserInputPlaybackHelper<RecordedMouseEv
 
         if(upcoming.length > 0 && this.movingTo !== upcoming[0]) {
             this.movingTo = upcoming[0];
-            mouse.style.transform = `translate(${this.movingTo.x}px, ${this.movingTo.y}px)`;
-            mouse.style.animation = `translate ${this.movingTo.timestamp - time}ms ease-in-out`
+            mouse.style.transform = `translate(${this.movingTo.x}px, ${this.movingTo.y}px) translateZ(0)`;
+            mouse.style.transition = `transform ${this.movingTo.timestamp - time}ms ease-in-out`
         }
         if(lastMove) {
             this.adjustHover(lastMove);
@@ -41,13 +41,15 @@ export class MouseEventPlayer implements UserInputPlaybackHelper<RecordedMouseEv
     // Can we be smart about limiting where it gets applied?
     private adjustHover(update: RecordedMouseEvent) {
         this.domManager.mutateElement(update.hovered, (node) => {
-            let curr: HTMLElement | null = node
-            this.hovered.forEach((oldHover) => oldHover.classList.remove(hoverReplacementClass))
+            const toRemove = new Set(this.hovered);
+            let curr: HTMLElement | null = node;
             while(curr) {
                 curr.classList.add(hoverReplacementClass);
-                this.hovered.push(curr);
+                this.hovered.add(curr);
+                toRemove.delete(curr);
                 curr = curr.parentElement;
             }
+            toRemove.forEach((oldHover) => oldHover.classList.remove(hoverReplacementClass))
         })
     }
 

@@ -1,7 +1,10 @@
 import { BaseUserInput, UserInputRecorder, RecordedEventContext } from "./input-recorder";
 import { ScrapedElement } from "../../types/types";
+import { injectable } from "inversify";
 
 const debounceThresholdMs = 100;
+
+@injectable()
 export class MouseRecorder implements UserInputRecorder<MouseEvent, RecordedMouseEvent> {
     constructor(
     ) { }

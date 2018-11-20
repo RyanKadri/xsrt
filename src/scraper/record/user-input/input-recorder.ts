@@ -1,27 +1,26 @@
-import { RecordedMouseEvent, MouseRecorder } from "./mouse-recorder";
-import { RecordedScrollEvent, scrollRecorder } from "./scroll-recorder";
+import { RecordedMouseEvent } from "./mouse-recorder";
+import { RecordedScrollEvent } from "./scroll-recorder";
 import { RecordedInputChannels, ScrapedElement } from "../../types/types";
 import { RecordingDomManager } from "../../traverse/traverse-dom";
-import { RecordedInputChangeEvent, inputRecorder } from "./input-event-recorder";
+import { RecordedInputChangeEvent } from "./input-event-recorder";
 import { TimeManager } from "../../utils/time-manager";
+import { injectable, multiInject } from "inversify";
+import { nodeIsHidden } from "../../utils/utils";
 
+export const IUserInputRecorder = Symbol.for('IUserInputRecorder');
+
+@injectable()
 export class CompleteInputRecorder {
 
-    private recorders: UserInputRecorder<Event, RecordedUserInput>[];
     private events: RecordedInputChannels = {};
     private handlers: {[ channel: string]: EventListener} = {};
     
     constructor(
         private domWalker: RecordingDomManager,
-        private timeManager: TimeManager
-    ) {
-        this.recorders = [
-            new MouseRecorder(),
-            scrollRecorder,
-            inputRecorder,
-        ]
-    }
-
+        private timeManager: TimeManager,
+        @multiInject(IUserInputRecorder) private recorders: UserInputRecorder<Event, RecordedUserInput>[]
+    ) { }
+    
     start() {
         this.recorders.forEach(rec => {
             if(rec.start) {
@@ -51,8 +50,12 @@ export class CompleteInputRecorder {
 
     private createEventHandler = (rec: UserInputRecorder<Event, RecordedUserInput>) => {
         return (event: Event) => {
+            const target = event.target && !nodeIsHidden(event.target as Node) 
+                ? this.domWalker.fetchManagedNode(event.target as Node)
+                : undefined;
+                
             const context: RecordedEventContext = {
-                target: this.domWalker.fetchManagedNode(event.target as Node),
+                target,
                 time: this.timeManager.currentTime()
             }
             const res = rec.handle(event, context);

@@ -1,12 +1,11 @@
 import * as React from 'react';
-import { hot } from 'react-hot-loader';
 import './viewer.css';
 import { RecordingHeader } from '../header/viewer-header';
 import { RecordingControls } from '../footer-controls/footer-controls';
 import { RecordingPlayer } from '../player/player';
 import { DedupedData } from '../../../scraper/types/types';
 
-class Viewer extends React.Component<ViewerData, ViewerState> {
+export class Viewer extends React.Component<ViewerData, ViewerState> {
 
     private data: DedupedData;
 
@@ -44,13 +43,14 @@ class Viewer extends React.Component<ViewerData, ViewerState> {
     }
 
     private duration() {
-        return this.data.metadata.stopTime - this.data.metadata.startTime;
+        return this.data.metadata.stopTime
+            ? this.data.metadata.stopTime - this.data.metadata.startTime
+            : 0;
     }
 
     play = () => {
         if(!this.state.isPlaying) {
             this.setState({ isPlaying: true });
-            this.startTime = Date.now();
             this.animate();
         }
     }
@@ -70,12 +70,16 @@ class Viewer extends React.Component<ViewerData, ViewerState> {
     }
 
     private animate() {
-        requestAnimationFrame(() => {
-            const curr = Date.now();
-            const timeDiff = curr - this.startTime!;
+        requestAnimationFrame((curr) => {
+            let timeDiff = 0;
+            if(this.startTime) {
+                timeDiff = curr - this.startTime
+            }
             this.startTime = curr;
             const currentTime = Math.min(this.state.currentTime + timeDiff, this.duration());
-            this.setState({ currentTime });
+            if(timeDiff > 0) {
+                this.setState({ currentTime });
+            }
             if(currentTime >= this.duration()) {
                 this.stop();
             } else {
@@ -86,8 +90,6 @@ class Viewer extends React.Component<ViewerData, ViewerState> {
         });
     }
 }
-
-export default hot(module)(Viewer);
 
 export interface ViewerData {
     data?: DedupedData;

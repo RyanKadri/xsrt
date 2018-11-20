@@ -1,29 +1,26 @@
-export function extractInitMetadata(document: Document, location: Location, startTime: number): InitMetadata {
-    const docType = (document.doctype && document.doctype.name) || 'html';
-    const { protocol, hostname, port, pathname } = location;
-    const viewportHeight = window.innerHeight, viewportWidth = window.innerWidth;
+export function extractMetadata(document: Document, location: Location, startTime: number): SnapshotMetadata {
     return { 
-        docType,
-        url: { protocol, hostname, port, path: pathname },
-        viewportHeight,
-        viewportWidth,
+        docType: (document.doctype && document.doctype.name) || 'html',
+        url: { 
+            protocol: location.protocol,
+            hostname: location.hostname,
+            port: location.port,
+            path: location.pathname
+        },
+        viewportHeight: window.innerHeight,
+        viewportWidth: window.innerWidth,
         startTime
     }
 }
 
-export interface InitMetadata {
+export interface SnapshotMetadata {
     startTime: number;
     docType: string;
     url: LocationMetadata;
     viewportHeight: number;
     viewportWidth: number;
+    stopTime?: number;    
 }
-
-export interface EndMetadata {
-    stopTime: number;    
-}
-
-export type RecordingMetadata = InitMetadata & EndMetadata;
 
 export interface LocationMetadata {
     protocol: string;

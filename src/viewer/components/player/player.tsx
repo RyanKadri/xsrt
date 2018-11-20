@@ -11,9 +11,10 @@ export class RecordingPlayer extends React.Component<PlayerInput, PlayerState> {
     private viewPort: React.RefObject<HTMLDivElement>;
     private data: DedupedData;
     private lastTime: number;
-    private mutationManager?: MutationManager;
     private domManager?: DomManager;
+    private mutationManager?: MutationManager;
     private userInputManager?: UserInputPlaybackManager;
+    private iframeDimensions?: React.CSSProperties
 
     constructor(props: PlayerInput){
         super(props) 
@@ -27,7 +28,7 @@ export class RecordingPlayer extends React.Component<PlayerInput, PlayerState> {
     render() {
         return <div className="player-container" ref={this.viewPort}>
             { this.props.isPlaying ? <div className="input-guard"></div> : null }
-            <iframe ref={this.iframe} style={this.iframeDimensions()}></iframe>
+            <iframe ref={this.iframe} style={this.iframeDimensions}></iframe>
         </div> 
     }
 
@@ -76,22 +77,20 @@ export class RecordingPlayer extends React.Component<PlayerInput, PlayerState> {
     
     private calcSize = () => {
         if(this.viewPort.current) {
-            const bb = this.viewPort.current!.getBoundingClientRect();
+            const bb = this.viewPort.current.getBoundingClientRect();
             const horizScale = bb.width / this.data.metadata.viewportWidth;
-            const vertScale = bb.height / this.data.metadata.viewportHeight;
+            // const vertScale = bb.height / this.data.metadata.viewportHeight; -- TODO make this document height not viewport
             this.setState({
-                scale: Math.min(horizScale, vertScale)
+                scale: Math.min(horizScale)
+            }, () => {
+                this.iframeDimensions = {
+                    width: this.data.metadata.viewportWidth,
+                    transform: `scale(${ this.state.scale })`
+                };
             })
         }
     }
 
-    private iframeDimensions(): React.CSSProperties {
-        return {
-            height: this.data.metadata.viewportHeight,
-            width: this.data.metadata.viewportWidth,
-            transform: `scale(${ this.state.scale })`
-        };
-    }
 }
 
 export interface PlayerInput {
