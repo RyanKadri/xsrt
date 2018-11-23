@@ -1,14 +1,26 @@
 import { ScrapedAttribute, DedupedData, OptimizedElement, OptimizedStyleRule, OptimizedHtmlElementInfo, OptimizedStyleElement, OptimizedTextElementInfo } from "../types/types";
 import { toBlobUrl } from "../utils/utils";
+import { injectable } from "inversify";
 
+@injectable()
 export class DomManager {
 
-    constructor(
-        private document: Document
-    ) {}
+    private _document?: Document;
 
     private nodeMapping = new Map<number, Node>();
     private assets: string[] = [];
+
+    initialize(document: Document) {
+        this._document = document;
+    }
+
+    private get document() {
+        if(this._document) {
+            return this._document;
+        } else {
+            throw new Error('Document was never provided');
+        }
+    }
 
     async serializeToDocument(data: DedupedData): Promise<void> {
         this.assets = await this.adjustReferences(data.assets);
@@ -51,6 +63,10 @@ export class DomManager {
         shadow.innerHTML = fragment;
         this.document.body.appendChild(el);
         return { host: el }
+    }
+
+    mutateDocument(cb: (doc: Document) => void) {
+        cb(this.document);
     }
     
     private _serializeToElement(parent: Node, node: OptimizedElement, currNS = '', before: number | null = null) {

@@ -3,8 +3,7 @@ import { injectable } from "inversify";
 
 @injectable()
 export class ScrollRecorder implements UserInputRecorder<UIEvent, RecordedScrollEvent> {
-    readonly channel = 'scroll';
-    readonly events = ['scroll'];
+    readonly channels = ['scroll'];
 
     handle(_: UIEvent, { target }: RecordedEventContext): Partial<RecordedScrollEvent> {
         const domElement = target ? target.domElement : undefined;

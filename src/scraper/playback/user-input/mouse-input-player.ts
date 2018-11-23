@@ -3,56 +3,43 @@ import { UserInputPlaybackHelper } from "./user-input-manager";
 import { DomManager } from "../dom-utils";
 import { reverseFind } from "../../utils/utils";
 import mouseFragment from './mouse-fragment.html'
+import { injectable } from "inversify";
+import { PseudoClassManager } from "./pseudo-class-manager";
 
-export const hoverReplacementClass = '__hover';
-
+@injectable()
 export class MouseEventPlayer implements UserInputPlaybackHelper<RecordedMouseEvent> {
 
+    channels = ['mousemove', 'mouseup', 'mousedown'];
     private mouse?: HTMLElement;
-    private hovered = new Set<HTMLElement>();
-    private movingTo?: RecordedMouseEvent;
 
     constructor(
         private domManager: DomManager,
+        private pseudoClassManager: PseudoClassManager,
     ) { }
 
-    simulateInput(updates: RecordedMouseEvent[], upcoming: RecordedMouseEvent[], time: number) {
+    simulateInput(updates: RecordedMouseEvent[]) {
         const lastMove = reverseFind(updates, (update => update.type === 'mousemove'));
         const lastButton = reverseFind(updates, (update => update.type === 'mouseup' || update.type === 'mousedown'));
 
         const mouse = this.fetchMouseIndicator();
 
-        if(upcoming.length > 0 && this.movingTo !== upcoming[0]) {
-            this.movingTo = upcoming[0];
-            mouse.style.transform = `translate(${this.movingTo.x}px, ${this.movingTo.y}px) translateZ(0)`;
-            mouse.style.transition = `transform ${this.movingTo.timestamp - time}ms ease-in-out`
-        }
         if(lastMove) {
-            this.adjustHover(lastMove);
+            mouse.style.transform = `translate(${lastMove.x}px, ${lastMove.y}px) translateZ(0)`;
+            if(lastMove.hovered) {
+                this.pseudoClassManager.hoverTarget(lastMove.hovered);
+            }
         }
         if (lastButton && lastButton.type === 'mouseup') {
             mouse.classList.remove('clicked');
+            this.pseudoClassManager.removeActive()
         } else if(lastButton && lastButton.type === 'mousedown') {
             mouse.classList.add('clicked');
+            if(lastButton.hovered) {
+                this.pseudoClassManager.markActive(lastButton.hovered)
+            }
         }
     }
     
-    // TODO - This adds some jankiness if the hover class gets applied too high up. 
-    // Can we be smart about limiting where it gets applied?
-    private adjustHover(update: RecordedMouseEvent) {
-        this.domManager.mutateElement(update.hovered, (node) => {
-            const toRemove = new Set(this.hovered);
-            let curr: HTMLElement | null = node;
-            while(curr) {
-                curr.classList.add(hoverReplacementClass);
-                this.hovered.add(curr);
-                toRemove.delete(curr);
-                curr = curr.parentElement;
-            }
-            toRemove.forEach((oldHover) => oldHover.classList.remove(hoverReplacementClass))
-        })
-    }
-
     private fetchMouseIndicator() {
         return this.mouse ? this.mouse : this.createMouseIndicator();
     }

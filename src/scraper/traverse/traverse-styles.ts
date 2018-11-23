@@ -23,12 +23,16 @@ function unpackImport(rule: CSSImportRule) {
     return matchesMedia(rule.media) ? extractStyleInfo(rule.styleSheet) : [];
 }
 
-function extractRule(rule: CSSRule, sheet: CSSStyleSheet): ScrapedStyleRule {
-    return { 
-        text: rule.cssText,
-        source: sheet.href || undefined,
-        ...extractExtras(rule)
-    } as ScrapedStyleRule;
+function extractRule(rule: CSSRule, sheet: CSSStyleSheet): ScrapedStyleRule | ScrapedStyleRule[] {
+    if(rule instanceof CSSMediaRule || rule instanceof CSSSupportsRule) {
+        return Array.from(rule.cssRules).map(innerRule => extractRule(innerRule, sheet)).flat(1)
+    } else {
+        return { 
+            text: rule.cssText,
+            source: sheet.href || undefined,
+            ...extractExtras(rule)
+        } as ScrapedStyleRule;
+    }
 }
 
 function extractExtras(rule: CSSRule) {
@@ -36,10 +40,6 @@ function extractExtras(rule: CSSRule) {
         return { type: 'style', selector: rule.selectorText };
     } else if(rule instanceof CSSKeyframeRule || rule instanceof CSSKeyframesRule) {
         return { type: 'keyframe' };
-    } else if(rule instanceof CSSMediaRule) {
-        return { type: 'media', conditions: Array.from(rule.media) };
-    } else if(rule instanceof CSSSupportsRule) {
-        return { type: 'supports', condition: rule.conditionText };
     } else if(rule instanceof CSSFontFaceRule) {
         return { type: 'font-face', src: rule.style['src'] }
     } else if(rule instanceof CSSImportRule) {

@@ -5,7 +5,8 @@ import { RecordingDomManager } from "../../traverse/traverse-dom";
 import { RecordedInputChangeEvent } from "./input-event-recorder";
 import { TimeManager } from "../../utils/time-manager";
 import { injectable, multiInject } from "inversify";
-import { nodeIsHidden } from "../../utils/utils";
+import { nodeIsHidden, pluck, group } from "../../utils/utils";
+import { RecordedFocusEvent } from "./focus-recorder";
 
 export const IUserInputRecorder = Symbol.for('IUserInputRecorder');
 
@@ -13,43 +14,47 @@ export const IUserInputRecorder = Symbol.for('IUserInputRecorder');
 export class CompleteInputRecorder {
 
     private events: RecordedInputChannels = {};
-    private handlers: {[ channel: string]: EventListener} = {};
+    private handlers: {[ channel: string]: UserInputRecorder} = {};
+    private listeners: { channel: string, listener: (e) => void }[] = [];
     
     constructor(
         private domWalker: RecordingDomManager,
         private timeManager: TimeManager,
-        @multiInject(IUserInputRecorder) private recorders: UserInputRecorder<Event, RecordedUserInput>[]
-    ) { }
+        @multiInject(IUserInputRecorder) recorders: UserInputRecorder<Event, RecordedUserInput>[]
+    ) { 
+        this.handlers = group(recorders, pluck('channels'))
+            .reduce((acc, el) => {
+                acc[el.group] = el.items[0];
+                return acc;
+            }, {})
+    }
     
     start() {
-        this.recorders.forEach(rec => {
-            if(rec.start) {
-                rec.start();
+        Object.entries(this.handlers).forEach(([group, recorder]) => {
+            this.events[group] = [];
+            if(recorder.start) {
+                recorder.start();
             }
-            this.events[rec.channel] = [];
-            const handler = this.createEventHandler(rec);
-            this.handlers[rec.channel] = handler;
-
-            rec.events.forEach(evt => {
-                document.addEventListener(evt, handler, { capture: true });
-            });
+            this.createEventHandler(group);
+            this.handlers[group] = recorder;
         })
     }
 
     stop() {
-        this.recorders.forEach(rec => {
+        Object.values(this.handlers).forEach(rec => {
             if(rec.stop) {
                 rec.stop();
             }
-            rec.events.forEach(evt => {
-                document.removeEventListener(evt, this.handlers[rec.channel], { capture: true });
-            })
+        });
+        this.listeners.forEach(({channel, listener}) => {
+            document.removeEventListener(channel, listener, { capture: true });
         })
         return this.events;
     }
 
-    private createEventHandler = (rec: UserInputRecorder<Event, RecordedUserInput>) => {
-        return (event: Event) => {
+    private createEventHandler = (group: string) => {
+        const recorder = this.handlers[group];
+        const handleEvent = (event: Event) => {
             const target = event.target && !nodeIsHidden(event.target as Node) 
                 ? this.domWalker.fetchManagedNode(event.target as Node)
                 : undefined;
@@ -58,9 +63,10 @@ export class CompleteInputRecorder {
                 target,
                 time: this.timeManager.currentTime()
             }
-            const res = rec.handle(event, context);
+
+            const res = recorder.handle(event, context);
             if(res) {
-                this.events[rec.channel].push({
+                this.events[group].push({
                     ...res,
                     type: event.type,
                     target: context.target ? context.target.id : undefined,
@@ -68,19 +74,21 @@ export class CompleteInputRecorder {
                 } as RecordedUserInput)
             }
         }
+        document.addEventListener(group, handleEvent, { capture: true });
+        this.listeners.push({ channel: group, listener: handleEvent })
     }
 }
 
-export type RecordedUserInput = RecordedMouseEvent | RecordedScrollEvent | RecordedInputChangeEvent
+export type RecordedUserInput = RecordedMouseEvent | RecordedScrollEvent | RecordedInputChangeEvent | RecordedFocusEvent
 
 export interface BaseUserInput {
     timestamp: number;
     type: string;
 }
 
-export interface UserInputRecorder<EventType, RecordedType> {
-    channel: string;
-    events: string[];
+export interface UserInputRecorder<EventType = Event, RecordedType = RecordedUserInput> {
+    // A recorder can listen to multiple channels but two recorders cannot currently listen to the same channel
+    channels: string[];
     handle(event: EventType, context: RecordedEventContext): Partial<RecordedType> | null;
     start?();
     stop?(): void;

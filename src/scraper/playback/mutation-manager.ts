@@ -1,15 +1,22 @@
 import { RecordedMutationGroup, AttributeMutation, ChangeTextMutation, OptimizedMutation, OptimizedChildrenMutation } from "../record/dom-changes/mutation-recorder";
 import { DomManager } from "./dom-utils";
+import { injectable } from "inversify";
 
+@injectable()
 export class MutationManager {
     
     private usedMutations = new Set<OptimizedMutation>()
-    constructor(private domManager: DomManager) { }
+    constructor(
+        private domManager: DomManager
+    ) { }
 
     applyChanges(changeGroup: RecordedMutationGroup[]) {
         changeGroup.forEach(group => {
             group.mutations.forEach(mutation => {
-                if(this.usedMutations.has(mutation)) console.log(mutation)
+                if(this.usedMutations.has(mutation)) {
+                    console.error(`Assertion error. Mutation is getting replayed`);
+                    console.error(mutation);
+                }
                 this.usedMutations.add(mutation);
                 this.applyChange(mutation);
             })

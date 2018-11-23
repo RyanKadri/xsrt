@@ -3,8 +3,7 @@ import { injectable } from "inversify";
 
 @injectable()
 export class HtmlInputRecorder implements UserInputRecorder<Event, RecordedInputChangeEvent> {
-    readonly channel = 'input';
-    readonly events = ['input', 'change'];
+    readonly channels = ['input', 'change'];
     handle(evt: Event, { target }: RecordedEventContext) {
         if(!target) throw new Error('Could not replay input to undefined target');
         return {

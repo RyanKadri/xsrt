@@ -110,7 +110,7 @@ export class MutationRecorder {
             .map(addition => {
                 const processed = this.domWalker.traverseNode(addition)!;
                 let before: Node | null | undefined = processed.domElement;
-                while(before && this.domWalker.isManaged(before.nextSibling)) {
+                while(before && !this.domWalker.isManaged(before.nextSibling)) {
                     before = before.nextSibling;
                 }
 

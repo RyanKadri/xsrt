@@ -6,16 +6,13 @@ const debounceThresholdMs = 100;
 
 @injectable()
 export class MouseRecorder implements UserInputRecorder<MouseEvent, RecordedMouseEvent> {
-    constructor(
-    ) { }
 
+    readonly channels = ['mouseup', 'mousedown', 'mousemove'];
     private lastTime = 0;
     private lastHovered?: ScrapedElement;
-    readonly channel = 'mouse';
-    readonly events = ['mouseup', 'mousedown', 'mousemove'];
 
     handle(evt: MouseEvent, { time, target }: RecordedEventContext): Partial<RecordedMouseEvent> | null {
-        if(target === this.lastHovered && time - this.lastTime < debounceThresholdMs) {
+        if(evt.type === 'mousemove' && target === this.lastHovered && time - this.lastTime < debounceThresholdMs) {
             return null;
         } else {
             this.lastHovered = target;

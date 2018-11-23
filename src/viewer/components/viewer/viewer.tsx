@@ -2,10 +2,15 @@ import * as React from 'react';
 import './viewer.css';
 import { RecordingHeader } from '../header/viewer-header';
 import { RecordingControls } from '../footer-controls/footer-controls';
-import { RecordingPlayer } from '../player/player';
 import { DedupedData } from '../../../scraper/types/types';
+import { PlayerComponent } from '../player/player';
 
-export class Viewer extends React.Component<ViewerData, ViewerState> {
+export type ViewerComponent = new (props: ViewerData) => React.Component<ViewerData, ViewerState>;
+
+export const ViewerType = Symbol('Viewer');
+
+export const Viewer = (Player: PlayerComponent) => 
+    class extends React.Component<ViewerData, ViewerState> {
 
     private data: DedupedData;
 
@@ -20,10 +25,10 @@ export class Viewer extends React.Component<ViewerData, ViewerState> {
     render() {
         return <div className="viewer">
             <RecordingHeader metadata={ this.data.metadata }></RecordingHeader>
-            <RecordingPlayer 
+            <Player 
                 data={ this.data } 
                 currentTime={ this.state.currentTime } 
-                isPlaying={ this.state.isPlaying}></RecordingPlayer>
+                isPlaying={ this.state.isPlaying}></Player>
             { this.Controls() }
         </div>;
     }

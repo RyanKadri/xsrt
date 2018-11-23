@@ -3,7 +3,6 @@
     "target": "es2018",
     "module": "es2015",
     "lib": ["dom", "es2018", "esnext.array"],
-    "declaration": true,
     "sourceMap": true,
     "outDir": "./dist/",
     "downlevelIteration": true,

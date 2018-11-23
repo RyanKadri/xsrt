@@ -2,7 +2,7 @@ import containerHTML from './widget.html';
 import containerCSS from '!raw-loader!./container.css';
 import { formatDuration } from "../../viewer/components/utils/format-utils";
 import { outputStandaloneSnapshot, outputDataSnapshot } from "../output/output-manager";
-import { AppContainer } from '../inversify.conf';
+import { AppContainer } from '../inversify.recorder';
 import { Scraper } from '../scrape';
 
 (function bootstrapScraper() {

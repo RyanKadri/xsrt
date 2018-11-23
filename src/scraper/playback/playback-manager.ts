@@ -1,0 +1,36 @@
+import { DomManager } from "./dom-utils";
+import { MutationManager } from "./mutation-manager";
+import { UserInputPlaybackManager } from "./user-input/user-input-manager";
+import { DedupedData } from "../types/types";
+import { pluck, between, pipe } from "../utils/utils";
+import { injectable } from "inversify";
+
+@injectable()
+export class PlaybackManager {
+    constructor(
+        private domManager: DomManager,
+        private mutationManager: MutationManager,
+        private userInputManager: UserInputPlaybackManager
+    ) {}
+
+    play({ changes, inputs }: DedupedData, fromTime: number, toTime: number) {
+        const timeInRange = pipe(pluck('timestamp'), between(fromTime, toTime)); 
+        
+        this.mutationManager.applyChanges(
+            changes.filter(timeInRange)
+        );
+            
+        const userInputs = Object.entries(inputs)
+            .map(([channel, inputs]) => ({
+                channel,
+                updates: inputs.filter(timeInRange),
+                time: toTime
+            })).filter(req => req.updates.length > 0);
+        this.userInputManager.simulateUserInputs(userInputs);
+    }
+
+    initialize(document: Document, data: DedupedData) {
+        this.domManager.initialize(document);
+        this.domManager.serializeToDocument(data);
+    }
+}

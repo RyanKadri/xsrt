@@ -3,11 +3,13 @@ import * as ReactDOM from "react-dom";
 import './main.css';
 import pako from "pako";
 import { DedupedData } from "../scraper/types/types";
-import { Viewer } from "./components/viewer/viewer";
+import { ViewerComponent, ViewerType } from "./components/viewer/viewer";
+import { AppContainer } from "../scraper/inversify.player";
 
 (async function(){
     const data = await fetchRecordingData();
     
+    const Viewer = AppContainer.get<ViewerComponent>(ViewerType);
     ReactDOM.render(
         <Viewer data={data}></Viewer>,
         document.getElementById('viewer-root')

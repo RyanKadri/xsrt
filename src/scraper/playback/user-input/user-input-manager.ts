@@ -1,28 +1,29 @@
 import { RecordedUserInput } from "../../record/user-input/input-recorder";
-import { MouseEventPlayer } from "./mouse-input-player";
-import { ScrollEventPlayer } from "./scroll-input-player";
-import { DomManager } from "../dom-utils";
-import { InputChangePlayer } from "./input-change-player";
+import { injectable, multiInject } from "inversify";
+import { group, pluck } from "../../utils/utils";
 
+export const IPlaybackHandler = Symbol('IPlaybackHandler');
+
+@injectable()
 export class UserInputPlaybackManager {
 
     private channelHandlers: ChannelHandlers;
-
     constructor(
-        document: Document,
-        domManager: DomManager
+        @multiInject(IPlaybackHandler) channelHandlers: UserInputPlaybackHelper[] 
     ) {
-        this.channelHandlers = {
-            mouse: new MouseEventPlayer(domManager),
-            scroll: new ScrollEventPlayer(domManager, document),
-            input: new InputChangePlayer(domManager),
-        }
+        this.channelHandlers = group(channelHandlers, pluck('channels'))
+            .reduce((acc, {group, items}) => {
+                acc[group] = items;
+                return acc;
+            }, {});
     }
 
     simulateUserInputs(updates: UserInputSimulationRequest[]) {
         updates.forEach(update => {
-            const handler = this.channelHandlers[update.channel]
-            handler.simulateInput(update.updates, update.upcoming, update.time);
+            const handlers = this.channelHandlers[update.channel]
+            handlers.forEach(handler => {
+                handler.simulateInput(update.updates);
+            })
         })
     }
 
@@ -31,14 +32,14 @@ export class UserInputPlaybackManager {
 export interface UserInputSimulationRequest {
     channel: string;
     updates: RecordedUserInput[]; // New inputs since the last frame
-    upcoming: RecordedUserInput[];  // The next upcoming input (used for animations)
     time: number;
 }
 
 export interface UserInputPlaybackHelper<InputType extends RecordedUserInput = RecordedUserInput> {
-    simulateInput(input: InputType[], upcoming: InputType[], time: number): void;
+    readonly channels: string[];
+    simulateInput(input: InputType[]): void;
 }
 
 type ChannelHandlers = {
-    [channel: string]: UserInputPlaybackHelper
+    [channel: string]: UserInputPlaybackHelper[]
 }
