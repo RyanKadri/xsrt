@@ -1,6 +1,7 @@
 import { RecordedUserInput } from "../../record/user-input/input-recorder";
 import { injectable, multiInject } from "inversify";
 import { group, pluck } from "../../utils/utils";
+import { UserInputInterpolator } from "./interpolation/user-input-interpolator";
 
 export const IPlaybackHandler = Symbol('IPlaybackHandler');
 
@@ -9,6 +10,7 @@ export class UserInputPlaybackManager {
 
     private channelHandlers: ChannelHandlers;
     constructor(
+        private interpolationManager: UserInputInterpolator,
         @multiInject(IPlaybackHandler) channelHandlers: UserInputPlaybackHelper[] 
     ) {
         this.channelHandlers = group(channelHandlers, pluck('channels'))
@@ -21,8 +23,9 @@ export class UserInputPlaybackManager {
     simulateUserInputs(updates: UserInputSimulationRequest[]) {
         updates.forEach(update => {
             const handlers = this.channelHandlers[update.channel]
+            const interpolatedUpdates = this.interpolationManager.interpolate(update.channel, update.updates);
             handlers.forEach(handler => {
-                handler.simulateInput(update.updates);
+                handler.simulateInput(interpolatedUpdates);
             })
         })
     }

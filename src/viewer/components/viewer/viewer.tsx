@@ -41,7 +41,7 @@ export const Viewer = (Player: PlayerComponent) =>
                 isPlaying={ this.state.isPlaying }
                 onPlay={ this.play }
                 onPause={ this.stop }
-                onRestart={ this.restart }></RecordingControls> 
+                seek={ this.seek }></RecordingControls> 
         } else {
             return null;
         }
@@ -66,9 +66,9 @@ export const Viewer = (Player: PlayerComponent) =>
         }
     }
 
-    restart = () => {
+    seek = (toTime: number) => {
         this.setState({
-            currentTime: 0,
+            currentTime: toTime,
         }, () => {
             this.play();
         });

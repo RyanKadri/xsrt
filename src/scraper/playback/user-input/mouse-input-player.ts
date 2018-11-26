@@ -41,7 +41,7 @@ export class MouseEventPlayer implements UserInputPlaybackHelper<RecordedMouseEv
     }
     
     private fetchMouseIndicator() {
-        return this.mouse ? this.mouse : this.createMouseIndicator();
+        return this.domManager.elementExists(this.mouse) ? this.mouse as HTMLElement : this.createMouseIndicator();
     }
 
     private createMouseIndicator() {

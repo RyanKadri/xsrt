@@ -69,6 +69,10 @@ export class DomManager {
         cb(this.document);
     }
     
+    elementExists(el?: Node) {
+        return el && this.document.contains(el);
+    }
+
     private _serializeToElement(parent: Node, node: OptimizedElement, currNS = '', before: number | null = null) {
         const created = node.type === 'element'
             ? this.createElement(node, currNS)

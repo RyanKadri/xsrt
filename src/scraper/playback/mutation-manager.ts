@@ -5,7 +5,6 @@ import { injectable } from "inversify";
 @injectable()
 export class MutationManager {
     
-    private usedMutations = new Set<OptimizedMutation>()
     constructor(
         private domManager: DomManager
     ) { }
@@ -13,11 +12,6 @@ export class MutationManager {
     applyChanges(changeGroup: RecordedMutationGroup[]) {
         changeGroup.forEach(group => {
             group.mutations.forEach(mutation => {
-                if(this.usedMutations.has(mutation)) {
-                    console.error(`Assertion error. Mutation is getting replayed`);
-                    console.error(mutation);
-                }
-                this.usedMutations.add(mutation);
                 this.applyChange(mutation);
             })
         })
