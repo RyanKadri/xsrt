@@ -1,4 +1,4 @@
-iframe, .player-container {
+.player, .player-container {
     width: 100%;
     flex-grow: 1;
     border: none;
@@ -17,7 +17,7 @@ iframe, .player-container {
     position: absolute;
 }
 
-iframe {
+.player {
     transform-origin: center;
     top: 50%;
     left: 50%;

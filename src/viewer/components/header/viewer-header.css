@@ -1,8 +1,7 @@
 header {
-    background-color: #444;
     padding: 12px;
     font-size: 2em;
-    color: #fff;
+    color: black;
     display: flex;
     align-items: center;
 }
@@ -12,5 +11,4 @@ header .date {
 header .url {
     margin-left: auto;
     font-size: 1.5rem;
-    color: #fff;
 }

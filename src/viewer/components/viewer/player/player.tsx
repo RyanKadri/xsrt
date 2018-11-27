@@ -1,11 +1,11 @@
 import React from "react";
-import { DedupedData } from "../../../scraper/types/types";
-import './player.css';
-import { PlaybackManager } from "../../../scraper/playback/playback-manager";
+import { DedupedData } from "../../../../scraper/types/types";
+import styles from './player.css';
+import { PlaybackManager } from "../../../../scraper/playback/playback-manager";
 
 export type PlayerComponent = new (props: PlayerInput) => React.Component<PlayerInput, PlayerState>;
-
 export const PlayerType = Symbol('PlayerType');
+
 export const RecordingPlayer: (playbackManager: PlaybackManager) => PlayerComponent = 
     (playbackManager: PlaybackManager) =>  class RecordingPlayer extends React.Component<PlayerInput, PlayerState> {
 
@@ -24,10 +24,10 @@ export const RecordingPlayer: (playbackManager: PlaybackManager) => PlayerCompon
     }
 
     render() {
-        return <div className="player-container" ref={this.viewPort}>
-            { this.props.isPlaying ? <div className="input-guard"></div> : null }
-            <iframe ref={this.iframe} src="about:blank" style={ this.iframeDimensions() }></iframe>
-        </div> 
+        return <div className={ styles.playerContainer } ref={this.viewPort}>
+            { this.props.isPlaying ? <div className={ styles.inputGuard }></div> : null }
+            <iframe className={ styles.player } ref={this.iframe} src="about:blank" style={ this.iframeDimensions() }></iframe>
+        </div>
     }
 
     async componentDidMount() {

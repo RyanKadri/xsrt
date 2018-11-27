@@ -1,14 +1,14 @@
 import * as React from "react";
 import { faPlay, faPause, faRedo } from '@fortawesome/free-solid-svg-icons';
-import './footer-controls.css';
-import { IconButton } from "../common/icon-button";
-import { formatDuration } from "../utils/format-utils";
+import styles from './footer-controls.css';
+import { IconButton } from "../../common/icon-button";
+import { formatDuration } from "../../utils/format-utils";
 import { ProgressBar } from "./progress-bar/progress-bar";
 
 export const RecordingControls = (props: ControlsInput) => {
-    return <footer>
+    return <footer className={ styles.controls }>
         <ProgressBar duration={props.duration} time={props.time} seek={props.seek} />
-        <nav className="control-icons">
+        <nav className={ styles.controlIcons }>
             { PlayOrPause(props) }
         </nav>
         <section>{ formatDuration(props.time) } / { formatDuration(props.duration) }</section>

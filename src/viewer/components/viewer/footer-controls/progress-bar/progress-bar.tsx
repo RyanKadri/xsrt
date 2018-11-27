@@ -1,9 +1,9 @@
 import React from "react";
-import './progress-bar.css';
+import styles from './progress-bar.css';
 
 export const ProgressBar = ({seek, time, duration}: ProgressBarProps) =>
-    <div className="progress-bar-container" onClick={ (e) => handleSeek(e, seek, duration) }>
-        <div className="progress-bar" style={ { width: time / duration * 100 + '%' } }></div>
+    <div className={ styles.progressBarContainer} onClick={ (e) => handleSeek(e, seek, duration) }>
+        <div className={styles.progressBar} style={ { width: time / duration * 100 + '%' } }></div>
     </div>
 
 const handleSeek = (evt: React.MouseEvent<HTMLDivElement>, seek: (pos: number) => void, duration: number) => {

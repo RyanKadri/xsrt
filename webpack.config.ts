@@ -18,7 +18,17 @@ module.exports = {
             },
             {
                 test: /\.css$/,
-                use: ['style-loader', 'css-loader'],
+                use: [
+                    'style-loader',
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            modules: true,
+                            camelCase: true,
+                            localIdentName: '[name]-[local]-[hash:base64:5]'
+                        }
+                    }
+                ],
                 exclude: /node_modules/
             },
             {
@@ -41,10 +51,10 @@ module.exports = {
         publicPath: '/dist/web',
     },
     devServer: {
-        contentBase: path.join(__dirname, 'src'),
+        contentBase: path.join(__dirname, 'src/viewer'),
         port: 3000,
-        publicPath: 'http://localhost:3000/dist',
-        //hotOnly: true
+        publicPath: 'http://localhost:3000/dist/web',
+        historyApiFallback: true,
         hot: false, //Doing this until I have a better approach for the bookmarklet
         inline: false,
         proxy: {
