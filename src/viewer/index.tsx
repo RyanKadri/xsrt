@@ -21,14 +21,14 @@ import { AppContainer } from "../scraper/inversify.player";
         if(embeddedSource) {
             return JSON.parse(embeddedSource.innerText) as DedupedData;
         } else {
-            const data = await fetch('/data.json');
+            const data = await fetch('/api/recordings/-L_ZCPQ22');
             try {
                 const text = await (await data.clone()).text();
                 return JSON.parse(text)
             } catch(e) {
                 const bin = new Uint8Array(await data.arrayBuffer());
                 const inflated = pako.inflate(bin, { to: 'string' });
-                return JSON.parse(JSON.parse(inflated)); //Because parsing once is for Loooosers
+                return JSON.parse(inflated);
             }
         }
     }

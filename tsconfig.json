@@ -6,7 +6,6 @@
     "sourceMap": true,
     "outDir": "./dist/",
     "downlevelIteration": true,
-    // "isolatedModules": true,
 
     "strict": true,
     "noImplicitAny": false,
@@ -21,14 +20,6 @@
     "resolveJsonModule": true,
 
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true, 
-  },
-  "include": [
-    "src/module.d.ts",
-    "src/**/*", "karma.conf.ts"
-  ],
-  
-  "files": [
-    "src/module.d.ts"
-  ]
+    "emitDecoratorMetadata": true
+  }
 }

@@ -1,8 +1,9 @@
 import * as template from '../../viewer/index.html';
 import { ScraperConfig } from "../scrape";
 import { toJson } from '../utils/utils';
-import { triggerDownload } from './output-utils';
+import { triggerDownload, compress } from './output-utils';
 import { DedupedData } from '../types/types';
+import axios, { } from 'axios';
 
 function serializeToViewer(data: DedupedData) {
     return (template as any).replace(
@@ -19,4 +20,17 @@ export async function outputStandaloneSnapshot(data: DedupedData) {
 export async function outputDataSnapshot(data: DedupedData, filename: string, config: ScraperConfig) {
     const serialized = toJson(data);
     triggerDownload(serialized, 'application/json; charset=UTF-8', filename, !config.debugMode);
+}
+
+export async function postToBackend(data: DedupedData, config: ScraperConfig) {
+    const serialized = config.debugMode ? toJson(data): compress(toJson(data));
+    const url = `${config.backendUrl}/api/recordings`;
+    const res = await axios.post(url, serialized, {
+        // Jury's out on whether this is idiomatic
+        headers: Object.assign({}, 
+            {'Content-Type': 'application/json'},
+            !config.debugMode ? {'Content-Encoding': 'gzip'} : null
+        )
+    });
+    return res.data._id;
 }

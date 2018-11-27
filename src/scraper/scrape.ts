@@ -63,6 +63,7 @@ export class Scraper implements Scraper {
 
 export interface ScraperConfig {
     debugMode: boolean;
+    backendUrl: string;
 }
 
 export interface Scraper {

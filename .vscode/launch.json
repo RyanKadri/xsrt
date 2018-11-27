@@ -7,11 +7,14 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
-            "program": "${workspaceFolder}/index.js",
+            "name": "Start Backend",
+            "program": "${workspaceFolder}/dist/api/server.js",
+            "preLaunchTask": "tsc: watch - tsconfig.api.json",
+            "sourceMaps": true,
             "outFiles": [
-                "${workspaceFolder}/**/*.js"
-            ]
+                "${workspaceFolder}/dist/api"
+            ],
+            "protocol": "inspector"
         }
     ]
 }

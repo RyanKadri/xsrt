@@ -28,7 +28,7 @@ module.exports = {
         ]
     },
     plugins: [
-        new CleanWebpackPlugin(['dist']),
+        new CleanWebpackPlugin(['dist/web']),
         new WriteFilePlugin(),
         new webpack.HotModuleReplacementPlugin(),
     ],
@@ -37,8 +37,8 @@ module.exports = {
     },
     output: {
         filename: '[name].bundle.js',
-        path: path.resolve(__dirname, 'dist'),
-        publicPath: '/dist/',
+        path: path.resolve(__dirname, 'dist/web'),
+        publicPath: '/dist/web',
     },
     devServer: {
         contentBase: path.join(__dirname, 'src'),
@@ -46,7 +46,10 @@ module.exports = {
         publicPath: 'http://localhost:3000/dist',
         //hotOnly: true
         hot: false, //Doing this until I have a better approach for the bookmarklet
-        inline: false
+        inline: false,
+        proxy: {
+            '/api': 'http://localhost:3001'
+        }
     },
     mode: 'development'
-}
+};

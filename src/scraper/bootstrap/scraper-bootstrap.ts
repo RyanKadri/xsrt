@@ -1,9 +1,9 @@
 import containerHTML from './widget.html';
 import containerCSS from '!raw-loader!./container.css';
 import { formatDuration } from "../../viewer/components/utils/format-utils";
-import { outputStandaloneSnapshot, outputDataSnapshot } from "../output/output-manager";
+import { outputStandaloneSnapshot, outputDataSnapshot, postToBackend } from "../output/output-manager";
 import { AppContainer } from '../inversify.recorder';
-import { Scraper } from '../scrape';
+import { Scraper, ScraperConfig } from '../scrape';
 
 (function bootstrapScraper() {
 
@@ -26,8 +26,9 @@ import { Scraper } from '../scrape';
         const debugMode = debugCheckbox.checked;
         const output = modeSelect.value;
 
-        const config = {
-            debugMode
+        const config: ScraperConfig = {
+            debugMode,
+            backendUrl: 'http://localhost:3001'
         };
 
         if(output === 'single-page' || output === 'json') {
@@ -39,11 +40,12 @@ import { Scraper } from '../scrape';
             }
         } else if(output === 'record') {
             if(modeSelect.value === 'record') {
-                toggleMode();
+                toggleDialogMode();
                 timerId = startTimer();
             }
-            scraper.record(config).then(res => {
-                outputDataSnapshot(res, 'recording.json', config);
+            scraper.record(config).then(async res => {
+                const id = await postToBackend(res, config);
+                console.log(id);
             })
         } else {
             throw new Error('Unknown output format: ' + output)
@@ -68,7 +70,7 @@ import { Scraper } from '../scrape';
         }, 500)
     }
 
-    function toggleMode() {
+    function toggleDialogMode() {
         setupMode.classList.add('hidden');
         recordingMode.classList.remove('hidden');
     }
