@@ -1,6 +1,6 @@
 import React from "react";
-import { RecordingService, StoredMetadata } from "../../services/recording-service";
-import { RecordingList } from "./recording-list/recording-list";
+import { RecordingService, MetadataGroup } from "../../services/recording-service";
+import { RecordingGroupList } from "./recording-group/recording-group";
 
 export type DashboardComponent = new (props: {}) => React.Component;
 export const IDashboardView = Symbol('DashboardView');
@@ -17,7 +17,7 @@ class extends React.Component<{}, DashboardState> {
     
     render() {
         return this.state.availableRecordings
-            ? <RecordingList recordings={this.state.availableRecordings}></RecordingList>
+            ? <RecordingGroupList groups={this.state.availableRecordings}></RecordingGroupList>
             : <h1>Loading</h1>;
     }
 
@@ -29,5 +29,5 @@ class extends React.Component<{}, DashboardState> {
 }
 
 interface DashboardState {
-    availableRecordings?: StoredMetadata[];
+    availableRecordings?: MetadataGroup[];
 }

@@ -1,9 +1,9 @@
-import { DomManager } from "./dom-utils";
+import { DomManager } from "./dom-manager";
 import { MutationManager } from "./mutation-manager";
 import { UserInputPlaybackManager } from "./user-input/user-input-manager";
 import { DedupedData } from "../types/types";
-import { pluck, between, pipe } from "../utils/utils";
 import { injectable } from "inversify";
+import { pipe, pluck, between } from "@common/utils/functional-utils";
 
 @injectable()
 export class PlaybackManager {

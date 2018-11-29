@@ -1,9 +1,11 @@
 import * as React from "react";
-import { faPlay, faPause, faRedo } from '@fortawesome/free-solid-svg-icons';
 import styles from './footer-controls.css';
-import { IconButton } from "../../common/icon-button";
 import { formatDuration } from "../../utils/format-utils";
 import { ProgressBar } from "./progress-bar/progress-bar";
+import { IconButton } from "@material-ui/core";
+import PauseSharp from '@material-ui/icons/PauseSharp';
+import PlaySharp from '@material-ui/icons/PlayArrowSharp';
+import FastRewindSharp from '@material-ui/icons/FastRewindSharp';
 
 export const RecordingControls = (props: ControlsInput) => {
     return <footer className={ styles.controls }>
@@ -16,14 +18,19 @@ export const RecordingControls = (props: ControlsInput) => {
 }
 
 
-const controlButton = 'control-button';
 const PlayOrPause = ({ isPlaying, onPlay, onPause, seek, time, duration }: ControlsInput ) => {
     if(isPlaying){
-        return <IconButton icon={ faPause } onClick={ onPause } buttonClass={ controlButton }></IconButton>
+        return <IconButton onClick={ onPause }>
+            <PauseSharp></PauseSharp>
+        </IconButton>
     } else if(time === duration) {
-        return <IconButton icon={ faRedo } onClick={ () => seek(0) } buttonClass={ controlButton }></IconButton>
+        return <IconButton onClick={ () => seek(0) }>
+            <FastRewindSharp></FastRewindSharp>
+        </IconButton>
     } else {
-        return <IconButton icon={ faPlay } onClick={ onPlay } buttonClass={ controlButton }></IconButton>;
+        return <IconButton onClick={ onPlay }>
+            <PlaySharp></PlaySharp>
+        </IconButton>;
     }
 }
 

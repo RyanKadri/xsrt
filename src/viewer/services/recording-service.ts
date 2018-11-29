@@ -25,7 +25,7 @@ export class RecordingService {
         }
     }
 
-    async fetchAvailableRecordings(): Promise<StoredMetadata[]> {
+    async fetchAvailableRecordings(): Promise<MetadataGroup[]> {
         return axios.get(`/api/recordings`)
             .then(resp => resp.data);
     }
@@ -33,4 +33,10 @@ export class RecordingService {
 
 export interface StoredMetadata extends WithId {
     metadata: RecordingMetadata
+    thumbnail?: string;
+}
+
+export interface MetadataGroup {
+    site: string;
+    results: StoredMetadata[];
 }

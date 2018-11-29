@@ -3,7 +3,6 @@
     "target": "es2018",
     "module": "es2015",
     "lib": ["dom", "es2018", "esnext.array"],
-    "sourceMap": true,
     "outDir": "./dist/",
     "downlevelIteration": true,
 
@@ -20,6 +19,11 @@
     "resolveJsonModule": true,
 
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@common/*": ["common/*"],
+      "@scraper/*": ["scraper/*"]
+    }
   }
 }

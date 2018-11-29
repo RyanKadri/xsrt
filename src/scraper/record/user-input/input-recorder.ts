@@ -5,8 +5,9 @@ import { RecordingDomManager } from "../../traverse/traverse-dom";
 import { RecordedInputChangeEvent } from "./input-event-recorder";
 import { TimeManager } from "../../utils/time-manager";
 import { injectable, multiInject } from "inversify";
-import { nodeIsHidden, pluck, group } from "../../utils/utils";
+import { nodeIsHidden } from "../../utils/utils";
 import { RecordedFocusEvent } from "./focus-recorder";
+import { group, pluck } from "@common/utils/functional-utils";
 
 export const IUserInputRecorder = Symbol.for('IUserInputRecorder');
 

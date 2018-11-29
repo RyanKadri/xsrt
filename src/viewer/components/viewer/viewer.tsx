@@ -2,15 +2,15 @@ import * as React from 'react';
 import styles from './viewer.css';
 import { RecordingControls } from './footer-controls/footer-controls';
 import { DedupedData } from '../../../scraper/types/types';
-import { PlayerComponent } from './player/player';
+import { PlayerComponentType } from './player/player';
 import { match } from 'react-router';
 import { Fragment } from 'react';
 import { RecordingService } from '../../services/recording-service';
 
-export type ViewerComponent = new (props: ViewerData) => React.Component<ViewerData, ViewerState>;
-export const ViewerType = Symbol('Viewer');
+export type ViewerType = new (props: ViewerData) => React.Component<ViewerData, ViewerState>;
+export const IViewerComponent = Symbol('Viewer');
 
-export const Viewer = (Player: PlayerComponent, recordingService: RecordingService) => 
+export const ViewerComponent = (Player: PlayerComponentType, recordingService: RecordingService) => 
     class extends React.Component<ViewerData, ViewerState> {
 
     private startTime?: number;
@@ -44,7 +44,7 @@ export const Viewer = (Player: PlayerComponent, recordingService: RecordingServi
     }
 
     private Controls(data: DedupedData) {
-        return data.changes.length > 0
+        return (data.changes.length > 0 || (Object.keys(data.inputs).length > 0))
             ? <RecordingControls 
                 duration={ this.duration() }
                 time={ this.state.currentTime }

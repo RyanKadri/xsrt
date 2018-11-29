@@ -1,7 +1,7 @@
 import 'reflect-metadata';
-import { Container } from "inversify";
-import { Viewer, ViewerType } from '../viewer/components/viewer/viewer';
-import { RecordingPlayer, PlayerType } from '../viewer/components/viewer/player/player';
+import { Container, interfaces } from "inversify";
+import { ViewerComponent, IViewerComponent } from '../viewer/components/viewer/viewer';
+import { PlayerComponent, IPlayerComponent } from '../viewer/components/viewer/player/player';
 import { IPlaybackHandler } from './playback/user-input/user-input-manager';
 import { MouseEventPlayer } from './playback/user-input/mouse-input-player';
 import { ScrollEventPlayer } from './playback/user-input/scroll-input-player';
@@ -13,8 +13,13 @@ import { MouseInterpolationHelper } from './playback/user-input/interpolation/mo
 import { DashboardView, IDashboardView } from '../viewer/components/dashboard/dashboard';
 import { RecordingService } from '../viewer/services/recording-service';
 import { AppRoot, IAppRoot } from '../viewer/components/app-root/app-root';
+import { DomManager } from './playback/dom-manager';
 
 const AppContainer = new Container({ autoBindInjectable: true, defaultScope: "Singleton" });
+
+// I do this because I want to access the DomManager from non-container parts of the app.
+AppContainer.bind(DomManager).toConstantValue(new DomManager())
+
 AppContainer.bind(IPlaybackHandler).to(MouseEventPlayer);
 AppContainer.bind(IPlaybackHandler).to(ScrollEventPlayer);
 AppContainer.bind(IPlaybackHandler).to(InputChangePlayer);
@@ -22,9 +27,15 @@ AppContainer.bind(IPlaybackHandler).to(FocusPlayer);
 
 AppContainer.bind(IInterpolationHelper).to(MouseInterpolationHelper);
 
-AppContainer.bind(PlayerType).toDynamicValue((ctx) => RecordingPlayer(ctx.container.get(PlaybackManager)));
-AppContainer.bind(ViewerType).toDynamicValue((ctx) => Viewer(ctx.container.get(PlayerType), ctx.container.get(RecordingService)));
-AppContainer.bind(IDashboardView).toDynamicValue((ctx) => DashboardView(ctx.container.get(RecordingService)));
-AppContainer.bind(IAppRoot).toDynamicValue((ctx) => AppRoot(ctx.container.get(IDashboardView), ctx.container.get(ViewerType)));
+bindComponent(IPlayerComponent, PlayerComponent, [PlaybackManager]);
+bindComponent(IViewerComponent, ViewerComponent, [IPlayerComponent, RecordingService]);
+bindComponent(IDashboardView, DashboardView, [RecordingService]);
+bindComponent(IAppRoot, AppRoot, [IDashboardView, IViewerComponent]);
 
 export { AppContainer };
+
+function bindComponent(type: symbol, factory: ComponentFactory, deps: (symbol | interfaces.Newable<any>)[] ) {
+    AppContainer.bind(type).toDynamicValue((ctx) => factory(...deps.map(dep => ctx.container.get(dep))));
+}
+
+type ComponentFactory = (...args) => (new (props?) => React.Component<any,any>)

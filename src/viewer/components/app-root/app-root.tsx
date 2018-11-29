@@ -1,23 +1,32 @@
 import React, { Fragment } from "react";
-import { BrowserRouter as Router, Route, Link, Switch, Redirect } from 'react-router-dom';
-import styles from './app-root.css';
+import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 import { DashboardComponent } from "../dashboard/dashboard";
-import { ViewerComponent } from "../viewer/viewer";
+import { ViewerType } from "../viewer/viewer";
+import CssBaseline from '@material-ui/core/CssBaseline'
+import { MuiThemeProvider } from "@material-ui/core";
+import { appTheme } from "../../../viewer/theme/theme";
+import TopNav from "./top-nav/top-nav";
 
 export const IAppRoot = Symbol('AppRoot');
-export const AppRoot = (DashboardView: DashboardComponent, RecordingView: ViewerComponent) => 
+export const AppRoot = (DashboardView: DashboardComponent, RecordingView: ViewerType) => 
 class extends React.Component {
+
+    constructor(props) {
+        super(props)
+    }
+
     render() {
         return <Router>
             <Fragment>
-                <nav className={ styles.topHeader }>
-                    <Link to="/dashboard">App ICU</Link>
-                </nav>
-                <Switch>
-                    <Route path="/recordings/:recordingId" component={ RecordingView } />
-                    <Route path="/dashboard" component={ DashboardView } />
-                    <Route render={() => <Redirect to="/dashboard" /> } />
-                </Switch>
+                <CssBaseline />
+                <MuiThemeProvider theme={ appTheme }>
+                    <TopNav />
+                    <Switch>
+                        <Route path="/recordings/:recordingId" component={ RecordingView } />
+                        <Route path="/dashboard" component={ DashboardView } />
+                        <Route render={() => <Redirect to="/dashboard" /> } />
+                    </Switch>
+                </MuiThemeProvider>
             </Fragment>
         </Router>
     }

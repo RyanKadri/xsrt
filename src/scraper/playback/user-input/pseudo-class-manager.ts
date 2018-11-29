@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
 import { CSS_PSEUDO_CLASSES, PseudoClassReplacer } from "../../transform/transform-styles";
-import { DomManager } from "../dom-utils";
+import { DomManager } from "../dom-manager";
 
 /* This class applies state-based pseudo classes to the dom based on
  */

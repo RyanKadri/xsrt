@@ -2,7 +2,7 @@ import { injectable } from "inversify";
 
 import { UserInputPlaybackHelper } from "./user-input-manager";
 
-import { DomManager } from "../dom-utils";
+import { DomManager } from "../dom-manager";
 import { RecordedFocusEvent } from "../../record/user-input/focus-recorder";
 import { PseudoClassManager } from "./pseudo-class-manager";
 

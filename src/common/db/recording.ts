@@ -8,4 +8,4 @@ const recordingSchema = new Schema({
     }
 }, { strict: false, collection: 'recordings' })
 
-export const Recording = model('Test', recordingSchema);
+export const Recording = model('Recording', recordingSchema);

@@ -2,9 +2,11 @@
     "extends": "./tsconfig.json",
     "compilerOptions": {
         "module": "commonjs",
-        "outDir": "dist/api"
+        "outDir": "dist",
+        "sourceMap": true
     },
     "files": [
-        "./src/api/server.ts"
+        "./src/api/api-server.ts",
+        "./src/decorators/decorator-server.ts"
     ]
 }

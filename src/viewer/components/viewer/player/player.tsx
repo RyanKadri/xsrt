@@ -3,10 +3,10 @@ import { DedupedData } from "../../../../scraper/types/types";
 import styles from './player.css';
 import { PlaybackManager } from "../../../../scraper/playback/playback-manager";
 
-export type PlayerComponent = new (props: PlayerInput) => React.Component<PlayerInput, PlayerState>;
-export const PlayerType = Symbol('PlayerType');
+export type PlayerComponentType = new (props: PlayerInput) => React.Component<PlayerInput, PlayerState>;
+export const IPlayerComponent = Symbol('PlayerComponent');
 
-export const RecordingPlayer: (playbackManager: PlaybackManager) => PlayerComponent = 
+export const PlayerComponent: (playbackManager: PlaybackManager) => PlayerComponentType = 
     (playbackManager: PlaybackManager) =>  class RecordingPlayer extends React.Component<PlayerInput, PlayerState> {
 
     private iframe: React.RefObject<HTMLIFrameElement>;

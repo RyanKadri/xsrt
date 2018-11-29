@@ -5,9 +5,10 @@
     "tasks": [
         {
             "type": "typescript",
-            "tsconfig": "tsconfig.json",
+            "tsconfig": "tsconfig.api.json",
+            "option": "watch",
             "problemMatcher": [
-                "$tsc"
+                "$tsc-watch"
             ]
         }
     ]

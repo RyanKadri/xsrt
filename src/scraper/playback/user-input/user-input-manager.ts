@@ -1,7 +1,7 @@
 import { RecordedUserInput } from "../../record/user-input/input-recorder";
 import { injectable, multiInject } from "inversify";
-import { group, pluck } from "../../utils/utils";
 import { UserInputInterpolator } from "./interpolation/user-input-interpolator";
+import { pluck, group } from "@common/utils/functional-utils";
 
 export const IPlaybackHandler = Symbol('IPlaybackHandler');
 

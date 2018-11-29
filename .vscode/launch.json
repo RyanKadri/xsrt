@@ -7,14 +7,32 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Start Backend",
-            "program": "${workspaceFolder}/dist/api/server.js",
+            "name": "Start API",
+            "program": "${workspaceFolder}/dist/api/api-server.js",
             "preLaunchTask": "tsc: watch - tsconfig.api.json",
-            "sourceMaps": true,
             "outFiles": [
                 "${workspaceFolder}/dist/api"
             ],
-            "protocol": "inspector"
+            "sourceMaps": true,
+            "protocol": "inspector",
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Start Decorators",
+            "program": "${workspaceFolder}/dist/decorators/decorator-server.js",
+            "preLaunchTask": "tsc: watch - tsconfig.api.json",
+            "outFiles": [
+                "${workspaceFolder}/dist/decorators"
+            ],
+            "sourceMaps": true,
+            "protocol": "inspector",
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Start Backend",
+            "configurations": ["Start API", "Start Decorators"],
         }
     ]
 }

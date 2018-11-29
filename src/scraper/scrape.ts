@@ -58,7 +58,6 @@ export class Scraper implements Scraper {
             this.onStop();
         }
     }
-    
 }
 
 export interface ScraperConfig {

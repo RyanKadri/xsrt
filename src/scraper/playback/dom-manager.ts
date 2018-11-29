@@ -1,8 +1,7 @@
 import { ScrapedAttribute, DedupedData, OptimizedElement, OptimizedStyleRule, OptimizedHtmlElementInfo, OptimizedStyleElement, OptimizedTextElementInfo } from "../types/types";
 import { toBlobUrl } from "../utils/utils";
-import { injectable } from "inversify";
 
-@injectable()
+export const IDomManager = Symbol('DomManager');
 export class DomManager {
 
     private _document?: Document;
