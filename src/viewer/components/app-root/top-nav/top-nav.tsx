@@ -14,7 +14,7 @@ function TopNav({ classes }: { classes, expandMenu?: () => void }) {
         <AppBar position="static">
             <Toolbar>
                 <Typography variant="h6" color="inherit" className={ classes.grow }>
-                    App ICUs
+                    App ICU
                 </Typography>
                 <IconButton color="inherit" component={Link as any} { ...{to:"/dashboard"} }>
                     <HomeSharp></HomeSharp>

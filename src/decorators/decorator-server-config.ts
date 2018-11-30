@@ -8,8 +8,9 @@ import cors from "cors";
 export class DecoratorConfig implements ServerConfig {
     readonly port = 3002
     readonly mongoUrl = `mongodb://localhost:27017/recordings`;
-    readonly staticScreenshotUrl = `localhost:3000/screenshot.html`;
-    readonly screenshotDir = '/var/www/record-service.jane/screenshots'
+    // Note - This URL must contain the protocol or it will break headless chrome
+    readonly staticScreenshotUrl = `http://localhost:3000/screenshot.html`;
+    readonly screenshotDir = '/var/www/record-service.jane/screenshots';
 }
 
 @injectable()

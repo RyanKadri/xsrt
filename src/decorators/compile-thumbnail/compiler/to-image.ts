@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { launch, Browser } from 'puppeteer';
+import { launch, Browser, LaunchOptions } from 'puppeteer';
 import { DecoratorConfig } from "../../decorator-server-config";
 
 @injectable()
@@ -9,25 +9,32 @@ export class ThumbnailCompiler {
         private decoratorConfig: DecoratorConfig
     ) {}
 
-    private browser?: Promise<Browser>;
+    private browser?: Browser;
+    // TODO - Figure out issues related to rendering images in headless
+    private readonly launchConfig: LaunchOptions = { headless: false }
 
-    private async initialize() {
+    private async newPage() {
         if(!this.browser) {
-            this.browser = launch({ headless: false });
+            this.browser = await launch(this.launchConfig);
+        } else {
+            try {
+                await this.browser.version()
+            } catch(e) {
+                this.browser = await launch(this.launchConfig);
+            }
         }
-        return this.browser;
+        return await this.browser.newPage();
     }
 
     async createThumbnail(forRecording: string) {
-        const browser = await this.initialize();
-        const page = await browser.newPage();
+        const page = await this.newPage();
         try {
+            await page.setUserAgent("Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1");
             await page.goto(`${this.decoratorConfig.staticScreenshotUrl}?recording=${forRecording}`);
-            const frame = (await page.frames())[0];
-            await frame.waitFor(1000); //TODO - Play around with this timing stuff more. Times out on wait for network
+            await page.waitForFunction(`window['targetViewport']`, { polling: 100 });
     
             const targetViewport = await page.evaluate(`window['targetViewport']`);
-            await page.setViewport({ height: targetViewport.height, width: targetViewport.width })
+            await page.setViewport({ height: targetViewport.height, width: targetViewport.width });
             
             const fileName = `${forRecording}.png`
             const path = `${this.decoratorConfig.screenshotDir}/${fileName}`;
