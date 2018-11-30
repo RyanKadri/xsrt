@@ -1,6 +1,7 @@
 import React from "react";
-import { AppBar, Toolbar, Typography, IconButton, withStyles } from "@material-ui/core";
+import { AppBar, Toolbar, Typography, IconButton, withStyles, WithStyles } from "@material-ui/core";
 import HomeSharp from '@material-ui/icons/HomeSharp';
+import MenuIcon from '@material-ui/icons/Menu';
 import { Link } from "react-router-dom";
 
 const styles = {
@@ -9,10 +10,13 @@ const styles = {
     }
 };
 
-function TopNav({ classes }: { classes, expandMenu?: () => void }) {
+function TopNav({ classes, onExpand }: TopNavProps) {
     return (
         <AppBar position="static">
             <Toolbar>
+                <IconButton color="inherit" onClick={ onExpand }>
+                    <MenuIcon></MenuIcon>
+                </IconButton>
                 <Typography variant="h6" color="inherit" className={ classes.grow }>
                     App ICU
                 </Typography>
@@ -25,3 +29,7 @@ function TopNav({ classes }: { classes, expandMenu?: () => void }) {
 }
 
 export default withStyles(styles)(TopNav);
+
+export interface TopNavProps extends WithStyles<typeof styles> {
+    onExpand(): void;
+}

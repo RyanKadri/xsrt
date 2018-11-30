@@ -86,12 +86,12 @@ module.exports = [
             port: 3000,
             publicPath: 'http://localhost:3000/dist/web',
             historyApiFallback: true,
+            hot: true,
             inline: true,
             proxy: {
                 '/api': 'http://localhost:3001',
                 '/screenshots': 'http://localhost',
             },
-            watchContentBase: true
         },
         mode: 'development'
     }), 

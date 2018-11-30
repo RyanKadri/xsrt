@@ -5,7 +5,7 @@ import { RecordingMetadata } from "../../scraper/traverse/extract-metadata";
 import axios from "axios";
 
 @injectable()
-export class RecordingService {
+export class RecordingApiService {
 
     //TODO - This whole deflation part should be handled by native browser stuff on the receiving end.
     async fetchRecordingData(recording: string): Promise<DedupedData> {

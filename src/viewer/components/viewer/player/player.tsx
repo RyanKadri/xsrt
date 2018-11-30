@@ -1,13 +1,9 @@
 import React from "react";
 import { DedupedData } from "../../../../scraper/types/types";
 import styles from './player.css';
-import { PlaybackManager } from "../../../../scraper/playback/playback-manager";
+import { PlaybackManager } from "@scraper/playback/playback-manager";
 
-export type PlayerComponentType = new (props: PlayerInput) => React.Component<PlayerInput, PlayerState>;
-export const IPlayerComponent = Symbol('PlayerComponent');
-
-export const PlayerComponent: (playbackManager: PlaybackManager) => PlayerComponentType = 
-    (playbackManager: PlaybackManager) =>  class RecordingPlayer extends React.Component<PlayerInput, PlayerState> {
+export class RecordingPlayer extends React.Component<PlayerInput, PlayerState> {
 
     private iframe: React.RefObject<HTMLIFrameElement>;
     private viewPort: React.RefObject<HTMLDivElement>;
@@ -42,7 +38,7 @@ export const PlayerComponent: (playbackManager: PlaybackManager) => PlayerCompon
             this.lastTime = 0;
         }
 
-        playbackManager.play(this.data, this.lastTime, currentTime);
+        this.props.playbackManager.play(this.data, this.lastTime, currentTime);
         this.lastTime = currentTime;
         
     }
@@ -50,7 +46,7 @@ export const PlayerComponent: (playbackManager: PlaybackManager) => PlayerCompon
     private initializeIframe() {
         const currDocument = this.iframe.current && this.iframe.current.contentDocument
         if(this.data.root && currDocument) {
-            playbackManager.initialize(currDocument, this.data)
+            this.props.playbackManager.initialize(currDocument, this.data)
         }
     }
     
@@ -84,6 +80,7 @@ export interface PlayerInput {
     data: DedupedData;
     currentTime: number;
     isPlaying: boolean;
+    playbackManager: PlaybackManager
 }
 
 export interface PlayerState {

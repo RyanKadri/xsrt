@@ -1,3 +1,5 @@
+import { StripArray } from "./type-utils";
+
 export function groupToMap<T, S>(elements: T[], groupSelector: (el: T) => S) {
     const groups = new Map<StripArray<S>, T[]>();
     for(const el of elements) {
@@ -31,5 +33,3 @@ export const pluck = <T = any, K extends keyof T = any>(key: K) => (item: T) => 
 export const pipe = <A, B, C>(fn1: (a: A) => B, fn2: (b: B) => C) => (a1: A) => {
     return fn2(fn1(a1));
 }
-
-export type StripArray<T> = T extends Array<any> ? T[0] : T;

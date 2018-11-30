@@ -4,6 +4,9 @@ import { RouteHandler } from '@common/server/express-server';
 import { injectable } from 'inversify';
 import axios from 'axios';
 import { ApiServerConfig } from '../api-server-conf';
+import { DedupedData } from '@scraper/types/types';
+import { Target } from '@common/db/targets';
+import { NewSiteTarget } from 'viewer/components/manage-sites/add-site-form';
 
 @injectable()
 export class RecordingRouteHandler implements RouteHandler {
@@ -43,8 +46,18 @@ export class RecordingRouteHandler implements RouteHandler {
         })
     }
 
-    private createRecording = (req: Request, resp: Response) => {
-        const recording = new Recording(req.body);
+    // TODO - Figure out how to do this with transactions
+    private createRecording = async (req: Request, resp: Response) => {
+        const recordingData: DedupedData = req.body;
+        const host = recordingData.metadata.url.hostname;
+
+        const existingSite = await Target.findOne({ identifiedBy: 'host', identifier: host });
+        let site = existingSite;
+        if(!site) {
+            const newTarget: NewSiteTarget = { name: host, identifiedBy: 'host', identifier: host };
+            site = await new Target(newTarget).save()
+        }
+        const recording = new Recording({ ...recordingData, site: site._id });
         recording.save((err, data) => {
             if(err) {
                 resp.json({ error: err })

@@ -2,16 +2,13 @@ import * as React from 'react';
 import styles from './viewer.css';
 import { RecordingControls } from './footer-controls/footer-controls';
 import { DedupedData } from '../../../scraper/types/types';
-import { PlayerComponentType } from './player/player';
 import { match } from 'react-router';
 import { Fragment } from 'react';
-import { RecordingService } from '../../services/recording-service';
+import { RecordingApiService } from '../../services/recording-service';
+import { PlaybackManager } from '@scraper/playback/playback-manager';
+import { RecordingPlayer } from './player/player';
 
-export type ViewerType = new (props: ViewerData) => React.Component<ViewerData, ViewerState>;
-export const IViewerComponent = Symbol('Viewer');
-
-export const ViewerComponent = (Player: PlayerComponentType, recordingService: RecordingService) => 
-    class extends React.Component<ViewerData, ViewerState> {
+export class ViewerComponent extends React.Component<ViewerData, ViewerState> {
 
     private startTime?: number;
     
@@ -26,10 +23,11 @@ export const ViewerComponent = (Player: PlayerComponentType, recordingService: R
                 this.state.data === undefined
                     ? <h1>Loading</h1>
                     : <Fragment>
-                        <Player 
+                        <RecordingPlayer 
                             data={ this.state.data } 
                             currentTime={ this.state.currentTime } 
-                            isPlaying={ this.state.isPlaying}></Player>
+                            isPlaying={ this.state.isPlaying}
+                            playbackManager={ this.props.playbackManager }/>
                         { this.Controls(this.state.data) }
                     </Fragment>
             }
@@ -37,7 +35,7 @@ export const ViewerComponent = (Player: PlayerComponentType, recordingService: R
     }
 
     componentDidMount() {
-        recordingService.fetchRecordingData(this.props.match.params.recordingId)
+        this.props.recordingService.fetchRecordingData(this.props.match.params.recordingId)
             .then(data => {
                 this.setState({ data });
             })
@@ -106,7 +104,9 @@ export const ViewerComponent = (Player: PlayerComponentType, recordingService: R
 }
 
 export interface ViewerData {
-    match: match<{ recordingId: string }>
+    match: match<{ recordingId: string }>;
+    playbackManager: PlaybackManager
+    recordingService: RecordingApiService
 }
 
 export interface ViewerState {

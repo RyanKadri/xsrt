@@ -1,17 +1,12 @@
 import React from "react";
-import { RecordingService, MetadataGroup } from "../../services/recording-service";
+import { RecordingApiService, MetadataGroup } from "../../services/recording-service";
 import { RecordingGroup } from "./recording-group/recording-group";
 import { Typography } from "@material-ui/core";
 import styles from './dashboard.css';
 
-export type DashboardComponent = new (props: {}) => React.Component;
-export const IDashboardView = Symbol('DashboardView');
+export class DashboardView extends React.Component<DashboardViewProps, DashboardState> {
 
-export const DashboardView = (recordingService: RecordingService) =>
-
-class extends React.Component<{}, DashboardState> {
-
-    constructor(props: {}) { 
+    constructor(props: DashboardViewProps) { 
         super(props);
         this.state = {
             availableRecordings: undefined,
@@ -20,12 +15,21 @@ class extends React.Component<{}, DashboardState> {
     }
     
     render() {
+        return <div className={ styles.dashboardView}>
+            { !this.state.availableRecordings
+                ? <h1>Loading</h1>
+                : this.groupList()
+            }
+        </div>
+    }
+
+    private groupList = () => {
         return !this.currentGroup
-            ? <h1>Loading</h1>
-            : (<div className={ styles.dashboardView }>
-                <Typography variant="h4">{ this.currentGroup.site }</Typography>
-                <RecordingGroup group={ this.currentGroup }/>
-            </div>)
+            ? <Typography variant="body1">There are not any recordings yet</Typography>
+            :   <div className={ styles.dashboardView }>
+                    <Typography variant="h4">{ this.currentGroup.site }</Typography>
+                    <RecordingGroup group={ this.currentGroup }/>
+                </div>
     }
 
     get currentGroup() {
@@ -35,10 +39,14 @@ class extends React.Component<{}, DashboardState> {
     }
 
     async componentDidMount() {
-        const recordings = await recordingService.fetchAvailableRecordings();
+        const recordings = await this.props.recordingService.fetchAvailableRecordings();
         this.setState({ availableRecordings: recordings });
     }
 
+}
+
+interface DashboardViewProps {
+    recordingService: RecordingApiService
 }
 
 interface DashboardState {

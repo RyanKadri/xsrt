@@ -1,0 +1,10 @@
+.manage-sites-view {
+    padding: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    width: 600px;
+}
+
+.sites-list {
+    width: 100%;
+}
