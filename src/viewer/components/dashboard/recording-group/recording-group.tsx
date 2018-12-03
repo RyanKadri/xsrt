@@ -7,7 +7,7 @@ export const RecordingGroup = ({group}: { group: MetadataGroup }) => {
     return <div className="recording-group">
         { thumbnail ? <img src={ thumbnail }></img> : null } 
         <ul>
-            <RecordingList recordings={group.results}></RecordingList>
+            
         </ul>
     </div>
 }

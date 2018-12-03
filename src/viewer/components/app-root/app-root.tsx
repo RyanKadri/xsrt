@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
-import { DashboardView } from "../dashboard/dashboard";
+import { OverallDashboardView } from "../dashboard/overall-dashboard";
 import { ViewerComponent } from "../viewer/viewer";
 import CssBaseline from '@material-ui/core/CssBaseline'
 import { MuiThemeProvider } from "@material-ui/core";
@@ -14,6 +14,7 @@ import { TargetApiService } from "../../../viewer/services/sites-api-service";
 import { RecordingApiService } from "../../../viewer/services/recording-service";
 import { PlaybackManager } from "@scraper/playback/playback-manager";
 import { hot } from 'react-hot-loader';
+import { SiteDashboardView } from "../dashboard/site-dashboard";
 
 class AppRoot extends React.Component<AppProps, AppState> {
 
@@ -40,8 +41,15 @@ class AppRoot extends React.Component<AppProps, AppState> {
                         <Route path="/recordings/:recordingId" render={ (props) =>
                             <ViewerComponent {...props} playbackManager={ playbackManager } recordingService={ recordingApi } />
                          } />
+                        <Route path="/dashboard/:siteId" render={ (match) => 
+                            <SiteDashboardView 
+                                routeParams={match} 
+                                recordingService={ this.props.recordingApi } 
+                                site={ this.state.availableSites.find(site => site._id === match.match.params.siteId )!}
+                            />
+                        } />
                         <Route path="/dashboard" render={ () => 
-                            <DashboardView recordingService={ recordingApi } />
+                            <OverallDashboardView  sites={ this.state.availableSites } />
                         } />
                         <Route path="/sites" render={ () => 
                             <ManageSitesView sites={this.state.availableSites} 
@@ -88,7 +96,7 @@ export default hot(module)(AppRoot)
 export interface AppProps {
     targetApi: TargetApiService,
     recordingApi: RecordingApiService,
-    playbackManager: PlaybackManager
+    playbackManager: PlaybackManager,
 }
 
 export interface AppState {

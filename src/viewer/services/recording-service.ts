@@ -25,8 +25,8 @@ export class RecordingApiService {
         }
     }
 
-    async fetchAvailableRecordings(): Promise<MetadataGroup[]> {
-        return axios.get(`/api/recordings`)
+    async fetchAvailableRecordings(id: string): Promise<Partial<DedupedData>[]> {
+        return axios.get(`/api/recordings?site=${id}`)
             .then(resp => resp.data);
     }
 }

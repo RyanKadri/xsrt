@@ -1,11 +1,11 @@
 import { Recording } from '../../common/db/recording';
 import { Router, Request, Response } from 'express';
-import { RouteHandler } from '@common/server/express-server';
+import { RouteHandler } from '../../common/server/express-server';
 import { injectable } from 'inversify';
 import axios from 'axios';
 import { ApiServerConfig } from '../api-server-conf';
-import { DedupedData } from '@scraper/types/types';
-import { Target } from '@common/db/targets';
+import { DedupedData } from '../../scraper/types/types';
+import { Target } from '../../common/db/targets';
 import { NewSiteTarget } from 'viewer/components/manage-sites/add-site-form';
 
 @injectable()
@@ -33,17 +33,16 @@ export class RecordingRouteHandler implements RouteHandler {
 
     // TODO - This will probably be inefficient once we have larger numbers of recordings.
     // Not sure if the grouping knows about the slice later on. Might grab everything
-    private fetchRecordings = (_: Request, resp: Response) => {
-        Recording.aggregate([
-            { '$project': { metadata: 1, thumbnail: 1 }},
-            { '$sort': { 'metadata.url.hostname': 1, 'metadata.startTime': -1 }},
-            { '$group': { '_id': '$metadata.url.hostname', 'docs': { '$push': '$$ROOT'}}},
-            { '$project': { 'site': '$_id', 'results': { '$slice': ['$docs', 3]} } } 
-        ], (err, data) => {
-            return err
-                ? resp.json({ error: err })
-                : resp.json( data )
-        })
+    private fetchRecordings = async (req: Request, resp: Response) => {   
+        try{
+            const res = await Recording.find(
+                { site: req.query.site },
+                { metadata: 1, thumbnail: 1 })
+            .limit(15)
+            resp.json(res);
+        } catch(e){
+            resp.json({error: e})
+        }
     }
 
     // TODO - Figure out how to do this with transactions
