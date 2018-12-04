@@ -1,14 +1,22 @@
 import * as React from 'react';
-import styles from './viewer.css';
 import { RecordingControls } from './footer-controls/footer-controls';
 import { DedupedData } from '../../../scraper/types/types';
 import { match } from 'react-router';
 import { Fragment } from 'react';
 import { RecordingApiService } from '../../services/recording-service';
-import { PlaybackManager } from '@scraper/playback/playback-manager';
 import { RecordingPlayer } from './player/player';
+import { withDependencies } from '../../services/with-dependencies';
+import { createStyles, withStyles, WithStyles } from '@material-ui/core';
 
-export class ViewerComponent extends React.Component<ViewerData, ViewerState> {
+const styles = createStyles({
+    root: {
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: 480
+    }
+})
+
+class _ViewerComponent extends React.Component<ViewerData, ViewerState> {
 
     private startTime?: number;
     
@@ -18,7 +26,8 @@ export class ViewerComponent extends React.Component<ViewerData, ViewerState> {
     }
     
     render() {
-        return <div className={styles.viewer}>
+        const { classes } = this.props;
+        return <div className={ classes.root }>
             {
                 this.state.data === undefined
                     ? <h1>Loading</h1>
@@ -26,8 +35,7 @@ export class ViewerComponent extends React.Component<ViewerData, ViewerState> {
                         <RecordingPlayer 
                             data={ this.state.data } 
                             currentTime={ this.state.currentTime } 
-                            isPlaying={ this.state.isPlaying}
-                            playbackManager={ this.props.playbackManager }/>
+                            isPlaying={ this.state.isPlaying}/>
                         { this.Controls(this.state.data) }
                     </Fragment>
             }
@@ -103,9 +111,12 @@ export class ViewerComponent extends React.Component<ViewerData, ViewerState> {
     }
 }
 
-export interface ViewerData {
+export const ViewerComponent = withStyles(styles)(
+    withDependencies(_ViewerComponent, { recordingService: RecordingApiService })
+)
+
+export interface ViewerData extends WithStyles<typeof styles> {
     match: match<{ recordingId: string }>;
-    playbackManager: PlaybackManager
     recordingService: RecordingApiService
 }
 

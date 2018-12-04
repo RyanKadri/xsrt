@@ -10,25 +10,23 @@ const styles = {
     }
 };
 
-function TopNav({ classes, onExpand }: TopNavProps) {
-    return (
-        <AppBar position="static">
-            <Toolbar>
-                <IconButton color="inherit" onClick={ onExpand }>
-                    <MenuIcon></MenuIcon>
-                </IconButton>
-                <Typography variant="h6" color="inherit" className={ classes.grow }>
-                    App ICU
-                </Typography>
-                <IconButton color="inherit" component={Link as any} { ...{to:"/dashboard"} }>
-                    <HomeSharp></HomeSharp>
-                </IconButton>
-            </Toolbar>
-        </AppBar>
-    )
-}
+const _TopNav = ({ classes, onExpand }: TopNavProps) => (
+    <AppBar position="static">
+        <Toolbar>
+            <IconButton color="inherit" onClick={ onExpand }>
+                <MenuIcon></MenuIcon>
+            </IconButton>
+            <Typography variant="h6" color="inherit" className={ classes.grow }>
+                App ICU
+            </Typography>
+            <IconButton color="inherit" component={Link as any} { ...{to:"/dashboard"} }>
+                <HomeSharp></HomeSharp>
+            </IconButton>
+        </Toolbar>
+    </AppBar>
+)
 
-export default withStyles(styles)(TopNav);
+export const TopNav = withStyles(styles)(_TopNav);
 
 export interface TopNavProps extends WithStyles<typeof styles> {
     onExpand(): void;

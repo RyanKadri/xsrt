@@ -1,9 +1,39 @@
 import React from "react";
 import { DedupedData } from "../../../../scraper/types/types";
-import styles from './player.css';
 import { PlaybackManager } from "@scraper/playback/playback-manager";
+import { withDependencies } from "../../../services/with-dependencies";
+import { withStyles, createStyles, WithStyles } from "@material-ui/core";
+import c from 'classnames';
 
-export class RecordingPlayer extends React.Component<PlayerInput, PlayerState> {
+const styles = createStyles({
+    horizExpand: {
+        width: '100%',
+        flexGrow: 1,
+        border: 'none'
+    },
+    
+    playerContainer: {
+        display: 'flex',
+        position: 'relative',
+        background: '#111',
+        overflow: 'hidden'
+    },
+    
+    inputGuard: {
+        width: '100%',
+        height: '100%',
+        position: 'absolute'
+    },
+    
+    player: {
+        transformOrigin: 'center',
+        top: '50%',
+        left: '50%',
+        position: 'absolute'
+    }
+})
+
+class _RecordingPlayer extends React.Component<PlayerInput, PlayerState> {
 
     private iframe: React.RefObject<HTMLIFrameElement>;
     private viewPort: React.RefObject<HTMLDivElement>;
@@ -20,9 +50,10 @@ export class RecordingPlayer extends React.Component<PlayerInput, PlayerState> {
     }
 
     render() {
-        return <div className={ styles.playerContainer } ref={this.viewPort}>
-            { this.props.isPlaying ? <div className={ styles.inputGuard }></div> : null }
-            <iframe className={ styles.player } ref={this.iframe} src="about:blank" style={ this.iframeDimensions() }></iframe>
+        const { classes } = this.props;
+        return <div className={ c(classes.horizExpand, classes.playerContainer) } ref={this.viewPort}>
+            { this.props.isPlaying ? <div className={ classes.inputGuard }></div> : null }
+            <iframe className={ c(classes.player, classes.horizExpand) } ref={this.iframe} src="about:blank" style={ this.iframeDimensions() }></iframe>
         </div>
     }
 
@@ -76,7 +107,11 @@ export class RecordingPlayer extends React.Component<PlayerInput, PlayerState> {
 
 }
 
-export interface PlayerInput {
+export const RecordingPlayer = withStyles(styles)(
+    withDependencies(_RecordingPlayer, { playbackManager: PlaybackManager })
+);
+
+export interface PlayerInput extends WithStyles<typeof styles> {
     data: DedupedData;
     currentTime: number;
     isPlaying: boolean;

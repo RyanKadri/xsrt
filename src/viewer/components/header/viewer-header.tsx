@@ -1,15 +1,33 @@
 import React from "react";
 import { LocationMetadata, RecordingMetadata } from "../../../scraper/traverse/extract-metadata";
-import './viewer-header.css';
+import { createStyles, withStyles, WithStyles } from "@material-ui/core";
 
-export const RecordingHeader = ({metadata}: {metadata: RecordingMetadata}) =>
-    <header>
-        <a target="_blank" href={ fullUrl(metadata.url) } className="url">{ shortUrl(metadata.url) }</a>
-        <small className="date">{ formatDate(metadata.startTime) }</small>
+const styles = createStyles({
+    header: {
+        padding: 12,
+        fontSize: '2em',
+        color: 'black',
+        display: 'flex',
+        alignItems: 'center'
+    },
+    date: {
+        marginLeft: 16
+    },
+    url: {
+        marginLeft: 'auto',
+        fontSize: '1.5rem'
+    }
+})
+    
+
+const _RecordingHeader = ({metadata, classes}: RecordingHeaderProps) =>
+    <header className={ classes.header }>
+        <a target="_blank" href={ fullUrl(metadata.url) } className={classes.url}>{ shortUrl(metadata.url) }</a>
+        <small className={ classes.date }>{ formatDate(metadata.startTime) }</small>
     </header>;
 
 let cachedDate;
-export const formatDate = (timeStamp: number) => {
+const formatDate = (timeStamp: number) => {
     if(cachedDate) {
         return cachedDate
     } else {
@@ -17,10 +35,16 @@ export const formatDate = (timeStamp: number) => {
     }
 } 
 
-export const fullUrl = (location: LocationMetadata) =>
+const fullUrl = (location: LocationMetadata) =>
     `${ location.protocol }//${shortUrl(location)}`;
 
-export const shortUrl = (location: LocationMetadata) =>
+const shortUrl = (location: LocationMetadata) =>
     `${ location.hostname }${ formatPort(location) }${ location.path }`;
 
 const formatPort = (location: LocationMetadata) => !!location.port ? `:${location.port}`: ''
+
+export const RecordingHeader = withStyles(styles)(_RecordingHeader);
+
+export interface RecordingHeaderProps extends WithStyles<typeof styles> {
+    metadata: RecordingMetadata;
+}

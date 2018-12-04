@@ -3,20 +3,24 @@ import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-d
 import { OverallDashboardView } from "../dashboard/overall-dashboard";
 import { ViewerComponent } from "../viewer/viewer";
 import CssBaseline from '@material-ui/core/CssBaseline'
-import { MuiThemeProvider } from "@material-ui/core";
+import { MuiThemeProvider, createStyles, withStyles } from "@material-ui/core";
 import { appTheme } from "../../../viewer/theme/theme";
-import TopNav from "./top-nav/top-nav";
-import SideBar from './side-bar/side-bar';
+import { TopNav } from "./top-nav/top-nav";
+import { Sidebar } from './side-bar/side-bar';
 import { SiteTarget } from "@common/db/targets";
 import { NewSiteTarget } from "../manage-sites/add-site-form";
 import { ManageSitesView } from "../manage-sites/manage-sites-view";
 import { TargetApiService } from "../../../viewer/services/sites-api-service";
-import { RecordingApiService } from "../../../viewer/services/recording-service";
-import { PlaybackManager } from "@scraper/playback/playback-manager";
 import { hot } from 'react-hot-loader';
 import { SiteDashboardView } from "../dashboard/site-dashboard";
+import { withDependencies } from "../../services/with-dependencies";
 
-class AppRoot extends React.Component<AppProps, AppState> {
+const styles = createStyles({
+    root: {
+    }
+})
+
+class _AppRoot extends React.Component<AppProps, AppState> {
 
     constructor(props) {
         super(props)
@@ -27,24 +31,22 @@ class AppRoot extends React.Component<AppProps, AppState> {
     }
 
     render() {
-        const { playbackManager, recordingApi } = this.props;
         return <Router>
             <Fragment>
                 <CssBaseline />
                 <MuiThemeProvider theme={ appTheme }>
                     <TopNav onExpand= { this.toggleSidebar(true) } />
-                    <SideBar 
+                    <Sidebar 
                         expanded={ this.state.sidebarExpanded } 
                         sites={ this.state.availableSites } 
                         onClose={ this.toggleSidebar(false) }/>
                     <Switch>
                         <Route path="/recordings/:recordingId" render={ (props) =>
-                            <ViewerComponent {...props} playbackManager={ playbackManager } recordingService={ recordingApi } />
+                            <ViewerComponent {...props} />
                          } />
                         <Route path="/dashboard/:siteId" render={ (match) => 
                             <SiteDashboardView 
                                 routeParams={match} 
-                                recordingService={ this.props.recordingApi } 
                                 site={ this.state.availableSites.find(site => site._id === match.match.params.siteId )!}
                             />
                         } />
@@ -91,12 +93,14 @@ class AppRoot extends React.Component<AppProps, AppState> {
     }
 }
 
-export default hot(module)(AppRoot)
+export const AppRoot = hot(module)(
+    withStyles(styles)(
+        withDependencies(_AppRoot, { targetApi: TargetApiService })
+    )
+);
 
 export interface AppProps {
     targetApi: TargetApiService,
-    recordingApi: RecordingApiService,
-    playbackManager: PlaybackManager,
 }
 
 export interface AppState {

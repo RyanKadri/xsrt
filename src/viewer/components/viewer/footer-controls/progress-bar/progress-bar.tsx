@@ -1,9 +1,29 @@
 import React from "react";
-import styles from './progress-bar.css';
+import { createStyles, WithStyles, withStyles, Theme } from "@material-ui/core";
 
-export const ProgressBar = ({seek, time, duration}: ProgressBarProps) =>
-    <div className={ styles.progressBarContainer} onClick={ (e) => handleSeek(e, seek, duration) }>
-        <div className={styles.progressBar} style={ { width: time / duration * 100 + '%' } }></div>
+const styles = (theme: Theme) => createStyles({
+    progressBarContainer: {
+        width: '100%',
+        height: 20,
+        position: 'absolute', 
+        top: -10,
+        '&:hover $progressBar': {
+            transform: 'scaleY(1)'
+        }
+    },
+    progressBar: {
+        position: 'absolute',
+        top: 9,
+        height: 4,
+        backgroundColor: theme.palette.secondary.main,
+        transition: 'transform 150ms ease-in',
+        transform: 'scaleY(0.6)',
+    },
+})
+
+const _ProgressBar = ({seek, time, duration, classes}: ProgressBarProps) =>
+    <div className={ classes.progressBarContainer} onClick={ (e) => handleSeek(e, seek, duration) }>
+        <div className={ classes.progressBar } style={ { width: time / duration * 100 + '%' } }></div>
     </div>
 
 const handleSeek = (evt: React.MouseEvent<HTMLDivElement>, seek: (pos: number) => void, duration: number) => {
@@ -13,7 +33,9 @@ const handleSeek = (evt: React.MouseEvent<HTMLDivElement>, seek: (pos: number) =
     seek(duration * seekRatio)
 }
 
-export interface ProgressBarProps {
+export const ProgressBar = withStyles(styles)(_ProgressBar)
+
+export interface ProgressBarProps extends WithStyles<typeof styles> {
     seek(pos: number): void;
     time: number;
     duration: number

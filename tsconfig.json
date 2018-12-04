@@ -18,12 +18,12 @@
     "jsx": "react",
     "resolveJsonModule": true,
 
+    "baseUrl": "./src",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "baseUrl": "./src",
     "paths": {
-      "@common/*": ["common/*"],
-      "@scraper/*": ["scraper/*"]
+      "@common/*": ["./common/*"],
+      "@scraper/*": ["./scraper/*"]
     }
   }
 }
