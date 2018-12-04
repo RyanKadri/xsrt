@@ -18,7 +18,7 @@ describe('optimizeAttributeMutations', () => {
         const mutations = optimizeAttributeMutations([
             { type: 'attribute', target: 1, name: 'thing', val: 'abc'},
             { type: 'attribute', target: 2, name: 'thing', val: 'abc'},
-            { type: 'attribute', target: 3, name: 'thing', val: 'abc'},
+            { type: 'attribute', target: 3, name: 'thing', val: 'abc'}, 
         ], new Set([2,3]));
         expect(mutations.length).toEqual(1);
         expect(mutations[0].target).toEqual(1);
