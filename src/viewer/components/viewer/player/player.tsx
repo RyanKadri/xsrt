@@ -38,7 +38,6 @@ class _RecordingPlayer extends React.Component<PlayerInput, PlayerState> {
     private iframe: React.RefObject<HTMLIFrameElement>;
     private viewPort: React.RefObject<HTMLDivElement>;
     private data: DedupedData;
-    private lastTime: number;
 
     constructor(props: PlayerInput){
         super(props) 
@@ -46,7 +45,6 @@ class _RecordingPlayer extends React.Component<PlayerInput, PlayerState> {
         this.iframe = React.createRef();
         this.viewPort = React.createRef();
         this.data = this.props.data;
-        this.lastTime = this.data.metadata.startTime;
     }
 
     render() {
@@ -62,16 +60,12 @@ class _RecordingPlayer extends React.Component<PlayerInput, PlayerState> {
         this.initializeIframe();
     }
 
-    componentWillReceiveProps() { 
-        const currentTime = this.props.currentTime;
-        if(currentTime < this.lastTime) {
+    componentDidUpdate(prevProps: PlayerInput) { 
+        if(this.props.currentTime < prevProps.currentTime) {
             this.initializeIframe();
-            this.lastTime = 0;
         }
 
-        this.props.playbackManager.play(this.data, this.lastTime, currentTime);
-        this.lastTime = currentTime;
-        
+        this.props.playbackManager.play(this.data, prevProps.currentTime, this.props.currentTime);
     }
 
     private initializeIframe() {

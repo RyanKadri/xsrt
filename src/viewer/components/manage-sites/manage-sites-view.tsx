@@ -16,30 +16,20 @@ const styles = (theme: Theme) => createStyles({
     }
 })
 
-class _ManageSitesView extends React.Component<ManageSitesProps> {
-
-    constructor(props: ManageSitesProps) { 
-        super(props);
-    }
-    
-    render() {
-
-        const { classes } = this.props;
-        return <div className={ classes.root }>
-            { this.availableSites(classes) }
-            <AddSiteForm onNewSite={ this.props.onNewSite } />
-        </div>
-    }
-
-    private availableSites(classes: ManageSitesProps['classes']) {
-        return <div className={ classes.sitesList }>{
-            this.props.sites
-            ? <SiteList sites={ this.props.sites } onDelete={ this.props.onDelete }></SiteList>
-            : <Typography variant="body1">Loading</Typography>
-        }</div>
-    }
-
+const _ManageSitesView = (props: ManageSitesProps) => {
+    const { classes, onNewSite } = props; 
+    return <div className={ classes.root }>
+        <AvailableSites {...props} />
+        <AddSiteForm onNewSite={ onNewSite } />
+    </div>
 }
+
+const AvailableSites = ({ classes, onDelete, sites }: ManageSitesProps) => 
+    <div className={ classes.sitesList }>{
+        sites
+        ? <SiteList sites={ sites } onDelete={ onDelete }></SiteList>
+        : <Typography variant="body1">Loading</Typography>
+    }</div>
 
 export const ManageSitesView = withStyles(styles)(_ManageSitesView);
 

@@ -18,28 +18,24 @@ const styles = createStyles({
 
 class _ViewerComponent extends React.Component<ViewerData, ViewerState> {
 
-    private startTime?: number;
-    
     constructor(props: ViewerData) {
         super(props)
-        this.state = { data: undefined, currentTime: 0, isPlaying: false }
+        this.state = { data: undefined, lastFrameTime: undefined, playerTime: 0, isPlaying: false }
     }
     
     render() {
         const { classes } = this.props;
-        return <div className={ classes.root }>
-            {
+        return <div className={ classes.root }>{
                 this.state.data === undefined
                     ? <h1>Loading</h1>
                     : <Fragment>
                         <RecordingPlayer 
                             data={ this.state.data } 
-                            currentTime={ this.state.currentTime } 
+                            currentTime={ this.state.playerTime } 
                             isPlaying={ this.state.isPlaying}/>
                         { this.Controls(this.state.data) }
                     </Fragment>
-            }
-        </div>;
+        }</div>;
     }
 
     componentDidMount() {
@@ -53,7 +49,7 @@ class _ViewerComponent extends React.Component<ViewerData, ViewerState> {
         return (data.changes.length > 0 || (Object.keys(data.inputs).length > 0))
             ? <RecordingControls 
                 duration={ this.duration() }
-                time={ this.state.currentTime }
+                time={ this.state.playerTime }
                 isPlaying={ this.state.isPlaying }
                 onPlay={ this.play }
                 onPause={ this.stop }
@@ -70,41 +66,43 @@ class _ViewerComponent extends React.Component<ViewerData, ViewerState> {
     play = () => {
         if(!this.state.isPlaying) {
             this.setState({ isPlaying: true });
-            this.animate();
+            this.nextFrame();
         }
     }
 
     stop = () => {
         if(this.state.isPlaying) {
-            this.setState({ isPlaying: false });
+            this.setState({ 
+                isPlaying: false,
+                lastFrameTime: undefined
+            });
         }
     }
 
     seek = (toTime: number) => {
         this.setState({
-            currentTime: toTime,
+            playerTime: toTime,
         }, () => {
             this.play();
         });
     }
 
-    private animate() {
+    private nextFrame() {
         requestAnimationFrame((curr) => {
             let timeDiff = 0;
-            if(this.startTime) {
-                timeDiff = curr - this.startTime
+            if(this.state.lastFrameTime) {
+                timeDiff = curr - this.state.lastFrameTime
             }
-            this.startTime = curr;
             const duration = this.duration();
-            const currentTime = Math.min(this.state.currentTime + timeDiff, duration);
-            if(timeDiff > 0) {
-                this.setState({ currentTime });
-            }
-            if(currentTime >= duration) {
+            const currentTime = Math.min(this.state.playerTime + timeDiff, duration);
+            if(currentTime === duration) {
                 this.stop();
+                this.setState({ playerTime: this.duration() })
             } else {
+                this.setState({ playerTime: currentTime });
                 if(this.state.isPlaying) {
-                    this.animate();
+                    this.setState({ lastFrameTime: curr })
+                    this.nextFrame();
                 }
             }
         });
@@ -122,6 +120,7 @@ export interface ViewerData extends WithStyles<typeof styles> {
 
 export interface ViewerState {
     data?: DedupedData;
-    currentTime: number;
+    playerTime: number;
+    lastFrameTime?: number;
     isPlaying: boolean;
 }

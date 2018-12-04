@@ -1,7 +1,7 @@
 import React from "react";
 import { withStyles, Drawer, List, ListSubheader, WithStyles, createStyles, Typography } from "@material-ui/core";
-import { SiteTarget } from "@common/db/targets";
 import { LinkListItem } from "../../common/link-list-item";
+import { SiteTarget } from "../../../../common/db/targets";
 
 const styles = theme => createStyles({
     nested: {
@@ -12,48 +12,51 @@ const styles = theme => createStyles({
     }
 })
 
-const Link = (link: Entry, nestedClass: string) => (
+const Link = (link: SidebarEntry, nestedClass: string, onClose: () => void) => (
     link.type === "link"
-    ?   <LinkListItem button to={link.to} key={link.to}>
+    ?   <LinkListItem button to={link.to} key={link.to} onClick={ onClose }>
             <Typography variant="body1">{ link.text }</Typography>
         </LinkListItem>
 
     :   <List subheader={<ListSubheader component="div">{ link.heading }</ListSubheader>}
               key={ link.heading } className={ nestedClass }>
-            { link.children.map(link => Link(link, nestedClass)) }
+            { link.children.map(link => Link(link, nestedClass, onClose)) }
         </List>
 )
 
 const _SideBar = ({ expanded, sites, classes, onClose }: SidebarProps) => {
-    const links: Entry[] = [ 
-        { type: 'link', to: '/dashboard', text: 'Dashboard' },
-        { type: 'link', to: '/sites', text: 'Manage Sites' },
-        { type: 'group', heading: 'Sites', children: sites.map(site => (
-            { type: 'link' as 'link', to: `/dashboard/${site._id}`, text: site.name }
-        ))}
-    ];
     return <Drawer variant="temporary" anchor="left" open={expanded} className={ classes.root } onClose={ onClose }>
         <List color="inherit" component="nav">
-            { links.map(link => Link(link, classes.nested)) }
+            { sidebarLinks(sites).map(link => Link(link, classes.nested, onClose)) }
         </List>
     </Drawer>
+}
+
+const sidebarLinks = (sites: SiteTarget[]) => {
+    return [ 
+        { type: 'link', to: '/dashboard', text: 'Dashboard' },
+        { type: 'link', to: '/sites', text: 'Manage Sites' },
+        { type: 'group', heading: 'Sites', children: (sites || []).map(site => (
+            { type: 'link' as 'link', to: `/dashboard/${site._id}`, text: site.name }
+        ))}
+    ] as SidebarEntry[];
 }
 
 
 export const Sidebar = withStyles(styles, { withTheme: true })(_SideBar);
 
-type Entry = Group | Link;
+type SidebarEntry = SidebarGroup | SidebarLink;
 
-interface Link {
+interface SidebarLink {
     type: 'link'
     to: string;
     text: string;
 }
 
-interface Group {
+interface SidebarGroup {
     type: 'group';
     heading: string;
-    children: Entry[];
+    children: SidebarEntry[];
 }
 
 export interface SidebarProps extends WithStyles<typeof styles> {

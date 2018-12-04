@@ -33,7 +33,7 @@ describe(`Mutation Observer Expectations`, () => {
             div.textContent = 'Test';
             div.textContent = 'Testing';
             div.setAttribute('attr', 'thingy')
-            div.setAttribute('attr', 'thingy123')
+            div.setAttribute('attr', 'thingy123') 
             return div;
         })
         expect(mutations.length).toEqual(5);

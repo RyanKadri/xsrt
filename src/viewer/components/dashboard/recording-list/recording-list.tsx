@@ -14,4 +14,5 @@ const RecordingListItem = (recording: StoredMetadata) =>
         <Link to={`/recordings/${recording._id}`}>
             { new Date(recording.metadata.startTime).toLocaleDateString('en-US') }
         </Link>
+        { recording.thumbnail ? <img src={ `/screenshots/${recording.thumbnail}` }></img> : null } 
     </li>

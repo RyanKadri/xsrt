@@ -98,12 +98,8 @@ class AddSiteFormPlain extends React.Component<AddSiteFormProps, AddSiteFormStat
     }
 
     private handleNewSite = (evt: FormEvent<HTMLFormElement>) => {
-        try {
-            this.props.onNewSite( this.state.newSite );
-            this.setState({ newSite: initForm })
-        } catch(e) {
-
-        }
+        this.props.onNewSite( this.state.newSite );
+        this.setState({ newSite: initForm })
         evt.preventDefault()
     }
 }
