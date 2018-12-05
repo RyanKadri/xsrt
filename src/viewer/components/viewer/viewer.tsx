@@ -6,13 +6,14 @@ import { Fragment } from 'react';
 import { RecordingApiService } from '../../services/recording-service';
 import { RecordingPlayer } from './player/player';
 import { withDependencies } from '../../services/with-dependencies';
-import { createStyles, withStyles, WithStyles } from '@material-ui/core';
+import { createStyles, withStyles, WithStyles, Theme } from '@material-ui/core';
 
-const styles = createStyles({
+const styles = (theme: Theme) => createStyles({
     root: {
         display: 'flex',
         flexDirection: 'column',
-        minHeight: 480
+        minHeight: 480,
+        height: `calc(100vh - ${theme.spacing.unit * 8}px)`
     }
 })
 
@@ -99,9 +100,9 @@ class _ViewerComponent extends React.Component<ViewerData, ViewerState> {
                 this.stop();
                 this.setState({ playerTime: this.duration() })
             } else {
-                this.setState({ playerTime: currentTime });
+                // this.setState({ playerTime: currentTime });
                 if(this.state.isPlaying) {
-                    this.setState({ lastFrameTime: curr })
+                    this.setState({ lastFrameTime: curr, playerTime: currentTime })
                     this.nextFrame();
                 }
             }

@@ -2,10 +2,10 @@ import React from "react";
 import { DedupedData } from "../../../../scraper/types/types";
 import { PlaybackManager } from "@scraper/playback/playback-manager";
 import { withDependencies } from "../../../services/with-dependencies";
-import { withStyles, createStyles, WithStyles } from "@material-ui/core";
+import { withStyles, createStyles, WithStyles, Theme } from "@material-ui/core";
 import c from 'classnames';
 
-const styles = createStyles({
+const styles = (theme: Theme) => createStyles({
     horizExpand: {
         width: '100%',
         flexGrow: 1,
@@ -15,8 +15,8 @@ const styles = createStyles({
     playerContainer: {
         display: 'flex',
         position: 'relative',
-        background: '#111',
-        overflow: 'hidden'
+        background: theme.palette.grey[800],
+        overflow: 'hidden',
     },
     
     inputGuard: {
@@ -29,7 +29,7 @@ const styles = createStyles({
         transformOrigin: 'center',
         top: '50%',
         left: '50%',
-        position: 'absolute'
+        position: 'absolute',
     }
 })
 

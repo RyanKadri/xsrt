@@ -6,6 +6,7 @@ import PauseSharp from '@material-ui/icons/PauseSharp';
 import PlaySharp from '@material-ui/icons/PlayArrowSharp';
 import FastRewindSharp from '@material-ui/icons/FastRewindSharp';
 import { SvgIconProps } from "@material-ui/core/SvgIcon";
+import { pure } from "../../common/pure-wrapper";
 
 const styles = (theme: Theme) => createStyles({
     controls: {
@@ -47,7 +48,7 @@ const Icon = (onClick: () => void, Icon: React.ComponentType<SvgIconProps>) => (
     </IconButton>
 )
 
-export const RecordingControls = withStyles(styles)(_RecordingControls);
+export const RecordingControls = withStyles(styles)(pure(_RecordingControls));
 
 export interface ControlsInput extends WithStyles<typeof styles> {
     onPlay: () => void;
