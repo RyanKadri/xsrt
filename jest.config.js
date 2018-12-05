@@ -4,7 +4,7 @@ const { compilerOptions } = require('./tsconfig');
 
 module.exports = {
   // All imported modules in your tests should be mocked automatically
-  // automock: false,
+  automock: false,
 
   // Stop running tests after the first failure
   // bail: false,
@@ -16,21 +16,21 @@ module.exports = {
   // cacheDirectory: "/tmp/jest_rs",
 
   // Automatically clear mock calls and instances between every test
-  clearMocks: true,
+  clearMocks: false,
 
   // Indicates whether the coverage information should be collected while executing the test
-  // collectCoverage: false,
+  collectCoverage: false,
 
   // An array of glob patterns indicating a set of files for which coverage information should be collected
   // collectCoverageFrom: null,
 
   // The directory where Jest should output its coverage files
-  coverageDirectory: "coverage",
+  // coverageDirectory: "coverage",
 
   // An array of regexp pattern strings used to skip coverage collection
-  coveragePathIgnorePatterns: [
-    "/node_modules/"
-  ],
+  // coveragePathIgnorePatterns: [
+  //   "/node_modules/"
+  // ],
 
   // A list of reporter names that Jest uses when writing coverage reports
   // coverageReporters: [
@@ -75,7 +75,7 @@ module.exports = {
   ],
 
   // A map from regular expressions to module names that allow to stub out resources with a single module
-  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths),
+  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/src/'}),
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
   // modulePathIgnorePatterns: [],
@@ -96,7 +96,7 @@ module.exports = {
   // reporters: undefined,
 
   // Automatically reset mock state between every test
-  // resetMocks: false,
+  resetMocks: false,
 
   // Reset the module registry before running each individual test
   // resetModules: false,
@@ -105,7 +105,7 @@ module.exports = {
   // resolver: null,
 
   // Automatically restore mock state between every test
-  // restoreMocks: false,
+  restoreMocks: false,
 
   // The root directory that Jest should scan for tests and modules within
   // rootDir: null,
@@ -128,7 +128,7 @@ module.exports = {
   // snapshotSerializers: [],
 
   // The test environment that will be used for testing
-  // testEnvironment: "jest-environment-jsdom",
+  testEnvironment: "node",
 
   // Options that will be passed to the testEnvironment
   // testEnvironmentOptions: {},
@@ -179,8 +179,8 @@ module.exports = {
   // verbose: null,
 
   // An array of regexp patterns that are matched against all source file paths before re-running tests in watch mode
-  // watchPathIgnorePatterns: [],
+  watchPathIgnorePatterns: [],
 
   // Whether to use watchman for file crawling
-  // watchman: true,
+  watchman: true,
 };

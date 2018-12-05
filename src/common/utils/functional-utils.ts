@@ -33,3 +33,5 @@ export const pluck = <T = any, K extends keyof T = any>(key: K) => (item: T) => 
 export const pipe = <A, B, C>(fn1: (a: A) => B, fn2: (b: B) => C) => (a1: A) => {
     return fn2(fn1(a1));
 }
+
+export const nCopies = <T>(item: T, n) => new Array(n).fill(item);

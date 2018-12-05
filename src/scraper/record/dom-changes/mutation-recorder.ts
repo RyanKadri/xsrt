@@ -1,20 +1,17 @@
-import { RecordingDomManager } from "../../traverse/traverse-dom";
 import { ScrapedElement } from "../../types/types";
-import { shouldTraverseNode } from "../../filter/filter-dom";
-import { optimizeMutationGroup } from "../../optimize/optimize-mutations";
-import { TimeManager } from "../../utils/time-manager";
 import { injectable } from "inversify";
+import { MutationTracker } from "./mutation-tracker";
+import { MutationTransformer } from "./mutation-transformer";
 
 @injectable()
 export class MutationRecorder {
 
     private observer: MutationObserver;
-    private mutations: RecordedMutationGroup[] = [];
     private running = false;
 
     constructor(
-        private domWalker: RecordingDomManager,
-        private timeManager: TimeManager
+        private mutationTracker: MutationTracker,
+        private transformer: MutationTransformer
     ) {
         this.observer = new MutationObserver(this.recordMutation);
     }
@@ -37,99 +34,16 @@ export class MutationRecorder {
         this.running = false;
 
         this.observer.disconnect();
-        const mutations = this.mutations;
-        this.mutations = [];
-        return mutations;
+        return this.mutationTracker.dump();
     }
 
     private recordMutation = (mutations: MutationRecord[]) => {
-        this.mutations.push({
-            timestamp: this.timeManager.currentTime(),
-            mutations: optimizeMutationGroup(
-                mutations
-                    .map(mutation => this.transformMutation(mutation)).flat(Infinity)
-            )
-        })
+        this.mutationTracker.record(
+            mutations.map(mutation => this.transformer.transformMutation(mutation)).flat(Infinity)
+        )
     }
     
-    private transformMutation(mutation: MutationRecord): RecordedMutation[] {
-        const targetNode = this.domWalker.fetchManagedNode(mutation.target);
-        if(!targetNode) {
-            throw new Error('Expected mutation target: ' + mutation.target + ' to be a managed node');
-        }
-        const target = targetNode.id;
-
-        if(mutation.type === 'attributes') {
-            return [ this.attributeMutation(mutation, target) ];
-        } else if(mutation.type === 'characterData') {
-            return [ this.textMutation(mutation, target) ];
-        } else {
-            const res: RecordedMutation[] = [];
-            if(mutation.removedNodes && mutation.removedNodes.length > 0) {
-                res.push(this.removeChildrenMutation(mutation, target));
-            }
-            if(mutation.addedNodes && mutation.addedNodes.length > 0) {
-                res.push(this.addChildrenMutation(mutation, target));
-            }
-            return res;
-        }
-    }
-
-    private attributeMutation(mutation: MutationRecord, target: number): AttributeMutation {
-        const name = mutation.attributeName!;
-        const val = (mutation.target as HTMLElement).getAttribute(name)!;
-        return {
-            type: 'attribute',
-            target,
-            name,
-            val
-        };
-    }
-
-    private textMutation(mutation: MutationRecord, target: number): ChangeTextMutation {
-        return {
-            type: "change-text",
-            target,
-            update: mutation.target.textContent || ''
-        }
-    }
-
-    private removeChildrenMutation(mutation: MutationRecord, target: number): ChangeChildrenMutation {
-        return {
-            type: "children",
-            target,
-            removals: Array.from(mutation.removedNodes)
-                .map(node => this.domWalker.fetchManagedNode(node)!),
-            additions: []
-        }
-    }
-
-    private addChildrenMutation(mutation: MutationRecord, target: number): ChangeChildrenMutation {
-        const additions = Array.from(mutation.addedNodes)
-            .filter(shouldTraverseNode)
-            .map(addition => {
-                const processed = this.domWalker.traverseNode(addition)!;
-                let before: Node | null | undefined = processed.domElement;
-                while(before && !this.domWalker.isManaged(before.nextSibling)) {
-                    before = before.nextSibling;
-                }
-
-                let beforeId: number | null = null;
-                if(before) {
-                    beforeId = this.domWalker.fetchManagedNode(before).id;
-                }
-                return {
-                    before: beforeId,
-                    data: processed
-                }
-            });
-        return {
-            type: 'children',
-            target,
-            additions,
-            removals: []
-        }
-    }
+    
 }
 
 export interface RecordedMutationGroup {

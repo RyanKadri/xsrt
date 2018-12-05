@@ -1,18 +1,5 @@
 import { matchesMedia, recoverGlobals } from "../utils/utils";
 
-export function shouldIncludeSheet(sheet: CSSStyleSheet) {
-    if(matchesMedia(sheet.media)) {
-        try { 
-            sheet.rules;
-            return sheet.rules.length > 0;
-        } catch {
-            return false
-        }
-    } else {
-        return false;
-    }
-}
-
 export function shouldIncludeRule(rule: CSSRule): boolean {
     const globals = recoverGlobals();
     if(rule instanceof CSSMediaRule) {

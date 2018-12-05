@@ -1,19 +1,14 @@
 import { ScrapedStyleRule, OptimizedStyleRule, ScrapedHtmlElement, ScrapedTextElement, OptimizedStyleElement } from "../types/types";
 import { OptimizationContext, NodeOptimizationResult } from "./optimize";
 import { extractStyleInfo } from "../traverse/traverse-styles";
-import { shouldIncludeSheet } from "../filter/filter-styles";
+import { matchesMedia } from "../utils/utils";
 
 export function optimizeStyle(styleEl: ScrapedHtmlElement, initContext: OptimizationContext): NodeOptimizationResult {
-    if(styleEl.tag === 'link' && 
-        !styleEl.attributes.some(attr => attr.name === 'rel' && attr.value === 'stylesheet')) {
-            return inertPlaceholder(styleEl, initContext);
-        }
-    const sheet = (styleEl.domElement as HTMLStyleElement).sheet as CSSStyleSheet;
-
-    let parsedRules: ScrapedStyleRule[] = [], context = initContext;
-    if(shouldIncludeSheet(sheet)) {
-        parsedRules = extractStyleInfo(sheet);
-        context = extractStyleUrls(parsedRules, initContext);
+    if(isLinkStylesheet(styleEl) || !shouldIncludeSheet(styleEl)) {
+        return inertPlaceholder(styleEl, initContext);
+    } else {
+        const parsedRules = extractStyleInfo(extractSheet(styleEl));
+        const context = extractStyleUrls(parsedRules, initContext);
         return {
             nodeTask: {
                 ...styleEl,
@@ -23,9 +18,8 @@ export function optimizeStyle(styleEl: ScrapedHtmlElement, initContext: Optimiza
             } as OptimizedStyleElement,
             context
         }
-    } else {
-        return inertPlaceholder(styleEl, initContext);
     }
+    
 }
 
 function inertPlaceholder(styleEl: ScrapedHtmlElement, context: OptimizationContext){
@@ -86,6 +80,29 @@ function extractStyleUrls(rules: ScrapedStyleRule[], context: OptimizationContex
     return {
         assets: newContext
     };
+}
+
+function extractSheet(styleEl: ScrapedHtmlElement) {
+    return (styleEl.domElement as HTMLStyleElement).sheet as CSSStyleSheet;
+}
+
+function shouldIncludeSheet(styleEl: ScrapedHtmlElement) {
+    const sheet = extractSheet(styleEl);
+    if(matchesMedia(sheet.media)) {
+        try { 
+            sheet.rules;
+            return sheet.rules.length > 0;
+        } catch {
+            return false
+        }
+    } else {
+        return false;
+    }
+}
+
+function isLinkStylesheet(styleEl: ScrapedHtmlElement) {
+    return styleEl.tag === 'link' && 
+                !styleEl.attributes.some(attr => attr.name === 'rel' && attr.value === 'stylesheet')
 }
 
 // TODO - Speaking of normalizing, we should probably normalize relative paths for deduping as well...

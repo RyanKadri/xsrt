@@ -24,7 +24,6 @@ export class PlaybackManager {
             .map(([channel, inputs]) => ({
                 channel,
                 updates: inputs.filter(timeInRange),
-                time: toTime
             })).filter(req => req.updates.length > 0);
         this.userInputManager.simulateUserInputs(userInputs);
     }

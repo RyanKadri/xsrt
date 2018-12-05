@@ -7,7 +7,7 @@
     "start:viewer": "webpack-dev-server --mode development --config-name viewer-frontend",
     "build:bootstrap": "webpack --watch --mode development --config-name bootstrap-scripts",
     "build:backend": "webpack --watch --mode development --config-name backend-servers",
-    "test": "jest --watchAll"
+    "test": "jest --watchAll --runInBand"
   },
   "author": "",
   "license": "ISC",

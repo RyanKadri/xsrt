@@ -42,10 +42,9 @@ export class RecordingDomManager {
     }
 
     private extractElement(node: HTMLElement): ScrapedHtmlElement {
-        const res = transformElement(
+        return transformElement(
             this.scrapeBasicElement(node)
         );
-        return res;
     }
     
     private scrapeBasicElement(node: HTMLElement): ScrapedHtmlElement {
