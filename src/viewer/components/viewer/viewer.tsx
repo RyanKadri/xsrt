@@ -1,12 +1,11 @@
 import * as React from 'react';
 import { RecordingControls } from './footer-controls/footer-controls';
 import { DedupedData } from '../../../scraper/types/types';
-import { match } from 'react-router';
 import { Fragment } from 'react';
-import { RecordingApiService } from '../../services/recording-service';
+import { RecordingResolver } from '../../services/recording-service';
 import { RecordingPlayer } from './player/player';
-import { withDependencies } from '../../services/with-dependencies';
 import { createStyles, withStyles, WithStyles, Theme } from '@material-ui/core';
+import { withData } from '../../services/with-data';
 
 const styles = (theme: Theme) => createStyles({
     root: {
@@ -21,29 +20,20 @@ class _ViewerComponent extends React.Component<ViewerData, ViewerState> {
 
     constructor(props: ViewerData) {
         super(props)
-        this.state = { data: undefined, lastFrameTime: undefined, playerTime: 0, isPlaying: false }
+        this.state = { lastFrameTime: undefined, playerTime: 0, isPlaying: false }
     }
     
     render() {
         const { classes } = this.props;
-        return <div className={ classes.root }>{
-                this.state.data === undefined
-                    ? <h1>Loading</h1>
-                    : <Fragment>
-                        <RecordingPlayer 
-                            data={ this.state.data } 
-                            currentTime={ this.state.playerTime } 
-                            isPlaying={ this.state.isPlaying}/>
-                        { this.Controls(this.state.data) }
-                    </Fragment>
-        }</div>;
-    }
-
-    componentDidMount() {
-        this.props.recordingService.fetchRecordingData(this.props.match.params.recordingId)
-            .then(data => {
-                this.setState({ data });
-            })
+        return <div className={ classes.root }>
+            <Fragment>
+                <RecordingPlayer 
+                    data={ this.props.data } 
+                    currentTime={ this.state.playerTime } 
+                    isPlaying={ this.state.isPlaying}/>
+                { this.Controls(this.props.data) }
+            </Fragment>
+        </div>;
     }
 
     private Controls(data: DedupedData) {
@@ -59,8 +49,8 @@ class _ViewerComponent extends React.Component<ViewerData, ViewerState> {
     }
 
     private duration() {
-        if(!this.state.data) return 0;
-        const { stopTime, startTime } = this.state.data.metadata;
+        if(!this.props.data) return 0;
+        const { stopTime, startTime } = this.props.data.metadata;
         return stopTime ? stopTime - startTime : 0;
     }
 
@@ -111,16 +101,14 @@ class _ViewerComponent extends React.Component<ViewerData, ViewerState> {
 }
 
 export const ViewerComponent = withStyles(styles)(
-    withDependencies(_ViewerComponent, { recordingService: RecordingApiService })
+    withData(_ViewerComponent, { data: RecordingResolver })
 )
 
 export interface ViewerData extends WithStyles<typeof styles> {
-    match: match<{ recordingId: string }>;
-    recordingService: RecordingApiService
+    data: DedupedData;
 }
 
 export interface ViewerState {
-    data?: DedupedData;
     playerTime: number;
     lastFrameTime?: number;
     isPlaying: boolean;

@@ -41,12 +41,12 @@ class _AppRoot extends React.Component<AppProps, AppState> {
                         sites={ this.state.availableSites } 
                         onClose={ this.toggleSidebar(false) }/>
                     <Switch>
-                        <Route path="/recordings/:recordingId" render={ (props) =>
-                            <ViewerComponent {...props} />
+                        <Route path="/recordings/:recordingId" render={ (match) =>
+                            <ViewerComponent routeParams={match} />
                          } />
                         <Route path="/dashboard/:siteId" render={ (match) => 
                             <SiteDashboardView 
-                                routeParams={match} 
+                                routeParams={ match }
                                 site={ this.state.availableSites.find(site => site._id === match.match.params.siteId )!}
                             />
                         } />

@@ -1,11 +1,9 @@
 import React, { Fragment } from "react";
-import { RecordingApiService } from "../../services/recording-service";
+import { RecordingMetadataResolver, StoredMetadata } from "../../services/recording-service";
 import { Typography, createStyles, withStyles, WithStyles, Theme } from "@material-ui/core";
-import { RouteComponentProps } from "react-router";
-import { DedupedData } from "@scraper/types/types";
 import { RecordingList } from "./recording-list/recording-list";
 import { SiteTarget } from "@common/db/targets";
-import { withDependencies } from "../../services/with-dependencies";
+import { withData } from "../../services/with-data";
 
 const styles = (theme: Theme) => createStyles({
     root: {
@@ -13,7 +11,7 @@ const styles = (theme: Theme) => createStyles({
     }
 });
 
-class _SiteDashboardView extends React.Component<DashboardViewProps, DashboardState> {
+class _SiteDashboardView extends React.Component<DashboardViewProps> {
 
     constructor(props: DashboardViewProps) { 
         super(props);
@@ -24,40 +22,23 @@ class _SiteDashboardView extends React.Component<DashboardViewProps, DashboardSt
     
     render() {
         const { classes } = this.props;
-        return <div className={ classes.root }>
-            { !this.state.availableRecordings
-                ? <h1>Loading</h1>
-                : this.groupList()
-            }
-        </div>
-    }
-
-    private groupList = () => {
-        return (!this.state.availableRecordings || !this.props.site )
-            ? <Typography variant="body1">There are not any recordings yet</Typography>
-            :   <Fragment>
-                    <Typography variant="h4">{ this.props.site.name }</Typography>
-                    <RecordingList recordings={ this.state.availableRecordings as any || [] } />
-                </Fragment>
-    }
-
-    async componentDidMount() {
-        const recordings = await this.props.recordingService.fetchAvailableRecordings(this.props.routeParams.match.params.siteId);
-        this.setState({ availableRecordings: recordings });
+        return <div className={ classes.root }>{ 
+            !this.props.site
+                ? <Typography variant="body1">Are you sure this site exists?</Typography>
+                : <Fragment>
+                      <Typography variant="h4">{ this.props.site.name }</Typography>
+                      <RecordingList recordings={ this.props.recordings } />
+                  </Fragment>
+        }</div>
     }
 
 }
 
 export const SiteDashboardView = withStyles(styles)(
-    withDependencies(_SiteDashboardView, { recordingService: RecordingApiService })
+    withData(_SiteDashboardView, { recordings: RecordingMetadataResolver })
 )
 
 interface DashboardViewProps extends WithStyles<typeof styles> {
-    routeParams: RouteComponentProps<{siteId: string}>
-    recordingService: RecordingApiService
+    recordings: StoredMetadata[]
     site: SiteTarget
-}
-
-interface DashboardState {
-    availableRecordings?: Partial<DedupedData>[];
 }
