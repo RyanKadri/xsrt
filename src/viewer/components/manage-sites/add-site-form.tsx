@@ -29,7 +29,8 @@ const styles = (theme: Theme) => createStyles({
 const initForm: NewSiteTarget = {
     name: "",
     identifiedBy: "host",
-    identifier: ""
+    identifier: "",
+    url: ""
 }
 
 class AddSiteFormPlain extends React.Component<AddSiteFormProps, AddSiteFormState> {

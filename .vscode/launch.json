@@ -32,7 +32,7 @@
             "type": "node",
             "request": "launch",
             "name": "Start API",
-            "program": "${workspaceFolder}/dist/api/api-server.js",
+            "program": "${workspaceFolder}/dist/backend/api/api-server.js",
             "preLaunchTask": "tsc: watch - tsconfig.api.json",
             "outFiles": [
                 "${workspaceFolder}/dist/api"
@@ -44,7 +44,7 @@
             "type": "node",
             "request": "launch",
             "name": "Start Decorators",
-            "program": "${workspaceFolder}/dist/decorators/decorator-server.js",
+            "program": "${workspaceFolder}/dist/backend/decorators/decorator-server.js",
             "preLaunchTask": "tsc: watch - tsconfig.api.json",
             "outFiles": [
                 "${workspaceFolder}/dist/decorators"

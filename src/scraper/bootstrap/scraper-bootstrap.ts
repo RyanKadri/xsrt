@@ -3,12 +3,13 @@ import containerCSS from '!raw-loader!./container.css';
 import { formatDuration } from "../../viewer/components/utils/format-utils";
 import { outputStandaloneSnapshot, outputDataSnapshot, postToBackend } from "../output/output-manager";
 import { AppContainer } from '../inversify.recorder';
-import { Scraper, ScraperConfig } from '../scrape';
+import { Scraper } from '../scrape';
+import { ScraperConfig, ScraperConfigToken } from '../scraper-config,';
 
 (function bootstrapScraper() {
 
-    const scraper = AppContainer.get(Scraper);
     let timerId: number | undefined;
+    let scraper: Scraper;
     const containerId = '_recording-widget-container';
 
     cleanup();
@@ -31,6 +32,8 @@ import { Scraper, ScraperConfig } from '../scrape';
             backendUrl: 'http://localhost:3001'
         };
 
+        AppContainer.bind(ScraperConfigToken).toConstantValue(config);
+        scraper = AppContainer.get(Scraper);
         if(output === 'single-page' || output === 'json') {
             const res = await scraper.takeDataSnapshot();
             if(output === 'single-page') {

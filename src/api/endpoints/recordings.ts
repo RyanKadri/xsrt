@@ -31,8 +31,6 @@ export class RecordingRouteHandler implements RouteHandler {
         return router;
     }
 
-    // TODO - This will probably be inefficient once we have larger numbers of recordings.
-    // Not sure if the grouping knows about the slice later on. Might grab everything
     private fetchRecordings = async (req: Request, resp: Response) => {   
         try{
             const res = await Recording.find(
@@ -53,7 +51,7 @@ export class RecordingRouteHandler implements RouteHandler {
         const existingSite = await Target.findOne({ identifiedBy: 'host', identifier: host });
         let site = existingSite;
         if(!site) {
-            const newTarget: NewSiteTarget = { name: host, identifiedBy: 'host', identifier: host };
+            const newTarget: NewSiteTarget = { name: host, identifiedBy: 'host', identifier: host, url: host };
             site = await new Target(newTarget).save()
         }
         const recording = new Recording({ ...recordingData, site: site._id });

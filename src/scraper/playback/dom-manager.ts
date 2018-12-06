@@ -150,7 +150,11 @@ export class DomManager {
     
     private adjustReferences(refs: string[]) {
         return Promise.all(
-            refs.map(toBlobUrl)
+            refs.map(ref => {
+                return ref.startsWith("data:")
+                    ? toBlobUrl(ref)
+                    : ref
+            })
         );
     }
 }

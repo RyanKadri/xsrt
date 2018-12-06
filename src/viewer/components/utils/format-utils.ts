@@ -6,13 +6,8 @@ export const formatDuration = (timeInMillis: number) => {
     return `${ pad(minutes) }:${ pad(seconds % 60) }`;
 }
 
-let cachedDate;
 export const formatDate = (timeStamp: number) => {
-    if(cachedDate) {
-        return cachedDate
-    } else {
-        return cachedDate = new Date(timeStamp).toLocaleDateString('en-US');
-    }
+    return new Date(timeStamp).toLocaleDateString('en-US');
 } 
 
 export const fullUrl = (location: LocationMetadata) =>

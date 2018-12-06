@@ -2,8 +2,7 @@
     "extends": "./tsconfig.json",
     "compilerOptions": {
         "module": "commonjs",
-        "outDir": "dist",
-        "sourceMap": true
+        "outDir": "dist/backend",
     },
     "files": [
         "./src/api/api-server.ts",

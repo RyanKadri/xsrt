@@ -39,8 +39,8 @@ export class RecordingResolver implements Resolver {
         private recordingService: RecordingApiService
     ) {}
     
-    resolve(routeParams: RouteComponentProps<{routeId: string}>) {
-        return this.recordingService.fetchRecordingData(routeParams.match.params.routeId);
+    resolve(routeParams: RouteComponentProps<{recordingId: string}>) {
+        return this.recordingService.fetchRecordingData(routeParams.match.params.recordingId);
     }
 }
 

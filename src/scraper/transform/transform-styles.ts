@@ -21,7 +21,7 @@ function replacePseudoClasses(rule: ScrapedStyleRule) {
         if(rule.type !== 'style' || !currentReplacement.checker.test(rule.selector)) {
             return finalText;
         } else {
-            return rule.text.replace(currentReplacement.checker, '.' + currentReplacement.replacementClass);
+            return finalText.replace(currentReplacement.checker, '.' + currentReplacement.replacementClass);
         }
     }, rule.text);
 }

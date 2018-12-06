@@ -8,7 +8,8 @@ import cors from "cors";
 export class ApiServerConfig implements ServerConfig {
     readonly port = 3001;
     readonly mongoUrl = `mongodb://localhost:27017/recordings`;
-    readonly decorateUrl = `http://localhost:3002`
+    readonly decorateUrl = `http://localhost:3002`;
+    readonly assetDir = "/var/www/record-service.jane/assets";
 }
 
 @injectable()

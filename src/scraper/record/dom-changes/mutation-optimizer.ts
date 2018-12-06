@@ -1,6 +1,8 @@
 import { RecordedMutation, OptimizedMutation, ChangeChildrenMutation, AttributeMutation, ChangeTextMutation, AddDescriptor } from "./mutation-recorder";
 import { ScrapedElement } from "../../types/types";
+import { injectable } from "inversify";
 
+@injectable()
 export class MutationOptimizer {
 
     optimizeMutationGroup(mutationGroup: RecordedMutation[]): OptimizedMutation[] {

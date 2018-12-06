@@ -17,6 +17,7 @@
     "esModuleInterop": true,
     "jsx": "react",
     "resolveJsonModule": true,
+    "sourceMap": true,
 
     "baseUrl": "./src",
     "experimentalDecorators": true,

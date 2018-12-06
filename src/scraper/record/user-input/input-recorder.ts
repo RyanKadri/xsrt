@@ -56,7 +56,7 @@ export class CompleteInputRecorder {
     private createEventHandler = (group: string) => {
         const recorder = this.handlers[group];
         const handleEvent = (event: Event) => {
-            const target = event.target && !nodeIsHidden(event.target as Node) 
+            const target = event.target && !nodeIsHidden(event.target as Node) && this.domWalker.isManaged(event.target as Node)
                 ? this.domWalker.fetchManagedNode(event.target as Node)
                 : undefined;
                 

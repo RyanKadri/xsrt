@@ -4,8 +4,9 @@ import { MutationRecorder } from "./record/dom-changes/mutation-recorder";
 import { RecordingDomManager } from "./traverse/traverse-dom";
 import { CompleteInputRecorder } from "./record/user-input/input-recorder";
 import { TimeManager } from "./utils/time-manager";
-import { optimize } from "./optimize/optimize";
+import { RecordingOptimizer } from "./optimize/optimize";
 import { injectable } from 'inversify';
+import { ScraperConfig } from "./scraper-config,";
 
 @injectable()
 export class Scraper implements Scraper {
@@ -15,11 +16,12 @@ export class Scraper implements Scraper {
         private timeManager: TimeManager,
         private mutationRecorder: MutationRecorder,
         private inputRecorder: CompleteInputRecorder,
+        private optimizer: RecordingOptimizer
     ) {}
     private onStop: (() => void) | undefined;
 
     takeDataSnapshot(): Promise<DedupedData> {
-        return optimize(this.syncSnapshot());
+        return this.optimizer.optimize(this.syncSnapshot());
     }
 
     private syncSnapshot(): ScrapedData {
@@ -39,7 +41,7 @@ export class Scraper implements Scraper {
         
         return new Promise<DedupedData>((resolve, reject) => {
             this.onStop = () => {
-                optimize({ 
+                this.optimizer.optimize({ 
                     ...initSnapshot,
                     changes: this.mutationRecorder.stop(),
                     inputs: this.inputRecorder.stop(),
@@ -58,11 +60,6 @@ export class Scraper implements Scraper {
             this.onStop();
         }
     }
-}
-
-export interface ScraperConfig {
-    debugMode: boolean;
-    backendUrl: string;
 }
 
 export interface Scraper {

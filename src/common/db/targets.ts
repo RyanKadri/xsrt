@@ -18,6 +18,10 @@ const siteSchema = new Schema({
     identifier: {
         type: String,
         required: true
+    },
+    url: {
+        type: String,
+        required: true
     }
 }, { strict: true, collection: 'targets' })
 
@@ -28,4 +32,5 @@ export interface SiteTarget {
     name: string;
     identifiedBy: "host";
     identifier: string;
+    url: string;
 }

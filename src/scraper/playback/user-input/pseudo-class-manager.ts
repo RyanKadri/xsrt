@@ -66,6 +66,7 @@ export class PseudoClassManager {
             } while(curr && propogateUp);
 
             toRemove.forEach((oldElement) => oldElement.classList.remove(clss))
+            this.classTracker.set(clss, applied);
         })
     }
 }

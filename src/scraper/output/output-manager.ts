@@ -1,9 +1,9 @@
 import * as template from '../../viewer/index.html';
-import { ScraperConfig } from "../scrape";
 import { toJson } from '../utils/utils';
 import { triggerDownload, compress } from './output-utils';
 import { DedupedData } from '../types/types';
 import axios, { } from 'axios';
+import { ScraperConfig } from '../scraper-config,';
 
 function serializeToViewer(data: DedupedData) {
     return (template as any).replace(

@@ -11,12 +11,12 @@ export function withData<P, K extends keyof P>(DIComponent: ComponentType<P>, re
             super(props);
             this.state = {
                 data: [],
-                loadingResolvers: []
+                loadingResolvers: undefined
             }
         }
 
         render() {
-            if(this.state.loadingResolvers.length > 0) {
+            if(!this.state.loadingResolvers || this.state.loadingResolvers.length > 0) {
                 return <h1>Loading</h1>
             } else {
                 const newProps = {...this.props as any};
@@ -42,7 +42,7 @@ export function withData<P, K extends keyof P>(DIComponent: ComponentType<P>, re
                 .map(([field, resolver]) => {
                     const resolvePromise = PlayerContainer.get<Resolver>(resolver).resolve(this.props.routeParams)
                         .then(data => this.setState(oldState => ({
-                            loadingResolvers: oldState.loadingResolvers.filter(prom => prom.field !== field),
+                            loadingResolvers: (oldState.loadingResolvers || []).filter(prom => prom.field !== field),
                             data: [
                                 ...oldState.data,
                                 { field, value: data}
@@ -64,7 +64,7 @@ export interface Resolver {
 }
 
 interface WithDataState {
-    loadingResolvers: {
+    loadingResolvers?: {
         field: string;
         resolver: Promise<void>;
     }[]

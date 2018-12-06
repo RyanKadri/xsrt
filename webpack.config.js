@@ -91,6 +91,7 @@ module.exports = [
             proxy: {
                 '/api': 'http://localhost:3001',
                 '/screenshots': 'http://localhost',
+                '/assets': 'http://localhost',
             },
         },
         mode: 'development'

@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { RouteHandler } from '../../common/server/express-server';
 import { injectable } from 'inversify';
-import { Target } from '../../common/db/targets';
+import { Target, SiteTarget } from '../../common/db/targets';
 
 @injectable()
 export class TargetRouteHandler implements RouteHandler {
@@ -33,7 +33,13 @@ export class TargetRouteHandler implements RouteHandler {
     }
 
     private createTarget = (req: Request, resp: Response) => {
-        const recording = new Target(req.body);
+        const target: Partial<SiteTarget> = {
+            ...req.body
+        }
+        if(target.identifiedBy === 'host' && !req.body.url) {
+            target.url = target.identifier;
+        }
+        const recording = new Target(target);
         recording.save((err, data) => {
             if(err) {
                 resp.json({ error: err })
