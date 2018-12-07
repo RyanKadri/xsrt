@@ -3,13 +3,15 @@ import { RouteHandler } from "../../common/server/express-server";
 import { Router, Request, Response } from "express";
 import { Asset, ProxiedAsset } from "../../common/db/asset";
 import axios from 'axios';
-import { mkdir, createWriteStream } from "fs";
+import { mkdir, createWriteStream, WriteStream, rename } from "fs";
 import { promisify } from "util";
 import { ApiServerConfig } from "../api-server-conf";
 import { join } from "path";
 import { URL } from 'url';
+import { createHash } from 'crypto';
 
 const mkdirFs = promisify(mkdir)
+const renameFs = promisify(rename)
 
 @injectable()
 export class AssetProxyHandler implements RouteHandler {
@@ -60,31 +62,42 @@ export class AssetProxyHandler implements RouteHandler {
         const proxyRes = await axios.get(url.href, { responseType: 'stream', headers: { ['User-Agent']: userAgent } });
         const headers = Object.entries(proxyRes.headers)
             .map(([name, value]) => ({ name, value }));
+        const dataStream: WriteStream = proxyRes.data;
 
-        // TODO - Apply streaming hash here
-        // https://stackoverflow.com/questions/18658612/obtaining-the-hash-of-a-file-using-the-stream-capabilities-of-crypto-module-ie
-        const contentHash = "temp-" // hash(proxyRes.data).replace(/[\/+=-]/g, '_');
+        // TODO - May need to watch for overwrite collisions here. Consider shortid?
+        const contentHash = "temp-";
         const matches = url.pathname.match(/\/([^/]+)$/);
         const baseName = matches ? matches[1] : "root";
         const saveDir = join(this.serverConfig.assetDir, url.hostname);
         const fileName = `${contentHash}-${baseName}`
         const savePath = join(saveDir, fileName);
+        const hashStream = createHash('sha1');
         await mkdirFs(saveDir, { recursive: true });
-        proxyRes.data.pipe(createWriteStream(savePath));
-        await new Promise((resolve, reject) => {
-            proxyRes.data.on('end', () => {
-              resolve()
-            })
+        dataStream
+            .pipe(createWriteStream(savePath));
+
+        const hash = await new Promise<string>((resolve, reject) => {
+            dataStream.on('end', () => {
+                resolve(hashStream.digest('base64') as string)
+            });
+            dataStream.on('data', (chunk) => {
+                hashStream.update(chunk);
+            });
         
-            proxyRes.data.on('error', () => {
+            dataStream.on('error', () => {
               reject()
-            })
-          })
+            });
+          });
+
+        const safeHash = hash.replace(/[\/+=-]/g, '_');
+        const renamed = join(saveDir, `${safeHash}-${baseName}`);
+        await renameFs(savePath, renamed);
+
         const asset = new Asset({
             url,
             hash: contentHash,
             headers,
-            content: savePath
+            content: renamed
         })
         return asset.save();
     }

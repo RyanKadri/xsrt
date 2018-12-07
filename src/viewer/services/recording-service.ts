@@ -1,20 +1,19 @@
 import { injectable } from "inversify";
 import { DedupedData, WithId } from "../../scraper/types/types";
-import { RecordingMetadata } from "../../scraper/traverse/extract-metadata";
 import axios from "axios";
 import { Resolver } from "./with-data";
 import { RouteComponentProps } from "react-router";
+import { RecordedMetadata } from "../../api/types";
 
 @injectable()
 export class RecordingApiService {
 
-    //TODO - This whole deflation part should be handled by native browser stuff on the receiving end.
     async fetchRecordingData(recording: string): Promise<DedupedData> {
         const data = await fetch(`/api/recordings/${recording}`);
         return await data.json();
     }
 
-    async fetchAvailableRecordings(id: string): Promise<Partial<DedupedData>[]> {
+    async fetchAvailableRecordings(id: string): Promise<StoredMetadata[]> {
         return axios.get(`/api/recordings?site=${id}`)
             .then(resp => resp.data);
     }
@@ -45,7 +44,8 @@ export class RecordingResolver implements Resolver {
 }
 
 export interface StoredMetadata extends WithId {
-    metadata: RecordingMetadata
+    metadata: RecordedMetadata;
+    _id: string;
     thumbnail?: string;
 }
 

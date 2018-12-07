@@ -21,7 +21,7 @@ const _RecordingList = (props: RecordingListProps) => {
                     <TableRow>
                         <TableCell>Date</TableCell>
                         <TableCell>Duration</TableCell>
-                        <TableCell>Tags</TableCell>
+                        <TableCell>User Agent</TableCell>
                         <TableCell>Preview</TableCell>
                     </TableRow>
                 </TableHead>
@@ -46,7 +46,11 @@ const RecordingRow = (recording: StoredMetadata, props: RecordingListProps) => {
                 : 'N/A'
             }
         </TableCell>
-        <TableCell></TableCell>
+        <TableCell>
+            { metadata.uaDetails 
+                ? `${ metadata.uaDetails.browser.name } - ${ metadata.uaDetails.os.name }`
+                : "Unknown" }
+        </TableCell>
         <TableCell>
             { thumbnail 
                 ? <img 

@@ -16,7 +16,7 @@ export class ApiServerConfig implements ServerConfig {
 export class ApiServerInitializer implements ServerInitializer {
     async initialize(app: Express) {
         app.use(bodyParser.urlencoded({ extended: false }));
-        app.use(bodyParser.json({ limit: '50mb' })); //TODO - Let's think about security...
+        app.use(bodyParser.json({ limit: '10mb', inflate: true })); //TODO - Let's think about security...
         app.use(cors())
         app.options('*', cors())
     }

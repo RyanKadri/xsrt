@@ -7,6 +7,8 @@ import { ApiServerConfig } from '../api-server-conf';
 import { DedupedData } from '../../scraper/types/types';
 import { Target } from '../../common/db/targets';
 import { NewSiteTarget } from 'viewer/components/manage-sites/add-site-form';
+import * as parser from 'ua-parser-js';
+import { RecordingData, UADetails } from '../types';
 
 @injectable()
 export class RecordingRouteHandler implements RouteHandler {
@@ -45,8 +47,9 @@ export class RecordingRouteHandler implements RouteHandler {
 
     // TODO - Figure out how to do this with transactions
     private createRecording = async (req: Request, resp: Response) => {
-        const recordingData: DedupedData = req.body;
-        const host = recordingData.metadata.url.hostname;
+        const bodyData: DedupedData = req.body;
+        const host = bodyData.metadata.url.hostname;
+        const ua = new parser.UAParser(bodyData.metadata.userAgent);
 
         const existingSite = await Target.findOne({ identifiedBy: 'host', identifier: host });
         let site = existingSite;
@@ -54,16 +57,29 @@ export class RecordingRouteHandler implements RouteHandler {
             const newTarget: NewSiteTarget = { name: host, identifiedBy: 'host', identifier: host, url: host };
             site = await new Target(newTarget).save()
         }
-        const recording = new Recording({ ...recordingData, site: site._id });
+        const extMetadata = { 
+            ...bodyData.metadata,
+            uaDetails: this.extractUADetails(ua)
+        }
+        const recordingData: RecordingData = { ...bodyData, site: site._id, metadata: extMetadata };
+        const recording = new Recording(recordingData);
         recording.save((err, data) => {
             if(err) {
                 resp.json({ error: err })
-            } else {
+            } else { 
                 axios.post(`${this.apiConfig.decorateUrl}/decorate/thumbnails`, { recordingId: data._id })
                     .catch(e => console.error(e));
-                resp.json( data )
+                resp.json({ success: true })
             }
         })
+    }
+
+    private extractUADetails(ua): UADetails {
+        return {
+            browser: ua.getBrowser(),
+            os: ua.getOS(),
+            device: ua.getDevice(),
+        }
     }
 
     private fetchSingleRecording = (req: Request, resp: Response) => {

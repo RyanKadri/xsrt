@@ -29,7 +29,7 @@ export async function postToBackend(data: DedupedData, config: ScraperConfig) {
         // Jury's out on whether this is idiomatic
         headers: Object.assign({}, 
             {'Content-Type': 'application/json'},
-            !config.debugMode ? {'Content-Encoding': 'gzip'} : null
+            !config.debugMode ? {'Content-Encoding': 'deflate'} : null
         )
     });
     return res.data._id;
