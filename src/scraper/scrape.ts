@@ -6,7 +6,6 @@ import { CompleteInputRecorder } from "./record/user-input/input-recorder";
 import { TimeManager } from "./utils/time-manager";
 import { RecordingOptimizer } from "./optimize/optimize";
 import { injectable } from 'inversify';
-import { ScraperConfig } from "./scraper-config,";
 
 @injectable()
 export class Scraper implements Scraper {
@@ -63,7 +62,7 @@ export class Scraper implements Scraper {
 }
 
 export interface Scraper {
-    record(config: ScraperConfig): Promise<DedupedData>;
+    record(): Promise<DedupedData>;
     takeDataSnapshot(): Promise<DedupedData>;
     stopRecording(): void;
 }

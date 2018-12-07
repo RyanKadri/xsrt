@@ -34,7 +34,7 @@ export class RecordingDomManager {
     }
 
     isManaged(node: Node | null | undefined) {
-        return node && this.nodeMapping.has(node);
+        return node !== undefined && node !== null && this.nodeMapping.has(node);
     }
 
     dump() {

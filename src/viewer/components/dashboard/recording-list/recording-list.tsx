@@ -1,20 +1,66 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { StoredMetadata } from "../../../services/recording-service";
-import { Typography, List, ListItem } from "@material-ui/core";
-import { formatDate } from "../../utils/format-utils";
+import { Typography, Table, TableHead, TableRow, TableCell, TableBody, withStyles, Theme, createStyles, WithStyles } from "@material-ui/core";
+import { formatDate, formatDuration } from "../../utils/format-utils";
 
-export const RecordingList = ({ recordings }: { recordings: StoredMetadata[] }) => 
-    recordings.length === 0 
+const styles = (_: Theme) => createStyles({
+    preview: {
+        maxWidth: 360,
+        maxHeight: 240,
+        cursor: "pointer"
+    }
+})
+
+const _RecordingList = (props: RecordingListProps) => {
+    const { recordings } = props;
+    return recordings.length === 0 
         ?   <Typography variant="body1">No recordings yet...</Typography>
-        :   <List>{
-                recordings.map(RecordingListItem)
-            }</List>;
+        :   <Table>
+                <TableHead>
+                    <TableRow>
+                        <TableCell>Date</TableCell>
+                        <TableCell>Duration</TableCell>
+                        <TableCell>Tags</TableCell>
+                        <TableCell>Preview</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>{
+                    recordings.map(recording => RecordingRow(recording, props))
+                }</TableBody>
+            </Table>;
+}
 
-const RecordingListItem = (recording: StoredMetadata) =>
-    <ListItem key={recording._id}>
-        <Link to={`/recordings/${recording._id}`}>
-            { formatDate(recording.metadata.startTime) }
-        </Link>
-        { recording.thumbnail ? <img src={ `/screenshots/${recording.thumbnail}` }></img> : null } 
-    </ListItem>
+const RecordingRow = (recording: StoredMetadata, props: RecordingListProps) => {
+    const {_id, metadata, thumbnail } = recording;
+    const { classes, onPreview } = props;
+    return <TableRow key={_id}>
+        <TableCell>
+            <Link to={`/recordings/${_id}`}>
+                { formatDate(metadata.startTime) }                
+            </Link>
+        </TableCell>
+        <TableCell>
+            { metadata.stopTime 
+                ? formatDuration(metadata.stopTime - metadata.startTime)
+                : 'N/A'
+            }
+        </TableCell>
+        <TableCell></TableCell>
+        <TableCell>
+            { thumbnail 
+                ? <img 
+                    className={ classes.preview }
+                    src={ `/screenshots/${thumbnail}` }
+                    onClick={ () => onPreview(recording) } />
+                : null } 
+        </TableCell>
+    </TableRow>
+}
+
+export interface RecordingListProps extends WithStyles<typeof styles> {
+    recordings: StoredMetadata[];
+    onPreview: (thumbnail: StoredMetadata) => void;
+}
+
+export const RecordingList = withStyles(styles)(_RecordingList)

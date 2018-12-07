@@ -6,10 +6,10 @@ import { ScrollRecorder } from './record/user-input/scroll-recorder';
 import { HtmlInputRecorder } from './record/user-input/input-event-recorder';
 import { FocusRecorder } from './record/user-input/focus-recorder';
 
-const AppContainer = new Container({ autoBindInjectable: true, defaultScope: "Singleton" });
-AppContainer.bind(IUserInputRecorder).to(MouseRecorder);
-AppContainer.bind(IUserInputRecorder).to(ScrollRecorder);
-AppContainer.bind(IUserInputRecorder).to(HtmlInputRecorder);
-AppContainer.bind(IUserInputRecorder).to(FocusRecorder);
+const RecorderContainer = new Container({ autoBindInjectable: true, defaultScope: "Singleton" });
+RecorderContainer.bind(IUserInputRecorder).to(MouseRecorder);
+RecorderContainer.bind(IUserInputRecorder).to(ScrollRecorder);
+RecorderContainer.bind(IUserInputRecorder).to(HtmlInputRecorder);
+RecorderContainer.bind(IUserInputRecorder).to(FocusRecorder);
 
-export { AppContainer };
+export { RecorderContainer };

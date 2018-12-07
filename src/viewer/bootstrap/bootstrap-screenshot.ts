@@ -2,7 +2,7 @@ import { DedupedData } from "@scraper/types/types";
 import { DomManager } from "@scraper/playback/dom-manager";
 
 (async function() {
-    const urlMatch = location.search.match(/recording=([a-zA-Z0-9\-]+)/); 
+    const urlMatch = location.search.match(/recording=([a-zA-Z0-9_\-]+)/); 
     if(urlMatch) {
         const domManager = new DomManager();
         domManager.initialize(document);

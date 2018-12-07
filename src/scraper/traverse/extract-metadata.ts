@@ -9,6 +9,7 @@ export function extractMetadata(document: Document, location: Location, startTim
         },
         viewportHeight: window.innerHeight,
         viewportWidth: window.innerWidth,
+        userAgent: navigator.userAgent,
         startTime
     }
 }
@@ -19,7 +20,8 @@ export interface RecordingMetadata {
     url: LocationMetadata;
     viewportHeight: number;
     viewportWidth: number;
-    stopTime?: number;    
+    stopTime?: number;
+    userAgent: string;
 }
 
 export interface LocationMetadata {

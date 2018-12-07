@@ -2,7 +2,7 @@ import containerHTML from './widget.html';
 import containerCSS from '!raw-loader!./container.css';
 import { formatDuration } from "../../viewer/components/utils/format-utils";
 import { outputStandaloneSnapshot, outputDataSnapshot, postToBackend } from "../output/output-manager";
-import { AppContainer } from '../inversify.recorder';
+import { RecorderContainer } from '../inversify.recorder';
 import { Scraper } from '../scrape';
 import { ScraperConfig, ScraperConfigToken } from '../scraper-config,';
 
@@ -32,8 +32,8 @@ import { ScraperConfig, ScraperConfigToken } from '../scraper-config,';
             backendUrl: 'http://localhost:3001'
         };
 
-        AppContainer.bind(ScraperConfigToken).toConstantValue(config);
-        scraper = AppContainer.get(Scraper);
+        RecorderContainer.bind(ScraperConfigToken).toConstantValue(config);
+        scraper = RecorderContainer.get(Scraper);
         if(output === 'single-page' || output === 'json') {
             const res = await scraper.takeDataSnapshot();
             if(output === 'single-page') {
@@ -46,10 +46,8 @@ import { ScraperConfig, ScraperConfigToken } from '../scraper-config,';
                 toggleDialogMode();
                 timerId = startTimer();
             }
-            scraper.record(config).then(async res => {
-                const id = await postToBackend(res, config);
-                console.log(id);
-            })
+            scraper.record()
+                .then(res => postToBackend(res, config));
         } else {
             throw new Error('Unknown output format: ' + output)
         }

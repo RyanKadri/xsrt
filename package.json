@@ -6,7 +6,7 @@
   "scripts": {
     "start:viewer": "webpack-dev-server --mode development --config-name viewer-frontend",
     "build:bootstrap": "webpack --watch --mode development --config-name bootstrap-scripts",
-    "build:backend": "webpack --watch --mode development --config-name backend-servers",
+    "build:extension": "webpack --watch --mode development --config-name compile-extension",
     "test": "jest --watchAll --runInBand"
   },
   "author": "",
@@ -47,6 +47,7 @@
   "dependencies": {
     "@material-ui/core": "^3.6.0",
     "@material-ui/icons": "^3.0.1",
+    "@types/chrome": "0.0.75",
     "@types/node": "^10.12.10",
     "@types/pako": "^1.0.0",
     "@types/react": "^16.4.18",

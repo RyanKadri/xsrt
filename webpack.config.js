@@ -4,6 +4,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const WriteFilePlugin = require('write-file-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const merge = require('webpack-merge');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const common = (output) => ({
     devtool: 'source-map',
@@ -100,18 +101,18 @@ module.exports = [
         name: 'bootstrap-scripts',
         entry: {
             ['scraper-bootstrap']: './src/scraper/bootstrap/scraper-bootstrap.ts',
-            ['screenshot-bootstrap']: './src/viewer/bootstrap/bootstrap-screenshot.ts'
+            ['screenshot-bootstrap']: './src/viewer/bootstrap/bootstrap-screenshot.ts',
         },
     }),
-    merge(common('dist/backend'), {
-        name: 'backend-servers',
+    merge(common('dist/extension'), {
+        name: 'compile-extension',
         entry: {
-            ['api-server']: './src/api/api-server.ts',
-            ['decorate-server']: './src/decorators/decorator-server.ts'
+            ['bootstrap']: './src/extension/bootstrap/extension-bootstrap.ts',
+            ['background']: './src/extension/background/background.ts',
+            ['content']: './src/extension/content/extension-content.ts'
         },
-        target: "node",
-        resolve: {
-            extensions: ['json']
-        }
+        plugins: [
+            new CopyWebpackPlugin([{ from: "./src/extension/*.{json,png}", to: './', flatten: true } ])
+        ]
     })
 ];

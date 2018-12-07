@@ -67,8 +67,8 @@ export class MutationTransformer {
                 }
 
                 let beforeId: number | null = null;
-                if(before) {
-                    beforeId = this.domWalker.fetchManagedNode(before).id;
+                if(before && before.nextSibling) {
+                    beforeId = this.domWalker.fetchManagedNode(before.nextSibling).id;
                 }
                 return {
                     before: beforeId,
