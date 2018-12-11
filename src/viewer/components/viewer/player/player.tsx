@@ -1,9 +1,11 @@
-import React from "react";
-import { DedupedData } from "../../../../scraper/types/types";
+import { createStyles, Theme, withStyles, WithStyles } from "@material-ui/core";
 import { PlaybackManager } from "@scraper/playback/playback-manager";
-import { withDependencies } from "../../../services/with-dependencies";
-import { withStyles, createStyles, WithStyles, Theme } from "@material-ui/core";
 import c from 'classnames';
+import React from "react";
+import { between, pipe, pluck } from "../../../../common/utils/functional-utils";
+import { RecordedResize } from "../../../../scraper/record/user-input/resize-recorder";
+import { DedupedData } from "../../../../scraper/types/types";
+import { withDependencies } from "../../../services/with-dependencies";
 
 const styles = (theme: Theme) => createStyles({
     horizExpand: {
@@ -41,7 +43,7 @@ class _RecordingPlayer extends React.Component<PlayerInput, PlayerState> {
 
     constructor(props: PlayerInput){
         super(props) 
-        this.state = { scale: 0 }
+        this.state = { scale: 0, height: props.data.metadata.viewportHeight, width: props.data.metadata.viewportWidth }
         this.iframe = React.createRef();
         this.viewPort = React.createRef();
         this.data = this.props.data;
@@ -66,6 +68,16 @@ class _RecordingPlayer extends React.Component<PlayerInput, PlayerState> {
         }
 
         this.props.playbackManager.play(this.data, prevProps.currentTime, this.props.currentTime);
+
+        const timeBetween = pipe(pluck('timestamp'), between(prevProps.currentTime, this.props.currentTime))
+        const recentResizes = this.data.inputs.resize.filter(timeBetween);
+        if(recentResizes.length > 0) {
+            const lastResize = recentResizes[recentResizes.length - 1] as RecordedResize;
+            this.setState({
+                height: lastResize.height,
+                width: lastResize.width
+            }, this.calcSize) 
+        }
     }
 
     private initializeIframe() {
@@ -83,8 +95,8 @@ class _RecordingPlayer extends React.Component<PlayerInput, PlayerState> {
     private calcSize = () => {
         if(this.viewPort.current) {
             const bb = this.viewPort.current.getBoundingClientRect();
-            const horizScale = bb.width / this.data.metadata.viewportWidth;
-            const vertScale = bb.height / this.data.metadata.viewportHeight;
+            const horizScale = bb.width / this.state.width;
+            const vertScale = bb.height / this.state.height;
             this.setState({
                 scale: Math.min(horizScale, vertScale)
             })
@@ -93,8 +105,8 @@ class _RecordingPlayer extends React.Component<PlayerInput, PlayerState> {
 
     private iframeDimensions(): React.CSSProperties {
         return {
-            height: this.data.metadata.viewportHeight,
-            width: this.data.metadata.viewportWidth,
+            height: this.state.height,
+            width: this.state.width,
             transform: `translate(-50%, -50%) scale(${ this.state.scale })`
         };
     }
@@ -113,5 +125,7 @@ export interface PlayerInput extends WithStyles<typeof styles> {
 }
 
 export interface PlayerState {
+    height: number;
+    width: number;
     scale: number;
 }

@@ -1,6 +1,6 @@
-import { BaseUserInput, UserInputRecorder, RecordedEventContext } from "./input-recorder";
-import { ScrapedElement } from "../../types/types";
 import { injectable } from "inversify";
+import { ScrapedElement } from "../../types/types";
+import { BaseUserInput, RecordedEventContext, UserInputRecorder } from "./input-recorder";
 
 const debounceThresholdMs = 100;
 
@@ -8,6 +8,8 @@ const debounceThresholdMs = 100;
 export class MouseRecorder implements UserInputRecorder<MouseEvent, RecordedMouseEvent> {
 
     readonly channels = ['mouseup', 'mousedown', 'mousemove'];
+    readonly listen = 'document';
+
     private lastTime = 0;
     private lastHovered?: ScrapedElement;
 

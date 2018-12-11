@@ -1,9 +1,9 @@
+import { between, pipe, pluck } from "@common/utils/functional-utils";
+import { injectable } from "inversify";
+import { DedupedData } from "../types/types";
 import { DomManager } from "./dom-manager";
 import { MutationManager } from "./mutation-manager";
 import { UserInputPlaybackManager } from "./user-input/user-input-manager";
-import { DedupedData } from "../types/types";
-import { injectable } from "inversify";
-import { pipe, pluck, between } from "@common/utils/functional-utils";
 
 @injectable()
 export class PlaybackManager {
@@ -30,6 +30,6 @@ export class PlaybackManager {
 
     initialize(document: Document, data: DedupedData) {
         this.domManager.initialize(document);
-        this.domManager.serializeToDocument(data);
+        this.domManager.createInitialDocument(data);
     }
 }

@@ -1,4 +1,5 @@
-import { ScrapedAttribute, DedupedData, OptimizedElement, OptimizedStyleRule, OptimizedHtmlElementInfo, OptimizedStyleElement, OptimizedTextElementInfo } from "../types/types";
+import uaStyles from '!raw-loader!./ua-styles.css';
+import { DedupedData, OptimizedElement, OptimizedHtmlElementInfo, OptimizedStyleElement, OptimizedStyleRule, OptimizedTextElementInfo, ScrapedAttribute } from "../types/types";
 import { toBlobUrl } from "../utils/utils";
 
 export const IDomManager = Symbol('DomManager');
@@ -21,13 +22,21 @@ export class DomManager {
         }
     }
 
-    async serializeToDocument(data: DedupedData): Promise<void> {
+    async createInitialDocument(data: DedupedData): Promise<void> {
         this.assets = await this.adjustReferences(data.assets);
         
         const docType = `<!DOCTYPE ${ data.metadata.docType }>`
         this.document.write(docType + '\n<html></html>');
         
         this.document.removeChild(this.document.documentElement!);
+        const head = data.root.children.find(child => child.type === 'element' && child.tag === 'head');
+        if(head) {
+            (head as OptimizedHtmlElementInfo).children.unshift({ id: -1, type: 'element', tag: 'style', children: [{
+                type: 'text',
+                content: uaStyles,
+                id: -1
+            }]})
+        }
         this._serializeToElement(this.document, data.root);
     }
     
@@ -95,7 +104,17 @@ export class DomManager {
     private createElement(node: OptimizedHtmlElementInfo, currNS = '') {
         const attributes = node.attributes || [];
         const nsAttr = (attributes).find(attr => attr.name === 'xmlns');
-        const ns = nsAttr ? nsAttr.value : currNS;
+        let ns: string;
+        if(nsAttr) {
+            ns = nsAttr.value;
+        } else {
+            const impNamespace = this.fetchImplicitNamespace(node);
+            if(impNamespace) {
+                ns = impNamespace;
+            } else {
+                ns = currNS
+            }
+        }
         let created = ns ? this.document.createElementNS(ns, node.tag): this.document.createElement(node.tag) as Element;
         
         attributes.forEach(attr => this._setAttribute(created, attr));
@@ -156,5 +175,14 @@ export class DomManager {
                     : ref
             })
         );
+    }
+
+    private fetchImplicitNamespace(el: OptimizedHtmlElementInfo) {
+        switch(el.tag) {
+            case 'svg':
+                return "http://www.w3.org/2000/svg";
+            default:
+                return '';
+        }
     }
 }

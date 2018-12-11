@@ -1,13 +1,14 @@
-import { RecordedMouseEvent } from "./mouse-recorder";
-import { RecordedScrollEvent } from "./scroll-recorder";
-import { RecordedInputChannels, ScrapedElement } from "../../types/types";
-import { RecordingDomManager } from "../../traverse/traverse-dom";
-import { RecordedInputChangeEvent } from "./input-event-recorder";
-import { TimeManager } from "../../utils/time-manager";
+import { group, pluck } from "@common/utils/functional-utils";
 import { injectable, multiInject } from "inversify";
+import { RecordingDomManager } from "../../traverse/traverse-dom";
+import { RecordedInputChannels, ScrapedElement } from "../../types/types";
+import { TimeManager } from "../../utils/time-manager";
 import { nodeIsHidden } from "../../utils/utils";
 import { RecordedFocusEvent } from "./focus-recorder";
-import { group, pluck } from "@common/utils/functional-utils";
+import { RecordedInputChangeEvent } from "./input-event-recorder";
+import { RecordedMouseEvent } from "./mouse-recorder";
+import { RecordedResize } from "./resize-recorder";
+import { RecordedScrollEvent } from "./scroll-recorder";
 
 export const IUserInputRecorder = Symbol.for('IUserInputRecorder');
 
@@ -48,7 +49,7 @@ export class CompleteInputRecorder {
             }
         });
         this.listeners.forEach(({channel, listener}) => {
-            document.removeEventListener(channel, listener, { capture: true });
+            this.listenerTarget(this.handlers[channel]).removeEventListener(channel, listener, { capture: true });
         })
         return this.events;
     }
@@ -75,12 +76,18 @@ export class CompleteInputRecorder {
                 } as RecordedUserInput)
             }
         }
-        document.addEventListener(group, handleEvent, { capture: true });
+        
+        this.listenerTarget(recorder).addEventListener(group, handleEvent, { capture: true });
         this.listeners.push({ channel: group, listener: handleEvent })
+    }
+    
+    private listenerTarget(recorder: UserInputRecorder) {
+        return recorder.listen === 'document' ? document : window;
     }
 }
 
-export type RecordedUserInput = RecordedMouseEvent | RecordedScrollEvent | RecordedInputChangeEvent | RecordedFocusEvent
+export type RecordedUserInput = RecordedMouseEvent | RecordedScrollEvent | RecordedInputChangeEvent
+                                 | RecordedFocusEvent | RecordedResize
 
 export interface BaseUserInput {
     timestamp: number;
@@ -91,6 +98,7 @@ export interface UserInputRecorder<EventType = Event, RecordedType = RecordedUse
     // A recorder can listen to multiple channels but two recorders cannot currently listen to the same channel
     channels: string[];
     handle(event: EventType, context: RecordedEventContext): Partial<RecordedType> | null;
+    listen: 'document' | 'window'
     start?();
     stop?(): void;
 }

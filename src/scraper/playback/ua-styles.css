@@ -1,0 +1,109 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+@namespace url(http://www.w3.org/1999/xhtml); /* set default namespace to HTML */
+@namespace xul url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);
+ 
+select > button.__active {
+    background-image: url("arrowd.gif") !important;
+}
+  
+select > button[orientation="left"].__active {
+    background-image: url("arrowd-left.gif") !important;
+}
+  
+select > button[orientation="right"].__active {
+    background-image: url("arrowd-right.gif") !important;
+}
+  
+select.__focus > option:checked,
+select.__focus > optgroup > option:checked {
+    background-color: Highlight ! important;
+    color: HighlightText ! important;
+}
+ 
+input[type="radio"]:disabled,
+input[type="radio"]:disabled.__active,
+input[type="radio"]:disabled.__hover,
+input[type="radio"]:disabled.__hover.__active,
+input[type="checkbox"]:disabled,
+input[type="checkbox"]:disabled.__active,
+input[type="checkbox"]:disabled.__hover,
+input[type="checkbox"]:disabled.__hover.__active {
+    cursor: inherit;
+}
+ 
+button.__hover,
+input[type="color"].__hover,
+input[type="reset"].__hover,
+input[type="button"].__hover,
+input[type="submit"].__hover {
+    background-color: -moz-buttonhoverface;
+}
+ 
+button.__hover,
+input[type="reset"].__hover,
+input[type="button"].__hover,
+input[type="submit"].__hover {
+    color: -moz-buttonhovertext;
+}
+ 
+button.__active.__hover,
+input[type="color"].__active.__hover,
+input[type="reset"].__active.__hover,
+input[type="button"].__active.__hover,
+input[type="submit"].__active.__hover {
+    padding-block-start: 0px;
+    padding-inline-end: 7px;
+    padding-block-end: 0px;
+    padding-inline-start: 9px;
+    border-style: inset;
+    background-color: ButtonFace;
+}
+ 
+button.__active.__hover,
+input[type="reset"].__active.__hover,
+input[type="button"].__active.__hover,
+input[type="submit"].__active.__hover {
+    color: ButtonText;
+}
+ 
+button:disabled.__active, button:disabled,
+input[type="color"]:disabled.__active,
+input[type="color"]:disabled,
+input[type="reset"]:disabled.__active,
+input[type="reset"]:disabled,
+input[type="button"]:disabled.__active,
+input[type="button"]:disabled,
+select:disabled > button,
+select:disabled > button,
+input[type="submit"]:disabled.__active,
+input[type="submit"]:disabled {
+    /* The sum of border and padding on block-start and block-end
+        must be the same here and for text inputs */
+    padding-block-start: 0px;
+    padding-inline-end: 8px;
+    padding-block-end: 0px;
+    padding-inline-start: 8px;
+    border: 2px outset ThreeDLightShadow;
+    cursor: inherit;
+}
+ 
+button:disabled.__active, button:disabled,
+input[type="reset"]:disabled.__active,
+input[type="reset"]:disabled,
+input[type="button"]:disabled.__active,
+input[type="button"]:disabled,
+select:disabled > button,
+select:disabled > button,
+input[type="submit"]:disabled.__active,
+input[type="submit"]:disabled {
+    color: GrayText;
+}
+ 
+input[type="number"] > div > div > div.__hover {
+    /* give some indication of hover state for the up/down buttons */
+    background-color: lightblue;
+}
+ 

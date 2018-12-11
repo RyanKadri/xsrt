@@ -1,7 +1,7 @@
 import { injectable } from "inversify";
-import { RecordingDomManager } from "../../traverse/traverse-dom";
-import { RecordedMutation, AttributeMutation, ChangeTextMutation, ChangeChildrenMutation } from "./mutation-recorder";
 import { shouldTraverseNode } from "../../filter/filter-dom";
+import { RecordingDomManager } from "../../traverse/traverse-dom";
+import { AttributeMutation, ChangeChildrenMutation, ChangeTextMutation, RecordedMutation } from "./mutation-recorder";
 
 @injectable()
 export class MutationTransformer {
@@ -30,10 +30,11 @@ export class MutationTransformer {
     }
 
     private attributeMutation(mutation: MutationRecord, target: number): AttributeMutation {
+        const name = mutation.attributeName!
         return {
             type: 'attribute',
             target,
-            name: mutation.attributeName!,
+            name,
             val: (mutation.target as HTMLElement).getAttribute(name)!
         };
     }
