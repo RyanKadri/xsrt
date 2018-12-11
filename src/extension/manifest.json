@@ -11,7 +11,9 @@
         "storage"
     ],
     "browser_action": {
-        "default_icon": "icon-48.png"
+        "default_icon": "icon.svg",
+        "default_title": "Record",
+        "default_popup": "main.html"
     },
     "background": {
         "scripts": ["./background.bundle.js"]

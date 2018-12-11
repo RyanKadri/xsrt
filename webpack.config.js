@@ -106,13 +106,17 @@ module.exports = [
     }),
     merge(common('dist/extension'), {
         name: 'compile-extension',
+        resolve: {
+            extensions: ['.tsx', '.html'],
+        },
         entry: {
             ['bootstrap']: './src/extension/bootstrap/extension-bootstrap.ts',
             ['background']: './src/extension/background/background.ts',
-            ['content']: './src/extension/content/extension-content.ts'
+            ['content']: './src/extension/content/extension-content.ts',
+            ['popup']: './src/extension/popup/index.tsx'
         },
         plugins: [
-            new CopyWebpackPlugin([{ from: "./src/extension/*.{json,png}", to: './', flatten: true } ])
+            new CopyWebpackPlugin([{ from: "./src/extension/**/*.{json,png,html,svg}", to: './', flatten: true } ])
         ]
     })
 ];

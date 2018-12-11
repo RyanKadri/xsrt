@@ -7,7 +7,3 @@ export function fetchConfig() {
         });
     })
 }
-
-export interface ExtensionBackgroundRequest {
-    request: 'config'
-}

@@ -1,26 +1,28 @@
-import { postToSite } from "./site-channel";
 import { ScraperConfig } from "../../scraper/scraper-config,";
+import { postToSite } from "./site-channel";
 
 export function listenForCommands() {
     chrome.runtime.onMessage.addListener((message: CommandMessage, _, sendResponse) => {
         if(message.command === 'startRecording' || message.command === 'stopRecording') {
             postToSite(message)
                 .then(resp => sendResponse(resp));
-        } else {
-            throw new Error(`Unknown command: ${ (message as any).command }`)
         }
     });
 }
 
-export type CommandMessage = StartRecording | StopRecording;
+export type CommandMessage = StartRecording | StopRecording | RecordingInfo;
 
 export class StartRecording {
-    command: 'startRecording' = 'startRecording';
+    readonly command = 'startRecording';
     constructor(
         public config: ScraperConfig
     ){}
 }
 
 export class StopRecording {
-    command: 'stopRecording' = 'stopRecording';
+    readonly command = 'stopRecording';
+}
+
+export class RecordingInfo {
+    readonly command = 'recordingInfo';
 }

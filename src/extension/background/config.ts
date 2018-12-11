@@ -1,16 +1,42 @@
 import { ExtensionConfig } from "../config/extension-config";
-import { ExtensionBackgroundRequest } from "../content/config";
+import { RecordingStatus } from "../popup/popup-root";
 
 export function loadConfig(): ExtensionConfig {
     return { shouldInject: true, backendUrl: 'http://localhost:3001', debugMode: true };
 }
 
-export function serveConfig(config: ExtensionConfig) {
+let status: RecordingStatus | undefined;
+
+export function listenCommands(config: ExtensionConfig) {
     chrome.runtime.onMessage.addListener((e: ExtensionBackgroundRequest, _, sendResponse) => {
         switch(e.request) {
           case 'config':
-          default:
             return sendResponse(config)
+          case 'fetchStatus':
+            return sendResponse(status);
+          case 'saveStatus':
+            status = e.status;
+            return sendResponse(true);
+          default:
         }
     })
 }
+
+export type ExtensionBackgroundRequest = ConfigRequest | FetchStatusRequest | SaveStatusRequest
+
+export class FetchStatusRequest {
+    readonly request = 'fetchStatus';
+}
+
+export class SaveStatusRequest {
+    readonly request = 'saveStatus';
+
+    constructor(
+        public status?: RecordingStatus
+    ) {}
+}
+
+export class ConfigRequest {
+    readonly request = 'config';
+}
+

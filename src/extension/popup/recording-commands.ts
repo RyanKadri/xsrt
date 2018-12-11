@@ -1,7 +1,7 @@
-import { MenuActionCallback } from "./setup-ui";
+import { ExtensionConfig } from "../config/extension-config";
 import { StartRecording, StopRecording } from "../content/commands";
 
-export const startRecording: MenuActionCallback = (_, tab, config) => { 
+export const startRecording: MenuActionCallback = (tab, config) => { 
     const tabId = tab.id;
     if(tabId) {
         const command = new StartRecording(config);
@@ -15,7 +15,7 @@ export const startRecording: MenuActionCallback = (_, tab, config) => {
     }
 }
 
-export const stopRecording: MenuActionCallback = (_, tab) => {
+export const stopRecording: MenuActionCallback = (tab) => {
     const tabId = tab.id;
     if(tabId) {
         const command = new StopRecording();
@@ -28,3 +28,5 @@ export const stopRecording: MenuActionCallback = (_, tab) => {
         return Promise.resolve();
     }
 }
+
+export type MenuActionCallback = (tab: chrome.tabs.Tab, config: ExtensionConfig) => Promise<void>

@@ -4,9 +4,7 @@ import * as ReactDOM from "react-dom";
 import './main.css';
 import { AppRoot } from "./components/app-root/app-root";
 
-(async function(){
-    ReactDOM.render(
-        <AppRoot />,
-        document.getElementById('app-root')
-    );
-})();
+ReactDOM.render(
+    <AppRoot />,
+    document.getElementById('app-root')
+);

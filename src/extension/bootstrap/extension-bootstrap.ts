@@ -1,7 +1,7 @@
-import { ScraperConfig, ScraperConfigToken } from "../../scraper/scraper-config,";
 import { RecorderContainer } from "../../scraper/inversify.recorder";
-import { Scraper } from "../../scraper/scrape";
 import { postToBackend } from "../../scraper/output/output-manager";
+import { Scraper } from "../../scraper/scrape";
+import { ScraperConfig, ScraperConfigToken } from "../../scraper/scraper-config,";
 import { CommandMessage } from "../content/commands";
 import { ExtensionMessage, ExtensionMessageResponse } from "../content/site-channel-types";
 
