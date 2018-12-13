@@ -6,6 +6,7 @@ import { TimeManager } from "../../utils/time-manager";
 import { nodeIsHidden } from "../../utils/utils";
 import { RecordedFocusEvent } from "./focus-recorder";
 import { RecordedInputChangeEvent } from "./input-event-recorder";
+import { RecordedKeyEvent } from "./key-recorder";
 import { RecordedMouseEvent } from "./mouse-recorder";
 import { RecordedResize } from "./resize-recorder";
 import { RecordedScrollEvent } from "./scroll-recorder";
@@ -68,11 +69,11 @@ export class CompleteInputRecorder {
 
             const res = recorder.handle(event, context);
             if(res) {
-                this.events[group].push({
-                    ...res,
+                this.events[res.type || group].push({
                     type: event.type,
                     target: context.target ? context.target.id : undefined,
-                    timestamp: context.time
+                    timestamp: context.time,
+                    ...res,
                 } as RecordedUserInput)
             }
         }
@@ -87,7 +88,7 @@ export class CompleteInputRecorder {
 }
 
 export type RecordedUserInput = RecordedMouseEvent | RecordedScrollEvent | RecordedInputChangeEvent
-                                 | RecordedFocusEvent | RecordedResize
+                                 | RecordedFocusEvent | RecordedResize | RecordedKeyEvent
 
 export interface BaseUserInput {
     timestamp: number;

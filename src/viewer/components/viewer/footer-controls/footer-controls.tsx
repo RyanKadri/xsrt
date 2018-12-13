@@ -1,12 +1,13 @@
-import * as React from "react";
-import { formatDuration } from "../../utils/format-utils";
-import { ProgressBar } from "./progress-bar/progress-bar";
-import { IconButton, createStyles, Theme, WithStyles, withStyles, Typography } from "@material-ui/core";
+import { Badge, createStyles, IconButton, Theme, Typography, WithStyles, withStyles } from "@material-ui/core";
+import { SvgIconProps } from "@material-ui/core/SvgIcon";
+import ChatBubbleSharp from '@material-ui/icons/ChatBubbleSharp';
+import FastRewindSharp from '@material-ui/icons/FastRewindSharp';
 import PauseSharp from '@material-ui/icons/PauseSharp';
 import PlaySharp from '@material-ui/icons/PlayArrowSharp';
-import FastRewindSharp from '@material-ui/icons/FastRewindSharp';
-import { SvgIconProps } from "@material-ui/core/SvgIcon";
+import * as React from "react";
 import { pure } from "../../common/pure-wrapper";
+import { formatDuration } from "../../utils/format-utils";
+import { ProgressBar } from "./progress-bar/progress-bar";
 
 const styles = (theme: Theme) => createStyles({
     controls: {
@@ -19,15 +20,23 @@ const styles = (theme: Theme) => createStyles({
     },
     icon: {
         color: theme.palette.primary.contrastText
+    },
+    annotationButton: {
+        marginLeft: 'auto'
     }
 })
 
 const _RecordingControls = (props: ControlsInput) => {
-    const { classes } = props;
+    const { classes, onToggleAnnotations, numAnnotations } = props;
     return <footer className={ classes.controls }>
         <ProgressBar duration={props.duration} time={props.time} seek={props.seek} />
         { PlayOrPause(props) }
         <Typography variant="body1" color="inherit">{ formatDuration(props.time) } / { formatDuration(props.duration) }</Typography>
+        <IconButton onClick={ onToggleAnnotations } color="inherit" className={ classes.annotationButton }>
+            <Badge badgeContent={ numAnnotations } color="primary" invisible={ numAnnotations === 0 } >
+                <ChatBubbleSharp />
+            </Badge>
+        </IconButton>
     </footer>
 }
 
@@ -44,7 +53,7 @@ const PlayOrPause = ({ isPlaying, onPlay, onPause, seek, time, duration }: Contr
 
 const Icon = (onClick: () => void, Icon: React.ComponentType<SvgIconProps>) => (
     <IconButton onClick={ onClick } color="inherit">
-        <Icon></Icon>
+        <Icon />
     </IconButton>
 )
 
@@ -53,8 +62,10 @@ export const RecordingControls = withStyles(styles)(pure(_RecordingControls));
 export interface ControlsInput extends WithStyles<typeof styles> {
     onPlay: () => void;
     onPause: () => void;
+    onToggleAnnotations: () => void;
     seek: (pos: number) => void;
     isPlaying: boolean;
     duration: number;
     time: number;
+    numAnnotations: number;
 }

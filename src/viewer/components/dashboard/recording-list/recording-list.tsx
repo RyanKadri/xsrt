@@ -1,7 +1,7 @@
+import { createStyles, Table, TableBody, TableCell, TableHead, TableRow, Theme, Typography, withStyles, WithStyles } from "@material-ui/core";
 import React from "react";
 import { Link } from "react-router-dom";
 import { StoredMetadata } from "../../../services/recording-service";
-import { Typography, Table, TableHead, TableRow, TableCell, TableBody, withStyles, Theme, createStyles, WithStyles } from "@material-ui/core";
 import { formatDate, formatDuration } from "../../utils/format-utils";
 
 const styles = (_: Theme) => createStyles({
@@ -13,7 +13,7 @@ const styles = (_: Theme) => createStyles({
 })
 
 const _RecordingList = (props: RecordingListProps) => {
-    const { recordings } = props;
+    const recordings = props.recordings.concat().sort((a, b) => b.metadata.startTime - a.metadata.startTime );
     return recordings.length === 0 
         ?   <Typography variant="body1">No recordings yet...</Typography>
         :   <Table>

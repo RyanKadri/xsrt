@@ -2,6 +2,7 @@ import uaStyles from '!raw-loader!./ua-styles.css';
 import { DedupedData, OptimizedElement, OptimizedHtmlElementInfo, OptimizedStyleElement, OptimizedStyleRule, OptimizedTextElementInfo, ScrapedAttribute } from "../types/types";
 import { toBlobUrl } from "../utils/utils";
 
+// TODO - Maybe in the process of refactoring, this can track a virtual-dom type thing (for testability and separation of concerns)
 export const IDomManager = Symbol('DomManager');
 export class DomManager {
 
@@ -81,6 +82,11 @@ export class DomManager {
         return el && this.document.contains(el);
     }
 
+    queryElement<T>(id: number, cb: (node: Node) => T) {
+        const node = this.fetchNode(id);
+        return cb(node);
+    }
+
     private _serializeToElement(parent: Node, node: OptimizedElement, currNS = '', before: number | null = null) {
         const created = node.type === 'element'
             ? this.createElement(node, currNS)
@@ -98,7 +104,12 @@ export class DomManager {
     }
 
     private fetchNode(id: number) {
-        return this.nodeMapping.get(id)!
+        const node = this.nodeMapping.get(id);
+        if(node) {
+            return node;
+        } else {
+            throw new Error(`Node ${id} does not exist`)
+        }
     }
     
     private createElement(node: OptimizedHtmlElementInfo, currNS = '') {

@@ -1,19 +1,19 @@
-import React, { Fragment } from "react";
-import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
-import { OverallDashboardView } from "../dashboard/overall-dashboard";
-import { ViewerComponent } from "../viewer/viewer";
-import CssBaseline from '@material-ui/core/CssBaseline'
-import { MuiThemeProvider, createStyles, withStyles } from "@material-ui/core";
-import { appTheme } from "../../../viewer/theme/theme";
-import { TopNav } from "./top-nav/top-nav";
-import { Sidebar } from './side-bar/side-bar';
 import { SiteTarget } from "@common/db/targets";
+import { createStyles, MuiThemeProvider, withStyles } from "@material-ui/core";
+import CssBaseline from '@material-ui/core/CssBaseline';
+import React, { Fragment } from "react";
+import { hot } from 'react-hot-loader';
+import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
+import { TargetApiService } from "../../../viewer/services/sites-api-service";
+import { appTheme } from "../../../viewer/theme/theme";
+import { withDependencies } from "../../services/with-dependencies";
+import { OverallDashboardView } from "../dashboard/overall-dashboard";
+import { SiteDashboardView } from "../dashboard/site-dashboard";
 import { NewSiteTarget } from "../manage-sites/add-site-form";
 import { ManageSitesView } from "../manage-sites/manage-sites-view";
-import { TargetApiService } from "../../../viewer/services/sites-api-service";
-import { hot } from 'react-hot-loader';
-import { SiteDashboardView } from "../dashboard/site-dashboard";
-import { withDependencies } from "../../services/with-dependencies";
+import { RecordingView } from "../viewer/recording-view";
+import { Sidebar } from './side-bar/side-bar';
+import { TopNav } from "./top-nav/top-nav";
 
 const styles = createStyles({
     root: {
@@ -42,7 +42,7 @@ class _AppRoot extends React.Component<AppProps, AppState> {
                         onClose={ this.toggleSidebar(false) }/>
                     <Switch>
                         <Route path="/recordings/:recordingId" render={ (match) =>
-                            <ViewerComponent routeParams={match} />
+                            <RecordingView routeParams={match} />
                          } />
                         <Route path="/dashboard/:siteId" render={ (match) => 
                             <SiteDashboardView 

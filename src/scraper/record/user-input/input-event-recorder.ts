@@ -8,9 +8,18 @@ export class HtmlInputRecorder implements UserInputRecorder<Event, RecordedInput
 
     handle(evt: Event, { target }: RecordedEventContext) {
         if(!target) throw new Error('Could not replay input to undefined target');
+        const value = this.extractValue(evt.target as HTMLInputElement);
         return {
             target: target.id,
-            value: (evt.target as HTMLInputElement).value,
+            value
+        }
+    }
+
+    private extractValue(el: HTMLInputElement) {
+        if(el.type === 'checkbox') {
+            return el.checked;
+        } else {
+            return el.value;
         }
     }
 }
@@ -18,5 +27,5 @@ export class HtmlInputRecorder implements UserInputRecorder<Event, RecordedInput
 export interface RecordedInputChangeEvent extends BaseUserInput {
     type: 'input' | 'change',
     target: number;
-    value: string;   
+    value: string | boolean;
 }

@@ -1,12 +1,15 @@
 import { Container } from "inversify";
-import { IPlaybackHandler } from '../scraper/playback/user-input/user-input-manager';
+import { DomManager } from '../scraper/playback/dom-manager';
+import { FocusPlayer } from '../scraper/playback/user-input/focus-player';
+import { InputChangePlayer } from '../scraper/playback/user-input/input-change-player';
+import { MouseInterpolationHelper } from '../scraper/playback/user-input/interpolation/mouse-interpolator';
+import { IInterpolationHelper } from '../scraper/playback/user-input/interpolation/user-input-interpolator';
 import { MouseEventPlayer } from '../scraper/playback/user-input/mouse-input-player';
 import { ScrollEventPlayer } from '../scraper/playback/user-input/scroll-input-player';
-import { InputChangePlayer } from '../scraper/playback/user-input/input-change-player';
-import { FocusPlayer } from '../scraper/playback/user-input/focus-player';
-import { IInterpolationHelper } from '../scraper/playback/user-input/interpolation/user-input-interpolator';
-import { MouseInterpolationHelper } from '../scraper/playback/user-input/interpolation/mouse-interpolator';
-import { DomManager } from '../scraper/playback/dom-manager';
+import { IPlaybackHandler } from '../scraper/playback/user-input/user-input-manager';
+import { IInputAnnotator } from "./services/annotation/annotation-service";
+import { InputEventAnnotator } from "./services/annotation/input-annotator";
+import { ResizeAnnotator } from "./services/annotation/resize-annotator";
 
 const PlayerContainer = new Container({ autoBindInjectable: true, defaultScope: "Singleton" });
 
@@ -20,4 +23,8 @@ PlayerContainer.bind(IPlaybackHandler).to(FocusPlayer);
 
 PlayerContainer.bind(IInterpolationHelper).to(MouseInterpolationHelper);
 
+PlayerContainer.bind(IInputAnnotator).to(ResizeAnnotator);
+PlayerContainer.bind(IInputAnnotator).to(InputEventAnnotator);
+
 export { PlayerContainer };
+

@@ -2,6 +2,7 @@ import { injectable } from "inversify";
 import { ScrapedElement } from "../../types/types";
 import { BaseUserInput, RecordedEventContext, UserInputRecorder } from "./input-recorder";
 
+// TODO - Move debounce to more natural spot?
 const debounceThresholdMs = 100;
 
 @injectable()
@@ -53,7 +54,7 @@ export interface RecordedMouseButton extends BaseMouseEvent {
 }
 
 export interface BaseMouseEvent extends BaseUserInput {
-    hovered: number;
+    hovered?: number;
     x: number;
     y: number;
 }

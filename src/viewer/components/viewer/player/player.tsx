@@ -2,10 +2,10 @@ import { createStyles, Theme, withStyles, WithStyles } from "@material-ui/core";
 import { PlaybackManager } from "@scraper/playback/playback-manager";
 import c from 'classnames';
 import React from "react";
-import { between, pipe, pluck } from "../../../../common/utils/functional-utils";
 import { RecordedResize } from "../../../../scraper/record/user-input/resize-recorder";
 import { DedupedData } from "../../../../scraper/types/types";
 import { withDependencies } from "../../../services/with-dependencies";
+import { eventsBetween, UserInputGroup } from "../../utils/recording-data-utils";
 
 const styles = (theme: Theme) => createStyles({
     horizExpand: {
@@ -67,12 +67,16 @@ class _RecordingPlayer extends React.Component<PlayerInput, PlayerState> {
             this.initializeIframe();
         }
 
-        this.props.playbackManager.play(this.data, prevProps.currentTime, this.props.currentTime);
+        const { inputs, changes } = eventsBetween(this.props.data, prevProps.currentTime, this.props.currentTime);
+        this.props.playbackManager.play(changes, inputs);
 
-        const timeBetween = pipe(pluck('timestamp'), between(prevProps.currentTime, this.props.currentTime))
-        const recentResizes = this.data.inputs.resize.filter(timeBetween);
-        if(recentResizes.length > 0) {
-            const lastResize = recentResizes[recentResizes.length - 1] as RecordedResize;
+        this.checkPlayerResize(inputs);
+    }
+
+    private checkPlayerResize(inputGroups: UserInputGroup[]) {
+        const resizeGroup = inputGroups.find(group => group.channel === 'resize');
+        if(resizeGroup && resizeGroup.updates.length > 0) {
+            const lastResize = resizeGroup.updates[resizeGroup.updates.length - 1] as RecordedResize;
             this.setState({
                 height: lastResize.height,
                 width: lastResize.width
