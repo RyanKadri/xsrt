@@ -1,4 +1,4 @@
-import { LocationMetadata } from "@scraper/traverse/extract-metadata";
+import { LocationMetadata } from "../../../scraper/types/types";
 
 export const formatDuration = (timeInMillis: number) => {
     const seconds = Math.round(timeInMillis / 1000);

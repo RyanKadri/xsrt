@@ -1,9 +1,9 @@
 import { between, pipe, pluck } from "../../../common/utils/functional-utils";
 import { RecordedMutationGroup } from "../../../scraper/record/dom-changes/mutation-recorder";
 import { RecordedUserInput } from "../../../scraper/record/user-input/input-recorder";
-import { DedupedData } from "../../../scraper/types/types";
+import { RecordedInputChannels } from "../../../scraper/types/types";
 
-export function eventsBetween({ changes, inputs }: DedupedData, fromTime: number, toTime: number): { changes: RecordedMutationGroup[], inputs: UserInputGroup[]} {
+export function eventsBetween(changes: RecordedMutationGroup[], inputs: RecordedInputChannels, fromTime: number, toTime: number): { changes: RecordedMutationGroup[], inputs: UserInputGroup[]} {
     const timeInRange = pipe(pluck('timestamp'), between(fromTime, toTime)); 
         
     return {

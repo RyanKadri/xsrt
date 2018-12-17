@@ -1,7 +1,7 @@
-import { Router, Request, Response } from 'express';
-import { RouteHandler } from '../../common/server/express-server';
+import { Request, Response, Router } from 'express';
 import { injectable } from 'inversify';
-import { Target, SiteTarget } from '../../common/db/targets';
+import { SiteTarget, Target } from '../../common/db/targets';
+import { RouteHandler } from '../../common/server/express-server';
 
 @injectable()
 export class TargetRouteHandler implements RouteHandler {
@@ -10,9 +10,7 @@ export class TargetRouteHandler implements RouteHandler {
 
     readonly base = "/api";
 
-    buildRouter() {
-        const router = Router();
-
+    decorateRouter(router: Router) {
         router.route('/targets')
             .get(this.fetchTargets)
             .post(this.createTarget)
@@ -20,8 +18,6 @@ export class TargetRouteHandler implements RouteHandler {
         router.route('/targets/:targetId')
             .get(this.fetchSingleTarget)
             .delete(this.deleteSingleTarget)
-
-        return router;
     }
 
     private fetchTargets = (_: Request, resp: Response) => {

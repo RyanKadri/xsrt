@@ -1,7 +1,8 @@
-import { DedupedData, ScrapedData, OptimizedElement, ScrapedElement } from "../types/types";
-import { optimizeNode } from "./optimize-dom";
 import { injectable } from "inversify";
+import { Without } from "../../common/utils/type-utils";
 import { AssetResolver } from "../assets/asset-resolver";
+import { OptimizedElement, OptimizedHtmlElementInfo, ScrapedElement, SnapshotChunk, UnoptimizedSnapshotChunk } from "../types/types";
+import { optimizeNode } from "./optimize-dom";
 
 @injectable()
 export class RecordingOptimizer {
@@ -10,15 +11,19 @@ export class RecordingOptimizer {
         private resolver: AssetResolver
     ) {}
 
-    async optimize(data: ScrapedData): Promise<DedupedData> {
-        const { context, root } = this.optimizeSubtree(data.root, { assets: [] });
-        const assets = await this.resolver.resolveAssets(context.assets);
+    async optimize(data: UnoptimizedSnapshotChunk): Promise<Without<SnapshotChunk, "_id">> {
+        if(data.type === 'snapshot') {
+            const { context, root } = this.optimizeSubtree(data.snapshot.root, { assets: [] });
+            const assets = await this.resolver.resolveAssets(context.assets);
+            return { 
+                ...data,
+                snapshot: { documentMetadata: data.snapshot.documentMetadata, root: await root as OptimizedHtmlElementInfo},
+                assets
+            };
+        } else {
+            throw new Error('Not sure yet how to optimize diff chunks')
+        }
     
-        return { 
-            ...data,
-            root: await root,
-            assets
-        } as DedupedData;
     }
     
     private optimizeSubtree = (root: ScrapedElement, inContext: OptimizationContext): OptimizationResult => {

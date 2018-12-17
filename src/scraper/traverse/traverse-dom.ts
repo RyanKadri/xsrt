@@ -1,8 +1,8 @@
-import { ScrapedHtmlElement, ScrapedTextElement, ScrapedElement } from "../types/types";
-import { isElementNode, isTextNode } from "../utils/utils";
+import { injectable } from "inversify";
 import { shouldTraverseNode } from "../filter/filter-dom";
 import { transformElement, transformText } from "../transform/transform-dom";
-import { injectable } from "inversify";
+import { ScrapedElement, ScrapedHtmlElement, ScrapedTextElement } from "../types/types";
+import { isElementNode, isTextNode } from "../utils/utils";
 
 @injectable()
 export class RecordingDomManager {
@@ -12,7 +12,12 @@ export class RecordingDomManager {
     private nodeMapping = new Map<Node, ScrapedElement>();
     private idMapping = new Map<number, ScrapedElement>();
 
-    traverseNode = (node: Node): ScrapedElement | undefined => {
+    traverseNode: {
+        (node: HTMLElement): ScrapedHtmlElement;
+        (node: Element): ScrapedTextElement;
+        (node: Comment): undefined
+        (node: Node): ScrapedElement | undefined
+    } = (node: any): any => {
         const result = isElementNode(node) ? this.extractElement(node) 
             : isTextNode(node) ? this.extractText(node)
             : undefined;
@@ -23,10 +28,11 @@ export class RecordingDomManager {
         return result;
     }
 
-    fetchManagedNode = (node: Node): ScrapedElement => {
+    //TODO - Overload dis
+    fetchManagedNode = (node: Node, strict = true): ScrapedElement => {
         const res = this.nodeMapping.get(node);
-        if(!res) throw new Error('Could not find managed node for: ' + node.textContent); //TODO - Make this less bad
-        return res;
+        if(!res && strict) throw new Error('Could not find managed node for: ' + node.textContent); //TODO - Make this less bad
+        return res!;
     }
 
     fetchScrapedNodeById = (id: number): ScrapedElement | undefined => {

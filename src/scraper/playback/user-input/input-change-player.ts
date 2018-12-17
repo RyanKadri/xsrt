@@ -1,7 +1,7 @@
-import { UserInputPlaybackHelper } from "./user-input-manager";
+import { injectable } from "inversify";
 import { RecordedInputChangeEvent } from "../../record/user-input/input-event-recorder";
 import { DomManager } from "../dom-manager";
-import { injectable } from "inversify";
+import { UserInputPlaybackHelper } from "./user-input-manager";
 
 @injectable()
 export class InputChangePlayer implements UserInputPlaybackHelper<RecordedInputChangeEvent> {
@@ -15,7 +15,20 @@ export class InputChangePlayer implements UserInputPlaybackHelper<RecordedInputC
     simulateInput(updates: RecordedInputChangeEvent[]) {
         const lastUpdate = updates[updates.length - 1];
         this.domManager.mutateElement(lastUpdate.target, (node) => {
-            (node as HTMLInputElement).value = lastUpdate.value;
+            if(!this.isInput(node)) {
+                throw new Error('Expected an input element here');
+            }
+            if(node.type !== 'checkbox' && typeof lastUpdate.value === 'string') {
+                node.value = lastUpdate.value;
+            } else if(node.type === 'checkbox' && typeof lastUpdate.value === 'boolean') {
+                node.checked = lastUpdate.value;
+            } else {
+                throw new Error('Something went wrong with the value types here...')
+            }
         })
+    }
+
+    private isInput(el: HTMLElement): el is HTMLInputElement {
+        return el.tagName === 'INPUT';
     }
 }

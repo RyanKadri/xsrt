@@ -4,7 +4,6 @@ import { injectable } from "inversify";
 export class TimeManager {
 
     private startTime?: number;
-    private stopTime?: number;
 
     start() {
         this.startTime = Date.now();
@@ -16,7 +15,6 @@ export class TimeManager {
     }
 
     stop() {
-        this.stopTime = Date.now();
-        return this.stopTime;
+        return this.currentTime();
     }
 }

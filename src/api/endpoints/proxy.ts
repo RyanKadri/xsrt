@@ -1,14 +1,14 @@
-import { injectable } from "inversify";
-import { RouteHandler } from "../../common/server/express-server";
-import { Router, Request, Response } from "express";
-import { Asset, ProxiedAsset } from "../../common/db/asset";
 import axios from 'axios';
-import { mkdir, createWriteStream, WriteStream, rename } from "fs";
-import { promisify } from "util";
-import { ApiServerConfig } from "../api-server-conf";
+import { createHash } from 'crypto';
+import { Request, Response, Router } from "express";
+import { createWriteStream, mkdir, rename, WriteStream } from "fs";
+import { injectable } from "inversify";
 import { join } from "path";
 import { URL } from 'url';
-import { createHash } from 'crypto';
+import { promisify } from "util";
+import { Asset, ProxiedAsset } from "../../common/db/asset";
+import { RouteHandler } from "../../common/server/express-server";
+import { ApiServerConfig } from "../api-server-conf";
 
 const mkdirFs = promisify(mkdir)
 const renameFs = promisify(rename)
@@ -22,16 +22,12 @@ export class AssetProxyHandler implements RouteHandler {
 
     readonly base = "/api";
 
-    buildRouter() {
-        const router = Router();
-
+    decorateRouter(router: Router) {
         router.route('/proxy')
             .post(this.proxyAsset)
 
         router.route('/proxy/:assetId')
             .get(this.fetchAsset)
-
-        return router;
     }
 
     private fetchAsset = async (req: Request, resp: Response) => {   

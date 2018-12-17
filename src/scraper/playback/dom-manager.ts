@@ -1,5 +1,5 @@
 import uaStyles from '!raw-loader!./ua-styles.css';
-import { DedupedData, OptimizedElement, OptimizedHtmlElementInfo, OptimizedStyleElement, OptimizedStyleRule, OptimizedTextElementInfo, ScrapedAttribute } from "../types/types";
+import { OptimizedElement, OptimizedHtmlElementInfo, OptimizedStyleElement, OptimizedStyleRule, OptimizedTextElementInfo, ScrapedAttribute, SnapshotChunk } from "../types/types";
 import { toBlobUrl } from "../utils/utils";
 
 // TODO - Maybe in the process of refactoring, this can track a virtual-dom type thing (for testability and separation of concerns)
@@ -23,14 +23,14 @@ export class DomManager {
         }
     }
 
-    async createInitialDocument(data: DedupedData): Promise<void> {
+    async createInitialDocument(data: SnapshotChunk): Promise<void> {
         this.assets = await this.adjustReferences(data.assets);
         
-        const docType = `<!DOCTYPE ${ data.metadata.docType }>`
+        const docType = `<!DOCTYPE ${ data.snapshot.documentMetadata.docType }>`
         this.document.write(docType + '\n<html></html>');
         
         this.document.removeChild(this.document.documentElement!);
-        const head = data.root.children.find(child => child.type === 'element' && child.tag === 'head');
+        const head = data.snapshot.root.children.find(child => child.type === 'element' && child.tag === 'head');
         if(head) {
             (head as OptimizedHtmlElementInfo).children.unshift({ id: -1, type: 'element', tag: 'style', children: [{
                 type: 'text',
@@ -38,7 +38,7 @@ export class DomManager {
                 id: -1
             }]})
         }
-        this._serializeToElement(this.document, data.root);
+        this._serializeToElement(this.document, data.snapshot.root);
     }
     
     serializeToElement(parent: number, node: OptimizedElement, before: number | null = null) {

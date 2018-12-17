@@ -2,8 +2,10 @@ import { createStyles, Theme, withStyles, WithStyles } from "@material-ui/core";
 import { PlaybackManager } from "@scraper/playback/playback-manager";
 import c from 'classnames';
 import React from "react";
+import { reverseFind } from "../../../../common/utils/functional-utils";
+import { RecordedMutationGroup } from "../../../../scraper/record/dom-changes/mutation-recorder";
 import { RecordedResize } from "../../../../scraper/record/user-input/resize-recorder";
-import { DedupedData } from "../../../../scraper/types/types";
+import { RecordedInputChannels, RecordingMetadata, SnapshotChunk } from "../../../../scraper/types/types";
 import { withDependencies } from "../../../services/with-dependencies";
 import { eventsBetween, UserInputGroup } from "../../utils/recording-data-utils";
 
@@ -39,14 +41,13 @@ class _RecordingPlayer extends React.Component<PlayerInput, PlayerState> {
 
     private iframe: React.RefObject<HTMLIFrameElement>;
     private viewPort: React.RefObject<HTMLDivElement>;
-    private data: DedupedData;
 
     constructor(props: PlayerInput){
-        super(props) 
-        this.state = { scale: 0, height: props.data.metadata.viewportHeight, width: props.data.metadata.viewportWidth }
+        super(props);
+        const { viewportHeight, viewportWidth } = props.snapshots[0].snapshot.documentMetadata
+        this.state = { scale: 0, height: viewportHeight, width: viewportWidth }
         this.iframe = React.createRef();
         this.viewPort = React.createRef();
-        this.data = this.props.data;
     }
 
     render() {
@@ -67,7 +68,7 @@ class _RecordingPlayer extends React.Component<PlayerInput, PlayerState> {
             this.initializeIframe();
         }
 
-        const { inputs, changes } = eventsBetween(this.props.data, prevProps.currentTime, this.props.currentTime);
+        const { inputs, changes } = eventsBetween(this.props.changes, this.props.inputs, prevProps.currentTime, this.props.currentTime);
         this.props.playbackManager.play(changes, inputs);
 
         this.checkPlayerResize(inputs);
@@ -86,8 +87,10 @@ class _RecordingPlayer extends React.Component<PlayerInput, PlayerState> {
 
     private initializeIframe() {
         const currDocument = this.iframe.current && this.iframe.current.contentDocument
-        if(this.data.root && currDocument) {
-            this.props.playbackManager.initialize(currDocument, this.data)
+        // TODO. Should I think about case where recording is not ready?
+        if(currDocument) {
+            const currSnapshot = reverseFind(this.props.snapshots, snapshot => snapshot.metadata.startTime <= this.props.currentTime);
+            this.props.playbackManager.initialize(currDocument, currSnapshot!);
         }
     }
     
@@ -122,7 +125,10 @@ export const RecordingPlayer = withStyles(styles)(
 );
 
 export interface PlayerInput extends WithStyles<typeof styles> {
-    data: DedupedData;
+    recordingMetadata: RecordingMetadata;
+    snapshots: SnapshotChunk[];
+    changes: RecordedMutationGroup[];
+    inputs: RecordedInputChannels;
     currentTime: number;
     isPlaying: boolean;
     playbackManager: PlaybackManager

@@ -47,26 +47,11 @@ module.exports = [
         },
         module: {
             rules: [
-                {
-                    test: /\.css$/,
-                    use: [
-                        'style-loader',
-                        {
-                            loader: 'css-loader',
-                            options: {
-                                modules: true,
-                                camelCase: true,
-                                localIdentName: '[name]-[local]-[hash:base64:5]'
-                            }
-                        }
-                    ],
-                    exclude: /node_modules/
-                }
             ]
         },
         plugins: [
             new WriteFilePlugin(),
-            new webpack.HotModuleReplacementPlugin(),
+            //new webpack.HotModuleReplacementPlugin(),
         ],
         optimization: {
             splitChunks: {

@@ -1,9 +1,9 @@
-import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core';
+import { CircularProgress, createStyles, Theme, withStyles, WithStyles } from '@material-ui/core';
 import * as React from 'react';
 import { Fragment } from 'react';
-import { RecordedMutation } from '../../../scraper/record/dom-changes/mutation-recorder';
+import { RecordedMutation, RecordedMutationGroup } from '../../../scraper/record/dom-changes/mutation-recorder';
 import { RecordedUserInput } from '../../../scraper/record/user-input/input-recorder';
-import { DedupedData } from '../../../scraper/types/types';
+import { RecordedInputChannels, RecordingMetadata, SnapshotChunk } from '../../../scraper/types/types';
 import { AnnotationService } from '../../services/annotation/annotation-service';
 import { withDependencies } from '../../services/with-dependencies';
 import { eventsBetween } from '../utils/recording-data-utils';
@@ -11,12 +11,13 @@ import { AnnotationSidebar } from './annotation-sidebar/annotation-sidebar';
 import { RecordingControls } from './footer-controls/footer-controls';
 import { RecordingPlayer } from './player/player';
 
-const styles = (_: Theme) => createStyles({
+const styles = (theme: Theme) => createStyles({
     recordingSpace: {
         width: '100%',
         flexGrow: 1,
         display: 'flex',
-        position: 'relative'
+        position: 'relative',
+        backgroundColor: theme.palette.grey[800]
     }
 })
 
@@ -30,6 +31,7 @@ class _RecordingViewer extends React.Component<ViewerProps, ViewerState> {
             showingAnnotations: false,
             annotations: [],
             lastFrameTime: undefined,
+            waitingOnBuffer: false
         }
     }
     
@@ -37,22 +39,31 @@ class _RecordingViewer extends React.Component<ViewerProps, ViewerState> {
         const { classes } = this.props; 
         return <Fragment>
                 <div className={ classes.recordingSpace }>
-                    <RecordingPlayer 
-                        data={ this.props.data } 
-                        currentTime={ this.state.playerTime } 
-                        isPlaying={ this.state.isPlaying} />
-                    <AnnotationSidebar 
-                        expanded={ this.state.showingAnnotations }
-                        annotations={ this.state.annotations } />
+                    {
+                        this.props.snapshots.length === 0
+                            ? <CircularProgress color="secondary" />
+                            : <Fragment>
+                                <RecordingPlayer 
+                                    snapshots={ this.props.snapshots }
+                                    inputs={ this.props.inputs }
+                                    changes={ this.props.changes } 
+                                    currentTime={ this.state.playerTime } 
+                                    isPlaying={ this.state.isPlaying}
+                                    recordingMetadata={ this.props.recordingMetadata }
+                                />
+                                <AnnotationSidebar 
+                                    expanded={ this.state.showingAnnotations }
+                                    annotations={ this.state.annotations } />
+                            </Fragment>
+                    }
                 </div>
-                { this.Controls(this.props.data) }
+                { this.Controls() }
             </Fragment>
     }
 
-    private Controls(data: DedupedData) {
-        //TODO - If I want to support single-frame snapshots, technically the inputs check is not right.
-        return (data.changes.length > 0 || (Object.keys(data.inputs).length > 0))
-            ? <RecordingControls 
+    //TODO - Maybe go back and rethink snapshots (if we want them)
+    private Controls() {
+        return <RecordingControls 
                 duration={ this.duration() }
                 time={ this.state.playerTime }
                 isPlaying={ this.state.isPlaying }
@@ -60,13 +71,11 @@ class _RecordingViewer extends React.Component<ViewerProps, ViewerState> {
                 onPlay={ this.play }
                 onPause={ this.stop }
                 seek={ this.seek }
-                onToggleAnnotations={ this.toggleAnnotations } />
-            : null;
+                onToggleAnnotations={ this.toggleAnnotations } />;
     }
 
     private duration() {
-        if(!this.props.data) return 0;
-        const { stopTime, startTime } = this.props.data.metadata;
+        const { stopTime, startTime } = this.props.recordingMetadata;
         return stopTime ? stopTime - startTime : 0;
     }
 
@@ -87,8 +96,8 @@ class _RecordingViewer extends React.Component<ViewerProps, ViewerState> {
     }
 
     seek = (toTime: number) => {
+        this.updateTime(toTime);
         this.setState({
-            playerTime: toTime,
             annotations: []
         }, () => {
             this.play();
@@ -111,13 +120,13 @@ class _RecordingViewer extends React.Component<ViewerProps, ViewerState> {
             const currentTime = Math.min(this.state.playerTime + timeDiff, duration);
             if(currentTime === duration) {
                 this.stop();
-                this.setState({ playerTime: this.duration() })
+                this.updateTime(this.duration());
             } else {
                 if(this.state.isPlaying) {
-                    const { changes, inputs } = eventsBetween(this.props.data, this.state.playerTime, currentTime);
+                    const { changes, inputs } = eventsBetween(this.props.changes, this.props.inputs, this.state.playerTime, currentTime);
+                    this.updateTime(currentTime)
                     this.setState({ 
                         lastFrameTime: curr,
-                        playerTime: currentTime,
                         annotations: this.props.annotationService.annotateChanges(changes, inputs, this.state.annotations) 
                     });
                     this.nextFrame();
@@ -125,13 +134,39 @@ class _RecordingViewer extends React.Component<ViewerProps, ViewerState> {
             }
         });
     }
+
+    private updateTime(toTime: number) {
+        this.setState({
+            playerTime: toTime,
+        })
+        this.props.onUpdateTime(toTime);
+    }
+
+    componentDidUpdate() {
+        if(this.props.bufferPos <= this.state.playerTime && !this.state.waitingOnBuffer && this.state.isPlaying) {
+            this.stop();
+            this.setState({
+                waitingOnBuffer: true
+            });
+        } else if(this.props.bufferPos > this.state.playerTime && this.state.waitingOnBuffer) {
+            this.play();
+            this.setState({
+                waitingOnBuffer: false
+            })
+        }
+    }
 }
 
 export const RecordingViewer = withStyles(styles)(withDependencies(_RecordingViewer, { annotationService: AnnotationService }));
 
 export interface ViewerProps extends WithStyles<typeof styles> {
-    data: DedupedData;
+    snapshots: SnapshotChunk[];
+    inputs: RecordedInputChannels;
+    changes: RecordedMutationGroup[];
+    recordingMetadata: RecordingMetadata;
+    bufferPos: number;
     annotationService: AnnotationService;
+    onUpdateTime: (newTime: number) => void
 }
 
 export interface ViewerState {
@@ -140,6 +175,7 @@ export interface ViewerState {
     isPlaying: boolean;
     showingAnnotations: boolean;
     annotations: RecordingAnnotation[];
+    waitingOnBuffer: boolean;
 }
 
 export interface RecordingAnnotation {

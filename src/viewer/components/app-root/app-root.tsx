@@ -2,7 +2,6 @@ import { SiteTarget } from "@common/db/targets";
 import { createStyles, MuiThemeProvider, withStyles } from "@material-ui/core";
 import CssBaseline from '@material-ui/core/CssBaseline';
 import React, { Fragment } from "react";
-import { hot } from 'react-hot-loader';
 import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
 import { TargetApiService } from "../../../viewer/services/sites-api-service";
 import { appTheme } from "../../../viewer/theme/theme";
@@ -93,11 +92,11 @@ class _AppRoot extends React.Component<AppProps, AppState> {
     }
 }
 
-export const AppRoot = hot(module)(
+export const AppRoot = /* hot(module)( */
     withStyles(styles)(
         withDependencies(_AppRoot, { targetApi: TargetApiService })
-    )
-);
+    ) 
+// );
 
 export interface AppProps {
     targetApi: TargetApiService,

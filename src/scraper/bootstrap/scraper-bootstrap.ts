@@ -1,10 +1,10 @@
-import containerHTML from './widget.html';
 import containerCSS from '!raw-loader!./container.css';
 import { formatDuration } from "../../viewer/components/utils/format-utils";
-import { outputStandaloneSnapshot, outputDataSnapshot, postToBackend } from "../output/output-manager";
 import { RecorderContainer } from '../inversify.recorder';
+import { outputDataSnapshot, outputStandaloneSnapshot, postToBackend } from "../output/output-manager";
 import { Scraper } from '../scrape';
 import { ScraperConfig, ScraperConfigToken } from '../scraper-config,';
+import containerHTML from './widget.html';
 
 (function bootstrapScraper() {
 
@@ -46,8 +46,13 @@ import { ScraperConfig, ScraperConfigToken } from '../scraper-config,';
                 toggleDialogMode();
                 timerId = startTimer();
             }
-            scraper.record()
-                .then(res => postToBackend(res, config));
+            scraper.record((err, chunk, info) => {
+                if(err) {
+                    console.log(err);
+                } else {
+                    postToBackend(chunk!, info!._id, config) 
+                }
+            })
         } else {
             throw new Error('Unknown output format: ' + output)
         }

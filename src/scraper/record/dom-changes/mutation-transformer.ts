@@ -11,8 +11,9 @@ export class MutationTransformer {
     ) {}
 
     transformMutation(mutation: MutationRecord): RecordedMutation[] {
-        const target = this.domWalker.fetchManagedNode(mutation.target).id;
-
+        const targetEl = this.domWalker.fetchManagedNode(mutation.target, false);
+        if(!targetEl) return [];
+        const target = targetEl.id;
         if(mutation.type === 'attributes') {
             return [ this.attributeMutation(mutation, target) ];
         } else if(mutation.type === 'characterData') {
@@ -20,7 +21,10 @@ export class MutationTransformer {
         } else {
             const res: RecordedMutation[] = [];
             if(mutation.removedNodes && mutation.removedNodes.length > 0) {
-                res.push(this.removeChildrenMutation(mutation, target));
+                const removal = this.removeChildrenMutation(mutation, target);
+                if(removal) {
+                    res.push(removal);
+                }
             }
             if(mutation.addedNodes && mutation.addedNodes.length > 0) {
                 res.push(this.addChildrenMutation(mutation, target));
@@ -47,14 +51,17 @@ export class MutationTransformer {
         }
     }
 
-    private removeChildrenMutation(mutation: MutationRecord, target: number): ChangeChildrenMutation {
-        return {
-            type: "children",
+    private removeChildrenMutation(mutation: MutationRecord, target: number): ChangeChildrenMutation | null {
+        const removal = {
+            type: "children" as 'children',
             target,
             removals: Array.from(mutation.removedNodes)
+                .filter(shouldTraverseNode)
+                .filter(node => this.domWalker.isManaged(node))
                 .map(node => this.domWalker.fetchManagedNode(node)!),
             additions: []
         }
+        return removal.removals.length > 0 ? removal : null;
     }
 
     private addChildrenMutation(mutation: MutationRecord, target: number): ChangeChildrenMutation {

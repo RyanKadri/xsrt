@@ -1,7 +1,7 @@
 import { injectable } from "inversify";
 import { UserInputGroup } from "../../viewer/components/utils/recording-data-utils";
 import { RecordedMutationGroup } from "../record/dom-changes/mutation-recorder";
-import { DedupedData } from "../types/types";
+import { SnapshotChunk } from "../types/types";
 import { DomManager } from "./dom-manager";
 import { MutationManager } from "./mutation-manager";
 import { UserInputPlaybackManager } from "./user-input/user-input-manager";
@@ -19,7 +19,7 @@ export class PlaybackManager {
         this.userInputManager.simulateUserInputs(inputs);
     }
 
-    initialize(document: Document, data: DedupedData) {
+    initialize(document: Document, data: SnapshotChunk) {
         this.domManager.initialize(document);
         this.domManager.createInitialDocument(data);
     }

@@ -1,7 +1,7 @@
-import { Router, Request, Response } from "express";
-import { RouteHandler } from "../../../common/server/express-server";
+import { Request, Response } from "express";
 import { injectable } from "inversify";
 import { Recording } from "../../../common/db/recording";
+import { RouteHandler } from "../../../common/server/express-server";
 import { ThumbnailCompiler } from "../compiler/to-image";
 
 @injectable()
@@ -12,16 +12,12 @@ export class ThumbnailRouteHandler implements RouteHandler {
     ) {}
     readonly base = "/decorate";
     
-    buildRouter() {
-        const router = Router();
-
+    decorateRouter(router) {
         router.route('/thumbnails')
             .post(this.compileThumbnail);
 
         router.route('/thumbnails/:recordingId')
             .delete(this.deleteThumbnail);
-
-        return router;
     }
 
     private compileThumbnail = async (req: Request, resp: Response) => {

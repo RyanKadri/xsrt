@@ -1,5 +1,5 @@
-import { injectable, multiInject, inject } from "inversify";
 import express, { Express, Router } from "express";
+import { inject, injectable, multiInject } from "inversify";
 
 export const IServerInitializer = Symbol('ServerInitializer');
 export interface ServerInitializer {
@@ -10,7 +10,7 @@ export interface ServerInitializer {
 export const IRouteHandler = Symbol('RouteHandler');
 export interface RouteHandler {
     readonly base: string;
-    buildRouter(): Router
+    decorateRouter(router: Router): void;
 }
 
 export const IServerConfig = Symbol("ServerConfig");
@@ -33,7 +33,9 @@ export class ExpressServer {
         await Promise.all(this.initializers.map(initializer => initializer.initialize(app)));
 
         this.routeHandlers.forEach(handler => {
-            app.use(handler.base, handler.buildRouter());
+            const router = Router();
+            handler.decorateRouter(router)
+            app.use(handler.base, router);
         })
         app.listen(this.config.port, () => console.log(`Server listening on port ${this.config.port}`))
     }

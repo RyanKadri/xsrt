@@ -1,19 +1,18 @@
-import { injectable } from "inversify";
-import { DedupedData, WithId } from "../../scraper/types/types";
 import axios from "axios";
-import { Resolver } from "./with-data";
+import { injectable } from "inversify";
 import { RouteComponentProps } from "react-router";
-import { RecordedMetadata } from "../../api/types";
+import { Recording, RecordingOverview } from "../../scraper/types/types";
+import { Resolver } from "./with-data";
 
 @injectable()
 export class RecordingApiService {
 
-    async fetchRecordingData(recording: string): Promise<DedupedData> {
+    async fetchRecordingData(recording: string): Promise<Recording> {
         const data = await fetch(`/api/recordings/${recording}`);
         return await data.json();
     }
 
-    async fetchAvailableRecordings(id: string): Promise<StoredMetadata[]> {
+    async fetchAvailableRecordings(id: string): Promise<RecordingOverview[]> {
         return axios.get(`/api/recordings?site=${id}`)
             .then(resp => resp.data);
     }
@@ -43,13 +42,7 @@ export class RecordingResolver implements Resolver {
     }
 }
 
-export interface StoredMetadata extends WithId {
-    metadata: RecordedMetadata;
-    _id: string;
-    thumbnail?: string;
-}
-
 export interface MetadataGroup {
     site: string;
-    results: StoredMetadata[];
+    results: RecordingOverview[];
 }

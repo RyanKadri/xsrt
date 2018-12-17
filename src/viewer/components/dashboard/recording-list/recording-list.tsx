@@ -1,7 +1,7 @@
 import { createStyles, Table, TableBody, TableCell, TableHead, TableRow, Theme, Typography, withStyles, WithStyles } from "@material-ui/core";
 import React from "react";
 import { Link } from "react-router-dom";
-import { StoredMetadata } from "../../../services/recording-service";
+import { RecordingOverview } from "../../../../scraper/types/types";
 import { formatDate, formatDuration } from "../../utils/format-utils";
 
 const styles = (_: Theme) => createStyles({
@@ -31,7 +31,7 @@ const _RecordingList = (props: RecordingListProps) => {
             </Table>;
 }
 
-const RecordingRow = (recording: StoredMetadata, props: RecordingListProps) => {
+const RecordingRow = (recording: RecordingOverview, props: RecordingListProps) => {
     const {_id, metadata, thumbnail } = recording;
     const { classes, onPreview } = props;
     return <TableRow key={_id}>
@@ -63,8 +63,8 @@ const RecordingRow = (recording: StoredMetadata, props: RecordingListProps) => {
 }
 
 export interface RecordingListProps extends WithStyles<typeof styles> {
-    recordings: StoredMetadata[];
-    onPreview: (thumbnail: StoredMetadata) => void;
+    recordings: RecordingOverview[];
+    onPreview: (thumbnail: RecordingOverview) => void;
 }
 
 export const RecordingList = withStyles(styles)(_RecordingList)

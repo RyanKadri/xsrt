@@ -1,5 +1,5 @@
-import { ScrapedElement } from "../../types/types";
 import { injectable } from "inversify";
+import { ScrapedElement } from "../../types/types";
 import { MutationTracker } from "./mutation-tracker";
 import { MutationTransformer } from "./mutation-transformer";
 
@@ -42,7 +42,6 @@ export class MutationRecorder {
             mutations.map(mutation => this.transformer.transformMutation(mutation)).flat(Infinity)
         )
     }
-    
     
 }
 

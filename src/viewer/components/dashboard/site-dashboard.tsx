@@ -1,10 +1,11 @@
-import React, { Fragment } from "react";
-import { RecordingMetadataResolver, StoredMetadata } from "../../services/recording-service";
-import { Typography, createStyles, withStyles, WithStyles, Theme, Dialog } from "@material-ui/core";
-import ExternalLink from '@material-ui/icons/OpenInBrowserSharp'; 
-import { RecordingList } from "./recording-list/recording-list";
 import { SiteTarget } from "@common/db/targets";
+import { createStyles, Dialog, Theme, Typography, withStyles, WithStyles } from "@material-ui/core";
+import ExternalLink from '@material-ui/icons/OpenInBrowserSharp';
+import React, { Fragment } from "react";
+import { RecordingOverview } from "../../../scraper/types/types";
+import { RecordingMetadataResolver } from "../../services/recording-service";
 import { withData } from "../../services/with-data";
+import { RecordingList } from "./recording-list/recording-list";
 
 const styles = (theme: Theme) => createStyles({
     root: {
@@ -49,7 +50,7 @@ class _SiteDashboardView extends React.Component<DashboardViewProps, DashboardSt
         }</div>
     }
 
-    private onPreview = (preview: StoredMetadata) => {
+    private onPreview = (preview: RecordingOverview) => {
         this.setState({
             preview
         })
@@ -68,10 +69,10 @@ export const SiteDashboardView = withStyles(styles)(
 )
 
 interface DashboardViewProps extends WithStyles<typeof styles> {
-    recordings: StoredMetadata[]
+    recordings: RecordingOverview[]
     site: SiteTarget
 }
 
 interface DashboardState {
-    preview?: StoredMetadata;
+    preview?: RecordingOverview;
 }

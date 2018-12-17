@@ -1,5 +1,5 @@
 import { DomManager } from "@scraper/playback/dom-manager";
-import { DedupedData } from "@scraper/types/types";
+import { Recording, SnapshotChunk } from "../../scraper/types/types";
 
 (async function() {
     const urlMatch = location.search.match(/recording=([a-zA-Z0-9_\-]+)/); 
@@ -8,13 +8,15 @@ import { DedupedData } from "@scraper/types/types";
         domManager.initialize(document);
         
         const recording = urlMatch[1];
-        const data: DedupedData = await fetch(`/api/recordings/${recording}`)
-            .then(resp => resp.json())
+        const data: Recording = await fetch(`/api/recordings/${recording}`)
+            .then(resp => resp.json());
+        const initChunk: SnapshotChunk = await fetch(`/api/chunks/${data.chunks[0]._id}`).then(resp => resp.json())
 
-        await domManager.createInitialDocument(data);
+        await domManager.createInitialDocument(initChunk);
+        const { viewportHeight, viewportWidth } = initChunk.snapshot.documentMetadata
         window['targetViewport'] = {
-            height: data.metadata.viewportHeight,
-            width: data.metadata.viewportWidth
+            height: viewportHeight,
+            width: viewportWidth
         }
 
     }

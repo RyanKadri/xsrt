@@ -1,6 +1,6 @@
+import { Without } from "../../common/utils/type-utils";
 import { RecordedMutationGroup } from "../record/dom-changes/mutation-recorder";
 import { RecordedUserInput } from "../record/user-input/input-recorder";
-import { RecordingMetadata } from "../traverse/extract-metadata";
 
 export type ScrapedElement = ScrapedHtmlElement | ScrapedTextElement;
 export type OptimizedElement = OptimizedHtmlElementInfo | OptimizedTextElementInfo;
@@ -59,19 +59,103 @@ interface BaseScrapedRule {
     references?: string[];
 }
 
-export interface ScrapedData {
-    root: ScrapedHtmlElement;
+export interface RecordingOverview {
+    _id: string;
     metadata: RecordingMetadata;
+    thumbnail?: string;
+    chunks: ChunkOverview[];
+    finalized?: boolean
+}
+
+export interface ChunkOverview {
+    _id: string;
+    type: 'snapshot' | 'diff';
+    metadata: ChunkMetadata
+}
+
+export interface Recording extends RecordingOverview {
+    _id: string;
+    metadata: RecordingMetadata;
+    chunks: RecordingChunk[];
+}
+
+export interface RecordingMetadata {
+    startTime: number;
+    stopTime: number;
+    site: string;
+    uaDetails: UADetails;
+}
+
+export interface UADetails {
+    browser: {
+        name: string;
+    };
+
+    os: {
+        name: string;
+    }
+
+    device: {
+        vendor: string;
+    }
+}
+
+export type ScrapedChunk = Without<SnapshotChunk, "_id" | "assets"> | Without<DiffChunk, "_id" | "assets">;
+
+export type RecordingChunk = SnapshotChunk | DiffChunk;
+
+export interface UnoptimizedSnapshotChunk extends BaseSnapshot {
+    type: 'snapshot';
+    snapshot: UnoptimizedRootSnapshot
+}
+
+export interface SnapshotChunk extends BaseSnapshotWithAssets {
+    type: 'snapshot';
+    snapshot: RootSnapshot;
+}
+
+export interface DiffChunk extends BaseSnapshotWithAssets {
+    type: 'diff';
+}
+
+export interface BaseSnapshotWithAssets extends BaseSnapshot {
+    _id: string;
+    assets: string[];
+}
+
+export interface BaseSnapshot {
+    metadata: ChunkMetadata;
     changes: RecordedMutationGroup[];
     inputs: RecordedInputChannels;
 }
 
-export interface DedupedData {
+export interface RootSnapshot {
+    documentMetadata: DocumentMetadata;
     root: OptimizedHtmlElementInfo;
-    metadata: RecordingMetadata;
-    changes: RecordedMutationGroup[];
-    inputs: RecordedInputChannels;
-    assets: string[];
+}
+
+export interface UnoptimizedRootSnapshot {
+    documentMetadata: DocumentMetadata;
+    root: ScrapedHtmlElement;
+}
+
+export interface DocumentMetadata {
+    docType: string;
+    url: LocationMetadata;
+    viewportHeight: number;
+    viewportWidth: number;
+}
+
+export interface ChunkMetadata {
+    startTime: number;
+    stopTime: number; 
+}
+
+export interface LocationMetadata {
+    protocol: string;
+    hostname: string;
+    port: string;
+    path: string;
 }
 
 export interface WithId {
