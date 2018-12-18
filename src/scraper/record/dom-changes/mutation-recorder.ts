@@ -29,12 +29,16 @@ export class MutationRecorder {
         });
     }
 
+    dump() {
+        return this.mutationTracker.dump();
+    }
+
     stop() {
         if(!this.running) throw new Error('Recorder is already stopped');
         this.running = false;
 
         this.observer.disconnect();
-        return this.mutationTracker.dump();
+        return this.dump();
     }
 
     private recordMutation = (mutations: MutationRecord[]) => {

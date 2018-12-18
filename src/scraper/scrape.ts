@@ -6,7 +6,7 @@ import { MutationRecorder } from "./record/dom-changes/mutation-recorder";
 import { CompleteInputRecorder } from "./record/user-input/input-recorder";
 import { extractMetadata } from "./traverse/extract-metadata";
 import { RecordingDomManager } from "./traverse/traverse-dom";
-import { RecordingChunk, SnapshotChunk, UnoptimizedSnapshotChunk } from "./types/types";
+import { DiffChunk, RecordingChunk, SnapshotChunk, UnoptimizedSnapshotChunk } from "./types/types";
 import { TimeManager } from "./utils/time-manager";
 
 @injectable()
@@ -20,9 +20,17 @@ export class Scraper implements IScraper {
         private optimizer: RecordingOptimizer,
         private recordingState: RecordingStateService
     ) {}
-    private onStop: (() => Promise<void>) | undefined;
-    private optimized?: Without<SnapshotChunk, "_id">;
-    private recordingInfo?: RecordingInfo;
+    
+    private lastRecording?: number;
+
+    private initInfoTask?: Promise<RecordingInfo>
+    private initInfo?: RecordingInfo;
+
+    private initSnapshotTask?: Promise<Without<SnapshotChunk, "_id">>
+    private initSnapshot?: Without<SnapshotChunk, "_id">;
+
+    private sentInitChunk = false;
+    private cb?: OnChunkCallback;
 
     takeDataSnapshot(): Promise<Without<SnapshotChunk, "_id">> {
         return this.optimizer.optimize(this.syncSnapshot());
@@ -45,46 +53,90 @@ export class Scraper implements IScraper {
     }
 
     async record(cb: OnChunkCallback) {
-        
-        this.takeDataSnapshot()
-            .then(optimized => this.optimized = optimized);
+        this.cb = cb;
+        this.initSnapshotTask = this.takeDataSnapshot()
+            .then(snapshot => this.initSnapshot = snapshot);
 
         [this.timeManager, this.mutationRecorder, this.inputRecorder]
             .forEach(manager => manager.start());
         
-        this.recordingState.startRecording()
-            .then(info => this.recordingInfo = info);
+        this.initInfoTask = this.recordingState.startRecording()
+            .then(info => this.initInfo = info);
         
-        this.onStop = async () => {
-            if(this.optimized && this.recordingInfo) {
-                const chunk = {
-                    ...this.optimized,
-                    changes: this.mutationRecorder.stop(),
-                    inputs: this.inputRecorder.stop(),
-                    metadata: { 
-                        ...this.optimized.metadata,
-                        startTime: this.recordingInfo.startTime,
-                        stopTime: this.timeManager.stop()
-                    },
-                };
-                cb(undefined, chunk, { ...this.recordingInfo });
-            } else {
-                // TODO - Potentially handle this by sending an unoptimized snapshot to the server and optimizing there.
-                // Need to think about data constraints and access to underlying dom elements (for call reduction)
-                cb(new Error(`Requested data was not ready by the time the page was closed`));
-            }
-        }
+        Promise.all([this.initSnapshotTask, this.initInfoTask])
+            .then(([ optimized, recordingInfo ]) => {
+                if(!this.sentInitChunk) {
+                    this.sentInitChunk = true;
+                    this.sendSnapshotChunk(optimized, recordingInfo);
+                }
+            })
 
         window.addEventListener('beforeunload', () => {
-            console.log("unload")
-            this.onStop!();
+            this.onStop!(true);
         })
     }
 
     async stopRecording() {
         if(this.onStop) {
-            await this.onStop();
+            await this.onStop(false);
             this.recordingState.closeRecording()
+        }
+    }
+
+    private sendSnapshotChunk(snapshot: Without<SnapshotChunk, "_id">, recordingInfo: RecordingInfo) {
+        const stopTime = this.lastRecording = this.timeManager.currentTime();
+        const chunk = {
+            ...snapshot,
+            changes: this.mutationRecorder.dump(),
+            inputs: this.inputRecorder.dump(),
+            metadata: { 
+                ...snapshot.metadata,
+                startTime: recordingInfo.startTime,
+                stopTime
+            },
+        };
+        this.cb!(undefined, chunk, { ...recordingInfo, unloading: false });
+    }
+
+    private onStop = async (isUnloading: boolean) => {
+        const startTime = this.lastRecording!;
+        const stopTime = this.lastRecording = this.timeManager.currentTime();
+        const changes = this.mutationRecorder.stop();
+        const inputs = this.inputRecorder.stop();
+        const type = this.sentInitChunk ? 'diff' : 'snapshot';
+        const baseChunk = {
+            type,
+            changes,
+            inputs,
+            metadata: {
+                startTime,
+                stopTime
+            }
+        };
+
+        if(!isUnloading) {
+            const info = await this.initInfoTask;
+            const cbInfo = { ...info!, unloading: isUnloading };
+            if(!this.sentInitChunk) {
+                const snapshot = await this.initSnapshotTask!;
+                this.cb!(undefined, { ...baseChunk, snapshot: snapshot.snapshot, assets: snapshot.assets } as SnapshotChunk, cbInfo);
+            } else {
+                this.cb!(undefined, baseChunk as DiffChunk, cbInfo);
+            }
+        } else {
+            if(this.sentInitChunk && this.initInfo) {
+                this.cb!(undefined, baseChunk as DiffChunk, { ...this.initInfo, unloading: isUnloading })
+            } else if(this.initInfo && this.initSnapshot) {
+                this.cb!(undefined, { 
+                    ...baseChunk,
+                    snapshot: this.initSnapshot.snapshot,
+                    assets: this.initSnapshot.assets
+                } as Without<SnapshotChunk, "_id">, { ...this.initInfo, unloading: isUnloading });
+            } else {
+                // TODO - Potentially handle this by sending an unoptimized snapshot to the server and optimizing there.
+                // Need to think about data constraints and access to underlying dom elements (for call reduction)
+                this.cb!(new Error(`Requested data was not ready by the time the page was closed`));
+            }
         }
     }
 }
@@ -96,5 +148,5 @@ export interface IScraper {
 }
 
 export interface OnChunkCallback {
-    (err?: Error, chunk?: Without<RecordingChunk, "_id">, recordingInfo?: RecordingInfo): void
+    (err?: Error, chunk?: Without<RecordingChunk, "_id">, recordingInfo?: RecordingInfo & { unloading: boolean }): void
 }

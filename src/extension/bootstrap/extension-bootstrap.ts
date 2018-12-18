@@ -6,6 +6,7 @@ import { CommandMessage } from "../content/commands";
 import { ExtensionMessage, ExtensionMessageResponse } from "../content/site-channel-types";
 
 const localStorageScrapeConfig = "app.icu.recording.config";
+const localStoragePendingChunk = "app.icu.recording.pendingChunk";
 
 let scraper: Scraper;
 let recordingId: string;
@@ -14,12 +15,22 @@ let sessionConfig: ScraperConfig;
 const localStoredConfig = localStorage.getItem(localStorageScrapeConfig);
 //TODO - Setting this to refer to other constant was causing issues with import reordering in VSCode.
 const localRecordingId = localStorage.getItem('app.icu.recording.id');
+const localStoredChunk = localStorage.getItem(localStoragePendingChunk);
 
 if(localStoredConfig && localRecordingId) {
     const config = JSON.parse(localStoredConfig);
     recordingId = localRecordingId;
     startScraping(config);
+
+    if(localStoredChunk) {
+        const pending = JSON.parse(localStoredChunk);
+        postToBackend(pending, recordingId, config)
+            .then(() => {
+                localStorage.removeItem(localStoragePendingChunk);
+            })
+    }
 }
+
 
 window.addEventListener('message', async (message) => {
     if(message.source !== window || message.data.type !== ExtensionMessage.type) {
@@ -47,8 +58,12 @@ function startScraping(config: ScraperConfig) {
         if(err) {
             console.log(err);
         } else {
-            recordingId = recordingInfo!._id
-            postToBackend(chunk!, recordingInfo!._id, config);
+            if(!recordingInfo!.unloading) {
+                recordingId = recordingInfo!._id
+                postToBackend(chunk!, recordingInfo!._id, config);
+            } else {
+                localStorage.setItem(localStoragePendingChunk, JSON.stringify(chunk))
+            }
         }
     })
 }

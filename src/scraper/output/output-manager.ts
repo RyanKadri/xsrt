@@ -39,9 +39,6 @@ export async function postToBackend(data: Without<RecordingChunk, "_id">, toReco
 export async function finalizeRecording(recordingId: string, config: ScraperConfig) {
     const finalization: DeepPartial<Recording> = { 
         finalized: true,
-        metadata: {
-            stopTime: Date.now()
-        }
     }
     await axios.patch(`${config.backendUrl}/api/recordings/${recordingId}`, finalization)
 }

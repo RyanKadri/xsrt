@@ -56,7 +56,7 @@ export class RecordingRouteHandler implements RouteHandler {
         }
         const uaDetails = this.extractUADetails(ua)
         const recordingData: Without<Recording, "_id"> = { 
-            metadata: { site: site._id, startTime: Date.now(), stopTime: Date.now(), uaDetails },
+            metadata: { site: site._id, startTime: bodyData.startTime, uaDetails },
             chunks: []
         };
         const recording = new RecordingSchema(recordingData);
@@ -76,8 +76,7 @@ export class RecordingRouteHandler implements RouteHandler {
                 .catch(e => console.error(e));
             try {
                 await RecordingSchema.findByIdAndUpdate(req.params.recordingId, { $set: {
-                    finalized: true, 
-                    "metadata.stopTime": patchRequest.metadata.stopTime
+                    finalized: true
                 } })
                 resp.json({ success: true })
             } catch(e) {
@@ -99,7 +98,7 @@ export class RecordingRouteHandler implements RouteHandler {
     private fetchSingleRecording = (req: Request, resp: Response) => {
         RecordingSchema.aggregate([ 
             { $match: { "_id": req.params.recordingId }},
-            { $unwind: "$chunks" },
+            //{ $unwind: "$chunks" },
             { $lookup: { 
                 from: "recordingChunks",
                 localField: "chunks", 

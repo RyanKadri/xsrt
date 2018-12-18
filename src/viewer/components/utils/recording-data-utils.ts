@@ -3,7 +3,8 @@ import { RecordedMutationGroup } from "../../../scraper/record/dom-changes/mutat
 import { RecordedUserInput } from "../../../scraper/record/user-input/input-recorder";
 import { RecordedInputChannels } from "../../../scraper/types/types";
 
-export function eventsBetween(changes: RecordedMutationGroup[], inputs: RecordedInputChannels, fromTime: number, toTime: number): { changes: RecordedMutationGroup[], inputs: UserInputGroup[]} {
+export function eventsBetween(changes: RecordedMutationGroup[], inputs: RecordedInputChannels, fromTime: number, toTime: number)
+    : { changes: RecordedMutationGroup[], inputs: UserInputGroup[]} {
     const timeInRange = pipe(pluck('timestamp'), between(fromTime, toTime)); 
         
     return {

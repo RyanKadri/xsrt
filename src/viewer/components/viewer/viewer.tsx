@@ -64,7 +64,7 @@ class _RecordingViewer extends React.Component<ViewerProps, ViewerState> {
     //TODO - Maybe go back and rethink snapshots (if we want them)
     private Controls() {
         return <RecordingControls 
-                duration={ this.duration() }
+                duration={ this.props.duration }
                 time={ this.state.playerTime }
                 isPlaying={ this.state.isPlaying }
                 numAnnotations={ this.state.annotations.length }
@@ -72,11 +72,6 @@ class _RecordingViewer extends React.Component<ViewerProps, ViewerState> {
                 onPause={ this.stop }
                 seek={ this.seek }
                 onToggleAnnotations={ this.toggleAnnotations } />;
-    }
-
-    private duration() {
-        const { stopTime, startTime } = this.props.recordingMetadata;
-        return stopTime ? stopTime - startTime : 0;
     }
 
     play = () => {
@@ -116,11 +111,11 @@ class _RecordingViewer extends React.Component<ViewerProps, ViewerState> {
             if(this.state.lastFrameTime) {
                 timeDiff = curr - this.state.lastFrameTime
             }
-            const duration = this.duration();
+            const duration = this.props.duration;
             const currentTime = Math.min(this.state.playerTime + timeDiff, duration);
             if(currentTime === duration) {
                 this.stop();
-                this.updateTime(this.duration());
+                this.updateTime(this.props.duration);
             } else {
                 if(this.state.isPlaying) {
                     const { changes, inputs } = eventsBetween(this.props.changes, this.props.inputs, this.state.playerTime, currentTime);
@@ -164,6 +159,7 @@ export interface ViewerProps extends WithStyles<typeof styles> {
     inputs: RecordedInputChannels;
     changes: RecordedMutationGroup[];
     recordingMetadata: RecordingMetadata;
+    duration: number;
     bufferPos: number;
     annotationService: AnnotationService;
     onUpdateTime: (newTime: number) => void

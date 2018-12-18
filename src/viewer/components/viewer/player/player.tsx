@@ -2,7 +2,7 @@ import { createStyles, Theme, withStyles, WithStyles } from "@material-ui/core";
 import { PlaybackManager } from "@scraper/playback/playback-manager";
 import c from 'classnames';
 import React from "react";
-import { reverseFind } from "../../../../common/utils/functional-utils";
+import { between } from "../../../../common/utils/functional-utils";
 import { RecordedMutationGroup } from "../../../../scraper/record/dom-changes/mutation-recorder";
 import { RecordedResize } from "../../../../scraper/record/user-input/resize-recorder";
 import { RecordedInputChannels, RecordingMetadata, SnapshotChunk } from "../../../../scraper/types/types";
@@ -60,15 +60,22 @@ class _RecordingPlayer extends React.Component<PlayerInput, PlayerState> {
 
     async componentDidMount() {
         this.initializeViewer();
-        this.initializeIframe();
+        this.props.snapshots[0];
+        this.initializeIframe(this.props.snapshots[0]);
     }
 
     componentDidUpdate(prevProps: PlayerInput) { 
-        if(this.props.currentTime < prevProps.currentTime) {
-            this.initializeIframe();
+        const prevTime = prevProps.currentTime <= this.props.currentTime ? prevProps.currentTime : 0; 
+        const snapshots = this.props.snapshots
+            .filter(snapshot => between(prevTime, this.props.currentTime)(snapshot.metadata.startTime));
+        const lastSnapshot = snapshots[snapshots.length - 1];
+        const adjustedPrevTime = lastSnapshot ? lastSnapshot.metadata.startTime : prevTime;
+        const { inputs, changes } = eventsBetween(this.props.changes, this.props.inputs, adjustedPrevTime, this.props.currentTime);
+
+        if(this.props.currentTime < prevProps.currentTime || lastSnapshot) {
+            this.initializeIframe(lastSnapshot);
         }
 
-        const { inputs, changes } = eventsBetween(this.props.changes, this.props.inputs, prevProps.currentTime, this.props.currentTime);
         this.props.playbackManager.play(changes, inputs);
 
         this.checkPlayerResize(inputs);
@@ -85,12 +92,11 @@ class _RecordingPlayer extends React.Component<PlayerInput, PlayerState> {
         }
     }
 
-    private initializeIframe() {
+    private initializeIframe(snapshot: SnapshotChunk) {
         const currDocument = this.iframe.current && this.iframe.current.contentDocument
         // TODO. Should I think about case where recording is not ready?
         if(currDocument) {
-            const currSnapshot = reverseFind(this.props.snapshots, snapshot => snapshot.metadata.startTime <= this.props.currentTime);
-            this.props.playbackManager.initialize(currDocument, currSnapshot!);
+            this.props.playbackManager.initialize(currDocument, snapshot);
         }
     }
     

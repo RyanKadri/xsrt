@@ -16,18 +16,19 @@ export class RecordingStateService {
 
     async startRecording(): Promise<RecordingInfo> {
         const currentRecording = localStorage.getItem(localStorageRecordingId);
-        const startTime = localStorage.getItem(localStorageRecordingStart);
+        const startTime = this.fetchStartTime();
         if(currentRecording && startTime) {
             return {
                 _id: currentRecording,
-                startTime: Date.now() - parseInt(startTime)
+                startTime: Date.now() - startTime
             }
         } else {
-            const startRecordingRequest: CreateRecordingRequest = { url: extractUrlMetadata(location), startTime: Date.now() }
+            const startTime = Date.now()
+            localStorage.setItem(localStorageRecordingStart, `${startTime}`);
+            const startRecordingRequest: CreateRecordingRequest = { url: extractUrlMetadata(location), startTime }
             const res = await Axios.post(`${this.config.backendUrl}/api/recordings`, startRecordingRequest)
                 .then(res => res.data)
             localStorage.setItem(localStorageRecordingId, res._id);
-            localStorage.setItem(localStorageRecordingStart, `${startRecordingRequest.startTime}`);
             return {
                 _id: res._id,
                 startTime: 0
@@ -35,9 +36,18 @@ export class RecordingStateService {
         }
     }
 
+    fetchStartTime() {
+        const startTime = localStorage.getItem(localStorageRecordingStart);
+        return startTime ? parseInt(startTime) : undefined;
+    }
+
     closeRecording() {
         localStorage.removeItem(localStorageRecordingId);
         localStorage.removeItem(localStorageRecordingStart)
+    }
+
+    storePendingChunk() {
+
     }
     
 }

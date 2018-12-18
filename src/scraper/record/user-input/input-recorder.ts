@@ -43,6 +43,16 @@ export class CompleteInputRecorder {
         })
     }
 
+    dump() {
+        const events = this.events;
+        this.events = Object.keys(this.events)
+            .reduce((acc, key) => {
+                acc[key] = [];
+                return acc;
+            }, { })
+        return events;
+    }
+
     stop() {
         Object.values(this.handlers).forEach(rec => {
             if(rec.stop) {
@@ -52,7 +62,7 @@ export class CompleteInputRecorder {
         this.listeners.forEach(({channel, listener}) => {
             this.listenerTarget(this.handlers[channel]).removeEventListener(channel, listener, { capture: true });
         })
-        return this.events;
+        return this.dump();
     }
 
     private createEventHandler = (group: string) => {

@@ -81,7 +81,6 @@ export interface Recording extends RecordingOverview {
 
 export interface RecordingMetadata {
     startTime: number;
-    stopTime: number;
     site: string;
     uaDetails: UADetails;
 }
