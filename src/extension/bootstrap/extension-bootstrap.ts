@@ -1,36 +1,10 @@
-import { RecorderContainer } from "../../scraper/inversify.recorder";
-import { finalizeRecording, postToBackend } from "../../scraper/output/output-manager";
-import { Scraper } from "../../scraper/scrape";
-import { ScraperConfig, ScraperConfigToken } from "../../scraper/scraper-config,";
+import { RecorderInitializer } from "../../scraper/recorder-initializer";
+import { ScraperConfig } from "../../scraper/scraper-config,";
 import { CommandMessage } from "../content/commands";
 import { ExtensionMessage, ExtensionMessageResponse } from "../content/site-channel-types";
 
-const localStorageScrapeConfig = "app.icu.recording.config";
-const localStoragePendingChunk = "app.icu.recording.pendingChunk";
-
-let scraper: Scraper;
-let recordingId: string;
-let sessionConfig: ScraperConfig;
-
-const localStoredConfig = localStorage.getItem(localStorageScrapeConfig);
-//TODO - Setting this to refer to other constant was causing issues with import reordering in VSCode.
-const localRecordingId = localStorage.getItem('app.icu.recording.id');
-const localStoredChunk = localStorage.getItem(localStoragePendingChunk);
-
-if(localStoredConfig && localRecordingId) {
-    const config = JSON.parse(localStoredConfig);
-    recordingId = localRecordingId;
-    startScraping(config);
-
-    if(localStoredChunk) {
-        const pending = JSON.parse(localStoredChunk);
-        postToBackend(pending, recordingId, config)
-            .then(() => {
-                localStorage.removeItem(localStoragePendingChunk);
-            })
-    }
-}
-
+const recorder = new RecorderInitializer();
+const autoStart = recorder.checkAutoStart();
 
 window.addEventListener('message', async (message) => {
     if(message.source !== window || message.data.type !== ExtensionMessage.type) {
@@ -39,34 +13,17 @@ window.addEventListener('message', async (message) => {
         const request: ExtensionMessage<CommandMessage> = message.data;
         const command = request.payload;
         if(command.command === "startRecording") {
-            localStorage.setItem(localStorageScrapeConfig, JSON.stringify(command.config))
-            startScraping(command.config)
+            if(!autoStart) {
+                recorder.initialize(command.config);
+            } else {
+                throw new Error('Tried to start the recorder but it was already recording');
+            }
         } else if(command.command === 'stopRecording') {
-            await scraper.stopRecording();
-            localStorage.removeItem(localStorageScrapeConfig);
-            finalizeRecording(recordingId, sessionConfig);
+            await recorder.stop();
         }
         window.postMessage(new ExtensionMessageResponse(request.id), location.origin)
     }
 }) 
-
-function startScraping(config: ScraperConfig) {
-    sessionConfig = config
-    RecorderContainer.bind(ScraperConfigToken).toConstantValue(config);
-    scraper = RecorderContainer.get(Scraper);
-    scraper.record((err, chunk, recordingInfo) => {
-        if(err) {
-            console.log(err);
-        } else {
-            if(!recordingInfo!.unloading) {
-                recordingId = recordingInfo!._id
-                postToBackend(chunk!, recordingInfo!._id, config);
-            } else {
-                localStorage.setItem(localStoragePendingChunk, JSON.stringify(chunk))
-            }
-        }
-    })
-}
 
 export type ExtensionRequest = StartScrapingRequest | StopScrapingRequest;
 

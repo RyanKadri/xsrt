@@ -65,16 +65,18 @@ class _RecordingPlayer extends React.Component<PlayerInput, PlayerState> {
     }
 
     componentDidUpdate(prevProps: PlayerInput) { 
-        const prevTime = prevProps.currentTime <= this.props.currentTime ? prevProps.currentTime : 0; 
+        const prevTime = prevProps.currentTime <= this.props.currentTime ? prevProps.currentTime : 0;
         const snapshots = this.props.snapshots
             .filter(snapshot => between(prevTime, this.props.currentTime)(snapshot.metadata.startTime));
         const lastSnapshot = snapshots[snapshots.length - 1];
-        const adjustedPrevTime = lastSnapshot ? lastSnapshot.metadata.startTime : prevTime;
-        const { inputs, changes } = eventsBetween(this.props.changes, this.props.inputs, adjustedPrevTime, this.props.currentTime);
-
-        if(this.props.currentTime < prevProps.currentTime || lastSnapshot) {
+        
+        if(this.props.currentTime < prevProps.currentTime || (lastSnapshot !== undefined && lastSnapshot !== this.state.currentSnapshot)) {
+            this.setState({ currentSnapshot: lastSnapshot })
             this.initializeIframe(lastSnapshot);
         }
+
+        const adjustedPrevTime = lastSnapshot ? lastSnapshot.metadata.startTime : prevTime;
+        const { inputs, changes } = eventsBetween(this.props.changes, this.props.inputs, adjustedPrevTime, this.props.currentTime);
 
         this.props.playbackManager.play(changes, inputs);
 
@@ -141,6 +143,7 @@ export interface PlayerInput extends WithStyles<typeof styles> {
 }
 
 export interface PlayerState {
+    currentSnapshot?: SnapshotChunk;
     height: number;
     width: number;
     scale: number;

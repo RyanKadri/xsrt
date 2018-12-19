@@ -35,3 +35,7 @@ export const pipe = <A, B, C>(fn1: (a: A) => B, fn2: (b: B) => C) => (a1: A) => 
 }
 
 export const nCopies = <T>(item: T, n) => new Array(n).fill(item);
+
+export const sortAsc = <T = any>(fieldAccessor: ((inp: T) => number)) => (a: T, b: T) => {
+    return fieldAccessor(a) - fieldAccessor(b);
+}

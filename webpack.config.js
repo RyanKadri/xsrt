@@ -46,8 +46,6 @@ module.exports = [
             viewer: './src/viewer/index.tsx',
         },
         module: {
-            rules: [
-            ]
         },
         plugins: [
             new WriteFilePlugin(),

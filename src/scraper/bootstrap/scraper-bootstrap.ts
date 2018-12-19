@@ -1,16 +1,14 @@
 import containerCSS from '!raw-loader!./container.css';
 import { formatDuration } from "../../viewer/components/utils/format-utils";
-import { RecorderContainer } from '../inversify.recorder';
-import { outputDataSnapshot, outputStandaloneSnapshot, postToBackend } from "../output/output-manager";
-import { Scraper } from '../scrape';
-import { ScraperConfig, ScraperConfigToken } from '../scraper-config,';
+import { RecorderInitializer } from '../recorder-initializer';
+import { ScraperConfig } from '../scraper-config,';
 import containerHTML from './widget.html';
 
 (function bootstrapScraper() {
 
     let timerId: number | undefined;
-    let scraper: Scraper;
     const containerId = '_recording-widget-container';
+    let recorder: RecorderInitializer;
 
     cleanup();
     const { startButton, debugCheckbox,
@@ -32,27 +30,22 @@ import containerHTML from './widget.html';
             backendUrl: 'http://localhost:3001'
         };
 
-        RecorderContainer.bind(ScraperConfigToken).toConstantValue(config);
-        scraper = RecorderContainer.get(Scraper);
+        recorder = new RecorderInitializer();
         if(output === 'single-page' || output === 'json') {
-            const res = await scraper.takeDataSnapshot();
-            if(output === 'single-page') {
-                outputStandaloneSnapshot(res);
-            } else {
-                outputDataSnapshot(res, 'snapshot.json', config);
-            }
+            // TODO - Add this back
+            throw new Error('Page snapshots are temporarily being removed');
+            // const res = await scraper.takeDataSnapshot();
+            // if(output === 'single-page') {
+            //     outputStandaloneSnapshot(res);
+            // } else {
+            //     outputDataSnapshot(res, 'snapshot.json', config);
+            // }
         } else if(output === 'record') {
             if(modeSelect.value === 'record') {
                 toggleDialogMode();
                 timerId = startTimer();
             }
-            scraper.record((err, chunk, info) => {
-                if(err) {
-                    console.log(err);
-                } else {
-                    postToBackend(chunk!, info!._id, config) 
-                }
-            })
+            recorder.initialize(config);
         } else {
             throw new Error('Unknown output format: ' + output)
         }
@@ -60,7 +53,7 @@ import containerHTML from './widget.html';
 
     function handleStop() {
         if(timerId !== undefined) {
-            scraper.stopRecording()
+            recorder.stop()
             clearInterval(timerId);
             cleanup();
         }

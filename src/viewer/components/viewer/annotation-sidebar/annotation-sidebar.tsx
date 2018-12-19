@@ -1,6 +1,6 @@
 import { createStyles, Fade, Paper, Theme, Typography, withStyles, WithStyles } from "@material-ui/core";
 import React from "react";
-import { RecordingAnnotation } from "../viewer";
+import { RecordingAnnotation } from "../../../services/annotation/annotation-service";
 
 const styles = (theme: Theme) => createStyles({
     root: {

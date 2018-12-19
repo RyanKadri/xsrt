@@ -37,7 +37,7 @@ const chunkSchema = new Schema({
     }],
     inputs: {
         type: SchemaTypes.Mixed,
-        required: false
+        required: false,
     }
 
 }, { strict: true, collection: 'recordingChunks' })

@@ -1,8 +1,7 @@
 import { injectable, multiInject } from "inversify";
-import { RecordedMutationGroup } from "../../../scraper/record/dom-changes/mutation-recorder";
+import { RecordedMutation, RecordedMutationGroup } from "../../../scraper/record/dom-changes/mutation-recorder";
 import { RecordedUserInput } from "../../../scraper/record/user-input/input-recorder";
 import { UserInputGroup } from "../../components/utils/recording-data-utils";
-import { InputCause, RecordingAnnotation } from "../../components/viewer/viewer";
 
 const debounceTime = 500;
 
@@ -24,12 +23,13 @@ export class AnnotationService {
                 let replaced = false;
                 const annotationVal = annotator.annotate(lastInput);
                 if(annotationVal) {
-                    const newAnnotation = {
+                    const newAnnotation: RecordingAnnotation = {
                         ...annotationVal,
                         cause: {
                             type: "input" as 'input',
                             input: lastInput
-                        }
+                        },
+                        startTime: lastInput.timestamp
                     };
                     for(let i = 0; i < newAnnotations.length; i++) {
                         const oldAnnotation = newAnnotations[i];
@@ -58,4 +58,22 @@ export interface InputAnnotator<T extends RecordedUserInput = RecordedUserInput>
     type: string;
     shouldOverwrite(rec: InputCause, evt: T): boolean;
     annotate(inp: T): Pick<RecordingAnnotation, "description"> | null
+}
+
+export interface RecordingAnnotation {
+    description: string;
+    cause?: AnnotationCause;
+    startTime: number
+}
+
+export type AnnotationCause = InputCause | MutationCause;
+
+export interface InputCause {
+    type: 'input';
+    input: RecordedUserInput;
+} 
+
+export interface MutationCause {
+    type: 'mutation';
+    mutation: RecordedMutation
 }

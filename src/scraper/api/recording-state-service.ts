@@ -1,39 +1,48 @@
-import Axios from "axios";
-import { inject, injectable } from "inversify";
-import { CreateRecordingRequest } from "../../api/endpoints/recordings";
-import { ScraperConfig, ScraperConfigToken } from "../scraper-config,";
-import { extractUrlMetadata } from "../traverse/extract-metadata";
+import { injectable } from "inversify";
+import { Without } from "../../common/utils/type-utils";
+import { ScraperConfig } from "../scraper-config,";
+import { RecordingChunk } from "../types/types";
 
 const localStorageRecordingId = "app.icu.recording.id";
 const localStorageRecordingStart = "app.icu.recording.start";
+const localStorageScrapeConfig = "app.icu.recording.config";
+const localStoragePendingChunk = "app.icu.recording.pendingChunk";
 
 @injectable()
 export class RecordingStateService {
+    storeConfig(config: ScraperConfig): void {
+        localStorage.setItem(localStorageScrapeConfig, JSON.stringify(config))
+    }
 
-    constructor(
-        @inject(ScraperConfigToken) private config: ScraperConfig
-    ) {}
+    recordRecordingId(_id: string): void {
+        localStorage.setItem(localStorageRecordingId, _id);
+    }
 
-    async startRecording(): Promise<RecordingInfo> {
-        const currentRecording = localStorage.getItem(localStorageRecordingId);
-        const startTime = this.fetchStartTime();
-        if(currentRecording && startTime) {
-            return {
-                _id: currentRecording,
-                startTime: Date.now() - startTime
-            }
-        } else {
-            const startTime = Date.now()
-            localStorage.setItem(localStorageRecordingStart, `${startTime}`);
-            const startRecordingRequest: CreateRecordingRequest = { url: extractUrlMetadata(location), startTime }
-            const res = await Axios.post(`${this.config.backendUrl}/api/recordings`, startRecordingRequest)
-                .then(res => res.data)
-            localStorage.setItem(localStorageRecordingId, res._id);
-            return {
-                _id: res._id,
-                startTime: 0
-            }
-        }
+    recordStartTime(startTime: number): void {
+        localStorage.setItem(localStorageRecordingStart, `${startTime}`);
+    }
+
+    storePendingChunk(chunk: Without<RecordingChunk, "_id">) {
+        localStorage.setItem(localStoragePendingChunk, JSON.stringify(chunk))
+    }
+
+    removePendingChunk(): void {
+        localStorage.removeItem(localStoragePendingChunk);
+    }
+    
+    fetchActiveConfig(): ScraperConfig {
+        const config = localStorage.getItem(localStorageScrapeConfig);
+        return config ? JSON.parse(config) : undefined
+    }
+    
+    fetchRecordingId(): string | undefined {
+        const recordingId = localStorage.getItem(localStorageRecordingId);
+        return recordingId ? recordingId : undefined;
+    }
+    
+    fetchPendingChunk(): RecordingChunk | undefined {
+        const pendingChunk = localStorage.getItem(localStoragePendingChunk);
+        return pendingChunk ? JSON.parse(pendingChunk) : undefined;
     }
 
     fetchStartTime() {
@@ -43,11 +52,9 @@ export class RecordingStateService {
 
     closeRecording() {
         localStorage.removeItem(localStorageRecordingId);
-        localStorage.removeItem(localStorageRecordingStart)
-    }
-
-    storePendingChunk() {
-
+        localStorage.removeItem(localStorageRecordingStart);
+        localStorage.removeItem(localStorageScrapeConfig);
+        localStorage.removeItem(localStoragePendingChunk);
     }
     
 }

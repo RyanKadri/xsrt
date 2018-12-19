@@ -8,20 +8,29 @@ export class TimeManager {
         private recordingState: RecordingStateService
     ) {}
 
-    private startTime?: number;
+    private recordingStart?: number;
+    private _sessionStart?: number;
+
+    get sessionStart () {
+        if(!this._sessionStart || !this.recordingStart) {
+            throw new Error("TimeManager not yet started");
+        }
+        return this._sessionStart - this.recordingStart;
+    }
 
     start() {
-        const startTime = this.recordingState.fetchStartTime();
-        if(startTime) {
-            this.startTime = startTime;
+        const recordingStart = this.recordingState.fetchStartTime();
+
+        if(recordingStart) {
+            this.recordingStart = recordingStart;
+            this._sessionStart = Date.now();
         } else {
-            this.startTime = Date.now();
+            this.recordingStart = this._sessionStart = Date.now();
         }
-        return this.startTime;
     }
 
     currentTime() {
-        return Date.now() - this.startTime!;
+        return Date.now() - this.recordingStart!;
     }
 
     stop() {

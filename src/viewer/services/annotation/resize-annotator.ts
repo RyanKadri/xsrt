@@ -1,7 +1,6 @@
 import { injectable } from "inversify";
 import { RecordedResize } from "../../../scraper/record/user-input/resize-recorder";
-import { InputCause } from "../../components/viewer/viewer";
-import { InputAnnotator } from "./annotation-service";
+import { InputAnnotator, InputCause } from "./annotation-service";
 
 @injectable()
 export class ResizeAnnotator implements InputAnnotator<RecordedResize> {

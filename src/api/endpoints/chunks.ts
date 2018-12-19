@@ -38,7 +38,9 @@ export class ChunkEndpoint implements RouteHandler {
     fetchChunk = async (req: Request, resp: Response) => {
         try {
             const res = await Chunk.findById(req.params.chunkId)
-            resp.json(res);
+            if(res) {
+                resp.json({ inputs: {}, ...res.toObject() });
+            }
         } catch(e) {
             resp.json({ error: e })
         }

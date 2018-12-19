@@ -56,7 +56,7 @@ export class RecordingRouteHandler implements RouteHandler {
         }
         const uaDetails = this.extractUADetails(ua)
         const recordingData: Without<Recording, "_id"> = { 
-            metadata: { site: site._id, startTime: bodyData.startTime, uaDetails },
+            metadata: { site: site._id, startTime: bodyData.startTime, duration: 0, uaDetails },
             chunks: []
         };
         const recording = new RecordingSchema(recordingData);
@@ -76,8 +76,9 @@ export class RecordingRouteHandler implements RouteHandler {
                 .catch(e => console.error(e));
             try {
                 await RecordingSchema.findByIdAndUpdate(req.params.recordingId, { $set: {
-                    finalized: true
-                } })
+                    finalized: true,
+                    'metadata.duration': patchRequest.metadata.duration
+                }})
                 resp.json({ success: true })
             } catch(e) {
                 resp.json({ error: e})

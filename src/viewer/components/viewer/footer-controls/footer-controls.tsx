@@ -29,7 +29,12 @@ const styles = (theme: Theme) => createStyles({
 const _RecordingControls = (props: ControlsInput) => {
     const { classes, onToggleAnnotations, numAnnotations } = props;
     return <footer className={ classes.controls }>
-        <ProgressBar duration={props.duration} time={props.time} seek={props.seek} />
+        <ProgressBar 
+            duration={props.duration} 
+            buffer={ props.buffer } 
+            time={props.time} 
+            seek={props.seek}
+        />
         { PlayOrPause(props) }
         <Typography variant="body1" color="inherit">{ formatDuration(props.time) } / { formatDuration(props.duration) }</Typography>
         <IconButton onClick={ onToggleAnnotations } color="inherit" className={ classes.annotationButton }>
@@ -67,5 +72,6 @@ export interface ControlsInput extends WithStyles<typeof styles> {
     isPlaying: boolean;
     duration: number;
     time: number;
+    buffer: number;
     numAnnotations: number;
 }

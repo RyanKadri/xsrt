@@ -81,6 +81,7 @@ export interface Recording extends RecordingOverview {
 
 export interface RecordingMetadata {
     startTime: number;
+    duration: number;
     site: string;
     uaDetails: UADetails;
 }
@@ -99,14 +100,15 @@ export interface UADetails {
     }
 }
 
-export type ScrapedChunk = Without<SnapshotChunk, "_id" | "assets"> | Without<DiffChunk, "_id" | "assets">;
-
 export type RecordingChunk = SnapshotChunk | DiffChunk;
 
 export interface UnoptimizedSnapshotChunk extends BaseSnapshot {
     type: 'snapshot';
     snapshot: UnoptimizedRootSnapshot
 }
+
+export type PendingSnapshotChunk = Without<SnapshotChunk, "_id">
+export type PendingDiffChunk = Without<DiffChunk, "_id">
 
 export interface SnapshotChunk extends BaseSnapshotWithAssets {
     type: 'snapshot';
@@ -155,10 +157,6 @@ export interface LocationMetadata {
     hostname: string;
     port: string;
     path: string;
-}
-
-export interface WithId {
-    _id: string;
 }
 
 export type RecordedInputChannels = {

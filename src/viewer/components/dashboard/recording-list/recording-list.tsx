@@ -41,8 +41,8 @@ const RecordingRow = (recording: RecordingOverview, props: RecordingListProps) =
             </Link>
         </TableCell>
         <TableCell>
-            { metadata.stopTime 
-                ? formatDuration(metadata.stopTime - metadata.startTime)
+            { metadata.duration
+                ? formatDuration(metadata.duration)
                 : 'N/A'
             }
         </TableCell>

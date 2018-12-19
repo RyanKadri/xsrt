@@ -1,12 +1,9 @@
 import { CircularProgress, createStyles, Theme, withStyles, WithStyles } from '@material-ui/core';
 import * as React from 'react';
 import { Fragment } from 'react';
-import { RecordedMutation, RecordedMutationGroup } from '../../../scraper/record/dom-changes/mutation-recorder';
-import { RecordedUserInput } from '../../../scraper/record/user-input/input-recorder';
+import { RecordedMutationGroup } from '../../../scraper/record/dom-changes/mutation-recorder';
 import { RecordedInputChannels, RecordingMetadata, SnapshotChunk } from '../../../scraper/types/types';
-import { AnnotationService } from '../../services/annotation/annotation-service';
-import { withDependencies } from '../../services/with-dependencies';
-import { eventsBetween } from '../utils/recording-data-utils';
+import { RecordingAnnotation } from '../../services/annotation/annotation-service';
 import { AnnotationSidebar } from './annotation-sidebar/annotation-sidebar';
 import { RecordingControls } from './footer-controls/footer-controls';
 import { RecordingPlayer } from './player/player';
@@ -29,7 +26,6 @@ class _RecordingViewer extends React.Component<ViewerProps, ViewerState> {
             playerTime: 0,
             isPlaying: false,
             showingAnnotations: false,
-            annotations: [],
             lastFrameTime: undefined,
             waitingOnBuffer: false
         }
@@ -53,7 +49,7 @@ class _RecordingViewer extends React.Component<ViewerProps, ViewerState> {
                                 />
                                 <AnnotationSidebar 
                                     expanded={ this.state.showingAnnotations }
-                                    annotations={ this.state.annotations } />
+                                    annotations={ this.availableAnnotations } />
                             </Fragment>
                     }
                 </div>
@@ -61,13 +57,13 @@ class _RecordingViewer extends React.Component<ViewerProps, ViewerState> {
             </Fragment>
     }
 
-    //TODO - Maybe go back and rethink snapshots (if we want them)
     private Controls() {
         return <RecordingControls 
                 duration={ this.props.duration }
                 time={ this.state.playerTime }
+                buffer={ this.props.bufferPos }
                 isPlaying={ this.state.isPlaying }
-                numAnnotations={ this.state.annotations.length }
+                numAnnotations={ this.availableAnnotations.length }
                 onPlay={ this.play }
                 onPause={ this.stop }
                 seek={ this.seek }
@@ -92,9 +88,7 @@ class _RecordingViewer extends React.Component<ViewerProps, ViewerState> {
 
     seek = (toTime: number) => {
         this.updateTime(toTime);
-        this.setState({
-            annotations: []
-        }, () => {
+        this.setState({ }, () => {
             this.play();
         });
     }
@@ -118,11 +112,9 @@ class _RecordingViewer extends React.Component<ViewerProps, ViewerState> {
                 this.updateTime(this.props.duration);
             } else {
                 if(this.state.isPlaying) {
-                    const { changes, inputs } = eventsBetween(this.props.changes, this.props.inputs, this.state.playerTime, currentTime);
                     this.updateTime(currentTime)
                     this.setState({ 
                         lastFrameTime: curr,
-                        annotations: this.props.annotationService.annotateChanges(changes, inputs, this.state.annotations) 
                     });
                     this.nextFrame();
                 }
@@ -150,18 +142,24 @@ class _RecordingViewer extends React.Component<ViewerProps, ViewerState> {
             })
         }
     }
+
+    get availableAnnotations() {
+        return this.props.annotations.filter(ann => ann.startTime < this.state.playerTime)
+    }
 }
 
-export const RecordingViewer = withStyles(styles)(withDependencies(_RecordingViewer, { annotationService: AnnotationService }));
+export const RecordingViewer = withStyles(styles)(_RecordingViewer);
 
 export interface ViewerProps extends WithStyles<typeof styles> {
     snapshots: SnapshotChunk[];
     inputs: RecordedInputChannels;
     changes: RecordedMutationGroup[];
+    annotations: RecordingAnnotation[]
+
     recordingMetadata: RecordingMetadata;
     duration: number;
+
     bufferPos: number;
-    annotationService: AnnotationService;
     onUpdateTime: (newTime: number) => void
 }
 
@@ -170,23 +168,5 @@ export interface ViewerState {
     lastFrameTime?: number;
     isPlaying: boolean;
     showingAnnotations: boolean;
-    annotations: RecordingAnnotation[];
     waitingOnBuffer: boolean;
-}
-
-export interface RecordingAnnotation {
-    description: string;
-    cause?: AnnotationCause;
-}
-
-export type AnnotationCause = InputCause | MutationCause;
-
-export interface InputCause {
-    type: 'input';
-    input: RecordedUserInput;
-} 
-
-export interface MutationCause {
-    type: 'mutation';
-    mutation: RecordedMutation
 }

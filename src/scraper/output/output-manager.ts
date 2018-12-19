@@ -1,10 +1,9 @@
-import axios from 'axios';
-import { DeepPartial, Without } from '../../common/utils/type-utils';
+import { Without } from '../../common/utils/type-utils';
 import * as template from '../../viewer/index.html';
 import { ScraperConfig } from '../scraper-config,';
-import { Recording, RecordingChunk, SnapshotChunk } from '../types/types';
+import { SnapshotChunk } from '../types/types';
 import { toJson } from '../utils/utils';
-import { compress, triggerDownload } from './output-utils';
+import { triggerDownload } from './output-utils';
 
 function serializeToViewer(data: Without<SnapshotChunk, "_id">) {
     return (template as any).replace(
@@ -21,24 +20,4 @@ export async function outputStandaloneSnapshot(data: Without<SnapshotChunk, "_id
 export async function outputDataSnapshot(data: Without<SnapshotChunk, "_id">, filename: string, config: ScraperConfig) {
     const serialized = toJson(data);
     triggerDownload(serialized, 'application/json; charset=UTF-8', filename, !config.debugMode);
-}
-
-export async function postToBackend(data: Without<RecordingChunk, "_id">, toRecording: string, config: ScraperConfig) {
-    const serialized = config.debugMode ? toJson(data): compress(toJson(data));
-    const url = `${config.backendUrl}/api/recordings/${toRecording}/chunks`;
-    const res = await axios.post(url, serialized, {
-        // Jury's out on whether this is idiomatic
-        headers: Object.assign({}, 
-            {'Content-Type': 'application/json'},
-            !config.debugMode ? {'Content-Encoding': 'deflate'} : null
-        )
-    });
-    return res.data._id;
-}
-
-export async function finalizeRecording(recordingId: string, config: ScraperConfig) {
-    const finalization: DeepPartial<Recording> = { 
-        finalized: true,
-    }
-    await axios.patch(`${config.backendUrl}/api/recordings/${recordingId}`, finalization)
 }
