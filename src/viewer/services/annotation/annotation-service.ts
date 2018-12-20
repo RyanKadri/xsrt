@@ -1,4 +1,5 @@
 import { injectable, multiInject } from "inversify";
+import { debounce } from "../../../common/utils/functional-utils";
 import { RecordedMutation, RecordedMutationGroup } from "../../../scraper/record/dom-changes/mutation-recorder";
 import { RecordedUserInput } from "../../../scraper/record/user-input/input-recorder";
 import { UserInputGroup } from "../../components/utils/recording-data-utils";
@@ -13,56 +14,51 @@ export class AnnotationService {
     constructor(
         @multiInject(IInputAnnotator) private annotators: InputAnnotator[]
     ) {}
-    
-    annotateChanges(_: RecordedMutationGroup[], inputGroup: UserInputGroup[], annotations: RecordingAnnotation[] = []) {
-        const newAnnotations = [...annotations];
-        for(const annotator of this.annotators) {
-            const annotationGroup = inputGroup.find(group => group.channel === annotator.type);
-            const lastInput = annotationGroup && annotationGroup.updates[annotationGroup.updates.length - 1];
-            if(lastInput) {
-                let replaced = false;
-                const annotationVal = annotator.annotate(lastInput);
-                if(annotationVal) {
-                    const newAnnotation: RecordingAnnotation = {
-                        ...annotationVal,
-                        cause: {
-                            type: "input" as 'input',
-                            input: lastInput
-                        },
-                        startTime: lastInput.timestamp
-                    };
-                    for(let i = 0; i < newAnnotations.length; i++) {
-                        const oldAnnotation = newAnnotations[i];
-                        if(oldAnnotation.cause !== undefined && oldAnnotation.cause.type === 'input'
-                                && annotator.shouldOverwrite(oldAnnotation.cause, lastInput)) {
-                            if(oldAnnotation.cause && oldAnnotation.cause.type === 'input' &&
-                                (lastInput.timestamp - oldAnnotation.cause.input.timestamp) < debounceTime) {
-                                newAnnotations[i] = newAnnotation;
-                                replaced = true;
-                            }
-                        }
-                    }
-                    if(!replaced) {
-                        newAnnotations.push(newAnnotation);
-                    }
-                }
+
+    annotate(_: RecordedMutationGroup[], inputGroups: UserInputGroup[]): RecordingAnnotation[] {
+        const annotationGroups: AnnotationGroup[] = this.annotators.map(annotator => {
+            const inputs = inputGroups.filter(group => group.name === annotator.type && group.elements.length > 0)
+            return {
+                annotator,
+                inputs: inputs.map(inp => inp.elements).flat()
             }
-        }
-        return newAnnotations;
+        }).filter(group => group.inputs.length > 0);
+
+        const debouncedGroups: AnnotationGroup[] = annotationGroups.map(group => {
+            return debounce(group.inputs, debounceTime, input => input.timestamp)
+                .map(inputs => ({
+                    annotator: group.annotator,
+                    inputs
+                }))
+        }).flat();
+
+        return debouncedGroups.map(group => {
+            const annotation = group.annotator.annotate(group.inputs[0]);
+            return {
+                ...annotation,
+                triggers: group.inputs.map(input => ({ type: 'input' as 'input', input })),
+                startTime: group.inputs[0].timestamp
+            }
+        })
     }
 
+}
+
+interface AnnotationGroup {
+    annotator: InputAnnotator;
+    inputs: RecordedUserInput[];
 }
 
 export interface InputAnnotator<T extends RecordedUserInput = RecordedUserInput> {
     listen: 'input';
     type: string;
     shouldOverwrite(rec: InputCause, evt: T): boolean;
-    annotate(inp: T): Pick<RecordingAnnotation, "description"> | null
+    annotate(inp: T): Pick<RecordingAnnotation, "description">
 }
 
 export interface RecordingAnnotation {
     description: string;
-    cause?: AnnotationCause;
+    triggers: AnnotationCause[];
     startTime: number
 }
 

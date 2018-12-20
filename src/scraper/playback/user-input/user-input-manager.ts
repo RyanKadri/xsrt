@@ -1,7 +1,8 @@
-import { RecordedUserInput } from "../../record/user-input/input-recorder";
+import { groupToMap, pluck } from "@common/utils/functional-utils";
 import { injectable, multiInject } from "inversify";
+import { Group } from "../../../common/utils/type-utils";
+import { RecordedUserInput } from "../../record/user-input/input-recorder";
 import { UserInputInterpolator } from "./interpolation/user-input-interpolator";
-import { pluck, groupToMap } from "@common/utils/functional-utils";
 
 export const IPlaybackHandler = Symbol('IPlaybackHandler');
 
@@ -17,21 +18,16 @@ export class UserInputPlaybackManager {
         this.channelHandlers = groupToMap(channelHandlers, pluck('channels'))
     }
 
-    simulateUserInputs(updates: UserInputSimulationRequest[]) {
-        updates.forEach(update => {
-            const handlers = this.channelHandlers.get(update.channel) || [];
-            const interpolatedUpdates = this.interpolationManager.interpolate(update.channel, update.updates);
+    simulateUserInputs(groups: Group<RecordedUserInput>[]) {
+        groups.forEach(group => {
+            const handlers = this.channelHandlers.get(group.name) || [];
+            const interpolatedUpdates = this.interpolationManager.interpolate(group.name, group.elements);
             handlers.forEach(handler => {
                 handler.simulateInput(interpolatedUpdates);
             })
         })
     }
 
-}
-
-export interface UserInputSimulationRequest {
-    channel: string;
-    updates: RecordedUserInput[]; // New inputs since the last frame
 }
 
 export interface UserInputPlaybackHelper<InputType extends RecordedUserInput = RecordedUserInput> {

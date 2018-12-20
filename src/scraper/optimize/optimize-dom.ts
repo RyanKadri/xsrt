@@ -1,5 +1,5 @@
-import { ScrapedHtmlElement, ScrapedElement } from "../types/types";
-import { OptimizationContext, NodeOptimizationResult } from "./optimize";
+import { ScrapedElement, ScrapedHtmlElement } from "../types/types";
+import { NodeOptimizationResult, OptimizationContext } from "./optimize";
 import { optimizeStyle } from "./optimize-styles";
 
 export function optimizeNode(root: ScrapedElement, context: OptimizationContext): NodeOptimizationResult {
@@ -43,7 +43,7 @@ function optimizeImage(node: ScrapedHtmlElement, context: OptimizationContext): 
             ...node,
             attributes: node.attributes.map(attr => 
                 attr.name === 'src'
-                    ? { ...attr, value: `##${assetInd}##`, references: ['' + assetInd]}
+                    ? { ...attr, value: `##${assetInd}##`, references: [assetInd]}
                     : attr
             )
         },

@@ -1,9 +1,9 @@
+import { createStyles, Drawer, List, ListSubheader, Theme, Typography, withStyles, WithStyles } from "@material-ui/core";
 import React from "react";
-import { withStyles, Drawer, List, ListSubheader, WithStyles, createStyles, Typography } from "@material-ui/core";
-import { LinkListItem } from "../../common/link-list-item";
 import { SiteTarget } from "../../../../common/db/targets";
+import { LinkListItem } from "../../common/link-list-item";
 
-const styles = theme => createStyles({
+const styles = (theme: Theme) => createStyles({
     nested: {
         paddingLeft: theme.spacing.unit * 2
     },

@@ -1,8 +1,9 @@
 import { inject, injectable } from "inversify";
+import { pluck, sortAsc } from "../common/utils/functional-utils";
 import { Without } from "../common/utils/type-utils";
 import { RecorderApiService } from "./api/recorder-api-service";
 import { RecordingInfo, RecordingStateService } from "./api/recording-state-service";
-import { mergeChanneledInputs } from "./record/user-input/input-utils";
+import { mergeMaps } from "./record/user-input/input-utils";
 import { Recorder } from "./recorder";
 import { ScraperConfig, ScraperConfigToken } from "./scraper-config,";
 import { PendingDiffChunk, PendingSnapshotChunk, RecordingChunk, SnapshotChunk } from "./types/types";
@@ -66,7 +67,7 @@ export class RecorderOrchestrator {
         return {
             ...snapshot,
             changes: snapshot.changes.concat(diff.changes),
-            inputs: mergeChanneledInputs(snapshot.inputs, diff.inputs)
+            inputs: mergeMaps(snapshot.inputs, diff.inputs, sortAsc(pluck("timestamp")))
         }
     }
 
@@ -81,7 +82,7 @@ export class RecorderOrchestrator {
         }
     }
 
-    private reportErr(err) {
+    private reportErr(err: Error) {
         console.log(err);
     }
 }

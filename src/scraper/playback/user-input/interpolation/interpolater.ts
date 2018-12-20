@@ -1,7 +1,8 @@
 import { nCopies } from "@common/utils/functional-utils";
+import { MapTo } from "../../../../common/utils/type-utils";
 
 export function interpolator<T>(nIntermediate: number, interpolators: InterpolationTypes<T>) {
-    const interpolated = Object.entries(interpolators)
+    const interpolated = Object.entries(interpolators as MapTo<InterpolationFunction<any>>)
         .map(([key, intFn]) => {
             return {
                 key,
@@ -14,9 +15,10 @@ export function interpolator<T>(nIntermediate: number, interpolators: Interpolat
         for(let i = 0; i < nIntermediate; i++) {
             additional.push({ ...fromA as any });
         }
-        interpolated.forEach((int) => {
-            int.values(fromA[int.key], toB[int.key]).forEach((val, i) => {
-                additional[i][int.key] = val;
+        interpolated.forEach(int => {
+            const key = int.key as keyof T;
+            int.values(fromA[key], toB[key]).forEach((val, i) => {
+                additional[i][key] = val;
             })
         });
         return [fromA, ...additional, toB]
@@ -35,8 +37,8 @@ export const linear: InterpolationFunction<number> = (nVals) => {
     }
 }
 
-export const flipHalfway: InterpolationFunction<any> = (numSteps: number) => {
-    return function<T>(first: T, second: T) {
+export const flipHalfway: InterpolationFunction<any> = <T>(numSteps: number) => {
+    return function(first: T, second: T) {
         return [
             ...nCopies(first, Math.floor(numSteps / 2)),
             ...nCopies(second, Math.ceil(numSteps / 2))

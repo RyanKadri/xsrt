@@ -1,4 +1,5 @@
 import { injectable } from "inversify";
+import { DomPreviewService } from "../../../scraper/playback/dom-preview-service";
 import { RecordedInputChangeEvent } from "../../../scraper/record/user-input/input-event-recorder";
 import { InputAnnotator } from "./annotation-service";
 
@@ -8,26 +9,28 @@ export class InputEventAnnotator implements InputAnnotator<RecordedInputChangeEv
     readonly type = 'input';
 
     constructor(
+        private domPreviewService: DomPreviewService
     ) { } 
 
-    // TODO - Improve this to not overwrite annotations for checkboxes. Depends on better domManager (across navs)
     shouldOverwrite() {
         return true;
     }
 
     annotate(input: RecordedInputChangeEvent) {
-        const description = this.formDescription(input.value);
-        if(!description) {
-            return null;
-        } else {
-            return {
-                description,
-            }
+        const preview = this.domPreviewService.previewNode(input.target, input.timestamp);
+        if(preview.type !== 'element') throw new Error("The input event has recorded an invalid target");
+        const description = this.formDescription(input.value, preview.attributes.type);
+        return {
+            description,
         }
     }
 
-    // TODO - Support checkboxes / other inputs after above work
-    private formDescription(value: string | boolean) {
-        return `User entered ${ value } in a form field`;
+    private formDescription(value: string | boolean, type: string) {
+        switch(type) {
+            case 'checkbox':
+                return `User ${ value === true ? 'checked' : 'unchecked' } a checkbox`
+            default:
+                return `User entered ${ value } in a form field`;
+        }
     }
 }

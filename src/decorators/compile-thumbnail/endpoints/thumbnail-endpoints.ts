@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, Router } from "express";
 import { injectable } from "inversify";
 import { Recording } from "../../../common/db/recording";
 import { RouteHandler } from "../../../common/server/express-server";
@@ -12,7 +12,7 @@ export class ThumbnailRouteHandler implements RouteHandler {
     ) {}
     readonly base = "/decorate";
     
-    decorateRouter(router) {
+    decorateRouter(router: Router) {
         router.route('/thumbnails')
             .post(this.compileThumbnail);
 

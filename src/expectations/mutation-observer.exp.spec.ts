@@ -43,7 +43,7 @@ describe(`Mutation Observer Expectations`, () => {
         return tags.map(tag => document.createElement(tag))
     }
 
-    function generateMutationsFor(changeCb) {
+    function generateMutationsFor(changeCb: () => HTMLElement) {
         let mutationGroups: MutationRecord[][] = [];
         const obs = new MutationObserver(e => mutationGroups.push(e));
         obs.observe(document.documentElement!, {

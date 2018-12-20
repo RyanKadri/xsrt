@@ -11,3 +11,12 @@ export type DeepPartial<T> = {
         ? ReadonlyArray<DeepPartial<U2>>
         : DeepPartial<T[P]>
 };
+
+export type MapTo<T> = {
+  [channel: string]: T
+}
+
+export interface Group<T> {
+  name: string;
+  elements: T[];
+}

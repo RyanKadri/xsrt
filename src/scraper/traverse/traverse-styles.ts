@@ -1,7 +1,7 @@
-import { matchesMedia } from "../utils/utils";
-import { ScrapedStyleRule } from "../types/types";
 import { shouldIncludeRule } from "../filter/filter-styles";
 import { transformRule } from "../transform/transform-styles";
+import { ScrapedStyleRule } from "../types/types";
+import { matchesMedia } from "../utils/utils";
 
 export function extractStyleInfo(styleSheet: CSSStyleSheet): ScrapedStyleRule[] {
     return extractRules(styleSheet)
@@ -41,7 +41,7 @@ function extractExtras(rule: CSSRule) {
     } else if(rule instanceof CSSKeyframeRule || rule instanceof CSSKeyframesRule) {
         return { type: 'keyframe' };
     } else if(rule instanceof CSSFontFaceRule) {
-        return { type: 'font-face', src: rule.style['src'] }
+        return { type: 'font-face', src: (rule.style as CSSStyleDeclaration & { src: string }).src }
     } else if(rule instanceof CSSImportRule) {
         return { type: 'import', src: rule.href }
     } else {

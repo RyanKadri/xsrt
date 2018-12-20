@@ -1,9 +1,12 @@
 import { createStyles, Theme, withStyles, WithStyles } from "@material-ui/core";
 import React from "react";
 import { pluck, sortAsc } from "../../../common/utils/functional-utils";
+import { Group } from "../../../common/utils/type-utils";
+import { DomPreviewService } from "../../../scraper/playback/dom-preview-service";
 import { RecordedMutationGroup } from "../../../scraper/record/dom-changes/mutation-recorder";
-import { mergeChanneledInputs } from "../../../scraper/record/user-input/input-utils";
-import { RecordedInputChannels, Recording, RecordingChunk, SnapshotChunk } from "../../../scraper/types/types";
+import { RecordedUserInput } from "../../../scraper/record/user-input/input-recorder";
+import { convertMapToGroups, mergeGroups } from "../../../scraper/record/user-input/input-utils";
+import { Recording, RecordingChunk, SnapshotChunk } from "../../../scraper/types/types";
 import { AnnotationService, RecordingAnnotation } from "../../services/annotation/annotation-service";
 import { ChunkApiService } from "../../services/chunk-api-service";
 import { RecordingResolver } from "../../services/recording-service";
@@ -35,7 +38,7 @@ class _RecordingView extends React.Component<RecordingViewData, RecordingViewSta
 
             snapshots: [],
             changes: [],
-            inputs: {},
+            inputs: [],
             annotations: []
         }
     }
@@ -83,13 +86,17 @@ class _RecordingView extends React.Component<RecordingViewData, RecordingViewSta
                 .sort(this.sortSnapshot)
             const changes = oldState.changes.concat(chunk.changes)
                 .sort(this.sortByTimestamp)
-            const inputs = mergeChanneledInputs(oldState.inputs, chunk.inputs);
+            const inputs = mergeGroups(oldState.inputs, convertMapToGroups(chunk.inputs), this.sortByTimestamp);
 
             const retrievedChunks = oldState.retrievedChunks.concat(chunk._id);
             const bufferPos = this.calcBuffer(retrievedChunks);
 
             const allEvents = eventsBetween(changes, inputs, 0, bufferPos);
-            const annotations = this.props.annotationService.annotateChanges(allEvents.changes, allEvents.inputs, oldState.annotations);
+            this.props.previewService.registerUpdate({
+                changes,
+                snapshots
+            })
+            const annotations = this.props.annotationService.annotate(allEvents.changes, allEvents.inputs);
             return {
                 snapshots,
                 changes, 
@@ -127,7 +134,8 @@ export const RecordingView = withStyles(styles)(
         withData(_RecordingView, { recording: RecordingResolver }),
         { 
             chunkService: ChunkApiService,
-            annotationService: AnnotationService
+            annotationService: AnnotationService,
+            previewService: DomPreviewService
         }
     )
 )
@@ -135,13 +143,14 @@ export const RecordingView = withStyles(styles)(
 export interface RecordingViewData extends WithStyles<typeof styles> {
     recording: Recording;
     chunkService: ChunkApiService;
-    annotationService: AnnotationService
+    annotationService: AnnotationService,
+    previewService: DomPreviewService
 }
 
 export interface RecordingViewState {
     snapshots: SnapshotChunk[];
     changes: RecordedMutationGroup[];
-    inputs: RecordedInputChannels;
+    inputs: Group<RecordedUserInput>[];
     annotations: RecordingAnnotation[]
 
     bufferPos: number;

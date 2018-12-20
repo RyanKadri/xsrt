@@ -17,13 +17,15 @@ export class RecordingOptimizer {
             const assets = await this.resolver.resolveAssets(context.assets);
             return { 
                 ...data,
-                snapshot: { documentMetadata: data.snapshot.documentMetadata, root: await root as OptimizedHtmlElementInfo},
+                snapshot: { 
+                    documentMetadata: data.snapshot.documentMetadata, 
+                    root: await root as OptimizedHtmlElementInfo
+                },
                 assets
             };
         } else {
             throw new Error('Not sure yet how to optimize diff chunks')
         }
-    
     }
     
     private optimizeSubtree = (root: ScrapedElement, inContext: OptimizationContext): OptimizationResult => {

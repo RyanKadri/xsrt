@@ -1,6 +1,6 @@
 import { Button, createStyles, ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, FormControlLabel, Switch, TextField, Theme, Typography, withStyles, WithStyles } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import React, { FormEvent } from "react";
+import React, { ChangeEvent, FormEvent } from "react";
 import { ExtensionConfig } from "../../config/extension-config";
 
 const styles = (theme: Theme) => createStyles({
@@ -56,7 +56,7 @@ class _ConfigForm extends React.Component<ConfigFormProps, ConfigFormState> {
     }
 
     private updateField = (field: keyof ExtensionConfig) => {
-        return (evt) => {
+        return (evt: ChangeEvent<HTMLInputElement>) => {
             const target = evt.currentTarget;
             this.setState(oldState => ({
                 config: {

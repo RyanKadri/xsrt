@@ -1,5 +1,6 @@
 import { group, pluck } from "@common/utils/functional-utils";
 import { injectable, multiInject } from "inversify";
+import { MapTo } from "../../../common/utils/type-utils";
 import { RecordingDomManager } from "../../traverse/traverse-dom";
 import { RecordedInputChannels, ScrapedElement } from "../../types/types";
 import { TimeManager } from "../../utils/time-manager";
@@ -17,8 +18,8 @@ export const IUserInputRecorder = Symbol.for('IUserInputRecorder');
 export class CompleteInputRecorder {
 
     private events: RecordedInputChannels = {};
-    private handlers: {[ channel: string]: UserInputRecorder} = {};
-    private listeners: { channel: string, listener: (e) => void }[] = [];
+    private handlers: MapTo<UserInputRecorder> = {};
+    private listeners: { channel: string, listener: (e: Event) => void }[] = [];
     
     constructor(
         private domWalker: RecordingDomManager,
@@ -29,7 +30,7 @@ export class CompleteInputRecorder {
             .reduce((acc, el) => {
                 acc[el.group] = el.items[0];
                 return acc;
-            }, {})
+            }, {} as MapTo<UserInputRecorder>)
     }
     
     start() {
@@ -49,7 +50,7 @@ export class CompleteInputRecorder {
             .reduce((acc, key) => {
                 acc[key] = [];
                 return acc;
-            }, { })
+            }, { } as RecordedInputChannels)
         return events;
     }
 
@@ -110,7 +111,7 @@ export interface UserInputRecorder<EventType = Event, RecordedType = RecordedUse
     channels: string[];
     handle(event: EventType, context: RecordedEventContext): Partial<RecordedType> | null;
     listen: 'document' | 'window'
-    start?();
+    start?(): void;
     stop?(): void;
 }
 

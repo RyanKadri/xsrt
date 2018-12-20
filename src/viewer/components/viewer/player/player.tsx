@@ -5,7 +5,7 @@ import React from "react";
 import { between } from "../../../../common/utils/functional-utils";
 import { RecordedMutationGroup } from "../../../../scraper/record/dom-changes/mutation-recorder";
 import { RecordedResize } from "../../../../scraper/record/user-input/resize-recorder";
-import { RecordedInputChannels, RecordingMetadata, SnapshotChunk } from "../../../../scraper/types/types";
+import { RecordingMetadata, SnapshotChunk } from "../../../../scraper/types/types";
 import { withDependencies } from "../../../services/with-dependencies";
 import { eventsBetween, UserInputGroup } from "../../utils/recording-data-utils";
 
@@ -84,9 +84,9 @@ class _RecordingPlayer extends React.Component<PlayerInput, PlayerState> {
     }
 
     private checkPlayerResize(inputGroups: UserInputGroup[]) {
-        const resizeGroup = inputGroups.find(group => group.channel === 'resize');
-        if(resizeGroup && resizeGroup.updates.length > 0) {
-            const lastResize = resizeGroup.updates[resizeGroup.updates.length - 1] as RecordedResize;
+        const resizeGroup = inputGroups.find(group => group.name === 'resize');
+        if(resizeGroup && resizeGroup.elements.length > 0) {
+            const lastResize = resizeGroup.elements[resizeGroup.elements.length - 1] as RecordedResize;
             this.setState({
                 height: lastResize.height,
                 width: lastResize.width
@@ -136,7 +136,7 @@ export interface PlayerInput extends WithStyles<typeof styles> {
     recordingMetadata: RecordingMetadata;
     snapshots: SnapshotChunk[];
     changes: RecordedMutationGroup[];
-    inputs: RecordedInputChannels;
+    inputs: UserInputGroup[];
     currentTime: number;
     isPlaying: boolean;
     playbackManager: PlaybackManager

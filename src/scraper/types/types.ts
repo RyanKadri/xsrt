@@ -1,4 +1,4 @@
-import { Without } from "../../common/utils/type-utils";
+import { MapTo, Without } from "../../common/utils/type-utils";
 import { RecordedMutationGroup } from "../record/dom-changes/mutation-recorder";
 import { RecordedUserInput } from "../record/user-input/input-recorder";
 
@@ -18,7 +18,7 @@ export interface ScrapedTextElement extends OptimizedTextElementInfo {
 export interface ScrapedAttribute {
     name: string;
     value: string;
-    references?: string[];
+    references?: number[];
 }
 
 export type ScrapedStyleRule = ScrapedMediaRule | ScrapedFontFaceRule | ScrapedSupportsRule | BasicRule | ImportRule | KeyframesRule;
@@ -159,13 +159,11 @@ export interface LocationMetadata {
     path: string;
 }
 
-export type RecordedInputChannels = {
-    [channel: string]: RecordedUserInput[];
-}
+export type RecordedInputChannels = MapTo<RecordedUserInput[]>;
 
 export interface OptimizedStyleRule {
     text: string;
-    references?: string[];
+    references?: number[];
 }
 
 export interface OptimizedHtmlElementInfo {

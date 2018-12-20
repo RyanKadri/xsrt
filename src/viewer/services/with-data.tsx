@@ -1,13 +1,13 @@
-import { ComponentType } from "react";
-import { Omit } from "../../common/utils/type-utils";
-import React from "react";
-import { PlayerContainer } from "../inversify.player";
+import { interfaces } from "inversify";
+import React, { ComponentType } from "react";
 import { RouteComponentProps } from "react-router";
+import { Omit } from "../../common/utils/type-utils";
+import { PlayerContainer } from "../inversify.player";
 
 export function withData<P, K extends keyof P>(DIComponent: ComponentType<P>, resolvers: DataResolvers<K>): ComponentType<Omit<P, K> & { routeParams: RouteComponentProps }> {
     return class WithData extends React.Component<Omit<P, K> & { routeParams: RouteComponentProps }, WithDataState> {
         
-        constructor(props) {
+        constructor(props: Omit<P, K> & { routeParams: RouteComponentProps }) {
             super(props);
             this.state = {
                 data: [],
@@ -40,7 +40,7 @@ export function withData<P, K extends keyof P>(DIComponent: ComponentType<P>, re
         private update() {
             const loadingResolvers = Object.entries(resolvers)
                 .map(([field, resolver]) => {
-                    const resolvePromise = PlayerContainer.get<Resolver>(resolver).resolve(this.props.routeParams)
+                    const resolvePromise = PlayerContainer.get<Resolver>(resolver as interfaces.Newable<Resolver>).resolve(this.props.routeParams)
                         .then(data => this.setState(oldState => ({
                             loadingResolvers: (oldState.loadingResolvers || []).filter(prom => prom.field !== field),
                             data: [
@@ -57,7 +57,7 @@ export function withData<P, K extends keyof P>(DIComponent: ComponentType<P>, re
     }
 }
 
-export type DataResolvers<K extends string | number | symbol> = { [key in K]: (new (...args) => Resolver) }
+export type DataResolvers<K extends string | number | symbol> = { [key in K]: interfaces.Newable<Resolver> }
 
 export interface Resolver {
     resolve(routeParams: RouteComponentProps): Promise<any>

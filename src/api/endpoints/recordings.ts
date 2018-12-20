@@ -88,7 +88,7 @@ export class RecordingRouteHandler implements RouteHandler {
         }
     }
 
-    private extractUADetails(ua): UADetails {
+    private extractUADetails(ua: any): UADetails {
         return {
             browser: ua.getBrowser(),
             os: ua.getOS(),
@@ -112,7 +112,7 @@ export class RecordingRouteHandler implements RouteHandler {
                 "chunks.snapshot": 0,
                 "chunks.assets": 0
             }}
-        ], (err, data: Recording) => {
+        ], (err: string, data: Recording[]) => {
             return err
                 ? resp.json({ error: err })
                 : resp.json(data[0])

@@ -50,7 +50,7 @@ module.exports = {
   // forceCoverageMatch: [],
 
   // A path to a module which exports an async function that is triggered once before all test suites
-  // globalSetup: null,
+  // globalSetup: './jest.setup.js',
 
   // A path to a module which exports an async function that is triggered once after all test suites
   // globalTeardown: null,
@@ -99,7 +99,7 @@ module.exports = {
   resetMocks: false,
 
   // Reset the module registry before running each individual test
-  // resetModules: false,
+  resetModules: false,
 
   // A path to a custom resolver
   // resolver: null,
@@ -119,7 +119,7 @@ module.exports = {
   // runner: "jest-runner",
 
   // The paths to modules that run some code to configure or set up the testing environment before each test
-  // setupFiles: [],
+  setupFiles: ['./jest.setup.js'],
 
   // The path to a module that runs some code to configure or set up the testing framework before each test
   // setupTestFrameworkScriptFile: null,

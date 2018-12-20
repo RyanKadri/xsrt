@@ -7,7 +7,7 @@
     "downlevelIteration": true,
 
     "strict": true,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "alwaysStrict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,

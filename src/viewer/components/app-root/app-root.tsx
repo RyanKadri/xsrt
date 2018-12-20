@@ -21,7 +21,7 @@ const styles = createStyles({
 
 class _AppRoot extends React.Component<AppProps, AppState> {
 
-    constructor(props) {
+    constructor(props: AppProps) {
         super(props)
         this.state = {
             sidebarExpanded: false,

@@ -19,7 +19,7 @@ export class DomManager {
         if(this._document) {
             return this._document;
         } else {
-            throw new Error('Document was never provided');
+            throw new Error('DOM Manager not initialized');
         }
     }
 
@@ -91,7 +91,8 @@ export class DomManager {
         const created = node.type === 'element'
             ? this.createElement(node, currNS)
             : this.document.createTextNode(node.content);
-        created['debug-scrape-data'] = node;
+
+        (created as any)['debug-scrape-data'] = node;
 
         this.nodeMapping.set(node.id, created);
         if(before) {
@@ -171,7 +172,7 @@ export class DomManager {
         node.setAttribute(attr.name, val);
     }
     
-    private replaceReferences(valWithRefs: string, references: string[]) {        
+    private replaceReferences(valWithRefs: string, references: number[]) {        
         references.forEach(ref => {
             valWithRefs = valWithRefs.replace(`##${ref}##`, this.assets[ref]);
         })

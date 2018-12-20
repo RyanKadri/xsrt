@@ -1,7 +1,7 @@
-import { injectable, inject } from "inversify";
 import Axios from "axios";
+import { inject, injectable } from "inversify";
+import { ScraperConfig, ScraperConfigToken } from "../scraper-config,";
 import { toDataUrl } from "../utils/utils";
-import { ScraperConfigToken, ScraperConfig } from "../scraper-config,";
 
 @injectable()
 export class AssetResolver {
@@ -13,7 +13,7 @@ export class AssetResolver {
     async resolveAssets(assets: string[]): Promise<string[]> {
         try {
             const requestUrls = assets.map(asset => this.resolveFullRequestUrl(asset));
-            const res = await Axios.post(`${this.config.backendUrl}/api/proxy`, { urls: requestUrls });
+            const res = await Axios.post<{assets: string[]}>(`${this.config.backendUrl}/api/proxy`, { urls: requestUrls });
             return res.data.assets.map(asset => `/api/proxy/${asset}`);
         } catch (e) {
             return Promise.all(

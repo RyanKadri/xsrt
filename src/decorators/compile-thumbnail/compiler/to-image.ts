@@ -1,5 +1,6 @@
 import { injectable } from "inversify";
-import { launch, Browser, LaunchOptions } from 'puppeteer';
+import { Browser, launch, LaunchOptions } from 'puppeteer';
+import { ViewportSize } from "../../../viewer/bootstrap/bootstrap-screenshot";
 import { DecoratorConfig } from "../../decorator-server-config";
 
 @injectable()
@@ -33,7 +34,7 @@ export class ThumbnailCompiler {
             await page.goto(`${this.decoratorConfig.staticScreenshotUrl}?recording=${forRecording}`);
             await page.waitForFunction(`window['targetViewport']`, { polling: 100 });
     
-            const targetViewport = await page.evaluate(`window['targetViewport']`);
+            const targetViewport: ViewportSize = await page.evaluate(`window['targetViewport']`);
             await page.setViewport({ height: targetViewport.height, width: targetViewport.width });
             
             const fileName = `${forRecording}.png`

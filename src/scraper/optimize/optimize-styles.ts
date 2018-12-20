@@ -1,7 +1,7 @@
-import { ScrapedStyleRule, OptimizedStyleRule, ScrapedHtmlElement, ScrapedTextElement, OptimizedStyleElement } from "../types/types";
-import { OptimizationContext, NodeOptimizationResult } from "./optimize";
 import { extractStyleInfo } from "../traverse/traverse-styles";
+import { OptimizedStyleElement, OptimizedStyleRule, ScrapedHtmlElement, ScrapedStyleRule, ScrapedTextElement } from "../types/types";
 import { matchesMedia } from "../utils/utils";
+import { NodeOptimizationResult, OptimizationContext } from "./optimize";
 
 export function optimizeStyle(styleEl: ScrapedHtmlElement, initContext: OptimizationContext): NodeOptimizationResult {
     if(isLinkStylesheet(styleEl) || !shouldIncludeSheet(styleEl)) {
@@ -43,7 +43,7 @@ function stripChildText(children: ScrapedTextElement[]) {
 function trimRule(rule: ScrapedStyleRule): OptimizedStyleRule {
     return {
         text: rule.text,
-        references: rule.references && rule.references.length > 0 ? rule.references : undefined
+        references: rule.references && rule.references.length > 0 ? rule.references.map(ref => parseInt(ref)) : undefined
     }
 }
 
@@ -112,6 +112,6 @@ export function normalizeUrl(url: string, source?: string) {
         : source.replace(/\/[^\/]*?$/, '/' + url);
 }
 
-function urlIsAbsolute(url) {
+function urlIsAbsolute(url: string) {
     return url.startsWith('/') || url.startsWith('http://') || url.startsWith('https://')
 }

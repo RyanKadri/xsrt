@@ -1,9 +1,10 @@
-import { CircularProgress, createStyles, Theme, withStyles, WithStyles } from '@material-ui/core';
+import { createStyles, Theme, Typography, withStyles, WithStyles } from '@material-ui/core';
 import * as React from 'react';
 import { Fragment } from 'react';
 import { RecordedMutationGroup } from '../../../scraper/record/dom-changes/mutation-recorder';
-import { RecordedInputChannels, RecordingMetadata, SnapshotChunk } from '../../../scraper/types/types';
+import { RecordingMetadata, SnapshotChunk } from '../../../scraper/types/types';
 import { RecordingAnnotation } from '../../services/annotation/annotation-service';
+import { UserInputGroup } from '../utils/recording-data-utils';
 import { AnnotationSidebar } from './annotation-sidebar/annotation-sidebar';
 import { RecordingControls } from './footer-controls/footer-controls';
 import { RecordingPlayer } from './player/player';
@@ -37,7 +38,7 @@ class _RecordingViewer extends React.Component<ViewerProps, ViewerState> {
                 <div className={ classes.recordingSpace }>
                     {
                         this.props.snapshots.length === 0
-                            ? <CircularProgress color="secondary" />
+                            ? <Typography>Loading</Typography>// <CircularProgress color="secondary" />
                             : <Fragment>
                                 <RecordingPlayer 
                                     snapshots={ this.props.snapshots }
@@ -152,7 +153,7 @@ export const RecordingViewer = withStyles(styles)(_RecordingViewer);
 
 export interface ViewerProps extends WithStyles<typeof styles> {
     snapshots: SnapshotChunk[];
-    inputs: RecordedInputChannels;
+    inputs: UserInputGroup[];
     changes: RecordedMutationGroup[];
     annotations: RecordingAnnotation[]
 

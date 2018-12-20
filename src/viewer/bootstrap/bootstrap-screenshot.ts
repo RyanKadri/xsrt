@@ -14,11 +14,20 @@ import { Recording, SnapshotChunk } from "../../scraper/types/types";
         const initChunk: SnapshotChunk = await fetch(`/api/chunks/${chunkId}`).then(resp => resp.json())
 
         await domManager.createInitialDocument(initChunk);
-        const { viewportHeight, viewportWidth } = initChunk.snapshot.documentMetadata
-        window['targetViewport'] = {
+        const { viewportHeight, viewportWidth } = initChunk.snapshot.documentMetadata;
+        (window as WindowWithViewport).targetViewport = {
             height: viewportHeight,
             width: viewportWidth
         }
 
     }
 })()
+
+type WindowWithViewport = Window & {
+    targetViewport: ViewportSize
+}
+
+export interface ViewportSize {
+    height: number;
+    width: number;
+}

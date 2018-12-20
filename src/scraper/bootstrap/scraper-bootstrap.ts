@@ -104,7 +104,7 @@ import containerHTML from './widget.html';
         }
     }
 
-    function el(tagName, content): HTMLElement {
+    function el(tagName: string, content: string): HTMLElement {
         const thisEl = document.createElement(tagName);
         thisEl.innerHTML = content;
         return thisEl;

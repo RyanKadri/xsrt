@@ -1,7 +1,7 @@
-import { ExtensionMessageResponse, ExtensionMessage } from "./site-channel-types";
+import { ExtensionMessage, ExtensionMessageResponse } from "./site-channel-types";
 
 let messageId = 0;
-const activeMessages = new Map<number, (resp) => void>();
+const activeMessages = new Map<number, (resp: () => void) => void>();
 
 export function postToSite(message: any) {
     return new Promise<any>((resolve) => {
