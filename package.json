@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start:viewer": "webpack-dev-server --mode development --config-name viewer-frontend",
+    "build:viewer": "webpack --mode production --config-name viewer-frontend",
     "build:bootstrap": "webpack --mode development --config-name bootstrap-scripts",
     "build:extension": "webpack --watch --mode development --config-name compile-extension",
     "test": "jest --watchAll --runInBand"

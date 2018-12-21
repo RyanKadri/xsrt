@@ -3,10 +3,13 @@ import { pluck, sortAsc } from "../common/utils/functional-utils";
 import { Without } from "../common/utils/type-utils";
 import { RecorderApiService } from "./api/recorder-api-service";
 import { RecordingInfo, RecordingStateService } from "./api/recording-state-service";
+import { chunkMutationLimit } from "./record/dom-changes/mutation-tracker";
 import { mergeMaps } from "./record/user-input/input-utils";
 import { Recorder } from "./recorder";
 import { ScraperConfig, ScraperConfigToken } from "./scraper-config,";
+import { RecordingDomManager } from "./traverse/traverse-dom";
 import { PendingDiffChunk, PendingSnapshotChunk, RecordingChunk, SnapshotChunk } from "./types/types";
+import { EventService } from "./utils/event-service";
 
 @injectable()
 export class RecorderOrchestrator {
@@ -16,6 +19,8 @@ export class RecorderOrchestrator {
         private recorderState: RecordingStateService,
         private recorder: Recorder,
         @inject(ScraperConfigToken) private config: ScraperConfig,
+        private eventService: EventService,
+        private domWalker: RecordingDomManager
     ) { }
 
     private initInfoTask?: Promise<RecordingInfo>
@@ -40,7 +45,10 @@ export class RecorderOrchestrator {
             .then(([ optimized ]) => {
                     this.sentInitChunk = true;
                     this.reportChunk(optimized, false);
+            }).then(() => {
+                this.startCollectingDiffs();
             })
+        
     }
 
     onStop = async (isUnloading: boolean) => {
@@ -61,6 +69,15 @@ export class RecorderOrchestrator {
         } else {
             this.reportChunk(leftovers, isUnloading);
         }
+        console.log(this.domWalker.dump());
+    }
+
+    private startCollectingDiffs() {
+        // TODO - requestIdleCallback maybe?
+        this.eventService.addEventListener(chunkMutationLimit, () => {
+            const diff = this.recorder.dumpDiff(false);
+            this.reportChunk(diff, false);
+        })
     }
 
     private mergeLeftovers(snapshot: PendingSnapshotChunk, diff: PendingDiffChunk): PendingSnapshotChunk {

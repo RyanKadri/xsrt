@@ -27,7 +27,9 @@ import containerHTML from './widget.html';
 
         const config: ScraperConfig = {
             debugMode,
-            backendUrl: 'http://localhost:3001'
+            backendUrl: 'http://localhost:3001',
+            mutationsPerChunk: 1500,
+            inputsPerChunk: 1000
         };
 
         recorder = new RecorderInitializer();

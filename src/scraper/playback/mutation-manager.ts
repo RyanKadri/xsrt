@@ -1,6 +1,6 @@
-import { RecordedMutationGroup, AttributeMutation, ChangeTextMutation, OptimizedMutation, OptimizedChildrenMutation } from "../record/dom-changes/mutation-recorder";
-import { DomManager } from "./dom-manager";
 import { injectable } from "inversify";
+import { AttributeMutation, ChangeTextMutation, OptimizedChildrenMutation, OptimizedMutation, RecordedMutationGroup } from "../record/dom-changes/mutation-recorder";
+import { DomManager } from "./dom-manager";
 
 @injectable()
 export class MutationManager {

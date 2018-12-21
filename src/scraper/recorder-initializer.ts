@@ -1,11 +1,10 @@
-import { injectable } from "inversify";
+import 'reflect-metadata';
 import { RecorderApiService } from "./api/recorder-api-service";
 import { RecordingStateService } from "./api/recording-state-service";
 import { RecorderContainer } from "./inversify.recorder";
 import { RecorderOrchestrator } from "./recorder-orchestrator";
 import { ScraperConfig, ScraperConfigToken } from "./scraper-config,";
 
-@injectable()
 export class RecorderInitializer {
 
     private recordingState = new RecordingStateService();

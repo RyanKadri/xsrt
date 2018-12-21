@@ -23,4 +23,18 @@ export function findInTree<T>(root: T, predicate: (node: T) => boolean, fetchChi
     }
 }
 
+export function treeReduce<T, R>(root: T, reducer: (acc: R, node: T) => R, fetchChildren: FetchChildrenCallback<T>, init: R) {
+    let res = reducer(init, root);
+    const children = fetchChildren(root);
+    for(const child of children || []) {
+        res = treeReduce(child, reducer, fetchChildren, res);
+    }
+    return res;
+}
+
+export function treeForEach<T>(root: T, op: (node: T) => void, fetchChildren: FetchChildrenCallback<T>) {
+    op(root);
+    (fetchChildren(root) || []).forEach(node => treeForEach(node, op, fetchChildren));
+} 
+
 type FetchChildrenCallback<T> = (node: T) => T[] | undefined

@@ -78,7 +78,7 @@ module.exports = [
                 '/assets': 'http://localhost',
             },
         },
-        mode: 'development'
+        mode: 'production'
     }), 
     merge(common('dist/bootstrap'), {
         name: 'bootstrap-scripts',

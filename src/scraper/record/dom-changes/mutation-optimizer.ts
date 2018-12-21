@@ -1,6 +1,6 @@
-import { RecordedMutation, OptimizedMutation, ChangeChildrenMutation, AttributeMutation, ChangeTextMutation, AddDescriptor } from "./mutation-recorder";
-import { ScrapedElement } from "../../types/types";
 import { injectable } from "inversify";
+import { ScrapedElement } from "../../types/types";
+import { AddDescriptor, AttributeMutation, ChangeChildrenMutation, ChangeTextMutation, OptimizedMutation, RecordedMutation } from "./mutation-recorder";
 
 @injectable()
 export class MutationOptimizer {
@@ -61,6 +61,8 @@ export class MutationOptimizer {
         return Array.from(textMap.values());
     }
     
+    // TODO - There might still be an issue in here with reporting net removals to attribute and changetext optimizations.
+    // For instance, does [add] -> [change-text] -> [remove] get properly get optimize to a no-op?
     optimizeChildMutations(childMutations: ChangeChildrenMutation[]) {
         const allAdded = new Set<number>();
         const allRemoved = new Set<number>();

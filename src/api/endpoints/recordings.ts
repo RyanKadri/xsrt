@@ -35,6 +35,7 @@ export class RecordingRouteHandler implements RouteHandler {
             const res = await RecordingSchema.find(
                 { 'metadata.site': req.query.site, finalized: true },
                 { metadata: 1, thumbnail: 1 })
+            .sort({ 'metadata.startTime': -1 })
             .limit(15)
             resp.json(res);
         } catch(e){

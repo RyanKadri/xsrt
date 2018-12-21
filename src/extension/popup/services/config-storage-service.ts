@@ -11,7 +11,9 @@ export class ConfigStorageService {
             const defaultConfig: ExtensionConfig = { 
                 debugMode: true,
                 shouldInject: false,
-                backendUrl: 'localhost:3001'
+                backendUrl: 'localhost:3001',
+                mutationsPerChunk: 1500,
+                inputsPerChunk: 1000
             }
             chrome.storage.local.get({ config: defaultConfig }, (res) => {
                 resolve(res.config as ExtensionConfig);

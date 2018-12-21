@@ -1,30 +1,34 @@
 import { injectable, multiInject } from "inversify";
 import { debounce } from "../../../common/utils/functional-utils";
-import { RecordedMutation, RecordedMutationGroup } from "../../../scraper/record/dom-changes/mutation-recorder";
+import { RecordedMutation } from "../../../scraper/record/dom-changes/mutation-recorder";
 import { RecordedUserInput } from "../../../scraper/record/user-input/input-recorder";
 import { UserInputGroup } from "../../components/utils/recording-data-utils";
-
-const debounceTime = 500;
 
 export const IInputAnnotator = Symbol('IInputAnnotator');
 
 @injectable()
 export class AnnotationService {
 
+    static readonly defaultDebounce = 500;
+
     constructor(
-        @multiInject(IInputAnnotator) private annotators: InputAnnotator[]
+        @multiInject(IInputAnnotator) private annotators: InputAnnotator[],
     ) {}
 
-    annotate(_: RecordedMutationGroup[], inputGroups: UserInputGroup[]): RecordingAnnotation[] {
-        const annotationGroups: AnnotationGroup[] = this.annotators.map(annotator => {
-            const inputs = inputGroups.filter(group => group.name === annotator.type && group.elements.length > 0)
-            return {
-                annotator,
-                inputs: inputs.map(inp => inp.elements).flat()
+    annotate(inputGroups: UserInputGroup[]): RecordingAnnotation[] {
+        const annotationGroups = this.annotators.reduce((acc, annotator) => {
+            const inputGroup = inputGroups.find(group => group.name === annotator.type && group.elements.length > 0)
+            if(inputGroup) {
+                acc.push({
+                    annotator,
+                    inputs: inputGroup.elements
+                })
             }
-        }).filter(group => group.inputs.length > 0);
+            return acc;
+        }, [] as AnnotationGroup[]);
 
         const debouncedGroups: AnnotationGroup[] = annotationGroups.map(group => {
+            const debounceTime = group.annotator.debounceTime || AnnotationService.defaultDebounce;
             return debounce(group.inputs, debounceTime, input => input.timestamp)
                 .map(inputs => ({
                     annotator: group.annotator,
@@ -52,8 +56,8 @@ interface AnnotationGroup {
 export interface InputAnnotator<T extends RecordedUserInput = RecordedUserInput> {
     listen: 'input';
     type: string;
-    shouldOverwrite(rec: InputCause, evt: T): boolean;
     annotate(inp: T): Pick<RecordingAnnotation, "description">
+    debounceTime?: number
 }
 
 export interface RecordingAnnotation {

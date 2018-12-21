@@ -29,7 +29,7 @@ export class ChunkEndpoint implements RouteHandler {
             await Recording.findByIdAndUpdate(recordingId, { 
                 $push: { chunks: savedChunk._id } 
             });
-            resp.json({ success: true })
+            resp.json({ _id: savedChunk!._id })
         } catch(e) {
             resp.json({ error: true })
         }

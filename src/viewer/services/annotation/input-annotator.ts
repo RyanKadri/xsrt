@@ -12,10 +12,6 @@ export class InputEventAnnotator implements InputAnnotator<RecordedInputChangeEv
         private domPreviewService: DomPreviewService
     ) { } 
 
-    shouldOverwrite() {
-        return true;
-    }
-
     annotate(input: RecordedInputChangeEvent) {
         const preview = this.domPreviewService.previewNode(input.target, input.timestamp);
         if(preview.type !== 'element') throw new Error("The input event has recorded an invalid target");

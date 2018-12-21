@@ -1,5 +1,4 @@
 import { Container } from "inversify";
-import 'reflect-metadata';
 import { FocusRecorder } from './record/user-input/focus-recorder';
 import { HtmlInputRecorder } from './record/user-input/input-event-recorder';
 import { IUserInputRecorder } from './record/user-input/input-recorder';

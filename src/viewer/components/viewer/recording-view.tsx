@@ -96,7 +96,7 @@ class _RecordingView extends React.Component<RecordingViewData, RecordingViewSta
                 changes,
                 snapshots
             })
-            const annotations = this.props.annotationService.annotate(allEvents.changes, allEvents.inputs);
+            const annotations = this.props.annotationService.annotate(allEvents.inputs);
             return {
                 snapshots,
                 changes, 

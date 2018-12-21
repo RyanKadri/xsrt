@@ -60,8 +60,6 @@ class _RecordingPlayer extends React.Component<PlayerInput, PlayerState> {
 
     async componentDidMount() {
         this.initializeViewer();
-        this.props.snapshots[0];
-        this.initializeIframe(this.props.snapshots[0]);
     }
 
     componentDidUpdate(prevProps: PlayerInput) { 

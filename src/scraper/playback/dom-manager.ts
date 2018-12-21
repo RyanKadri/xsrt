@@ -24,6 +24,7 @@ export class DomManager {
     }
 
     async createInitialDocument(data: SnapshotChunk): Promise<void> {
+        console.log('Initialized playback iframe')
         this.assets = await this.adjustReferences(data.assets);
         
         const docType = `<!DOCTYPE ${ data.snapshot.documentMetadata.docType }>`
@@ -42,16 +43,21 @@ export class DomManager {
     }
     
     serializeToElement(parent: number, node: OptimizedElement, before: number | null = null) {
-        const parentNode = this.fetchNode(parent);
+        const parentNode = this.fetchNode(parent)!;
         this._serializeToElement(parentNode, node, undefined, before)
     }
     
     removeChild(target: number, child: number) {
-        this.fetchNode(target).removeChild(this.fetchNode(child))
+        this.fetchNode(target)!.removeChild(this.fetchNode(child)!)
     }
     
     updateText(target: number, newText: string) {
-        this.fetchNode(target).textContent = newText;
+        const targetNode = this.fetchNode(target);
+        if(targetNode) {
+            targetNode.textContent = newText;
+        } else {
+            console.warn(`No node found for target ${target} and text: ${newText}`)
+        }
     }
 
     setAttribute(target: number, attr: string, val: string) {
@@ -83,7 +89,7 @@ export class DomManager {
     }
 
     queryElement<T>(id: number, cb: (node: Node) => T) {
-        const node = this.fetchNode(id);
+        const node = this.fetchNode(id)!;
         return cb(node);
     }
 
@@ -109,7 +115,8 @@ export class DomManager {
         if(node) {
             return node;
         } else {
-            throw new Error(`Node ${id} does not exist`)
+            return undefined;
+            //throw new Error(`Node ${id} does not exist`)
         }
     }
     

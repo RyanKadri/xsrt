@@ -12,7 +12,10 @@ export class MutationTransformer {
 
     transformMutation(mutation: MutationRecord): RecordedMutation[] {
         const targetEl = this.domWalker.fetchManagedNode(mutation.target, false);
-        if(!targetEl) return [];
+        if(!targetEl) {
+            console.log(mutation.target)
+            return [];
+        }
         const target = targetEl.id;
         if(mutation.type === 'attributes') {
             return [ this.attributeMutation(mutation, target) ];
