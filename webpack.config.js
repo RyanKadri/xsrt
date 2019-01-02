@@ -5,13 +5,14 @@ const WriteFilePlugin = require('write-file-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const merge = require('webpack-merge');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const common = (output) => ({
     devtool: 'source-map',
     output: {
         filename: '[name].bundle.js',
         path: path.resolve(__dirname, output),
-        publicPath: "/" + output,
+        publicPath: "/",
     },
     plugins: [
         new CleanWebpackPlugin([output]),
@@ -39,36 +40,48 @@ const common = (output) => ({
     }
 });
 
+const frontendCommon = merge(common('dist/web/'), {
+    entry: {
+        viewer: './src/viewer/index.tsx',
+    },
+    optimization: {
+        splitChunks: {
+            cacheGroups: {
+                commons: {
+                    test: /\/node_modules\//,
+                    name: "vendor",
+                    chunks: "initial",
+                },
+            },
+        },
+    },
+    resolve: {
+        extensions: ['.tsx', '.html'],
+    },
+    plugins: [
+        new HtmlWebpackPlugin({
+            template: './src/viewer/index.html',
+            meta: {
+                charset: "UTF-8",
+                viewport: "minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
+            },
+            hash: true
+        })
+    ]
+})
+
 module.exports = [
-    merge(common('dist/web'), {
-        name: 'viewer-frontend',
-        entry: {
-            viewer: './src/viewer/index.tsx',
-        },
-        module: {
-        },
+    merge(frontendCommon, {
+        name: 'viewer-dev',
         plugins: [
             new WriteFilePlugin(),
             //new webpack.HotModuleReplacementPlugin(),
         ],
-        optimization: {
-            splitChunks: {
-                cacheGroups: {
-                    commons: {
-                        test: /\/node_modules\//,
-                        name: "vendor",
-                        chunks: "initial",
-                    },
-                },
-            },
-        },
-        resolve: {
-            extensions: ['.tsx', '.html'],
-        },
+        
         devServer: {
             contentBase: path.join(__dirname, 'src/viewer'),
             port: 3000,
-            publicPath: 'http://localhost:3000/dist/web',
+            publicPath: 'http://localhost:3000/',
             historyApiFallback: true,
             hot: false,
             inline: true,
@@ -78,8 +91,15 @@ module.exports = [
                 '/assets': 'http://localhost',
             },
         },
+        mode: 'development'
+    }),
+    merge(frontendCommon, {
+        name: 'viewer-prod',
+        plugins: [
+            new BundleAnalyzerPlugin({ analyzerMode: 'static' }),
+        ],
         mode: 'production'
-    }), 
+    }),
     merge(common('dist/bootstrap'), {
         name: 'bootstrap-scripts',
         entry: {

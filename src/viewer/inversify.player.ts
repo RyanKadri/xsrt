@@ -13,6 +13,7 @@ import { ResizeAnnotator } from "./services/annotation/resize-annotator";
 
 const PlayerContainer = new Container({ autoBindInjectable: true, defaultScope: "Singleton" });
 
+
 // I do this because I want to access the DomManager from non-container parts of the app.
 PlayerContainer.bind(DomManager).toConstantValue(new DomManager())
 

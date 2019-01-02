@@ -1,4 +1,4 @@
-import { createStyles, Theme, withStyles, WithStyles } from "@material-ui/core";
+import { createStyles, Theme, Typography, withStyles, WithStyles } from "@material-ui/core";
 import { PlaybackManager } from "@scraper/playback/playback-manager";
 import c from 'classnames';
 import React from "react";
@@ -12,13 +12,14 @@ import { eventsBetween, UserInputGroup } from "../../utils/recording-data-utils"
 const styles = (theme: Theme) => createStyles({
     horizExpand: {
         width: '100%',
+        height: '100%',
         flexGrow: 1,
         border: 'none'
     },
     
     playerContainer: {
         display: 'flex',
-        position: 'relative',
+        position: 'absolute',
         background: theme.palette.grey[800],
         overflow: 'hidden',
     },
@@ -27,6 +28,18 @@ const styles = (theme: Theme) => createStyles({
         width: '100%',
         height: '100%',
         position: 'absolute'
+    },
+
+    errorOverlay: {
+        width: '100%',
+        height: '100%',
+        position: 'absolute',
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        color: 'white',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 99,
     },
     
     player: {
@@ -53,7 +66,10 @@ class _RecordingPlayer extends React.Component<PlayerInput, PlayerState> {
     render() {
         const { classes } = this.props;
         return <div className={ c(classes.horizExpand, classes.playerContainer) } ref={this.viewPort}>
-            { this.props.isPlaying ? <div className={ classes.inputGuard }></div> : null }
+            { this.props.isPlaying ? <div className={ classes.inputGuard } /> : null }
+            { this.props.error ? <div className={ classes.errorOverlay } >
+                <Typography variant="h2" color="inherit">{ this.props.error }</Typography>
+            </div> : null}
             <iframe className={ c(classes.player, classes.horizExpand) } ref={this.iframe} src="about:blank" style={ this.iframeDimensions() }></iframe>
         </div>
     }
@@ -137,6 +153,7 @@ export interface PlayerInput extends WithStyles<typeof styles> {
     inputs: UserInputGroup[];
     currentTime: number;
     isPlaying: boolean;
+    error?: string;
     playbackManager: PlaybackManager
 }
 

@@ -39,7 +39,7 @@ export class RecordingRouteHandler implements RouteHandler {
             .limit(15)
             resp.json(res);
         } catch(e){
-            resp.json({error: e})
+            resp.status(500).json({error: e})
         }
     }
 
@@ -63,7 +63,7 @@ export class RecordingRouteHandler implements RouteHandler {
         const recording = new RecordingSchema(recordingData);
         recording.save((err, data) => {
             if(err) {
-                resp.json({ error: err }) 
+                resp.status(500).json({ error: err }) 
             } else { 
                 resp.json({ _id: data._id })
             }
@@ -72,20 +72,25 @@ export class RecordingRouteHandler implements RouteHandler {
 
     private finalizeRecording = async (req: Request, resp: Response) => {
         const patchRequest: DeepPartial<Recording> = req.body;
+        const recordingId: string = req.params.recordingId;
         if(patchRequest.finalized && patchRequest.metadata) {
-            Axios.post(`${this.apiConfig.decorateUrl}/decorate/thumbnails`, { recordingId: req.params.recordingId })
+            Axios.post(`${this.apiConfig.decorateUrl}/decorate/thumbnails`, { recordingId })
                 .catch(e => console.error(e));
             try {
-                await RecordingSchema.findByIdAndUpdate(req.params.recordingId, { $set: {
+                const recording = await RecordingSchema.findByIdAndUpdate(recordingId, { $set: {
                     finalized: true,
                     'metadata.duration': patchRequest.metadata.duration
                 }})
-                resp.json({ success: true })
+                if(recording) {
+                    resp.json({ success: true })
+                } else {
+                    resp.status(404).json({ error: `Recording ${recordingId} does not exist`})
+                }
             } catch(e) {
-                resp.json({ error: e})
+                resp.status(500).json({ error: e})
             }
         } else {
-            resp.json({ error: 'Unknown command' })
+            resp.status(400).json({ error: 'Unknown command' })
         }
     }
 
@@ -97,35 +102,41 @@ export class RecordingRouteHandler implements RouteHandler {
         }
     }
 
-    private fetchSingleRecording = (req: Request, resp: Response) => {
-        RecordingSchema.aggregate([ 
-            { $match: { "_id": req.params.recordingId }},
-            //{ $unwind: "$chunks" },
-            { $lookup: { 
-                from: "recordingChunks",
-                localField: "chunks", 
-                foreignField: "_id",
-                as: "chunks",
-            }},
-            { $project: {  // TODO - Is there some way I can do a positive projection (type and metadata) in the lookup?
-                "chunks.changes": 0,
-                "chunks.inputs": 0,
-                "chunks.snapshot": 0,
-                "chunks.assets": 0
-            }}
-        ], (err: string, data: Recording[]) => {
-            return err
-                ? resp.json({ error: err })
-                : resp.json(data[0])
-        });
+    private fetchSingleRecording = async (req: Request, resp: Response) => {
+        try {
+            const recordings: Recording[] = RecordingSchema.aggregate([ 
+                { $match: { "_id": req.params.recordingId }},
+                //{ $unwind: "$chunks" },
+                { $lookup: { 
+                    from: "recordingChunks",
+                    localField: "chunks", 
+                    foreignField: "_id",
+                    as: "chunks",
+                }},
+                { $project: {  // TODO - Is there some way I can do a positive projection (type and metadata) in the lookup?
+                    "chunks.changes": 0,
+                    "chunks.inputs": 0,
+                    "chunks.snapshot": 0,
+                    "chunks.assets": 0
+                }}
+            ]).exec();
+            resp.json(recordings[0])
+        } catch(e) {
+            resp.status(500).json({ error: e })
+        }
     }
 
     private deleteSingleRecording = (req: Request, resp: Response) => {
-        RecordingSchema.findByIdAndDelete(req.params.recordingId, (err, data) => {
-            return err
-                ? resp.json({ error: err })
-                : resp.json(data);
-        })
+        const { recordingId } = req.params;
+        RecordingSchema.findByIdAndDelete(recordingId, (err, data) => {
+            if(err) {
+                resp.status(500).json({ error: err })
+            } else if(data) {
+                resp.json(data)
+            } else {
+                resp.status(404).json({ error: `Recording ${recordingId} does not exist` })
+            }
+        });
     }
 }
 

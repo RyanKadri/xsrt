@@ -24,7 +24,7 @@ export class DomManager {
     }
 
     async createInitialDocument(data: SnapshotChunk): Promise<void> {
-        console.log('Initialized playback iframe')
+        console.debug('Initialized playback iframe')
         this.assets = await this.adjustReferences(data.assets);
         
         const docType = `<!DOCTYPE ${ data.snapshot.documentMetadata.docType }>`

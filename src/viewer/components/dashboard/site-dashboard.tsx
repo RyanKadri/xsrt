@@ -5,7 +5,7 @@ import React, { Fragment } from "react";
 import { RecordingOverview } from "../../../scraper/types/types";
 import { RecordingMetadataResolver } from "../../services/recording-service";
 import { withData } from "../../services/with-data";
-import { RecordingList } from "./recording-list/recording-list";
+import { RecordingList } from "./recording-table/recording-table";
 
 const styles = (theme: Theme) => createStyles({
     root: {

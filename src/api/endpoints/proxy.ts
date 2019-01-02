@@ -32,13 +32,18 @@ export class AssetProxyHandler implements RouteHandler {
 
     private fetchAsset = async (req: Request, resp: Response) => {   
         try {
-            const res = await Asset.findById(req.params.assetId) as unknown as ProxiedAsset;
-            res.headers.forEach(header => {
-                resp.setHeader(header.name, header.value);
-            })
-            resp.download(res.content);
+            const assetDoc = await Asset.findById(req.params.assetId);
+            if(assetDoc) {
+                const proxyAsset = assetDoc.toObject() as ProxiedAsset;
+                proxyAsset.headers.forEach(header => {
+                    resp.setHeader(header.name, header.value);
+                })
+                resp.download(proxyAsset.content);
+            } else {
+                resp.status(404).json({ error: `Could not find asset ${req.params.assetId}`})
+            }
         } catch(e){
-            resp.json({error: e})
+            resp.status(500).json({error: e})
         }
     }
 
@@ -50,7 +55,7 @@ export class AssetProxyHandler implements RouteHandler {
             resp.json({assets: assets.map(asset => asset._id) });
         } catch (e) {
             console.error(e);
-            resp.json({ error: e.message })
+            resp.status(500).json({ error: e.message })
         }
     }
 

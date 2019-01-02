@@ -1,4 +1,4 @@
-import { createStyles, Theme, Typography, withStyles, WithStyles } from '@material-ui/core';
+import { CircularProgress, createStyles, Theme, withStyles, WithStyles } from '@material-ui/core';
 import * as React from 'react';
 import { Fragment } from 'react';
 import { RecordedMutationGroup } from '../../../scraper/record/dom-changes/mutation-recorder';
@@ -15,7 +15,13 @@ const styles = (theme: Theme) => createStyles({
         flexGrow: 1,
         display: 'flex',
         position: 'relative',
-        backgroundColor: theme.palette.grey[800]
+        backgroundColor: theme.palette.grey[800],
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    progressSpinner: {
+        width: 80,
+        height: 80
     }
 })
 
@@ -24,12 +30,17 @@ class _RecordingViewer extends React.Component<ViewerProps, ViewerState> {
     constructor(props: ViewerProps) {
         super(props)
         this.state = { 
+            hasError: false,
             playerTime: 0,
             isPlaying: false,
             showingAnnotations: false,
             lastFrameTime: undefined,
             waitingOnBuffer: false
         }
+    }
+
+    static getDerivedStateFromError(_: string | Error): Partial<ViewerState> {
+        return { hasError: true, isPlaying: false }
     }
     
     render() {
@@ -38,7 +49,7 @@ class _RecordingViewer extends React.Component<ViewerProps, ViewerState> {
                 <div className={ classes.recordingSpace }>
                     {
                         this.props.snapshots.length === 0
-                            ? <Typography>Loading</Typography>// <CircularProgress color="secondary" />
+                            ? <CircularProgress color="secondary" className={ classes.progressSpinner } />
                             : <Fragment>
                                 <RecordingPlayer 
                                     snapshots={ this.props.snapshots }
@@ -47,6 +58,7 @@ class _RecordingViewer extends React.Component<ViewerProps, ViewerState> {
                                     currentTime={ this.state.playerTime } 
                                     isPlaying={ this.state.isPlaying}
                                     recordingMetadata={ this.props.recordingMetadata }
+                                    error={ this.state.hasError ? "Something went wrong": undefined }
                                 />
                                 <AnnotationSidebar 
                                     expanded={ this.state.showingAnnotations }
@@ -165,6 +177,7 @@ export interface ViewerProps extends WithStyles<typeof styles> {
 }
 
 export interface ViewerState {
+    hasError: boolean;
     playerTime: number;
     lastFrameTime?: number;
     isPlaying: boolean;

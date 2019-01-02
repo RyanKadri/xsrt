@@ -18,6 +18,7 @@
     "jsx": "react",
     "resolveJsonModule": true,
     "sourceMap": true,
+    "importHelpers": true,
 
     "baseUrl": "./src",
     "experimentalDecorators": true,
