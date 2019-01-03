@@ -3,6 +3,7 @@ import React from 'react';
 import { Link } from "react-router-dom";
 import { RecordingOverview } from "../../../../scraper/types/types";
 import { formatDate, formatDuration } from "../../utils/format-utils";
+import { AvailableRecordingColumn, RecordingColumn } from './available-columns';
 
 const styles = createStyles({
     preview: {
@@ -12,36 +13,36 @@ const styles = createStyles({
     },
 })
 
-const _RecordingRow = ({classes, onPreview, recording, selected, onToggle }: RecordingTableRowProps) => {
-    const {_id, metadata, thumbnail } = recording;
-    return <TableRow key={_id}>
+const columnDefs : { [col in AvailableRecordingColumn ]: (recording: RecordingOverview, props: RecordingTableRowProps) => JSX.Element | string | null } = {
+    date: ({metadata, _id}) => 
+            <Link to={`/recordings/${_id}`}>
+                { formatDate(metadata.startTime) }                
+            </Link>,
+    duration: ({metadata}) => 
+            metadata.duration
+                ? formatDuration(metadata.duration)
+                : 'N/A',
+    ua: ({metadata}) => 
+            metadata.uaDetails 
+                ? `${ metadata.uaDetails.browser.name } - ${ metadata.uaDetails.os.name }`
+                : "Unknown",
+    preview: (recording, props ) => 
+            recording.thumbnail 
+                ? <img 
+                    className={ props.classes.preview }
+                    src={ `/screenshots/${recording.thumbnail}` }
+                    onClick={ () => props.onPreview(recording) } />
+                : null
+}
+
+const _RecordingRow = (props: RecordingTableRowProps) => {
+    const { recording, selected, onToggle, displayColumns } = props;
+    const cols = displayColumns.map( col => columnDefs[col.key] )
+    return <TableRow>
         <TableCell>
             <Checkbox onChange={() => onToggle( recording )} checked={ selected } />
         </TableCell>
-        <TableCell>
-            <Link to={`/recordings/${_id}`}>
-                { formatDate(metadata.startTime) }                
-            </Link>
-        </TableCell>
-        <TableCell>
-            { metadata.duration
-                ? formatDuration(metadata.duration)
-                : 'N/A'
-            }
-        </TableCell>
-        <TableCell>
-            { metadata.uaDetails 
-                ? `${ metadata.uaDetails.browser.name } - ${ metadata.uaDetails.os.name }`
-                : "Unknown" }
-        </TableCell>
-        <TableCell>
-            { thumbnail 
-                ? <img 
-                    className={ classes.preview }
-                    src={ `/screenshots/${thumbnail}` }
-                    onClick={ () => onPreview(recording) } />
-                : null } 
-        </TableCell>
+        { cols.map((col, i) => <TableCell key={i}>{ col(recording, props) }</TableCell>) }
     </TableRow>
 }
 
@@ -50,6 +51,7 @@ export const RecordingRow = withStyles(styles)(_RecordingRow);
 export interface RecordingTableRowProps extends WithStyles<typeof styles> {
     recording: RecordingOverview;
     selected: boolean;
+    displayColumns: RecordingColumn[];
     onPreview: (thumbnail: RecordingOverview) => void;
     onToggle: (recording: RecordingOverview) => void;
 }
