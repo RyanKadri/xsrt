@@ -1,10 +1,10 @@
-import { RecordedMouseEvent } from "../../record/user-input/mouse-recorder";
-import { UserInputPlaybackHelper } from "./user-input-manager";
-import { DomManager } from "../dom-manager";
-import mouseFragment from './mouse-fragment.html'
-import { injectable } from "inversify";
-import { PseudoClassManager } from "./pseudo-class-manager";
 import { reverseFind } from "@common/utils/functional-utils";
+import { injectable } from "inversify";
+import { RecordedMouseEvent } from '../../types/types';
+import { DomManager } from "../dom-manager";
+import mouseFragment from './mouse-fragment.html';
+import { PseudoClassManager } from "./pseudo-class-manager";
+import { UserInputPlaybackHelper } from "./user-input-manager";
 
 @injectable()
 export class MouseEventPlayer implements UserInputPlaybackHelper<RecordedMouseEvent> {

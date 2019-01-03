@@ -1,4 +1,4 @@
-import { SiteTarget } from "@common/db/targets";
+import { NewSiteTarget, SiteTarget } from "@common/db/targets";
 import { createStyles, MuiThemeProvider, withStyles } from "@material-ui/core";
 import CssBaseline from '@material-ui/core/CssBaseline';
 import React, { Fragment } from "react";
@@ -8,7 +8,6 @@ import { appTheme } from "../../../viewer/theme/theme";
 import { withDependencies } from "../../services/with-dependencies";
 import { OverallDashboardView } from "../dashboard/overall-dashboard";
 import { SiteDashboardView } from "../dashboard/site-dashboard";
-import { NewSiteTarget } from "../manage-sites/add-site-form";
 import { ManageSitesView } from "../manage-sites/manage-sites-view";
 import { RecordingView } from "../viewer/recording-view";
 import { Sidebar } from './side-bar/side-bar';

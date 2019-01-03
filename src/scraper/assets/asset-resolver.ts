@@ -1,6 +1,6 @@
 import Axios from "axios";
 import { inject, injectable } from "inversify";
-import { ScraperConfig, ScraperConfigToken } from "../scraper-config,";
+import { ScraperConfig, ScraperConfigToken } from "../scraper-config";
 import { toDataUrl } from "../utils/utils";
 
 @injectable()

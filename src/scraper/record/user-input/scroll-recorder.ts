@@ -1,5 +1,6 @@
 import { injectable } from "inversify";
-import { BaseUserInput, RecordedEventContext, UserInputRecorder } from "./input-recorder";
+import { RecordedScrollEvent } from '../../types/types';
+import { RecordedEventContext, UserInputRecorder } from "./input-recorder";
 
 @injectable()
 export class ScrollRecorder implements UserInputRecorder<UIEvent, RecordedScrollEvent> {
@@ -15,11 +16,4 @@ export class ScrollRecorder implements UserInputRecorder<UIEvent, RecordedScroll
             scrollY: domElement ? domElement.scrollTop : window.scrollY
         };
     }
-}
-
-export interface RecordedScrollEvent extends BaseUserInput {
-    type: 'scroll';
-    target: number | null;
-    scrollX: number;
-    scrollY: number;
 }

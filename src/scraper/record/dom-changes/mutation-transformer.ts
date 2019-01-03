@@ -1,7 +1,7 @@
 import { injectable } from "inversify";
 import { shouldTraverseNode } from "../../filter/filter-dom";
 import { RecordingDomManager } from "../../traverse/traverse-dom";
-import { AttributeMutation, ChangeChildrenMutation, ChangeTextMutation, RecordedMutation } from "./mutation-recorder";
+import { AttributeMutation, ChangeChildrenMutation, ChangeTextMutation, RecordedMutation } from '../../types/types';
 
 @injectable()
 export class MutationTransformer {

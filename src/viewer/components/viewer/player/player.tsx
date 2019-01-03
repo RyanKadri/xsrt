@@ -3,9 +3,7 @@ import { PlaybackManager } from "@scraper/playback/playback-manager";
 import c from 'classnames';
 import React from "react";
 import { between } from "../../../../common/utils/functional-utils";
-import { RecordedMutationGroup } from "../../../../scraper/record/dom-changes/mutation-recorder";
-import { RecordedResize } from "../../../../scraper/record/user-input/resize-recorder";
-import { RecordingMetadata, SnapshotChunk } from "../../../../scraper/types/types";
+import { RecordedMutationGroup, RecordedResize, RecordingMetadata, SnapshotChunk } from "../../../../scraper/types/types";
 import { withDependencies } from "../../../services/with-dependencies";
 import { eventsBetween, UserInputGroup } from "../../utils/recording-data-utils";
 

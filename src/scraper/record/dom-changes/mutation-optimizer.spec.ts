@@ -1,5 +1,4 @@
-import { AttributeMutation, ChangeChildrenMutation } from "./mutation-recorder";
-import { ScrapedElement, ScrapedTextElement, ScrapedHtmlElement } from "../../types/types";
+import { AttributeMutation, ChangeChildrenMutation, ScrapedElement, ScrapedHtmlElement, ScrapedTextElement } from "../../types/types";
 import { MutationOptimizer } from "./mutation-optimizer";
 
 describe('MutationOptimzer', () => {

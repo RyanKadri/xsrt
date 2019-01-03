@@ -1,10 +1,10 @@
 import { injectable } from "inversify";
-
+import { RecordedFocusEvent } from '../../types/types';
+import { DomManager } from "../dom-manager";
+import { PseudoClassManager } from "./pseudo-class-manager";
 import { UserInputPlaybackHelper } from "./user-input-manager";
 
-import { DomManager } from "../dom-manager";
-import { RecordedFocusEvent } from "../../record/user-input/focus-recorder";
-import { PseudoClassManager } from "./pseudo-class-manager";
+
 
 @injectable()
 export class FocusPlayer implements UserInputPlaybackHelper<RecordedFocusEvent> {

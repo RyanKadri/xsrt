@@ -3,7 +3,7 @@ import { inject, injectable } from "inversify";
 import { CreateRecordingRequest } from "../../api/endpoints/recordings";
 import { DeepPartial, Without } from "../../common/utils/type-utils";
 import { compress } from "../output/output-utils";
-import { ScraperConfig, ScraperConfigToken } from "../scraper-config,";
+import { ScraperConfig, ScraperConfigToken } from "../scraper-config";
 import { extractUrlMetadata } from "../traverse/extract-metadata";
 import { Recording, RecordingChunk } from "../types/types";
 import { toJson } from "../utils/utils";

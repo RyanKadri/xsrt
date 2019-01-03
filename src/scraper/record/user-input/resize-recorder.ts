@@ -1,5 +1,6 @@
 import { injectable } from "inversify";
-import { BaseUserInput, UserInputRecorder } from "./input-recorder";
+import { RecordedResize } from '../../types/types';
+import { UserInputRecorder } from "./input-recorder";
 
 @injectable()
 export class ResizeRecorder implements UserInputRecorder<Event, RecordedResize> {
@@ -14,10 +15,4 @@ export class ResizeRecorder implements UserInputRecorder<Event, RecordedResize> 
             width: window.innerWidth
         }
     }
-}
-
-export interface RecordedResize extends BaseUserInput {
-    type: 'resize';
-    height: number;
-    width: number;
 }

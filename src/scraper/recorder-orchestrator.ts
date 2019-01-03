@@ -6,7 +6,7 @@ import { RecordingInfo, RecordingStateService } from "./api/recording-state-serv
 import { chunkMutationLimit } from "./record/dom-changes/mutation-tracker";
 import { mergeMaps } from "./record/user-input/input-utils";
 import { Recorder } from "./recorder";
-import { ScraperConfig, ScraperConfigToken } from "./scraper-config,";
+import { ScraperConfig, ScraperConfigToken } from "./scraper-config";
 import { RecordingDomManager } from "./traverse/traverse-dom";
 import { PendingDiffChunk, PendingSnapshotChunk, RecordingChunk, SnapshotChunk } from "./types/types";
 import { EventService } from "./utils/event-service";

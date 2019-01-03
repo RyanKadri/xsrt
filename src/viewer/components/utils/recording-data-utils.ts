@@ -1,7 +1,6 @@
 import { between, pipe, pluck } from "../../../common/utils/functional-utils";
 import { Group } from "../../../common/utils/type-utils";
-import { RecordedMutationGroup } from "../../../scraper/record/dom-changes/mutation-recorder";
-import { RecordedUserInput } from "../../../scraper/record/user-input/input-recorder";
+import { RecordedMutationGroup, RecordedUserInput } from '../../../scraper/types/types';
 
 export function eventsBetween(changes: RecordedMutationGroup[], inputGroups: UserInputGroup[], fromTime: number, toTime: number)
     : { changes: RecordedMutationGroup[], inputs: UserInputGroup[]} {

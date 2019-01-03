@@ -1,7 +1,6 @@
 import { injectable } from "inversify";
 import { between, pipe, pluck, reverseFind, toKeyValMap } from "../../common/utils/functional-utils";
-import { RecordedMutationGroup } from "../record/dom-changes/mutation-recorder";
-import { OptimizedElement, ScrapedElement, SnapshotChunk } from "../types/types";
+import { OptimizedElement, RecordedMutationGroup, ScrapedElement, SnapshotChunk } from "../types/types";
 import { findInTree } from "../utils/tree-utils";
 
 @injectable()

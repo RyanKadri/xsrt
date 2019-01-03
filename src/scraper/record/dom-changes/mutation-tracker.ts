@@ -1,10 +1,10 @@
 import { inject, injectable } from "inversify";
-import { ScraperConfig, ScraperConfigToken } from "../../scraper-config,";
+import { ScraperConfig, ScraperConfigToken } from "../../scraper-config";
+import { AddDescriptor, RecordedMutation, RecordedMutationGroup } from '../../types/types';
 import { EventService } from "../../utils/event-service";
 import { TimeManager } from "../../utils/time-manager";
 import { treeReduce } from "../../utils/tree-utils";
 import { MutationOptimizer } from "./mutation-optimizer";
-import { AddDescriptor, RecordedMutation, RecordedMutationGroup } from "./mutation-recorder";
 
 export const chunkMutationLimit = Symbol('chunkMutationLimit');
 

@@ -1,8 +1,7 @@
 import { CircularProgress, createStyles, Theme, withStyles, WithStyles } from '@material-ui/core';
 import * as React from 'react';
 import { Fragment } from 'react';
-import { RecordedMutationGroup } from '../../../scraper/record/dom-changes/mutation-recorder';
-import { RecordingMetadata, SnapshotChunk } from '../../../scraper/types/types';
+import { RecordedMutationGroup, RecordingMetadata, SnapshotChunk } from '../../../scraper/types/types';
 import { RecordingAnnotation } from '../../services/annotation/annotation-service';
 import { UserInputGroup } from '../utils/recording-data-utils';
 import { AnnotationSidebar } from './annotation-sidebar/annotation-sidebar';

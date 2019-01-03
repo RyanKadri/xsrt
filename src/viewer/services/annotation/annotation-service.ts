@@ -1,7 +1,6 @@
 import { injectable, multiInject } from "inversify";
 import { debounce } from "../../../common/utils/functional-utils";
-import { RecordedMutation } from "../../../scraper/record/dom-changes/mutation-recorder";
-import { RecordedUserInput } from "../../../scraper/record/user-input/input-recorder";
+import { RecordedMutation, RecordedUserInput } from '../../../scraper/types/types';
 import { UserInputGroup } from "../../components/utils/recording-data-utils";
 
 export const IInputAnnotator = Symbol('IInputAnnotator');

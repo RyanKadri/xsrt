@@ -1,7 +1,7 @@
 import containerCSS from '!raw-loader!./container.css';
 import { formatDuration } from "../../viewer/components/utils/format-utils";
 import { RecorderInitializer } from '../recorder-initializer';
-import { ScraperConfig } from '../scraper-config,';
+import { ScraperConfig } from '../scraper-config';
 import containerHTML from './widget.html';
 
 (function bootstrapScraper() {

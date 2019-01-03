@@ -1,8 +1,8 @@
+import { NewSiteTarget, SiteTarget } from "@common/db/targets";
+import { createStyles, Theme, Typography, withStyles, WithStyles } from "@material-ui/core";
 import React from "react";
-import { Typography, withStyles, WithStyles, createStyles, Theme } from "@material-ui/core";
-import { SiteTarget } from "@common/db/targets";
+import { AddSiteForm } from "./add-site-form";
 import { SiteList } from "./site-list";
-import { AddSiteForm, NewSiteTarget } from "./add-site-form";
 
 const styles = (theme: Theme) => createStyles({
     root: {

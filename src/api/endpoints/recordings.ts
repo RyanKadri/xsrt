@@ -2,9 +2,8 @@ import Axios from 'axios';
 import { Request, Response, Router } from 'express';
 import { injectable } from 'inversify';
 import * as parser from 'ua-parser-js';
-import { NewSiteTarget } from 'viewer/components/manage-sites/add-site-form';
 import { Recording as RecordingSchema } from '../../common/db/recording';
-import { Target } from '../../common/db/targets';
+import { NewSiteTarget, Target } from '../../common/db/targets';
 import { RouteHandler } from '../../common/server/express-server';
 import { DeepPartial, Without } from '../../common/utils/type-utils';
 import { LocationMetadata, Recording, UADetails } from '../../scraper/types/types';
@@ -28,6 +27,9 @@ export class RecordingRouteHandler implements RouteHandler {
             .get(this.fetchSingleRecording)
             .patch(this.finalizeRecording)
             .delete(this.deleteSingleRecording)
+
+        router.route('/recordings/delete-many')
+            .post(this.deleteManyRecordings)
     }
 
     private fetchRecordings = async (req: Request, resp: Response) => {   
@@ -104,7 +106,7 @@ export class RecordingRouteHandler implements RouteHandler {
 
     private fetchSingleRecording = async (req: Request, resp: Response) => {
         try {
-            const recordings: Recording[] = RecordingSchema.aggregate([ 
+            const recordings: Recording[] = await RecordingSchema.aggregate([ 
                 { $match: { "_id": req.params.recordingId }},
                 //{ $unwind: "$chunks" },
                 { $lookup: { 
@@ -138,10 +140,27 @@ export class RecordingRouteHandler implements RouteHandler {
             }
         });
     }
+
+    private deleteManyRecordings = async (req: Request, resp: Response) => {
+        const deleteRequest: DeleteManyRecordingsRequest = req.body;
+        if(deleteRequest.ids) {
+            try {
+                const res = await RecordingSchema.deleteMany({ _id: { $in: deleteRequest.ids } }).exec()
+                resp.json({ success: res })
+            } catch(e) {
+                resp.status(500).json({ error: e.message })
+            }
+        } else {
+            resp.status(400).json({ error: `Unsure how to process this deletion request`});
+        }
+    }
 }
 
 export interface CreateRecordingRequest {
     url: LocationMetadata;
     startTime: number;
+}
 
+export interface DeleteManyRecordingsRequest {
+    ids: number[];
 }

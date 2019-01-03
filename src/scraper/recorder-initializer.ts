@@ -3,7 +3,7 @@ import { RecorderApiService } from "./api/recorder-api-service";
 import { RecordingStateService } from "./api/recording-state-service";
 import { RecorderContainer } from "./inversify.recorder";
 import { RecorderOrchestrator } from "./recorder-orchestrator";
-import { ScraperConfig, ScraperConfigToken as ConfigToken } from "./scraper-config,";
+import { ScraperConfig, ScraperConfigToken as ConfigToken } from "./scraper-config";
 
 export class RecorderInitializer {
 

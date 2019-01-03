@@ -1,5 +1,6 @@
 import { injectable } from "inversify";
-import { BaseUserInput, RecordedEventContext, UserInputRecorder } from "./input-recorder";
+import { RecordedInputChangeEvent } from '../../types/types';
+import { RecordedEventContext, UserInputRecorder } from "./input-recorder";
 
 @injectable()
 export class HtmlInputRecorder implements UserInputRecorder<Event, RecordedInputChangeEvent> {
@@ -24,8 +25,3 @@ export class HtmlInputRecorder implements UserInputRecorder<Event, RecordedInput
     }
 }
 
-export interface RecordedInputChangeEvent extends BaseUserInput {
-    type: 'input' | 'change',
-    target: number;
-    value: string | boolean;
-}

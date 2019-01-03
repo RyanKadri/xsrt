@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { RecordedResize } from "../../../scraper/record/user-input/resize-recorder";
+import { RecordedResize } from '../../../scraper/types/types';
 import { InputAnnotator } from "./annotation-service";
 
 @injectable()

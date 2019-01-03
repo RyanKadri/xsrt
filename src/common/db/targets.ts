@@ -1,5 +1,6 @@
-import { Schema, model } from "mongoose";
+import { model, Schema } from "mongoose";
 import shortid from 'shortid';
+import { Without } from '../utils/type-utils';
 
 const siteSchema = new Schema({
     _id: {
@@ -34,3 +35,5 @@ export interface SiteTarget {
     identifier: string;
     url: string;
 }
+
+export type NewSiteTarget = Without<SiteTarget, '_id'>

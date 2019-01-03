@@ -6,6 +6,9 @@
     },
     "files": [
         "./src/api/api-server.ts",
-        "./src/decorators/decorator-server.ts"
-    ]
+        "./src/decorators/decorator-server.ts",
+        "./src/module.d.ts"
+    ],
+    "include": [],
+    "exclude": ["./src/scraper/**/*"]
 }

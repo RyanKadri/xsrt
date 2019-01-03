@@ -1,8 +1,7 @@
-import { withStyles, createStyles, Theme, WithStyles, ExpansionPanelSummary, ExpansionPanel, ExpansionPanelDetails, TextField, MenuItem, Button } from "@material-ui/core";
-import React, { FormEvent } from "react";
-import { SiteTarget } from "@common/db/targets";
-import { Without } from "@common/utils/type-utils";
+import { NewSiteTarget } from "@common/db/targets";
+import { Button, createStyles, ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, MenuItem, TextField, Theme, withStyles, WithStyles } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import React, { FormEvent } from "react";
 
 const styles = (theme: Theme) => createStyles({
     root: {
@@ -110,8 +109,6 @@ export const AddSiteForm = withStyles(styles)(AddSiteFormPlain);
 export interface AddSiteFormProps extends WithStyles<typeof styles> {
     onNewSite(newSite: NewSiteTarget): void;
 }
-
-export type NewSiteTarget = Without<SiteTarget, '_id'>
 
 export interface AddSiteFormState {
     newSite: NewSiteTarget;

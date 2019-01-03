@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
 import { Without } from "../../common/utils/type-utils";
-import { ScraperConfig } from "../scraper-config,";
+import { ScraperConfig } from "../scraper-config";
 import { RecordingChunk } from "../types/types";
 
 const localStorageRecordingId = "app.icu.recording.id";

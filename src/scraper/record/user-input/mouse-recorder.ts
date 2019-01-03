@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
-import { ScrapedElement } from "../../types/types";
-import { BaseUserInput, RecordedEventContext, UserInputRecorder } from "./input-recorder";
+import { RecordedMouseEvent, ScrapedElement } from "../../types/types";
+import { RecordedEventContext, UserInputRecorder } from "./input-recorder";
 
 // TODO - Move debounce to more natural spot?
 const debounceThresholdMs = 100;
@@ -38,23 +38,4 @@ export class MouseRecorder implements UserInputRecorder<MouseEvent, RecordedMous
                 return {  };
         }
     }
-}
-
-
-export type RecordedMouseEvent = RecordedMouseMove | RecordedMouseButton;
-
-export interface RecordedMouseMove extends BaseMouseEvent {
-    type: 'mousemove';
-}
-
-export interface RecordedMouseButton extends BaseMouseEvent {
-    type: 'mouseup' | 'mousedown';
-    button: number;
-    buttonDown: boolean;
-}
-
-export interface BaseMouseEvent extends BaseUserInput {
-    hovered?: number;
-    x: number;
-    y: number;
 }

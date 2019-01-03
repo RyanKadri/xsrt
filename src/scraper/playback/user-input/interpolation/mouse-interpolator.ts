@@ -1,7 +1,7 @@
 import { injectable } from "inversify";
-import { RecordedMouseMove } from "../../../record/user-input/mouse-recorder";
+import { RecordedMouseMove } from '../../../types/types';
+import { flipHalfway, interpolator, linear } from "./interpolater";
 import { InterpolationHelper } from "./user-input-interpolator";
-import { interpolator, linear, flipHalfway } from "./interpolater";
 
 @injectable()
 export class MouseInterpolationHelper implements InterpolationHelper<RecordedMouseMove> {

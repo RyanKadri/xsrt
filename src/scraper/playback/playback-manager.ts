@@ -1,7 +1,6 @@
 import { injectable } from "inversify";
 import { UserInputGroup } from "../../viewer/components/utils/recording-data-utils";
-import { RecordedMutationGroup } from "../record/dom-changes/mutation-recorder";
-import { SnapshotChunk } from "../types/types";
+import { RecordedMutationGroup, SnapshotChunk } from "../types/types";
 import { DomManager } from "./dom-manager";
 import { MutationManager } from "./mutation-manager";
 import { UserInputPlaybackManager } from "./user-input/user-input-manager";

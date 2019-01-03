@@ -1,7 +1,7 @@
-import { RecordedScrollEvent } from "../../record/user-input/scroll-recorder";
-import { UserInputPlaybackHelper } from "./user-input-manager";
-import { DomManager } from "../dom-manager";
 import { injectable } from "inversify";
+import { RecordedScrollEvent } from '../../types/types';
+import { DomManager } from "../dom-manager";
+import { UserInputPlaybackHelper } from "./user-input-manager";
 
 @injectable()
 export class ScrollEventPlayer implements UserInputPlaybackHelper<RecordedScrollEvent> {

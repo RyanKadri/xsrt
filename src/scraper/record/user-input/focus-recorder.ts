@@ -1,5 +1,6 @@
 import { injectable } from "inversify";
-import { BaseUserInput, RecordedEventContext, UserInputRecorder } from "./input-recorder";
+import { RecordedFocusEvent } from '../../types/types';
+import { RecordedEventContext, UserInputRecorder } from "./input-recorder";
 
 @injectable()
 export class FocusRecorder implements UserInputRecorder<FocusEvent, RecordedFocusEvent> {
@@ -11,9 +12,4 @@ export class FocusRecorder implements UserInputRecorder<FocusEvent, RecordedFocu
             target: target !== undefined ? target.id : undefined,
         }
     }
-}
-
-export interface RecordedFocusEvent extends BaseUserInput {
-    type: 'focus' | 'blur';
-    target?: number;
 }

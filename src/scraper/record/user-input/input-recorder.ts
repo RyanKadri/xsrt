@@ -2,15 +2,9 @@ import { group, pluck } from "@common/utils/functional-utils";
 import { injectable, multiInject } from "inversify";
 import { MapTo } from "../../../common/utils/type-utils";
 import { RecordingDomManager } from "../../traverse/traverse-dom";
-import { RecordedInputChannels, ScrapedElement } from "../../types/types";
+import { RecordedInputChannels, RecordedUserInput, ScrapedElement } from "../../types/types";
 import { TimeManager } from "../../utils/time-manager";
 import { nodeIsHidden } from "../../utils/utils";
-import { RecordedFocusEvent } from "./focus-recorder";
-import { RecordedInputChangeEvent } from "./input-event-recorder";
-import { RecordedKeyEvent } from "./key-recorder";
-import { RecordedMouseEvent } from "./mouse-recorder";
-import { RecordedResize } from "./resize-recorder";
-import { RecordedScrollEvent } from "./scroll-recorder";
 
 export const IUserInputRecorder = Symbol.for('IUserInputRecorder');
 
@@ -96,14 +90,6 @@ export class CompleteInputRecorder {
     private listenerTarget(recorder: UserInputRecorder) {
         return recorder.listen === 'document' ? document : window;
     }
-}
-
-export type RecordedUserInput = RecordedMouseEvent | RecordedScrollEvent | RecordedInputChangeEvent
-                                 | RecordedFocusEvent | RecordedResize | RecordedKeyEvent
-
-export interface BaseUserInput {
-    timestamp: number;
-    type: string;
 }
 
 export interface UserInputRecorder<EventType = Event, RecordedType = RecordedUserInput> {

@@ -1,4 +1,4 @@
-import { RecordedResize } from "../../../scraper/record/user-input/resize-recorder";
+import { RecordedResize } from '../../../scraper/types/types';
 import { AnnotationService } from "./annotation-service";
 
 describe(AnnotationService.name, () => {
@@ -11,7 +11,7 @@ describe(AnnotationService.name, () => {
                 return { description: 'something' }
             } 
         }]);
-        
+         
         const annotations = service.annotate([{ name: 'resize', elements: [
             resizeWithTimestamp(1),
             resizeWithTimestamp(2),
