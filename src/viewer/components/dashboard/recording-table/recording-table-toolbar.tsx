@@ -9,15 +9,14 @@ const styles = (_: Theme) => createStyles({
     }
 })
 
-const _RecordingTableToolbar = (props: RecordingTableToolbarProps) => {
-    const { numSelected, classes } = props;
+const _RecordingTableToolbar = ({ numSelected, onDeleteSelected, classes }: RecordingTableToolbarProps) => {
     return <Toolbar>
         { numSelected > 0 
             ? <Typography variant="subtitle1">{ numSelected } recordings selected</Typography>
             : <Typography variant="h6">Recordings</Typography>}
         <div className={classes.actions}>
             { numSelected > 0
-                ? <IconButton><DeleteIcon /></IconButton>
+                ? <IconButton onClick={ onDeleteSelected}><DeleteIcon /></IconButton>
                 : <IconButton><FilterIcon /></IconButton>
             }
         </div>
@@ -28,4 +27,5 @@ export const RecordingTableToolbar = withStyles(styles)(_RecordingTableToolbar)
 
 export interface RecordingTableToolbarProps extends WithStyles<typeof styles> {
     numSelected: number; 
+    onDeleteSelected: () => void;
 }

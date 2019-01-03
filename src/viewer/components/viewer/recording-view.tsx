@@ -3,13 +3,12 @@ import React from "react";
 import { pluck, sortAsc } from "../../../common/utils/functional-utils";
 import { Group } from "../../../common/utils/type-utils";
 import { DomPreviewService } from "../../../scraper/playback/dom-preview-service";
-import { RecordedMutationGroup } from "../../../scraper/record/dom-changes/mutation-recorder";
-import { RecordedUserInput } from "../../../scraper/record/user-input/input-recorder";
 import { convertMapToGroups, mergeGroups } from "../../../scraper/record/user-input/input-utils";
-import { Recording, RecordingChunk, SnapshotChunk } from "../../../scraper/types/types";
+import { RecordedMutationGroup, RecordedUserInput, Recording, RecordingChunk, SnapshotChunk } from "../../../scraper/types/types";
 import { AnnotationService, RecordingAnnotation } from "../../services/annotation/annotation-service";
 import { ChunkApiService } from "../../services/chunk-api-service";
 import { RecordingResolver } from "../../services/recording-service";
+import { RecordingState } from '../../services/state/recording-state';
 import { withData } from "../../services/with-data";
 import { withDependencies } from "../../services/with-dependencies";
 import { eventsBetween } from "../utils/recording-data-utils";
@@ -131,7 +130,9 @@ class _RecordingView extends React.Component<RecordingViewData, RecordingViewSta
 
 export const RecordingView = withStyles(styles)(
     withDependencies(
-        withData(_RecordingView, { recording: RecordingResolver }),
+        withData(_RecordingView, { recording: 
+            { resolver: RecordingResolver, state: RecordingState, criteria: () => true, unique: true } 
+        }),
         { 
             chunkService: ChunkApiService,
             annotationService: AnnotationService,

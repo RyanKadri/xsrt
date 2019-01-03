@@ -1,83 +1,51 @@
-import { Checkbox, createStyles, Paper, Table, TableBody, TableCell, TableHead, TableRow, Theme, Typography, withStyles, WithStyles } from "@material-ui/core";
+import { createStyles, Paper, Table, TableBody, Theme, withStyles, WithStyles } from "@material-ui/core";
 import React from "react";
-import { Link } from "react-router-dom";
 import { RecordingOverview } from "../../../../scraper/types/types";
-import { formatDate, formatDuration } from "../../utils/format-utils";
+import { RecordingTableHeader } from './recording-table-header';
+import { RecordingRow } from './recording-table-row';
 import { RecordingTableToolbar } from './recording-table-toolbar';
 
 const styles = (theme: Theme) => createStyles({
-    preview: {
-        maxWidth: 360,
-        maxHeight: 240,
-        cursor: "pointer"
-    },
     tableContainer: {
         marginTop: theme.spacing.unit * 2
     }
 })
 
-const _RecordingList = (props: RecordingListProps) => {
-    let { recordings, classes } = props;
-    recordings = props.recordings.concat().sort((a, b) => b.metadata.startTime - a.metadata.startTime );
+const _RecordingTable = (props: RecordingTableProps) => {
+    const { classes, onPreview, onToggleSelectAll, onToggleSelect, selected, onDeleteSelected } = props;
+   const recordings = props.recordings.concat().sort((a, b) => b.metadata.startTime - a.metadata.startTime );
 
-    return recordings.length === 0 
-        ?   <Typography variant="body1">No recordings yet...</Typography>
-        :   <Paper className={ classes.tableContainer }>
-                <RecordingTableToolbar numSelected={0}></RecordingTableToolbar>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell><Checkbox /></TableCell>
-                            <TableCell>Date</TableCell>
-                            <TableCell>Duration</TableCell>
-                            <TableCell>User Agent</TableCell>
-                            <TableCell>Preview</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>{
-                        recordings.map(recording => RecordingRow(recording, props))
-                    }</TableBody>
-                </Table>
-            </Paper>
+    return <Paper className={ classes.tableContainer }>
+        <RecordingTableToolbar 
+            numSelected={ selected.length }
+            onDeleteSelected={ onDeleteSelected } />
+        <Table>
+            <RecordingTableHeader 
+                allSelected={ recordings.length === selected.length }
+                onToggleAll={ onToggleSelectAll }
+            />
+            <TableBody>{
+                recordings.map(recording => 
+                    <RecordingRow 
+                        recording={ recording }
+                        selected={ selected.includes(recording) }
+                        onPreview={ onPreview }
+                        onToggle={ onToggleSelect }
+                        key={ recording._id } />
+                )
+            }</TableBody>
+        </Table>
+    </Paper>
 }
 
-const RecordingRow = (recording: RecordingOverview, props: RecordingListProps) => {
-    const {_id, metadata, thumbnail } = recording;
-    const { classes, onPreview } = props;
-    return <TableRow key={_id}>
-        <TableCell>
-            <Checkbox />
-        </TableCell>
-        <TableCell>
-            <Link to={`/recordings/${_id}`}>
-                { formatDate(metadata.startTime) }                
-            </Link>
-        </TableCell>
-        <TableCell>
-            { metadata.duration
-                ? formatDuration(metadata.duration)
-                : 'N/A'
-            }
-        </TableCell>
-        <TableCell>
-            { metadata.uaDetails 
-                ? `${ metadata.uaDetails.browser.name } - ${ metadata.uaDetails.os.name }`
-                : "Unknown" }
-        </TableCell>
-        <TableCell>
-            { thumbnail 
-                ? <img 
-                    className={ classes.preview }
-                    src={ `/screenshots/${thumbnail}` }
-                    onClick={ () => onPreview(recording) } />
-                : null } 
-        </TableCell>
-    </TableRow>
-}
-
-export interface RecordingListProps extends WithStyles<typeof styles> {
+export interface RecordingTableProps extends WithStyles<typeof styles> {
     recordings: RecordingOverview[];
+    selected: RecordingOverview[];
+
     onPreview: (thumbnail: RecordingOverview) => void;
+    onToggleSelect: (recording: RecordingOverview) => void;
+    onToggleSelectAll: (select: boolean) => void;
+    onDeleteSelected: () => void;
 }
 
-export const RecordingList = withStyles(styles)(_RecordingList)
+export const RecordingTable = withStyles(styles)(_RecordingTable)
