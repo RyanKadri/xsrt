@@ -3,7 +3,7 @@ import { IRouterHandler } from 'express-serve-static-core';
 import { interfaces } from 'inversify';
 import { MapTo } from '../../common/utils/type-utils';
 
-export const implement = <C, T extends RouteDefinition>(definition: T, implementations: RouteImplementation<C, T>) => {
+export const implement = <T extends RouteDefinition>(definition: T, implementations: RouteImplementation<T>) => {
     return (router: Router) => {
         const route = router.route(definition.url);
         const definitions = [ 
@@ -13,7 +13,7 @@ export const implement = <C, T extends RouteDefinition>(definition: T, implement
             [ definition.put, route.put.bind(route), implementations.put ]
         ]
         definitions.forEach(defPair => {
-            const definition = defPair[0] as GetDeleteVerbDefinition | PostPutVerbDefinition;
+            const definition = defPair[0] as UrlVerbDefinition | PayloadVerbDefinition;
             const route = defPair[1] as IRouterHandler<IRoute>;
             const implementation = defPair[2] as MethodImplementation<any, any, any>
 
@@ -24,18 +24,27 @@ export const implement = <C, T extends RouteDefinition>(definition: T, implement
                             acc[key] = injector.read(req);
                             return acc;
                         }, {} as MapTo<any>)
-                    const res = await implementation(injected);
-                    if(res.headers) {
-                        res.headers.forEach(({name, value}) => {
-                            resp.setHeader(name, value);
-                        })
-                    }
-                    if(res instanceof SuccessResponse) {
-                        resp.json(res.payload);
-                    } else if(res instanceof ErrorResponse){
-                        resp.status(res.code).json({ error: res.message })
-                    } else {
-                        resp.download(res.data);
+                    
+                    try {
+                        const res = await implementation(injected);
+                        if((res instanceof SuccessResponse || res instanceof ErrorResponse || res instanceof DownloadResponse)) {
+                            if(res.headers) {
+                                res.headers.forEach(({name, value}) => {
+                                    resp.setHeader(name, value);
+                                })
+                            }
+                            if(res instanceof SuccessResponse) {
+                                resp.json(res.payload);
+                            } else if(res instanceof ErrorResponse){
+                                resp.status(res.code).json({ error: res.message })
+                            } else if(res instanceof DownloadResponse) {
+                                resp.download(res.data);
+                            }
+                        } else {
+                            resp.json(res);
+                        }
+                    } catch(e) {
+                        resp.status(500).json({ error: e.message })
                     }
                 })
             }
@@ -47,19 +56,20 @@ export const defineRoute = <T extends RouteDefinition>(def: T) => def;
 
 export type RouterSetupFn = (router: Router) => void;
 
-export type RouteImplementation<C, T extends RouteDefinition> = {
+export type RouteImplementation<T extends RouteDefinition, C = any> = {
     get?: MethodImplementation<C, T, "get">,
     delete?: MethodImplementation<C, T, "delete">,
     post?: MethodImplementation<C, T, "post">,
-    put?: MethodImplementation<C, T, "put">
+    put?: MethodImplementation<C, T, "put">,
+    patch?: MethodImplementation<C, T, "patch">
 }
 
-export type MethodImplementation<C, T extends RouteDefinition & {[k in method]: GetDeleteVerbDefinition | PostPutVerbDefinition}, method extends keyof T> = 
+export type MethodImplementation<C, T extends RouteDefinition & {[k in method]?: UrlVerbDefinition | PayloadVerbDefinition}, method extends keyof T> = 
     T[method] extends undefined ? undefined : (opts: {
         [param in keyof NonNullable<T[method]>["request"]]: InjectedProp<NonNullable<T[method]>["request"][param]>
     }) => RouteResponse<C> | Promise<RouteResponse<C>>
 
-export type RouteResponse<C> = SuccessResponse<C> | ErrorResponse | DownloadResponse;
+export type RouteResponse<C> = SuccessResponse<C> | ErrorResponse | DownloadResponse | string | object;
 
 export type InjectedProp<T> = T extends RequestUnwrapper<infer U> ? U
     : T extends symbol ? any : T
@@ -93,17 +103,18 @@ export interface ResponseHeader {
 
 export interface RouteDefinition {
     readonly url: string;
-    get?: GetDeleteVerbDefinition;
-    delete?: GetDeleteVerbDefinition;
-    post?: PostPutVerbDefinition;
-    put?: PostPutVerbDefinition;
+    get?: UrlVerbDefinition;
+    delete?: UrlVerbDefinition;
+    post?: PayloadVerbDefinition;
+    put?: PayloadVerbDefinition;
+    patch?: PayloadVerbDefinition;
 }
 
-export interface GetDeleteVerbDefinition { 
+export interface UrlVerbDefinition { 
     request: MapTo<GetDeleteInjectionParam>
 }
 
-export interface PostPutVerbDefinition { 
+export interface PayloadVerbDefinition { 
     request: MapTo<PostPutInjectionParam<any>>
 }
 
@@ -124,7 +135,7 @@ export class RouteParamUnwrap implements RequestUnwrapper<string> {
         private param: string
     ) {}
 
-    read(request: Request) {
+    read(request: Request): string {
         return request.params[this.param];
     }
 }
@@ -136,7 +147,7 @@ export class RequestParamUnwrap implements RequestUnwrapper<string | undefined> 
         private param: string
     ) {}
 
-    read(request: Request) {
+    read(request: Request): string | undefined {
         return request.query[this.param];
     }
 }

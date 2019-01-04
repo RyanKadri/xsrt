@@ -13,28 +13,19 @@ const renameFs = promisify(rename)
 
 export const multiAssetImpl = implement(multiAssetRoute, {
     post: async ({ proxyReq, userAgent, config }) => {
-        try {
-            const assets = await Promise.all(proxyReq.urls.map(url => proxySingleAsset(new URL(url), config, userAgent)))
-            return new SuccessResponse({assets: assets.map(asset => asset._id) });
-        } catch (e) {
-            console.error(e);
-            return new ErrorResponse(500, e.message )
-        }
+        const assets = await Promise.all(proxyReq.urls.map(url => proxySingleAsset(new URL(url), config, userAgent)))
+        return new SuccessResponse({assets: assets.map(asset => asset._id) });
     }
 })
 
 export const singleAssetImpl = implement(singleAssetRoute, {
     get: async ({ assetId }) => {
-        try {
-            const assetDoc = await Asset.findById(assetId);
-            if(assetDoc) {
-                const proxyAsset = assetDoc.toObject() as ProxiedAsset;
-                return new DownloadResponse(proxyAsset.content, proxyAsset.headers);
-            } else {
-                return new ErrorResponse(404,`Could not find asset ${assetId}`);
-            }
-        } catch(e){
-            return new ErrorResponse(500, e.message);
+        const assetDoc = await Asset.findById(assetId);
+        if(assetDoc) {
+            const proxyAsset = assetDoc.toObject() as ProxiedAsset;
+            return new DownloadResponse(proxyAsset.content, proxyAsset.headers);
+        } else {
+            return new ErrorResponse(404,`Could not find asset ${assetId}`);
         }
     }
 })

@@ -1,5 +1,5 @@
 import express, { Express, Router } from "express";
-import { inject, injectable, multiInject } from "inversify";
+import { inject, injectable, multiInject, optional } from "inversify";
 import { RouterSetupFn } from '../../api/endpoints/route';
 
 export const IServerInitializer = Symbol('ServerInitializer');
@@ -27,7 +27,7 @@ export class ExpressServer {
 
     constructor(
         @multiInject(IServerInitializer) private initializers: ServerInitializer[],
-        @multiInject(IRouteHandler) private routeHandlers: RouteHandler[],
+        @optional() @multiInject(IRouteHandler) private routeHandlers: RouteHandler[],
         @multiInject(IRouteImplementation) private routeImplementations: RouterSetupFn[],
         @inject(IServerConfig) private config: ServerConfig
     ) { }

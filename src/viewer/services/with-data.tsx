@@ -13,7 +13,8 @@ export function withData<P, K extends keyof P>(DIComponent: ComponentType<P>, re
             super(props);
             this.state = {
                 data: [],
-                loadingResolvers: undefined
+                loadingResolvers: undefined,
+
             }
         }
 
@@ -37,6 +38,9 @@ export function withData<P, K extends keyof P>(DIComponent: ComponentType<P>, re
 
         componentDidMount() {
             this.update();
+        }
+
+        componentWillUnmount() {
         }
 
         private update() {
