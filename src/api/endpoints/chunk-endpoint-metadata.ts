@@ -1,14 +1,15 @@
 import { RecordingChunk } from '../../scraper/types/types';
-import { defineRoute, RequestBodyUnwrap, RouteParamUnwrap } from './route';
+import { defineRoute, RequestBodyUnwrap, RouteParamUnwrap, Type } from './route';
 
 export const multiChunkRoute = defineRoute({
     url: '/recordings/:recordingId/chunks',
-    post: {
+    post: ({
         request: {
             chunk: new RequestBodyUnwrap<RecordingChunk>(),
             recordingId: new RouteParamUnwrap('recordingId'),
-        }
-    }
+        },
+        response: Type<{ _id: string}>()
+    })
 })
 
 export const singleChunkRoute = defineRoute({
@@ -16,6 +17,7 @@ export const singleChunkRoute = defineRoute({
     get: {
         request: {
             chunkId: new RouteParamUnwrap('chunkId')
-        }
-    }
+        },
+        response: Type<RecordingChunk>()
+    },
 })

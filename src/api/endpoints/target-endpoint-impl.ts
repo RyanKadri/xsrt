@@ -1,22 +1,30 @@
 import { Target } from '../../common/db/targets';
-import { implement } from './route';
+import { errorNotFound, implement } from './route';
 import { mutliTargetMetadata, singleTargetMetadata } from './target-endpoint-metadata';
 
 export const singleTargetImpl = implement(singleTargetMetadata, {
     get: async ({ targetId }) => {
         const target = await Target.findById(targetId);
-        return target;
+        if(target) {
+            return target.toObject();
+        } else {
+            return errorNotFound(`Target ${targetId} not found`)
+        }
     },
     delete: async ({ targetId }) => {
         const res = await Target.findByIdAndDelete(targetId);
-        return res;
+        if(res) {
+            return res.toObject();
+        } else {
+            return errorNotFound(`Target ${targetId} not found`)
+        }
     }
 })
 
 export const multiTargetImpl = implement(mutliTargetMetadata, {
     get: async () => {
         const res = await Target.find({});
-        return res;
+        return res.map(doc => doc.toObject());
     },
     post: async ({ target }) => {
         if(target.identifiedBy === 'host' && !target.url) {
@@ -24,6 +32,6 @@ export const multiTargetImpl = implement(mutliTargetMetadata, {
         }
         const recording = new Target(target);
         const data = await recording.save();
-        return data;
+        return data.toObject();
     }
 })

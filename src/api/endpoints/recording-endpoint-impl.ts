@@ -5,10 +5,10 @@ import { NewSiteTarget, Target } from '../../common/db/targets';
 import { Without } from '../../common/utils/type-utils';
 import { Recording, UADetails } from '../../scraper/types/types';
 import { multiRecordingMetadata, recordingMultiDeleteMetadata, singleRecordingMetadata } from './recordings-endpoint-metadata';
-import { ErrorResponse, implement, SuccessResponse } from './route';
+import { errorInvalidCommand, errorNotFound, implement } from './route';
 
 export const singleRecordingImpl = implement(singleRecordingMetadata, {
-    get: async ({ recordingId }) => { 
+    async get({ recordingId }) { 
         const recordings: Recording[] = await RecordingSchema.aggregate([ 
             { $match: { "_id": recordingId }},
             //{ $unwind: "$chunks" },
@@ -25,17 +25,17 @@ export const singleRecordingImpl = implement(singleRecordingMetadata, {
                 "chunks.assets": 0
             }}
         ]).exec();
-        return new SuccessResponse(recordings[0])
+        return recordings[0];
     },
-    delete: async ({ recordingId }) => {
+    async delete({ recordingId }) {
         const data = await RecordingSchema.findByIdAndDelete(recordingId)
         if(data) {
-            return new SuccessResponse(data.toObject());
+            return data.toObject();
         } else {
-            return new ErrorResponse(404, `Recording ${recordingId} does not exist`);
+            return errorNotFound(`Recording ${recordingId} does not exist`);
         }
     },
-    patch: async ({ patchData, recordingId, config }) => {
+    async patch({ patchData, recordingId, config }) {
         if(patchData.finalized && patchData.metadata) {
             Axios.post(`${config.decorateUrl}/decorate/thumbnails`, { recordingId })
                 .catch(e => console.error(e));
@@ -45,12 +45,12 @@ export const singleRecordingImpl = implement(singleRecordingMetadata, {
                 'metadata.duration': patchData.metadata.duration
             }})
             if(recording) {
-                return new SuccessResponse({ success: true })
+                return { success: true }
             } else {
-                return new ErrorResponse(404, `Recording ${recordingId} does not exist`);
+                return errorNotFound(`Recording ${recordingId} does not exist`);
             }
         } else {
-            return new ErrorResponse(400, 'Unknown command' );
+            return errorInvalidCommand('Unknown command' );
         }
     }
 })
@@ -64,15 +64,15 @@ const extractUADetails = (ua: any): UADetails => {
 }
 
 export const multiRecordingEndpointImpl = implement(multiRecordingMetadata, {
-    get: async ({ site }) => {
+    async get ({ site }) {
         const res = await RecordingSchema.find(
             { 'metadata.site': site, finalized: true },
             { metadata: 1, thumbnail: 1 })
         .sort({ 'metadata.startTime': -1 })
         .limit(15)
-        return new SuccessResponse(res);
+        return res.map(res => res.toObject());
     },
-    post: async ({ recording: bodyData, userAgent }) => {
+    async post ({ recording: bodyData, userAgent }) {
         const host = bodyData.url.hostname;
         const ua = new parser.UAParser(userAgent || "");
 
@@ -89,17 +89,17 @@ export const multiRecordingEndpointImpl = implement(multiRecordingMetadata, {
         };
         const recording = new RecordingSchema(recordingData);
         const res = await recording.save();
-        return new SuccessResponse({ _id: res._id })
+        return { _id: res._id };
     }
 })
 
 export const recordingMultiDeleteImpl = implement(recordingMultiDeleteMetadata, {
-    post: async ({ deleteRequest }) => {
+    async post ({ deleteRequest }) {
         if(deleteRequest.ids) {
-            const res = await RecordingSchema.deleteMany({ _id: { $in: deleteRequest.ids } }).exec()
-            return new SuccessResponse({ success: res })
+            await RecordingSchema.deleteMany({ _id: { $in: deleteRequest.ids } }).exec()
+            return { success: true }
         } else {
-            return new ErrorResponse(400, `Unsure how to process this deletion request`);
+            return errorInvalidCommand(`Unsure how to process this deletion request`);
         }
     }
 })
