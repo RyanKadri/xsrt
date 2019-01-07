@@ -1,24 +1,18 @@
-import { IRoute, Request, Router } from 'express';
-import { IRouterHandler } from 'express-serve-static-core';
+import Axios from 'axios';
+import { Request, Response, Router } from 'express';
 import { interfaces } from 'inversify';
 import { MapTo } from '../../common/utils/type-utils';
 
-export const implement = <T extends RouteDefinition>(definition: T, implementations: RouteImplementation<T>) => {
+export const implement = <T extends EndpointDefinition>(endpointDef: T, implementations: RouteImplementation<T>) => {
     return (router: Router) => {
-        const route = router.route(definition.url);
-        const definitions = [ 
-            [ definition.get, route.get.bind(route), implementations.get ],
-            [ definition.delete, route.delete.bind(route), implementations.delete ],
-            [ definition.post, route.post.bind(route), implementations.post ],
-            [ definition.put, route.put.bind(route), implementations.put ]
-        ]
-        definitions.forEach(defPair => {
-            const definition = defPair[0] as UrlVerbDefinition | PayloadVerbDefinition;
-            const route = defPair[1] as IRouterHandler<IRoute>;
-            const implementation = defPair[2] as MethodImplementation<any, any>
+        const definitions = Object.entries(implementations)
+        definitions.forEach(([key, impl]) => {
+            const definition = endpointDef[key];
+            const route = router[definition.method].bind(router);
+            const implementation = impl;
 
             if(definition && implementation) {
-                route(async (req, resp) => {
+                route(definition.url, async (req: Request, resp: Response) => {
                     const injected = Object.entries(definition.request)
                         .reduce((acc, [ key, injector ]) => {
                             acc[key] = injector.read(req);
@@ -26,7 +20,7 @@ export const implement = <T extends RouteDefinition>(definition: T, implementati
                         }, {} as MapTo<any>)
                     
                     try {
-                        const res = await implementation(injected);
+                        const res = await implementation(injected as any);
                         if(res instanceof ExplicitResponse) {
                             const response = res.response;
                             if(response.headers) {
@@ -53,18 +47,73 @@ export const implement = <T extends RouteDefinition>(definition: T, implementati
     }
 }
 
-export const createApi = () => {
+export const createApi = <T extends EndpointDefinition>(endpointDef: T) => {
+    return Object.entries(endpointDef)
+        .reduce((acc, [action, actionDef]) => {
+            acc[action] = (params: RequestParams<typeof actionDef> = {}) => {
+                const query = extractQueryParams(actionDef, params);
+                const routeParam = extractRouteParams(actionDef, params);
+                const body = extractBody(actionDef, params);
+                const url = replaceRouteParams(actionDef.url, routeParam);
+                if(actionDef.method === 'get' || actionDef.method === 'delete') {
+                    const httpMethod = Axios[actionDef.method] as typeof Axios["get"];
+                    return httpMethod(url, { params: query }).then(resp => resp.data)
+                } else if(actionDef.method === 'patch' || actionDef.method === 'post' || actionDef.method === 'put') {
+                    const httpMethod = Axios[actionDef.method] as typeof Axios["post"];
+                    return httpMethod(url, body).then(resp => resp.data)
+                } else {
+                    throw new Error("Something went wrong");
+                }
+            };
+            return acc;
+        }, {} as EndpointApi<T>)
+}
 
+const extractQueryParams = (actionDef: PayloadVerbDefinition | UrlVerbDefinition, params: RequestParams<any>) => {
+    return Object.entries(actionDef.request)
+        .reduce((acc, [key, def]) => {
+            if(def[key] instanceof RequestParamUnwrap) {
+                acc[key] = params[key]
+            }
+            return acc;
+        }, {} as RequestParams<any>)
+}
+
+const extractRouteParams = (actionDef: PayloadVerbDefinition | UrlVerbDefinition, params: RequestParams<any>) => {
+    return Object.entries(actionDef.request)
+        .reduce((acc, [key, def]) => {
+            if(def[key] instanceof RouteParamUnwrap) {
+                acc[key] = params[key]
+            }
+            return acc;
+        }, {} as RequestParams<any>)
+}
+
+const extractBody = (actionDef: PayloadVerbDefinition | UrlVerbDefinition, params: RequestParams<any>) => {
+    const bodyKey = Object.keys(actionDef.request)
+        .find(key => actionDef.request[key] instanceof RequestBodyUnwrap) || ""
+    return params[bodyKey];
+}
+
+const replaceRouteParams = (url: string, replacements: RequestParams<any>) => {
+    return Object.entries(replacements)
+        .reduce((acc, [key, val]) => {
+            return acc.replace(key, val);
+        }, `/api/${url}`)
+}
+
+export type EndpointApi<T extends EndpointDefinition> = {
+    [action in keyof T]: PayloadApiMethod<T[action]>
 }
 
 export interface PayloadApiMethod<T extends PayloadVerbDefinition | UrlVerbDefinition> {
-    (params: RequestParams<T>): Promise<RouteResponse<T["response"]["type"]>>
+    (params?: RequestParams<T>): Promise<NonNullable<T["response"]["type"]>>
 }
 
 export type RequestParams<T extends PayloadVerbDefinition | UrlVerbDefinition> = 
     { [param in keyof T["request"]]: InjectedProp<T["request"][param]> }
 
-export const defineRoute = <T extends RouteDefinition>(def: T) => def;
+export const defineEndpoint = <T extends EndpointDefinition>(def: T) => def;
 
 export interface TypePlaceholder<T> {
     type?: T
@@ -74,18 +123,14 @@ export const Type = <T>() : TypePlaceholder<T> => ({})
 
 export type RouterSetupFn = (router: Router) => void;
 
-export type RouteImplementation<T extends RouteDefinition> = {
-    get?: MethodImplementation<T, "get">,
-    delete?: MethodImplementation<T, "delete">,
-    post?: MethodImplementation<T, "post">,
-    put?: MethodImplementation<T, "put">,
-    patch?: MethodImplementation<T, "patch">
+export type RouteImplementation<T extends EndpointDefinition> = {
+    [ action in keyof T ]: MethodImplementation<T[action]>
 }
 
-export type MethodImplementation<T extends RouteDefinition & {[k in method]?: UrlVerbDefinition | PayloadVerbDefinition}, method extends keyof T> = 
-    method extends undefined ? undefined : (opts: {
-        [param in keyof NonNullable<T[method]>["request"]]: InjectedProp<NonNullable<T[method]>["request"][param]>
-    }) => RouteResponse<NonNullable<T[method]>["response"]["type"]> | Promise<RouteResponse<NonNullable<T[method]>["response"]["type"]>>
+export type MethodImplementation<Action extends (UrlVerbDefinition | PayloadVerbDefinition)> = 
+    (opts: {
+        [param in keyof Action["request"]]: InjectedProp<Action["request"][param]>
+    }) => RouteResponse<Action["response"]["type"]> | Promise<RouteResponse<Action["response"]["type"]>>
 
 export type RouteResponse<C> = ExplicitResponse<C> | C;
 
@@ -136,21 +181,20 @@ export interface ResponseHeader {
     value: string;
 }
 
-export interface RouteDefinition {
-    readonly url: string;
-    get?: UrlVerbDefinition;
-    delete?: UrlVerbDefinition;
-    post?: PayloadVerbDefinition;
-    put?: PayloadVerbDefinition;
-    patch?: PayloadVerbDefinition;
+export interface EndpointDefinition {
+    [ action: string ] : UrlVerbDefinition | PayloadVerbDefinition
 }
 
 export interface UrlVerbDefinition<T = any> { 
+    method: 'get' | 'delete';
+    url: string
     request: MapTo<GetDeleteInjectionParam>;
     response: TypePlaceholder<T>
 }
 
 export interface PayloadVerbDefinition<T = any> { 
+    method: 'post' | 'put' | 'patch';
+    url: string;
     request: MapTo<PostPutInjectionParam<any>>;
     response: TypePlaceholder<T>
 }

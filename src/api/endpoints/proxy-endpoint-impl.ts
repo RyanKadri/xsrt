@@ -5,21 +5,14 @@ import { join } from 'path';
 import { promisify } from 'util';
 import { Asset, ProxiedAsset } from '../../common/db/asset';
 import { ApiServerConfig } from '../api-server-conf';
-import { multiAssetRoute, singleAssetRoute } from './proxy-endpoint-metadata';
-import { downloadResponse, errorNotFound, implement } from './route';
+import { assetEndpoint } from './proxy-endpoint-metadata';
+import { downloadResponse, errorNotFound, implement, RouteImplementation } from './route';
 
 const mkdirFs = promisify(mkdir)
 const renameFs = promisify(rename)
 
-export const multiAssetImpl = implement(multiAssetRoute, {
-    post: async ({ proxyReq, userAgent, config }) => {
-        const assets = await Promise.all(proxyReq.urls.map(url => proxySingleAsset(new URL(url), config, userAgent)))
-        return {assets: assets.map(asset => asset._id) };
-    }
-})
-
-export const singleAssetImpl = implement(singleAssetRoute, {
-    get: async ({ assetId }) => {
+export const assetEndpointImpl = implement(assetEndpoint, {
+    fetchAsset: async ({ assetId }) => {
         const assetDoc = await Asset.findById(assetId);
         if(assetDoc) {
             const proxyAsset = assetDoc.toObject() as ProxiedAsset;
@@ -27,8 +20,12 @@ export const singleAssetImpl = implement(singleAssetRoute, {
         } else {
             return errorNotFound(`Could not find asset ${assetId}`);
         }
+    },
+    createAsset: async ({ proxyReq, userAgent, config }) => {
+        const assets = await Promise.all(proxyReq.urls.map(url => proxySingleAsset(new URL(url), config, userAgent)))
+        return {assets: assets.map(asset => asset._id) };
     }
-})
+} as RouteImplementation<typeof assetEndpoint>)
 
 const proxySingleAsset = async (url: URL, config: ApiServerConfig, userAgent = "") => {
     const proxyRes = await axios.get(url.href, { responseType: 'stream', headers: { ['User-Agent']: userAgent } });

@@ -1,11 +1,11 @@
 import { Chunk } from '../../common/db/chunk';
 import { Recording } from '../../common/db/recording';
 import { RecordingChunk } from '../../scraper/types/types';
-import { multiChunkRoute, singleChunkRoute } from './chunk-endpoint-metadata';
-import { errorNotFound, implement } from './route';
+import { chunkEndpoint } from './chunk-endpoint-metadata';
+import { errorNotFound, implement, RouteImplementation } from './route';
 
-export const chunkEndpointImplementation = implement(multiChunkRoute, {
-    post: async ({ chunk, recordingId }) => {
+export const chunkEndpointImplementation = implement(chunkEndpoint, {
+    createChunk: (async ({ chunk, recordingId }) => {
         const savedChunk = await new Chunk(chunk).save();
         const doc = await Recording.findByIdAndUpdate(recordingId, { 
             $push: { chunks: savedChunk._id } 
@@ -15,11 +15,8 @@ export const chunkEndpointImplementation = implement(multiChunkRoute, {
         } else {
             return { _id: savedChunk!._id }
         }
-    }
-})
-
-export const singleChunkEndpointImpl = implement(singleChunkRoute, {
-    get: async ({ chunkId }) => {
+    }),
+    fetchChunk: (async ({ chunkId }) => {
         const res = await Chunk.findById(chunkId)
         if(res) {
             const test = { inputs: {}, ...(res.toObject() as RecordingChunk) };;
@@ -27,5 +24,5 @@ export const singleChunkEndpointImpl = implement(singleChunkRoute, {
         } else {
             return errorNotFound(`Could not find chunk ${chunkId }`)
         }
-    }
-})
+    })
+} as RouteImplementation<typeof chunkEndpoint>)

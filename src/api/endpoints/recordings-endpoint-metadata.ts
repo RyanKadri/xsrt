@@ -1,25 +1,33 @@
 import { IServerConfig } from '../../common/server/express-server';
 import { DeepPartial } from '../../common/utils/type-utils';
 import { LocationMetadata, Recording, RecordingOverview } from '../../scraper/types/types';
-import { defineRoute, RequestBodyUnwrap, RequestHeader, RequestParamUnwrap, RouteParamUnwrap, Type } from './route';
+import { defineEndpoint, RequestBodyUnwrap, RequestHeader, RequestParamUnwrap, RouteParamUnwrap, Type } from './route';
 
 const recordingIdParam = "recordingId";
-const recordingId = new RouteParamUnwrap(recordingIdParam)
-export const singleRecordingMetadata = defineRoute({
-    url: `/recordings/:${recordingIdParam}`,
-    get: {
+const singleRecordingUrl = `/recordings/:${recordingIdParam}`;
+const multiRecordingUrl = `/recordings`;
+const recordingId = new RouteParamUnwrap(recordingIdParam);
+
+export const recordingEndpoint = defineEndpoint({
+    fetchRecording: {
+        method: 'get',
+        url: singleRecordingUrl,
         request: {
             recordingId
         },
         response: Type<Recording>()
     },
-    delete: {
+    deleteRecording: {
+        method: 'delete',
+        url: singleRecordingUrl,
         request: {
             recordingId
         },
         response: Type<Recording>()
     },
-    patch: {
+    patchRecording: {
+        method: 'patch',
+        url: singleRecordingUrl,
         request: {
             recordingId,
             patchData: new RequestBodyUnwrap<DeepPartial<Recording>>(),
@@ -27,26 +35,24 @@ export const singleRecordingMetadata = defineRoute({
         },
         response: Type<{success: boolean}>()
     },
-})
-
-export const multiRecordingMetadata = defineRoute({
-    url: `/recordings`,
-    get: {
+    filterRecordings: {
+        url: multiRecordingUrl,
+        method: 'get',
         request: { site: new RequestParamUnwrap("site") },
         response: Type<RecordingOverview[]>()
     },
-    post: {
+    createRecording: {
+        method: 'post',
+        url: multiRecordingUrl,
         request: {
             recording: new RequestBodyUnwrap<CreateRecordingRequest>(),
             userAgent: new RequestHeader("user-agent")
         },
         response: Type<{ _id: string }>()
-    }
-})
-
-export const recordingMultiDeleteMetadata = defineRoute({
-    url: "/recordings/delete-many",
-    post: {
+    },
+    deleteMany: {
+        method: 'post',
+        url: "/recordings/delete-many",
         request: { deleteRequest: new RequestBodyUnwrap<DeleteManyRecordingsRequest>() },
         response: Type<{ success: boolean }>()
     }

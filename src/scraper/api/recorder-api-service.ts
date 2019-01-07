@@ -1,6 +1,6 @@
 import Axios from "axios";
 import { inject, injectable } from "inversify";
-import { CreateRecordingRequest } from "../../api/endpoints/recordings";
+import { CreateRecordingRequest } from '../../api/endpoints/recordings-endpoint-metadata';
 import { DeepPartial, Without } from "../../common/utils/type-utils";
 import { compress } from "../output/output-utils";
 import { ScraperConfig, ScraperConfigToken } from "../scraper-config";

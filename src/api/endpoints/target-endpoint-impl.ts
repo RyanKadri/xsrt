@@ -1,9 +1,9 @@
 import { Target } from '../../common/db/targets';
-import { errorNotFound, implement } from './route';
-import { mutliTargetMetadata, singleTargetMetadata } from './target-endpoint-metadata';
+import { errorNotFound, implement, RouteImplementation } from './route';
+import { siteTargetEndpoint } from './target-endpoint-metadata';
 
-export const singleTargetImpl = implement(singleTargetMetadata, {
-    get: async ({ targetId }) => {
+export const targetEndpointImpl = implement(siteTargetEndpoint, {
+    fetchSiteTarget: async ({ targetId }) => {
         const target = await Target.findById(targetId);
         if(target) {
             return target.toObject();
@@ -11,22 +11,19 @@ export const singleTargetImpl = implement(singleTargetMetadata, {
             return errorNotFound(`Target ${targetId} not found`)
         }
     },
-    delete: async ({ targetId }) => {
+    deleteSiteTarget: async ({ targetId }) => {
         const res = await Target.findByIdAndDelete(targetId);
         if(res) {
             return res.toObject();
         } else {
             return errorNotFound(`Target ${targetId} not found`)
         }
-    }
-})
-
-export const multiTargetImpl = implement(mutliTargetMetadata, {
-    get: async () => {
+    },
+    filterTargets: async () => {
         const res = await Target.find({});
         return res.map(doc => doc.toObject());
     },
-    post: async ({ target }) => {
+    createSiteTarget: async ({ target }) => {
         if(target.identifiedBy === 'host' && !target.url) {
             target.url = target.identifier;
         }
@@ -34,4 +31,4 @@ export const multiTargetImpl = implement(mutliTargetMetadata, {
         const data = await recording.save();
         return data.toObject();
     }
-})
+} as RouteImplementation<typeof siteTargetEndpoint>)

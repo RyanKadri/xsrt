@@ -28,7 +28,7 @@ export class ExpressServer {
     constructor(
         @multiInject(IServerInitializer) private initializers: ServerInitializer[],
         @optional() @multiInject(IRouteHandler) private routeHandlers: RouteHandler[],
-        @multiInject(IRouteImplementation) private routeImplementations: RouterSetupFn[],
+        @optional() @multiInject(IRouteImplementation) private routeImplementations: RouterSetupFn[],
         @inject(IServerConfig) private config: ServerConfig
     ) { }
 

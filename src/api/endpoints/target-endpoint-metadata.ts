@@ -1,32 +1,37 @@
 import { SiteTarget } from '../../common/db/targets';
-import { defineRoute, RequestBodyUnwrap, RouteParamUnwrap, Type } from './route';
+import { defineEndpoint, RequestBodyUnwrap, RouteParamUnwrap, Type } from './route';
 
-export const singleTargetMetadata = defineRoute({
-    url: '/targets/:targetId',
-    get: {
+const singleTargetUrl = '/targets/:targetId';
+const multiTargetUrl = '/targets';
+export const siteTargetEndpoint = defineEndpoint({
+    fetchSiteTarget: {
+        method: 'get',
+        url: singleTargetUrl,
         request: {
             targetId: new RouteParamUnwrap("targetId"),
         },
         response: Type<SiteTarget>()
     },
-    delete: {
+    deleteSiteTarget: {
+        method: 'delete',
+        url: singleTargetUrl,
         request: {
             targetId: new RouteParamUnwrap("targetId"),
         },
         response: Type<SiteTarget>()
-    }
-});
-
-export const mutliTargetMetadata = defineRoute({
-    url: "/targets",
-    get: {
+    },
+    filterTargets: {
+        method: 'get',
+        url: multiTargetUrl,
         request: {},
         response: Type<SiteTarget[]>()
     },
-    post: {
+    createSiteTarget: {
+        method: 'post',
+        url: multiTargetUrl,
         request: {
             target: new RequestBodyUnwrap<Partial<SiteTarget>>()
         },
         response: Type<SiteTarget>()
     }
-})
+});

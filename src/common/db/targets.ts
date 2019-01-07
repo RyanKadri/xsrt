@@ -29,7 +29,7 @@ const siteSchema = new Schema({
 export const Target = model('Target', siteSchema);
 
 export interface SiteTarget {
-    _id: number;
+    _id: string;
     name: string;
     identifiedBy: "host";
     identifier: string;

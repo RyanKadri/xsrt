@@ -1,19 +1,24 @@
-import { injectable } from "inversify";
-import Axios from "axios";
 import { SiteTarget } from "@common/db/targets";
 import { Without } from "@common/utils/type-utils";
+import { injectable } from "inversify";
+import { createApi } from '../../api/endpoints/route';
+import { siteTargetEndpoint } from '../../api/endpoints/target-endpoint-metadata';
+
+export const targetApiService = createApi(siteTargetEndpoint);
 
 @injectable()
 export class TargetApiService {
+    private readonly siteApi = createApi(siteTargetEndpoint);
+
     deleteSite(site: SiteTarget): any {
-        return Axios.delete(`/api/targets/${site._id}`).then(res => res.data);
+        return this.siteApi.deleteSiteTarget({ targetId: site._id })
     }
 
     fetchSites(): Promise<SiteTarget[]> {
-        return Axios.get('/api/targets').then(res => res.data);
+        return this.siteApi.filterTargets();
     }
 
     createSite(newSite: Without<SiteTarget, "_id">) {
-        return Axios.post('/api/targets', newSite).then(res => res.data);
+        return this.siteApi.createSiteTarget({ target: newSite});
     }
 }

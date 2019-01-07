@@ -4,11 +4,11 @@ import { Recording as RecordingSchema } from '../../common/db/recording';
 import { NewSiteTarget, Target } from '../../common/db/targets';
 import { Without } from '../../common/utils/type-utils';
 import { Recording, UADetails } from '../../scraper/types/types';
-import { multiRecordingMetadata, recordingMultiDeleteMetadata, singleRecordingMetadata } from './recordings-endpoint-metadata';
-import { errorInvalidCommand, errorNotFound, implement } from './route';
+import { recordingEndpoint } from './recordings-endpoint-metadata';
+import { errorInvalidCommand, errorNotFound, implement, RouteImplementation } from './route';
 
-export const singleRecordingImpl = implement(singleRecordingMetadata, {
-    async get({ recordingId }) { 
+export const recordingEndpointImpl = implement(recordingEndpoint, {
+    async fetchRecording({ recordingId }) { 
         const recordings: Recording[] = await RecordingSchema.aggregate([ 
             { $match: { "_id": recordingId }},
             //{ $unwind: "$chunks" },
@@ -27,7 +27,7 @@ export const singleRecordingImpl = implement(singleRecordingMetadata, {
         ]).exec();
         return recordings[0];
     },
-    async delete({ recordingId }) {
+    async deleteRecording({ recordingId }) {
         const data = await RecordingSchema.findByIdAndDelete(recordingId)
         if(data) {
             return data.toObject();
@@ -35,7 +35,7 @@ export const singleRecordingImpl = implement(singleRecordingMetadata, {
             return errorNotFound(`Recording ${recordingId} does not exist`);
         }
     },
-    async patch({ patchData, recordingId, config }) {
+    async patchRecording({ patchData, recordingId, config }) {
         if(patchData.finalized && patchData.metadata) {
             Axios.post(`${config.decorateUrl}/decorate/thumbnails`, { recordingId })
                 .catch(e => console.error(e));
@@ -52,19 +52,8 @@ export const singleRecordingImpl = implement(singleRecordingMetadata, {
         } else {
             return errorInvalidCommand('Unknown command' );
         }
-    }
-})
-
-const extractUADetails = (ua: any): UADetails => {
-    return {
-        browser: ua.getBrowser(),
-        os: ua.getOS(),
-        device: ua.getDevice(),
-    }
-}
-
-export const multiRecordingEndpointImpl = implement(multiRecordingMetadata, {
-    async get ({ site }) {
+    },
+    async filterRecordings({ site }) {
         const res = await RecordingSchema.find(
             { 'metadata.site': site, finalized: true },
             { metadata: 1, thumbnail: 1 })
@@ -72,7 +61,7 @@ export const multiRecordingEndpointImpl = implement(multiRecordingMetadata, {
         .limit(15)
         return res.map(res => res.toObject());
     },
-    async post ({ recording: bodyData, userAgent }) {
+    async createRecording({ recording: bodyData, userAgent }) {
         const host = bodyData.url.hostname;
         const ua = new parser.UAParser(userAgent || "");
 
@@ -90,11 +79,8 @@ export const multiRecordingEndpointImpl = implement(multiRecordingMetadata, {
         const recording = new RecordingSchema(recordingData);
         const res = await recording.save();
         return { _id: res._id };
-    }
-})
-
-export const recordingMultiDeleteImpl = implement(recordingMultiDeleteMetadata, {
-    async post ({ deleteRequest }) {
+    },
+    async deleteMany({ deleteRequest }) {
         if(deleteRequest.ids) {
             await RecordingSchema.deleteMany({ _id: { $in: deleteRequest.ids } }).exec()
             return { success: true }
@@ -102,4 +88,12 @@ export const recordingMultiDeleteImpl = implement(recordingMultiDeleteMetadata, 
             return errorInvalidCommand(`Unsure how to process this deletion request`);
         }
     }
-})
+} as RouteImplementation<typeof recordingEndpoint>)
+
+const extractUADetails = (ua: any): UADetails => {
+    return {
+        browser: ua.getBrowser(),
+        os: ua.getOS(),
+        device: ua.getDevice(),
+    }
+}
