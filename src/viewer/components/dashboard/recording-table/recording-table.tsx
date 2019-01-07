@@ -1,7 +1,9 @@
 import { createStyles, Paper, Table, TableBody, Theme, withStyles, WithStyles } from "@material-ui/core";
 import React from "react";
 import { RecordingOverview } from "../../../../scraper/types/types";
-import { allowedColumns, defaultColumns } from './available-columns';
+import { UIConfigService } from '../../../services/ui-config-service';
+import { withDependencies } from '../../../services/with-dependencies';
+import { allowedRecordingTableColumns } from './available-columns';
 import { RecordingTableHeader } from './recording-table-header';
 import { RecordingRow } from './recording-table-row';
 import { RecordingTableSettings } from './recording-table-settings';
@@ -18,7 +20,7 @@ class _RecordingTable extends React.Component<RecordingTableProps, RecordingTabl
     constructor(props: RecordingTableProps) {
         super(props);
         this.state = {
-            settings: { columns: defaultColumns },
+            settings: props.uiConfigService.loadRecordingsTableConfig(),
             settingsDialogOpen: false,
             settingsDialogAnchor: null
         }
@@ -56,7 +58,7 @@ class _RecordingTable extends React.Component<RecordingTableProps, RecordingTabl
             </Table>
             <RecordingTableSettings 
                 open={ this.state.settingsDialogOpen } 
-                availableColumns={ allowedColumns }
+                availableColumns={ allowedRecordingTableColumns }
                 onChangeSettings= { this.onSettingsChange }
                 settings={ this.state.settings }
                 onClose={ this.onSettingsClose }
@@ -78,11 +80,14 @@ class _RecordingTable extends React.Component<RecordingTableProps, RecordingTabl
     }
 
     onSettingsChange = (settings: RecordingTableSettings) => {
-        this.setState({ settings })
+        this.setState({ settings });
+        this.props.uiConfigService.saveRecordingsTableConfig(settings);
     }
 }
 
 export interface RecordingTableProps extends WithStyles<typeof styles> {
+    uiConfigService: UIConfigService
+
     recordings: RecordingOverview[];
     selected: RecordingOverview[];
 
@@ -98,4 +103,7 @@ export interface RecordingTableState {
     settingsDialogAnchor: HTMLElement | null
 }
 
-export const RecordingTable = withStyles(styles)(_RecordingTable)
+export const RecordingTable = withDependencies(
+    withStyles(styles)(_RecordingTable),
+    { uiConfigService: UIConfigService }
+)

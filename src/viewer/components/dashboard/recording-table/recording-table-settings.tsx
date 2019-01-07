@@ -1,12 +1,12 @@
 import { Checkbox, List, ListItem, ListItemText, Popover } from '@material-ui/core';
 import React from 'react';
-import { allowedColumns, RecordingColumn } from './available-columns';
+import { allowedRecordingTableColumns, RecordingColumn } from './available-columns';
 
 const toggleCol = (col: RecordingColumn, settings: RecordingTableSettings): RecordingTableSettings => {
     return {
         columns: settings.columns.includes(col)
             ? settings.columns.filter(settingsCol => settingsCol !== col)
-            : allowedColumns.filter(allowed => [...settings.columns, col].some(test => test.key === allowed.key))
+            : allowedRecordingTableColumns.filter(allowed => [...settings.columns, col].some(test => test.key === allowed.key))
     }
 }
 
