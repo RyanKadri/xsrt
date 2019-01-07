@@ -1,5 +1,5 @@
 import { IServerConfig } from '../../common/server/express-server';
-import { defineEndpoint, RequestBodyUnwrap, RequestHeader, RouteParamUnwrap, Type } from './route';
+import { defineEndpoint, RequestBodyUnwrap, RequestHeader, RouteParamUnwrap, Type } from '../../common/server/route-types';
 
 export const assetEndpoint = defineEndpoint({
     fetchAsset: {

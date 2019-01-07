@@ -51,11 +51,8 @@ export class RecordingOptimizer {
                 context
             } as OptimizationResult
         }
-    
     } 
-
 }
-
 
 export interface OptimizationContext {
     assets: string[];

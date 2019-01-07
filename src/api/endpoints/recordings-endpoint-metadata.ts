@@ -1,7 +1,7 @@
 import { IServerConfig } from '../../common/server/express-server';
+import { defineEndpoint, RequestBodyUnwrap, RequestHeader, RequestParamUnwrap, RouteParamUnwrap, Type } from '../../common/server/route-types';
 import { DeepPartial } from '../../common/utils/type-utils';
 import { LocationMetadata, Recording, RecordingOverview } from '../../scraper/types/types';
-import { defineEndpoint, RequestBodyUnwrap, RequestHeader, RequestParamUnwrap, RouteParamUnwrap, Type } from './route';
 
 const recordingIdParam = "recordingId";
 const singleRecordingUrl = `/recordings/:${recordingIdParam}`;

@@ -4,9 +4,10 @@ import { createWriteStream, mkdir, rename, WriteStream } from 'fs';
 import { join } from 'path';
 import { promisify } from 'util';
 import { Asset, ProxiedAsset } from '../../common/db/asset';
+import { downloadResponse, errorNotFound, implement } from '../../common/server/implement-route';
+import { RouteImplementation } from '../../common/server/route-types';
 import { ApiServerConfig } from '../api-server-conf';
 import { assetEndpoint } from './proxy-endpoint-metadata';
-import { downloadResponse, errorNotFound, implement, RouteImplementation } from './route';
 
 const mkdirFs = promisify(mkdir)
 const renameFs = promisify(rename)

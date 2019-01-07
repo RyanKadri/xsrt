@@ -1,8 +1,9 @@
 import { Chunk } from '../../common/db/chunk';
 import { Recording } from '../../common/db/recording';
+import { errorNotFound, implement } from '../../common/server/implement-route';
+import { RouteImplementation } from '../../common/server/route-types';
 import { RecordingChunk } from '../../scraper/types/types';
 import { chunkEndpoint } from './chunk-endpoint-metadata';
-import { errorNotFound, implement, RouteImplementation } from './route';
 
 export const chunkEndpointImplementation = implement(chunkEndpoint, {
     createChunk: (async ({ chunk, recordingId }) => {

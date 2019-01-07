@@ -1,5 +1,6 @@
 import { Target } from '../../common/db/targets';
-import { errorNotFound, implement, RouteImplementation } from './route';
+import { errorNotFound, implement } from '../../common/server/implement-route';
+import { RouteImplementation } from '../../common/server/route-types';
 import { siteTargetEndpoint } from './target-endpoint-metadata';
 
 export const targetEndpointImpl = implement(siteTargetEndpoint, {

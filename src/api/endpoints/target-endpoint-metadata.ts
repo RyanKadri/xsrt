@@ -1,5 +1,5 @@
 import { SiteTarget } from '../../common/db/targets';
-import { defineEndpoint, RequestBodyUnwrap, RouteParamUnwrap, Type } from './route';
+import { defineEndpoint, RequestBodyUnwrap, RouteParamUnwrap, Type } from '../../common/server/route-types';
 
 const singleTargetUrl = '/targets/:targetId';
 const multiTargetUrl = '/targets';

@@ -2,10 +2,11 @@ import Axios from 'axios';
 import * as parser from 'ua-parser-js';
 import { Recording as RecordingSchema } from '../../common/db/recording';
 import { NewSiteTarget, Target } from '../../common/db/targets';
+import { errorInvalidCommand, errorNotFound, implement } from '../../common/server/implement-route';
+import { RouteImplementation } from '../../common/server/route-types';
 import { Without } from '../../common/utils/type-utils';
 import { Recording, UADetails } from '../../scraper/types/types';
 import { recordingEndpoint } from './recordings-endpoint-metadata';
-import { errorInvalidCommand, errorNotFound, implement, RouteImplementation } from './route';
 
 export const recordingEndpointImpl = implement(recordingEndpoint, {
     async fetchRecording({ recordingId }) { 

@@ -1,5 +1,5 @@
+import { defineEndpoint, RequestBodyUnwrap, RouteParamUnwrap, Type } from '../../common/server/route-types';
 import { RecordingChunk } from '../../scraper/types/types';
-import { defineEndpoint, RequestBodyUnwrap, RouteParamUnwrap, Type } from './route';
 
 export const chunkEndpoint = defineEndpoint({
     createChunk: {
