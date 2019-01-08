@@ -10,13 +10,17 @@ describe(AnnotationService.name, () => {
             annotate() {
                 return { description: 'something' }
             } 
-        }]);
+        }], { annotationEventDebounce: 500, regionIdleTime: 5000, idealBuffer: 5000 });
          
-        const annotations = service.annotate([{ name: 'resize', elements: [
-            resizeWithTimestamp(1),
-            resizeWithTimestamp(2),
-            resizeWithTimestamp(22)
-        ] }]);
+        const annotations = service.annotate({ 
+            inputs: 
+                [{ name: 'resize', elements: [
+                    resizeWithTimestamp(1),
+                    resizeWithTimestamp(2),
+                    resizeWithTimestamp(22)
+                ]}],
+            changes: [] 
+        });
 
         expect(annotations.length).toEqual(2)
     })

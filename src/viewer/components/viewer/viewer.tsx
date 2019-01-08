@@ -1,12 +1,19 @@
 import { CircularProgress, createStyles, Theme, withStyles, WithStyles } from '@material-ui/core';
 import * as React from 'react';
 import { Fragment } from 'react';
+import { between } from '../../../common/utils/functional-utils';
 import { RecordedMutationGroup, RecordingMetadata, SnapshotChunk } from '../../../scraper/types/types';
 import { RecordingAnnotation } from '../../services/annotation/annotation-service';
+import { Region } from '../../services/regions-service';
+import { UIConfigService } from '../../services/ui-config-service';
+import { withDependencies } from '../../services/with-dependencies';
+import { formatPlayerTime } from '../utils/format-utils';
 import { UserInputGroup } from '../utils/recording-data-utils';
+import { ActionPrompt } from './action-prompt';
 import { AnnotationSidebar } from './annotation-sidebar/annotation-sidebar';
 import { RecordingControls } from './footer-controls/footer-controls';
 import { RecordingPlayer } from './player/player';
+import { ViewerSettingsPopover } from './viewer-settings';
 
 const styles = (theme: Theme) => createStyles({
     recordingSpace: {
@@ -34,7 +41,10 @@ class _RecordingViewer extends React.Component<ViewerProps, ViewerState> {
             isPlaying: false,
             showingAnnotations: false,
             lastFrameTime: undefined,
-            waitingOnBuffer: false
+            waitingOnBuffer: false,
+            showingSettings: false,
+            settingsAnchor: null,
+            settings: props.uiConfig.loadViewerConfig()
         }
     }
 
@@ -43,7 +53,8 @@ class _RecordingViewer extends React.Component<ViewerProps, ViewerState> {
     }
     
     render() {
-        const { classes } = this.props; 
+        const { classes } = this.props;
+        const actionPrompt = this.formActionPrompt();
         return <Fragment>
                 <div className={ classes.recordingSpace }>
                     {
@@ -55,31 +66,42 @@ class _RecordingViewer extends React.Component<ViewerProps, ViewerState> {
                                     inputs={ this.props.inputs }
                                     changes={ this.props.changes } 
                                     currentTime={ this.state.playerTime } 
-                                    isPlaying={ this.state.isPlaying}
+                                    isPlaying={ this.state.isPlaying }
                                     recordingMetadata={ this.props.recordingMetadata }
                                     error={ this.state.hasError ? "Something went wrong": undefined }
+                                    lockUI={ this.state.settings.blockViewerOnPause }
                                 />
+                                { actionPrompt
+                                    ? <ActionPrompt prompt={ actionPrompt.prompt } onPromptClicked={ actionPrompt.action } />
+                                    : null
+                                }
                                 <AnnotationSidebar 
                                     expanded={ this.state.showingAnnotations }
-                                    annotations={ this.availableAnnotations } />
+                                    annotations={ this.pastAnnotations } />
                             </Fragment>
                     }
                 </div>
-                { this.Controls() }
+                <RecordingControls 
+                    duration={ this.props.duration }
+                    time={ this.state.playerTime }
+                    buffer={ this.props.bufferPos }
+                    isPlaying={ this.state.isPlaying }
+                    annotations={ this.props.annotations }
+                    regions={ this.props.regions }
+                    showRegions={ this.state.settings.showRegions }
+                    onPlay={ this.play }
+                    onPause={ this.stop }
+                    onSeek={ this.seek }
+                    onToggleAnnotations={ this.toggleAnnotations }
+                    onToggleSettings={ this.toggleSettings } />
+                <ViewerSettingsPopover 
+                    open={this.state.showingSettings}
+                    settings={this.state.settings}
+                    onUpdate={this.updateSettings}
+                    onClose={this.closeSettings}
+                    anchor={this.state.settingsAnchor}
+                />
             </Fragment>
-    }
-
-    private Controls() {
-        return <RecordingControls 
-                duration={ this.props.duration }
-                time={ this.state.playerTime }
-                buffer={ this.props.bufferPos }
-                isPlaying={ this.state.isPlaying }
-                numAnnotations={ this.availableAnnotations.length }
-                onPlay={ this.play }
-                onPause={ this.stop }
-                seek={ this.seek }
-                onToggleAnnotations={ this.toggleAnnotations } />;
     }
 
     play = () => {
@@ -142,12 +164,15 @@ class _RecordingViewer extends React.Component<ViewerProps, ViewerState> {
     }
 
     componentDidUpdate() {
-        if(this.props.bufferPos <= this.state.playerTime && !this.state.waitingOnBuffer && this.state.isPlaying) {
+        if(this.props.bufferPos <= this.state.playerTime
+            && !this.state.waitingOnBuffer 
+            && this.state.isPlaying) {
             this.stop();
             this.setState({
                 waitingOnBuffer: true
             });
-        } else if(this.props.bufferPos > this.state.playerTime && this.state.waitingOnBuffer) {
+        } else if(this.props.bufferPos > this.state.playerTime 
+            && this.state.waitingOnBuffer) {
             this.play();
             this.setState({
                 waitingOnBuffer: false
@@ -155,18 +180,58 @@ class _RecordingViewer extends React.Component<ViewerProps, ViewerState> {
         }
     }
 
-    get availableAnnotations() {
+    get pastAnnotations() {
         return this.props.annotations.filter(ann => ann.startTime < this.state.playerTime)
+    }
+
+    formActionPrompt() {
+        const currRegion = this.props.regions.find(region => 
+            between(region.start, region.end)(this.state.playerTime)
+        )
+
+        const regionTooShort = !currRegion || currRegion.end - currRegion.start < 3000;
+
+        return (!currRegion || currRegion.type !== 'idle' || regionTooShort)
+            ? null
+            : { 
+                prompt: `Skip ${ formatPlayerTime(currRegion.end - this.state.playerTime) } seconds idle time`,
+                action: () => { this.seek( currRegion.end ) }
+             }
+    }
+
+    closeSettings = () => {
+        this.setState({ showingSettings: false })
+    }
+
+    toggleSettings = (evt: React.MouseEvent) => {
+        const target: HTMLElement = evt.currentTarget as HTMLElement;
+        this.setState(oldState => ({ 
+            showingSettings: !oldState.showingSettings,
+            settingsAnchor: target
+        }));
+    }
+
+    updateSettings = (settings: ViewerSettings) => {
+        this.props.uiConfig.saveViewerConfig(settings);
+        this.setState({
+            settings
+        })
     }
 }
 
-export const RecordingViewer = withStyles(styles)(_RecordingViewer);
+export const RecordingViewer = withStyles(styles)(
+    withDependencies(_RecordingViewer, {
+        uiConfig: UIConfigService
+    }));
 
 export interface ViewerProps extends WithStyles<typeof styles> {
+    uiConfig: UIConfigService
+
     snapshots: SnapshotChunk[];
     inputs: UserInputGroup[];
     changes: RecordedMutationGroup[];
-    annotations: RecordingAnnotation[]
+    annotations: RecordingAnnotation[];
+    regions: Region[];
 
     recordingMetadata: RecordingMetadata;
     duration: number;
@@ -181,5 +246,13 @@ export interface ViewerState {
     lastFrameTime?: number;
     isPlaying: boolean;
     showingAnnotations: boolean;
+    showingSettings: boolean;
     waitingOnBuffer: boolean;
+    settingsAnchor: HTMLElement | null;
+    settings: ViewerSettings
+}
+
+export interface ViewerSettings {
+    showRegions: boolean;
+    blockViewerOnPause: boolean;
 }

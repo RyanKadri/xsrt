@@ -8,7 +8,9 @@ import { RecordedMutationGroup, RecordedUserInput, Recording, RecordingChunk, Sn
 import { AnnotationService, RecordingAnnotation } from "../../services/annotation/annotation-service";
 import { ChunkApiService } from "../../services/chunk-api-service";
 import { RecordingResolver } from "../../services/recording-service";
+import { Region, RegionService } from '../../services/regions-service';
 import { RecordingState } from '../../services/state/recording-state';
+import { TweakableConfigs } from '../../services/tweakable-configs';
 import { withData } from "../../services/with-data";
 import { withDependencies } from "../../services/with-dependencies";
 import { eventsBetween } from "../utils/recording-data-utils";
@@ -23,12 +25,10 @@ const styles = (theme: Theme) => createStyles({
     }
 })
 
-const idealBuffer = 5000;
-
 //TODO - This data-passing pattern may need to be rethought if/when there's a standalone viewer
-class _RecordingView extends React.Component<RecordingViewData, RecordingViewState> {
+class _RecordingView extends React.Component<RecordingViewProps, RecordingViewState> {
 
-    constructor(props: RecordingViewData) {
+    constructor(props: RecordingViewProps) {
         super(props);
         this.state = {
             bufferPos: 0,
@@ -38,7 +38,8 @@ class _RecordingView extends React.Component<RecordingViewData, RecordingViewSta
             snapshots: [],
             changes: [],
             inputs: [],
-            annotations: []
+            annotations: [],
+            regions: []
         }
     }
 
@@ -49,8 +50,10 @@ class _RecordingView extends React.Component<RecordingViewData, RecordingViewSta
                 changes={ this.state.changes }
                 inputs={ this.state.inputs }
                 snapshots={ this.state.snapshots }
+
                 recordingMetadata={ recording.metadata }
                 annotations={ this.state.annotations }
+                regions={ this.state.regions }
 
                 bufferPos={ this.state.bufferPos }
                 onUpdateTime={ this.updateBuffer }
@@ -67,7 +70,7 @@ class _RecordingView extends React.Component<RecordingViewData, RecordingViewSta
 
     private updateBuffer = async (time = 0) => {
         const chunksToGrab = this.props.recording.chunks.filter(chunk => 
-            chunk.metadata.startTime - time < idealBuffer && !this.state.requestedChunks.includes(chunk._id));
+            chunk.metadata.startTime - time < this.props.uiTweaks.idealBuffer && !this.state.requestedChunks.includes(chunk._id));
 
         this.setState(oldState => ({
             requestedChunks: oldState.requestedChunks.concat(chunksToGrab.map(chunk => chunk._id))
@@ -95,14 +98,16 @@ class _RecordingView extends React.Component<RecordingViewData, RecordingViewSta
                 changes,
                 snapshots
             })
-            const annotations = this.props.annotationService.annotate(allEvents.inputs);
+            const annotations = this.props.annotationService.annotate(allEvents);
+            const regions = this.props.regionService.splitRegions(allEvents, bufferPos);
             return {
-                snapshots,
+                snapshots,  
                 changes, 
                 inputs,
                 annotations,
                 retrievedChunks,
                 bufferPos,
+                regions
             }
         })
     }
@@ -136,23 +141,28 @@ export const RecordingView = withStyles(styles)(
         { 
             chunkService: ChunkApiService,
             annotationService: AnnotationService,
-            previewService: DomPreviewService
+            previewService: DomPreviewService,
+            regionService: RegionService,
+            uiTweaks: TweakableConfigs
         }
     )
 )
 
-export interface RecordingViewData extends WithStyles<typeof styles> {
+export interface RecordingViewProps extends WithStyles<typeof styles> {
     recording: Recording;
     chunkService: ChunkApiService;
-    annotationService: AnnotationService,
-    previewService: DomPreviewService
+    annotationService: AnnotationService;
+    previewService: DomPreviewService;
+    regionService: RegionService;
+    uiTweaks: TweakableConfigs
 }
 
 export interface RecordingViewState {
     snapshots: SnapshotChunk[];
     changes: RecordedMutationGroup[];
     inputs: Group<RecordedUserInput>[];
-    annotations: RecordingAnnotation[]
+    annotations: RecordingAnnotation[];
+    regions: Region[];
 
     bufferPos: number;
     requestedChunks: string[];

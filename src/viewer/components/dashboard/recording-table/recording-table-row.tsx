@@ -2,7 +2,7 @@ import { Checkbox, createStyles, TableCell, TableRow, WithStyles, withStyles } f
 import React from 'react';
 import { Link } from "react-router-dom";
 import { RecordingOverview } from "../../../../scraper/types/types";
-import { formatDate, formatDuration } from "../../utils/format-utils";
+import { formatDate, formatPlayerTime } from "../../utils/format-utils";
 import { AvailableRecordingColumn, RecordingColumn } from './available-columns';
 
 const styles = createStyles({
@@ -20,7 +20,7 @@ const columnDefs : { [col in AvailableRecordingColumn ]: (recording: RecordingOv
             </Link>,
     duration: ({metadata}) => 
             metadata.duration
-                ? formatDuration(metadata.duration)
+                ? formatPlayerTime(metadata.duration)
                 : 'N/A',
     ua: ({metadata}) => 
             metadata.uaDetails 

@@ -1,4 +1,4 @@
-import uaStyles from '!raw-loader!./ua-styles.css';
+import defaultStyles from '!raw-loader!./default-styles.css';
 import { OptimizedElement, OptimizedHtmlElementInfo, OptimizedStyleElement, OptimizedStyleRule, OptimizedTextElementInfo, ScrapedAttribute, SnapshotChunk } from "../types/types";
 import { toBlobUrl } from "../utils/utils";
 
@@ -35,7 +35,7 @@ export class DomManager {
         if(head) {
             (head as OptimizedHtmlElementInfo).children.unshift({ id: -1, type: 'element', tag: 'style', children: [{
                 type: 'text',
-                content: uaStyles,
+                content: defaultStyles,
                 id: -1
             }]})
         }

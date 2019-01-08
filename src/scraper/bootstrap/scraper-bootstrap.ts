@@ -1,5 +1,5 @@
 import containerCSS from '!raw-loader!./container.css';
-import { formatDuration } from "../../viewer/components/utils/format-utils";
+import { formatPlayerTime } from "../../viewer/components/utils/format-utils";
 import { RecorderInitializer } from '../recorder-initializer';
 import { ScraperConfig } from '../scraper-config';
 import containerHTML from './widget.html';
@@ -62,12 +62,12 @@ import containerHTML from './widget.html';
     }
 
     function startTimer() {
-        elapsedTime.textContent = formatDuration(0);
+        elapsedTime.textContent = formatPlayerTime(0);
 
         const start = Date.now();
         return window.setInterval(() => {
             const now = Date.now();
-            elapsedTime.textContent = formatDuration(now - start);
+            elapsedTime.textContent = formatPlayerTime(now - start);
         }, 500)
     }
 

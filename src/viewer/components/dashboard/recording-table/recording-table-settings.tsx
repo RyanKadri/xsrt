@@ -14,10 +14,11 @@ export const RecordingTableSettings = ({ open, onClose, availableColumns, settin
     return <Popover onClose={ onClose} open={ open } anchorEl={ anchor } >
         <List>{
             availableColumns.map(col => 
-                <ListItem key={col.key}>
+                <ListItem key={col.key}
+                    onClick={ () => onChangeSettings(toggleCol(col, settings)) }
+                >
                     <Checkbox 
-                        checked={ settings.columns.some(selected => selected.key === col.key) } 
-                        onChange={ () => onChangeSettings(toggleCol(col, settings)) }    
+                        checked={ settings.columns.some(selected => selected.key === col.key) }
                     />
                     <ListItemText>{ col.header }</ListItemText>
                 </ListItem>

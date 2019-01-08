@@ -1,4 +1,4 @@
-import { formatDate, formatDuration } from "./format-utils";
+import { formatDate, formatPlayerTime } from "./format-utils";
 
 describe('format-utils', () => {
     describe('formatDate', () => {
@@ -9,8 +9,8 @@ describe('format-utils', () => {
 
     describe('formatDuration', () => {
         it('Formats a duration in milliseconds to mm:ss format', () => {
-            expect(formatDuration(1000)).toBe('00:01');
-            expect(formatDuration(61000)).toBe('01:01');
+            expect(formatPlayerTime(1000)).toBe('00:01');
+            expect(formatPlayerTime(61000)).toBe('01:01');
         })
     })
 })

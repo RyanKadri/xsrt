@@ -1,20 +1,21 @@
 import { injectable, multiInject } from "inversify";
 import { debounce } from "../../../common/utils/functional-utils";
-import { RecordedMutation, RecordedUserInput } from '../../../scraper/types/types';
-import { UserInputGroup } from "../../components/utils/recording-data-utils";
+import { RecordedUserInput } from '../../../scraper/types/types';
+import { RecordingEvents } from "../../components/utils/recording-data-utils";
+import { TweakableConfigs } from '../tweakable-configs';
 
 export const IInputAnnotator = Symbol('IInputAnnotator');
 
 @injectable()
 export class AnnotationService {
 
-    static readonly defaultDebounce = 500;
-
     constructor(
         @multiInject(IInputAnnotator) private annotators: InputAnnotator[],
+        private uxTweaks: TweakableConfigs
     ) {}
 
-    annotate(inputGroups: UserInputGroup[]): RecordingAnnotation[] {
+    annotate(events: RecordingEvents): RecordingAnnotation[] {
+        const inputGroups = events.inputs
         const annotationGroups = this.annotators.reduce((acc, annotator) => {
             const inputGroup = inputGroups.find(group => group.name === annotator.type && group.elements.length > 0)
             if(inputGroup) {
@@ -27,7 +28,7 @@ export class AnnotationService {
         }, [] as AnnotationGroup[]);
 
         const debouncedGroups: AnnotationGroup[] = annotationGroups.map(group => {
-            const debounceTime = group.annotator.debounceTime || AnnotationService.defaultDebounce;
+            const debounceTime = group.annotator.debounceTime || this.uxTweaks.annotationEventDebounce;
             return debounce(group.inputs, debounceTime, input => input.timestamp)
                 .map(inputs => ({
                     annotator: group.annotator,
@@ -36,11 +37,12 @@ export class AnnotationService {
         }).flat();
 
         return debouncedGroups.map(group => {
-            const annotation = group.annotator.annotate(group.inputs[0]);
+            const lastInput = group.inputs[group.inputs.length - 1]
+            const annotation = group.annotator.annotate(lastInput);
             return {
                 ...annotation,
-                triggers: group.inputs.map(input => ({ type: 'input' as 'input', input })),
-                startTime: group.inputs[0].timestamp
+                triggers: group.inputs.map(input => ({ type: 'input' as 'input', cause: input })),
+                startTime: lastInput.timestamp
             }
         })
     }
@@ -65,14 +67,9 @@ export interface RecordingAnnotation {
     startTime: number
 }
 
-export type AnnotationCause = InputCause | MutationCause;
+export type AnnotationCause = InputCause;
 
 export interface InputCause {
     type: 'input';
-    input: RecordedUserInput;
+    cause: RecordedUserInput;
 } 
-
-export interface MutationCause {
-    type: 'mutation';
-    mutation: RecordedMutation
-}

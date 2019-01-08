@@ -5,8 +5,6 @@ export const allowedRecordingTableColumns: RecordingColumn[] = [
     { key: "preview", header: "Preview" }
 ]
 
-export const defaultRecordingTableColumns = allowedRecordingTableColumns.filter(col => ["date", "duration", "preview"].includes(col.key))
-
 export interface RecordingColumn {
     header: string;
     key: AvailableRecordingColumn;

@@ -3,7 +3,7 @@ import { Group } from "../../../common/utils/type-utils";
 import { RecordedMutationGroup, RecordedUserInput } from '../../../scraper/types/types';
 
 export function eventsBetween(changes: RecordedMutationGroup[], inputGroups: UserInputGroup[], fromTime: number, toTime: number)
-    : { changes: RecordedMutationGroup[], inputs: UserInputGroup[]} {
+    : RecordingEvents {
     const timeInRange = pipe(pluck('timestamp'), between(fromTime, toTime)); 
         
     return {
@@ -16,3 +16,8 @@ export function eventsBetween(changes: RecordedMutationGroup[], inputGroups: Use
 }
 
 export type UserInputGroup = Group<RecordedUserInput>;
+
+export interface RecordingEvents {
+    changes: RecordedMutationGroup[];
+    inputs: UserInputGroup[];
+}

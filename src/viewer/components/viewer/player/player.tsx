@@ -25,7 +25,8 @@ const styles = (theme: Theme) => createStyles({
     inputGuard: {
         width: '100%',
         height: '100%',
-        position: 'absolute'
+        position: 'absolute',
+        zIndex: 10
     },
 
     errorOverlay: {
@@ -48,12 +49,12 @@ const styles = (theme: Theme) => createStyles({
     }
 })
 
-class _RecordingPlayer extends React.Component<PlayerInput, PlayerState> {
+class _RecordingPlayer extends React.Component<RecordingPlayerProps, PlayerState> {
 
     private iframe: React.RefObject<HTMLIFrameElement>;
     private viewPort: React.RefObject<HTMLDivElement>;
 
-    constructor(props: PlayerInput){
+    constructor(props: RecordingPlayerProps){
         super(props);
         const { viewportHeight, viewportWidth } = props.snapshots[0].snapshot.documentMetadata
         this.state = { scale: 0, height: viewportHeight, width: viewportWidth }
@@ -64,7 +65,7 @@ class _RecordingPlayer extends React.Component<PlayerInput, PlayerState> {
     render() {
         const { classes } = this.props;
         return <div className={ c(classes.horizExpand, classes.playerContainer) } ref={this.viewPort}>
-            { this.props.isPlaying ? <div className={ classes.inputGuard } /> : null }
+            { (this.props.isPlaying || this.props.lockUI) ? <div className={ classes.inputGuard } /> : null }
             { this.props.error ? <div className={ classes.errorOverlay } >
                 <Typography variant="h2" color="inherit">{ this.props.error }</Typography>
             </div> : null}
@@ -76,23 +77,24 @@ class _RecordingPlayer extends React.Component<PlayerInput, PlayerState> {
         this.initializeViewer();
     }
 
-    componentDidUpdate(prevProps: PlayerInput) { 
+    componentDidUpdate(prevProps: RecordingPlayerProps) { 
         const prevTime = prevProps.currentTime <= this.props.currentTime ? prevProps.currentTime : 0;
         const snapshots = this.props.snapshots
             .filter(snapshot => between(prevTime, this.props.currentTime)(snapshot.metadata.startTime));
         const lastSnapshot = snapshots[snapshots.length - 1];
         
+        const adjustedPrevTime = lastSnapshot ? lastSnapshot.metadata.startTime : prevTime;
+        const { inputs, changes } = eventsBetween(this.props.changes, this.props.inputs, adjustedPrevTime, this.props.currentTime);
+
         if(this.props.currentTime < prevProps.currentTime || (lastSnapshot !== undefined && lastSnapshot !== this.state.currentSnapshot)) {
             this.setState({ currentSnapshot: lastSnapshot })
             this.initializeIframe(lastSnapshot);
         }
 
-        const adjustedPrevTime = lastSnapshot ? lastSnapshot.metadata.startTime : prevTime;
-        const { inputs, changes } = eventsBetween(this.props.changes, this.props.inputs, adjustedPrevTime, this.props.currentTime);
-
         this.props.playbackManager.play(changes, inputs);
 
         this.checkPlayerResize(inputs);
+        this.checkPauseAnimations(prevProps.isPlaying);
     }
 
     private checkPlayerResize(inputGroups: UserInputGroup[]) {
@@ -103,6 +105,14 @@ class _RecordingPlayer extends React.Component<PlayerInput, PlayerState> {
                 height: lastResize.height,
                 width: lastResize.width
             }, this.calcSize) 
+        }
+    }
+
+    private checkPauseAnimations(wasPlaying: boolean) {
+        if(wasPlaying && !this.props.isPlaying) {
+            this.props.playbackManager.togglePause(true);
+        } else if (!wasPlaying && this.props.isPlaying) {
+            this.props.playbackManager.togglePause(false);
         }
     }
 
@@ -144,7 +154,7 @@ export const RecordingPlayer = withStyles(styles)(
     withDependencies(_RecordingPlayer, { playbackManager: PlaybackManager })
 );
 
-export interface PlayerInput extends WithStyles<typeof styles> {
+export interface RecordingPlayerProps extends WithStyles<typeof styles> {
     recordingMetadata: RecordingMetadata;
     snapshots: SnapshotChunk[];
     changes: RecordedMutationGroup[];
@@ -152,7 +162,8 @@ export interface PlayerInput extends WithStyles<typeof styles> {
     currentTime: number;
     isPlaying: boolean;
     error?: string;
-    playbackManager: PlaybackManager
+    playbackManager: PlaybackManager;
+    lockUI: boolean;
 }
 
 export interface PlayerState {

@@ -1,6 +1,6 @@
 import { Button, createStyles, Theme, Typography, withStyles, WithStyles } from "@material-ui/core";
 import React from "react";
-import { formatDuration } from "../../../viewer/components/utils/format-utils";
+import { formatPlayerTime } from "../../../viewer/components/utils/format-utils";
 import { RecordingStatus } from "../popup-root";
 
 const styles = (theme: Theme) => createStyles({
@@ -18,7 +18,7 @@ const _RunSection = (props: RunSectionProps) => {
 
 const duration = (elapsedTime?: number) => {
     return elapsedTime && elapsedTime > 0
-            ? `Recording: ${formatDuration(elapsedTime)}`
+            ? `Recording: ${formatPlayerTime(elapsedTime)}`
             : 'Not Recording'
 }
 

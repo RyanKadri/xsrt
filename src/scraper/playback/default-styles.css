@@ -1,3 +1,10 @@
+/* Pause CSS Animations when player is paused.
+ * TODO - Shoud I apply a class to animating elements instead? Probably...
+ */
+body.__app-icu-paused *, body.__app-icu-paused *:after {
+    animation-play-state: paused !important;
+}
+
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */

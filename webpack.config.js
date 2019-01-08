@@ -1,7 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-const WriteFilePlugin = require('write-file-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const merge = require('webpack-merge');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -74,8 +73,6 @@ module.exports = [
     merge(frontendCommon, {
         name: 'viewer-dev',
         plugins: [
-            new WriteFilePlugin(),
-            //new webpack.HotModuleReplacementPlugin(),
         ],
         
         devServer: {

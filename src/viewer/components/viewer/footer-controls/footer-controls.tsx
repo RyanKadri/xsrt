@@ -4,9 +4,12 @@ import ChatBubbleSharp from '@material-ui/icons/ChatBubbleSharp';
 import FastRewindSharp from '@material-ui/icons/FastRewindSharp';
 import PauseSharp from '@material-ui/icons/PauseSharp';
 import PlaySharp from '@material-ui/icons/PlayArrowSharp';
+import SettingsIcon from '@material-ui/icons/SettingsSharp';
 import * as React from "react";
+import { RecordingAnnotation } from '../../../services/annotation/annotation-service';
+import { Region } from '../../../services/regions-service';
 import { pure } from "../../common/pure-wrapper";
-import { formatDuration } from "../../utils/format-utils";
+import { formatPlayerTime } from "../../utils/format-utils";
 import { ProgressBar } from "./progress-bar/progress-bar";
 
 const styles = (theme: Theme) => createStyles({
@@ -21,24 +24,33 @@ const styles = (theme: Theme) => createStyles({
     icon: {
         color: theme.palette.primary.contrastText
     },
-    annotationButton: {
+    actionButton: {
         marginLeft: 'auto'
     }
 })
 
 const _RecordingControls = (props: ControlsInput) => {
-    const { classes, onToggleAnnotations, numAnnotations } = props;
+    const { classes, onToggleAnnotations, onToggleSettings, annotations, time, showRegions } = props;
+    const pastAnnotations = annotations.filter(ann => ann.startTime < time)
     return <footer className={ classes.controls }>
         <ProgressBar 
-            duration={props.duration} 
+            duration={ props.duration } 
             buffer={ props.buffer } 
-            time={props.time} 
-            seek={props.seek}
+            time={ props.time } 
+            seek={ props.onSeek }
+            regions={ props.regions }
+            annotations={ annotations }
+            showRegions={showRegions}
         />
-        { PlayOrPause(props) }
-        <Typography variant="body1" color="inherit">{ formatDuration(props.time) } / { formatDuration(props.duration) }</Typography>
-        <IconButton onClick={ onToggleAnnotations } color="inherit" className={ classes.annotationButton }>
-            <Badge badgeContent={ numAnnotations } color="primary" invisible={ numAnnotations === 0 } >
+        <PlayOrPause {...props} />
+        <Typography variant="body1" color="inherit">{ formatPlayerTime(props.time) } / { formatPlayerTime(props.duration) }</Typography>
+        <IconButton onClick={ onToggleSettings } color="inherit" className={classes.actionButton}>
+            <SettingsIcon />
+        </IconButton>
+        <IconButton onClick={ onToggleAnnotations } color="inherit">
+            <Badge color="primary"
+                 badgeContent={ pastAnnotations.length }
+                 invisible={ pastAnnotations.length === 0 }>
                 <ChatBubbleSharp />
             </Badge>
         </IconButton>
@@ -46,7 +58,7 @@ const _RecordingControls = (props: ControlsInput) => {
 }
 
 
-const PlayOrPause = ({ isPlaying, onPlay, onPause, seek, time, duration }: ControlsInput ) => {
+const PlayOrPause = ({ isPlaying, onPlay, onPause, onSeek: seek, time, duration }: ControlsInput ) => {
     if(isPlaying){
         return Icon(onPause, PauseSharp);
     } else if(time === duration) {
@@ -68,10 +80,13 @@ export interface ControlsInput extends WithStyles<typeof styles> {
     onPlay: () => void;
     onPause: () => void;
     onToggleAnnotations: () => void;
-    seek: (pos: number) => void;
+    onToggleSettings: (evt: React.MouseEvent) => void;
+    onSeek: (pos: number) => void;
     isPlaying: boolean;
     duration: number;
     time: number;
     buffer: number;
-    numAnnotations: number;
+    annotations: RecordingAnnotation[];
+    regions: Region[];
+    showRegions: boolean;
 }
