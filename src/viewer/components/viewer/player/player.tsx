@@ -3,7 +3,8 @@ import { PlaybackManager } from "@scraper/playback/playback-manager";
 import c from 'classnames';
 import React from "react";
 import { between } from "../../../../common/utils/functional-utils";
-import { RecordedMutationGroup, RecordedResize, RecordingMetadata, SnapshotChunk } from "../../../../scraper/types/types";
+import { RecordedResize } from '../../../../scraper/types/event-types';
+import { RecordedMutationGroup, RecordingMetadata, SnapshotChunk } from "../../../../scraper/types/types";
 import { withDependencies } from "../../../services/with-dependencies";
 import { eventsBetween, UserInputGroup } from "../../utils/recording-data-utils";
 
@@ -49,7 +50,7 @@ const styles = (theme: Theme) => createStyles({
     }
 })
 
-class _RecordingPlayer extends React.Component<RecordingPlayerProps, PlayerState> {
+class _RecordingPlayer extends React.PureComponent<RecordingPlayerProps, PlayerState> {
 
     private iframe: React.RefObject<HTMLIFrameElement>;
     private viewPort: React.RefObject<HTMLDivElement>;

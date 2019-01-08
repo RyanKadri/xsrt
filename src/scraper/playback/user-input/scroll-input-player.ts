@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { RecordedScrollEvent } from '../../types/types';
+import { RecordedScrollEvent } from '../../types/event-types';
 import { DomManager } from "../dom-manager";
 import { UserInputPlaybackHelper } from "./user-input-manager";
 

@@ -8,9 +8,10 @@ import SettingsIcon from '@material-ui/icons/SettingsSharp';
 import * as React from "react";
 import { RecordingAnnotation } from '../../../services/annotation/annotation-service';
 import { Region } from '../../../services/regions-service';
-import { pure } from "../../common/pure-wrapper";
 import { formatPlayerTime } from "../../utils/format-utils";
 import { ProgressBar } from "./progress-bar/progress-bar";
+
+export const footerRenderDebounce = 100;
 
 const styles = (theme: Theme) => createStyles({
     controls: {
@@ -29,52 +30,72 @@ const styles = (theme: Theme) => createStyles({
     }
 })
 
-const _RecordingControls = (props: ControlsInput) => {
-    const { classes, onToggleAnnotations, onToggleSettings, annotations, time, showRegions } = props;
-    const pastAnnotations = annotations.filter(ann => ann.startTime < time)
-    return <footer className={ classes.controls }>
-        <ProgressBar 
-            duration={ props.duration } 
-            buffer={ props.buffer } 
-            time={ props.time } 
-            seek={ props.onSeek }
-            regions={ props.regions }
-            annotations={ annotations }
-            showRegions={showRegions}
-        />
-        <PlayOrPause {...props} />
-        <Typography variant="body1" color="inherit">{ formatPlayerTime(props.time) } / { formatPlayerTime(props.duration) }</Typography>
-        <IconButton onClick={ onToggleSettings } color="inherit" className={classes.actionButton}>
-            <SettingsIcon />
-        </IconButton>
-        <IconButton onClick={ onToggleAnnotations } color="inherit">
-            <Badge color="primary"
-                 badgeContent={ pastAnnotations.length }
-                 invisible={ pastAnnotations.length === 0 }>
-                <ChatBubbleSharp />
-            </Badge>
-        </IconButton>
-    </footer>
+class _RecordingControls extends React.Component<ControlsInput> {
+    private lastRenderTime = 0;
+    render() {
+        const props = this.props;
+        const { classes, onToggleAnnotations, onToggleSettings, annotations, time, showRegions } = props;
+        const pastAnnotations = annotations.filter(ann => ann.startTime < time)
+        return <footer className={ classes.controls }>
+            <ProgressBar 
+                duration={ props.duration } 
+                buffer={ props.buffer } 
+                time={ props.time } 
+                seek={ props.onSeek }
+                regions={ props.regions }
+                annotations={ annotations }
+                showRegions={showRegions}
+            />
+            <PlayOrPause {...props} />
+            <Typography variant="body1" color="inherit">{ formatPlayerTime(props.time) } / { formatPlayerTime(props.duration) }</Typography>
+            <IconButton onClick={ onToggleSettings } color="inherit" className={classes.actionButton}>
+                <SettingsIcon />
+            </IconButton>
+            <IconButton onClick={ onToggleAnnotations } color="inherit">
+                <Badge color="primary"
+                     badgeContent={ pastAnnotations.length }
+                     invisible={ pastAnnotations.length === 0 }>
+                    <ChatBubbleSharp />
+                </Badge>
+            </IconButton>
+        </footer>
+    }
+
+    shouldComponentUpdate(nextProps: ControlsInput) {
+        for(const [key, val] of Object.entries(nextProps)) {
+            const currVal = this.props[key as keyof ControlsInput]
+            if(key !== 'time' && currVal !== val) {
+                this.lastRenderTime = nextProps.time;
+                return true;
+            }
+        }
+        if(nextProps.time - this.lastRenderTime > footerRenderDebounce) {
+            this.lastRenderTime = nextProps.time;
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
 
 
 const PlayOrPause = ({ isPlaying, onPlay, onPause, onSeek: seek, time, duration }: ControlsInput ) => {
     if(isPlaying){
-        return Icon(onPause, PauseSharp);
+        return <Icon action={ onPause } Icon={ PauseSharp } />
     } else if(time === duration) {
-        return Icon(() => seek(0), FastRewindSharp);
+        return <Icon action={() => seek(0)} Icon={ FastRewindSharp } />;
     } else {
-        return Icon(onPlay, PlaySharp);
+        return <Icon action={ onPlay} Icon={ PlaySharp } />;
     }
 }
 
-const Icon = (onClick: () => void, Icon: React.ComponentType<SvgIconProps>) => (
-    <IconButton onClick={ onClick } color="inherit">
+const Icon = ({action, Icon}: { action: () => void, Icon: React.ComponentType<SvgIconProps>}) => (
+    <IconButton onClick={ action } color="inherit">
         <Icon />
     </IconButton>
 )
 
-export const RecordingControls = withStyles(styles)(pure(_RecordingControls));
+export const RecordingControls = withStyles(styles)(_RecordingControls);
 
 export interface ControlsInput extends WithStyles<typeof styles> {
     onPlay: () => void;

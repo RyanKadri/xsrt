@@ -1,6 +1,6 @@
 import { injectable, multiInject } from "inversify";
 import { debounce } from "../../../common/utils/functional-utils";
-import { RecordedUserInput } from '../../../scraper/types/types';
+import { RecordedUserInput } from '../../../scraper/types/event-types';
 import { RecordingEvents } from "../../components/utils/recording-data-utils";
 import { TweakableConfigs } from '../tweakable-configs';
 

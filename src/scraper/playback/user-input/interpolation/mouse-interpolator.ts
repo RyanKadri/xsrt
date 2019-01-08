@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { RecordedMouseMove } from '../../../types/types';
+import { RecordedMouseMove } from '../../../types/event-types';
 import { flipHalfway, interpolator, linear } from "./interpolater";
 import { InterpolationHelper } from "./user-input-interpolator";
 

@@ -10,6 +10,7 @@ import { IPlaybackHandler } from '../scraper/playback/user-input/user-input-mana
 import { IInputAnnotator } from "./services/annotation/annotation-service";
 import { InputEventAnnotator } from "./services/annotation/input-annotator";
 import { ResizeAnnotator } from "./services/annotation/resize-annotator";
+import { UnloadAnnotator } from './services/annotation/unload-annotator';
 
 const PlayerContainer = new Container({ autoBindInjectable: true, defaultScope: "Singleton" });
 
@@ -26,6 +27,7 @@ PlayerContainer.bind(IInterpolationHelper).to(MouseInterpolationHelper);
 
 PlayerContainer.bind(IInputAnnotator).to(ResizeAnnotator);
 PlayerContainer.bind(IInputAnnotator).to(InputEventAnnotator);
+PlayerContainer.bind(IInputAnnotator).to(UnloadAnnotator);
 
 export { PlayerContainer };
 

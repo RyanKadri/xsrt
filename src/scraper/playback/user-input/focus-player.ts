@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { RecordedFocusEvent } from '../../types/types';
+import { RecordedFocusEvent } from '../../types/event-types';
 import { DomManager } from "../dom-manager";
 import { PseudoClassManager } from "./pseudo-class-manager";
 import { UserInputPlaybackHelper } from "./user-input-manager";

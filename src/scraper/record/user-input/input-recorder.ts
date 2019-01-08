@@ -2,7 +2,8 @@ import { group, pluck } from "@common/utils/functional-utils";
 import { injectable, multiInject } from "inversify";
 import { MapTo } from "../../../common/utils/type-utils";
 import { RecordingDomManager } from "../../traverse/traverse-dom";
-import { RecordedInputChannels, RecordedUserInput, ScrapedElement } from "../../types/types";
+import { RecordedInputChannels, RecordedUserInput } from '../../types/event-types';
+import { ScrapedElement } from "../../types/types";
 import { TimeManager } from "../../utils/time-manager";
 import { nodeIsHidden } from "../../utils/utils";
 

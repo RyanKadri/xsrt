@@ -7,9 +7,10 @@ import { chunkMutationLimit } from "./record/dom-changes/mutation-tracker";
 import { mergeMaps } from "./record/user-input/input-utils";
 import { Recorder } from "./recorder";
 import { ScraperConfig, ScraperConfigToken } from "./scraper-config";
-import { RecordingDomManager } from "./traverse/traverse-dom";
 import { PendingDiffChunk, PendingSnapshotChunk, RecordingChunk, SnapshotChunk } from "./types/types";
 import { EventService } from "./utils/event-service";
+
+const unloadEvent = "unload"
 
 @injectable()
 export class RecorderOrchestrator {
@@ -20,7 +21,6 @@ export class RecorderOrchestrator {
         private recorder: Recorder,
         @inject(ScraperConfigToken) private config: ScraperConfig,
         private eventService: EventService,
-        private domWalker: RecordingDomManager
     ) { }
 
     private initInfoTask?: Promise<RecordingInfo>
@@ -31,14 +31,14 @@ export class RecorderOrchestrator {
     private sentInitChunk = false;
 
     initialize() {
-        window.addEventListener('beforeunload', () => {
-            this.onStop(true);
-        })
-
+        
         this.recorder.record();
         this.initInfoTask = this.recorderApi.startRecording()
             .then(info => this.initInfo = info);
-
+        
+        // At the moment, this needs to run after the previous line so the event trackers can record unload events
+        // It feels fragile though. Maybe there's a better (but not annoying way)
+        window.addEventListener(unloadEvent, this.onUnload);
         this.initSnapshotTask = this.recorder.createSnapshotChunk()
 
         Promise.all([this.initSnapshotTask, this.initInfoTask])
@@ -49,6 +49,10 @@ export class RecorderOrchestrator {
                 this.startCollectingDiffs();
             })
         
+    }
+
+    onUnload = () => {
+        this.onStop(true);
     }
 
     onStop = async (isUnloading: boolean) => {
@@ -64,12 +68,12 @@ export class RecorderOrchestrator {
             const snapshot = await this.initSnapshotTask!;
             const initInfo = await this.initInfoTask;
             const chunk = this.sentInitChunk ? leftovers : this.mergeLeftovers(snapshot, leftovers)
+            window.removeEventListener(unloadEvent, this.onUnload);
             await this.reportChunk(chunk, isUnloading);
             this.recorderApi.finalizeRecording(initInfo!._id, this.config, this.latestEnd);
         } else {
             this.reportChunk(leftovers, isUnloading);
         }
-        console.log(this.domWalker.dump());
     }
 
     private startCollectingDiffs() {

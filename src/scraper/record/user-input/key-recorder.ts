@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { RecordedKeyEvent } from "../../types/events";
+import { RecordedKeyEvent } from "../../types/event-types";
 import { UserInputRecorder } from "./input-recorder";
 
 @injectable()

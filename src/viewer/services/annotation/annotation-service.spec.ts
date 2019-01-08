@@ -1,4 +1,4 @@
-import { RecordedResize } from '../../../scraper/types/types';
+import { RecordedResize } from '../../../scraper/types/event-types';
 import { AnnotationService } from "./annotation-service";
 
 describe(AnnotationService.name, () => {

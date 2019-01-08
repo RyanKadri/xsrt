@@ -1,5 +1,6 @@
 import { injectable } from 'inversify';
-import { RecordedMutationGroup, RecordedUserInput } from '../../scraper/types/types';
+import { RecordedUserInput } from '../../scraper/types/event-types';
+import { RecordedMutationGroup } from '../../scraper/types/types';
 import { RecordingEvents } from '../components/utils/recording-data-utils';
 import { TweakableConfigs } from './tweakable-configs';
 

@@ -1,5 +1,5 @@
 import { injectable, multiInject } from "inversify";
-import { RecordedUserInput } from '../../../types/types';
+import { RecordedUserInput } from '../../../types/event-types';
 
 export const IInterpolationHelper = Symbol('InterpolationHelper');
 

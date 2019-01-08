@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
 import { DomPreviewService } from "../../../scraper/playback/dom-preview-service";
-import { RecordedInputChangeEvent } from '../../../scraper/types/types';
+import { RecordedInputChangeEvent } from '../../../scraper/types/event-types';
 import { InputAnnotator } from "./annotation-service";
 
 @injectable()

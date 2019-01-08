@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { RecordedScrollEvent } from '../../types/types';
+import { RecordedScrollEvent } from '../../types/event-types';
 import { RecordedEventContext, UserInputRecorder } from "./input-recorder";
 
 @injectable()

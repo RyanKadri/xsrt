@@ -1,5 +1,6 @@
 import { injectable } from "inversify";
-import { RecordedMouseEvent, ScrapedElement } from "../../types/types";
+import { RecordedMouseEvent } from '../../types/event-types';
+import { ScrapedElement } from "../../types/types";
 import { RecordedEventContext, UserInputRecorder } from "./input-recorder";
 
 // TODO - Move debounce to more natural spot?

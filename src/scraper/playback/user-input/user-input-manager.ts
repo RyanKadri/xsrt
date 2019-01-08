@@ -1,7 +1,7 @@
 import { groupToMap, pluck } from "@common/utils/functional-utils";
 import { injectable, multiInject } from "inversify";
 import { Group } from "../../../common/utils/type-utils";
-import { RecordedUserInput } from '../../types/types';
+import { RecordedUserInput } from '../../types/event-types';
 import { UserInputInterpolator } from "./interpolation/user-input-interpolator";
 
 export const IPlaybackHandler = Symbol('IPlaybackHandler');

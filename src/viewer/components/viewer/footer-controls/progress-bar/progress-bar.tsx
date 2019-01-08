@@ -3,6 +3,7 @@ import c from 'classnames';
 import React from "react";
 import { RecordingAnnotation } from '../../../../services/annotation/annotation-service';
 import { Region } from '../../../../services/regions-service';
+import { footerRenderDebounce } from '../footer-controls';
 
 const styles = (theme: Theme) => createStyles({
     progressBarContainer: {
@@ -10,9 +11,9 @@ const styles = (theme: Theme) => createStyles({
         height: 20,
         position: 'absolute', 
         top: -10,
-        transform: 'scaleY(0.6)',
+        transform: 'scaleY(1)',
         '&:hover': {
-            transform: 'scaleY(1)'
+            transform: 'scaleY(1.25)'
         },
         transition: 'transform 150ms ease-in',
     },
@@ -39,7 +40,10 @@ const styles = (theme: Theme) => createStyles({
     },
     indicatorBar: {
         position: 'absolute',
+        width: '100%',
         top: 10,
+        transition: `transform ${footerRenderDebounce}ms linear`,
+        transformOrigin: "left"
     },
     action: {
         backgroundColor: theme.palette.primary.light
@@ -48,7 +52,7 @@ const styles = (theme: Theme) => createStyles({
         backgroundColor: theme.palette.secondary.light
     },
     annotationIcon: {
-        width: 5,
+        minWidth: 5,
         position: 'absolute',
         height: 5,
         backgroundColor: theme.palette.error.light,
@@ -60,8 +64,8 @@ const styles = (theme: Theme) => createStyles({
 const _ProgressBar = ({seek, time, buffer, duration, regions, annotations, classes, showRegions }: ProgressBarProps) =>
     <>
         <div className={ classes.progressBarContainer} onClick={ (e) => handleSeek(e, seek, duration) }>
-            <div className={ c(classes.indicatorBar, classes.progressBar) } style={ { width: time / duration * 100 + '%' } } />
-            <div className={ c(classes.indicatorBar, classes.bufferBar) } style={ { width: buffer / duration * 100 + '%' } } />
+            <div className={ c(classes.indicatorBar, classes.progressBar) } style={ { transform: `scaleX(${time / duration})` } } />
+            <div className={ c(classes.indicatorBar, classes.bufferBar) } style={ { transform: `scaleX(${buffer / duration})` } } />
             <ProgressAnnotations 
                 annotations={ annotations } 
                 duration={duration} 

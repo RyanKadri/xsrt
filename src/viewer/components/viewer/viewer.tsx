@@ -31,7 +31,7 @@ const styles = (theme: Theme) => createStyles({
     }
 })
 
-class _RecordingViewer extends React.Component<ViewerProps, ViewerState> {
+class _RecordingViewer extends React.PureComponent<ViewerProps, ViewerState> {
 
     constructor(props: ViewerProps) {
         super(props)
