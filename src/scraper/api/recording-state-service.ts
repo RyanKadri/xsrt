@@ -3,10 +3,10 @@ import { Without } from "../../common/utils/type-utils";
 import { ScraperConfig } from "../scraper-config";
 import { RecordingChunk } from "../types/types";
 
-const localStorageRecordingId = "app.icu.recording.id";
-const localStorageRecordingStart = "app.icu.recording.start";
-const localStorageScrapeConfig = "app.icu.recording.config";
-const localStoragePendingChunk = "app.icu.recording.pendingChunk";
+const localStorageRecordingId = "xsrt.recording.id";
+const localStorageRecordingStart = "xsrt.recording.start";
+const localStorageScrapeConfig = "xsrt.recording.config";
+const localStoragePendingChunk = "xsrt.recording.pendingChunk";
 
 @injectable()
 export class RecordingStateService {

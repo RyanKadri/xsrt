@@ -3,8 +3,8 @@ import { allowedRecordingTableColumns } from '../components/dashboard/recording-
 import { RecordingTableSettings } from '../components/dashboard/recording-table/recording-table-settings';
 import { ViewerSettings } from '../components/viewer/viewer';
 
-const localStorageTableSettings = "app.icu.recording-table.config";
-const localStorageViewerSettings = "app.icu.viewer.config";
+const localStorageTableSettings = "xsrt.recording-table.config";
+const localStorageViewerSettings = "xsrt.viewer.config";
 
 const defaultRecordingTableColumns: RecordingTableSettings = {
     columns: allowedRecordingTableColumns

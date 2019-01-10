@@ -1,7 +1,7 @@
-import React from "react";
-import { AppBar, Toolbar, Typography, IconButton, withStyles, WithStyles } from "@material-ui/core";
+import { AppBar, IconButton, Toolbar, Typography, withStyles, WithStyles } from "@material-ui/core";
 import HomeSharp from '@material-ui/icons/HomeSharp';
 import MenuIcon from '@material-ui/icons/Menu';
+import React from "react";
 import { Link } from "react-router-dom";
 
 const styles = {
@@ -17,7 +17,7 @@ const _TopNav = ({ classes, onExpand }: TopNavProps) => (
                 <MenuIcon></MenuIcon>
             </IconButton>
             <Typography variant="h6" color="inherit" className={ classes.grow }>
-                App ICU
+                XSRT
             </Typography>
             <IconButton color="inherit" component={Link as any} { ...{to:"/dashboard"} }>
                 <HomeSharp></HomeSharp>
