@@ -1,5 +1,5 @@
-import { reverseFind } from "@common/utils/functional-utils";
 import { injectable } from "inversify";
+import { reverseFind } from '../../../common/utils/functional-utils';
 import { RecordedMouseEvent } from '../../types/event-types';
 import { DomManager } from "../dom-manager";
 import mouseFragment from './mouse-fragment.html';

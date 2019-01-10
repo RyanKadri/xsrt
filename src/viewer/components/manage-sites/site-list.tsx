@@ -1,7 +1,7 @@
-import { WithStyles, withStyles, Typography, List, ListItem, ListItemText, ListItemSecondaryAction, IconButton } from "@material-ui/core";
-import { SiteTarget } from "@common/db/targets";
+import { IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, Typography, WithStyles, withStyles } from "@material-ui/core";
+import DeleteIcon from '@material-ui/icons/Delete';
 import React from "react";
-import DeleteIcon from '@material-ui/icons/Delete'
+import { SiteTarget } from '../../../common/db/targets';
 
 const styles = {
     root: {

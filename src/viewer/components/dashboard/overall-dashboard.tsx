@@ -1,6 +1,6 @@
-import React from "react";
 import { List, ListItemText } from "@material-ui/core";
-import { SiteTarget } from "@common/db/targets";
+import React from "react";
+import { SiteTarget } from '../../../common/db/targets';
 import { LinkListItem } from "../common/link-list-item";
 
 export const OverallDashboardView = ({ sites }: DashboardViewProps) =>

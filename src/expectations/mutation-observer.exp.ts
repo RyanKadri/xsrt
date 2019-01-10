@@ -1,6 +1,6 @@
 describe(`Mutation Observer Expectations`, () => {
   
-    it(`Generates a single mutation when a structure is built off-page and inserted`, () => {
+    xit(`Generates a single mutation when a structure is built off-page and inserted`, () => {
         const mutations = generateMutationsFor(() => {
             const [div, section, span] = el('div', 'section', 'span');
         
@@ -13,7 +13,7 @@ describe(`Mutation Observer Expectations`, () => {
         expect(mutations.length).toEqual(1);
     });
 
-    it(`Generates multiple mutations for synchronous element building on-page`, () => {
+    xit(`Generates multiple mutations for synchronous element building on-page`, () => {
         const mutations = generateMutationsFor(() => {
             const [div, section, span] = el('div', 'section', 'span');
         
@@ -26,7 +26,7 @@ describe(`Mutation Observer Expectations`, () => {
         expect(mutations.length).toEqual(3);
     });
 
-    it(`Does not optimize synchronous overwriting changes on single elements`, () => {
+    xit(`Does not optimize synchronous overwriting changes on single elements`, () => {
         const mutations = generateMutationsFor(() => {
             const [div] = el('div');
             document.body.appendChild(div);

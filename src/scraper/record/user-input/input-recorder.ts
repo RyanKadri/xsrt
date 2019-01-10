@@ -1,5 +1,5 @@
-import { group, pluck } from "@common/utils/functional-utils";
 import { injectable, multiInject } from "inversify";
+import { group, pluck } from '../../../common/utils/functional-utils';
 import { MapTo } from "../../../common/utils/type-utils";
 import { RecordingDomManager } from "../../traverse/traverse-dom";
 import { RecordedInputChannels, RecordedUserInput } from '../../types/event-types';

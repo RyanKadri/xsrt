@@ -1,6 +1,6 @@
-import { NewSiteTarget, SiteTarget } from "@common/db/targets";
 import { createStyles, Theme, Typography, withStyles, WithStyles } from "@material-ui/core";
 import React from "react";
+import { NewSiteTarget, SiteTarget } from '../../../common/db/targets';
 import { AddSiteForm } from "./add-site-form";
 import { SiteList } from "./site-list";
 

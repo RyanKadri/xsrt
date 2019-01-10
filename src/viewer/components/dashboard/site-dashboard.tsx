@@ -1,7 +1,7 @@
-import { SiteTarget } from "@common/db/targets";
 import { createStyles, Dialog, Theme, Typography, withStyles, WithStyles } from "@material-ui/core";
 import ExternalLink from '@material-ui/icons/OpenInBrowserSharp';
 import React, { Fragment } from "react";
+import { SiteTarget } from '../../../common/db/targets';
 import { RecordingOverview } from "../../../scraper/types/types";
 import { RecordingApiService, RecordingMetadataResolver } from "../../services/recording-service";
 import { RecordingState } from '../../services/state/recording-overview-state';

@@ -1,8 +1,8 @@
-import { SiteTarget } from "@common/db/targets";
-import { Without } from "@common/utils/type-utils";
 import { injectable } from "inversify";
 import { siteTargetEndpoint } from '../../api/endpoints/target-endpoint-metadata';
+import { SiteTarget } from '../../common/db/targets';
 import { createApi } from '../../common/server/create-api';
+import { Without } from '../../common/utils/type-utils';
 
 export const targetApiService = createApi(siteTargetEndpoint);
 

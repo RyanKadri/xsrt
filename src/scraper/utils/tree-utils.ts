@@ -4,7 +4,7 @@ export function transformTree<T, R>(root: T, transformNode: (node: T) => R, fetc
     const currentNode = transformNode(root) as any;
     return {
         ...currentNode,
-        children: transformedChildren
+        ...transformedChildren ? {children: transformedChildren } : {}
     }
 }
 

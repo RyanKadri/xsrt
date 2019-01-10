@@ -1,14 +1,14 @@
 import { findInTree, transformTree, treeReduce } from "./tree-utils";
-
+ 
 describe('tree-utils', () => {
     describe(transformTree.name, () => {
         it('Walks over a tree and transforms nodes', () => {
             const tree: ValNode = {
                 val: 1, children: [
                     { val: 2, children: [
-                        {val: 3}, {val: 4}
+                        { val: 3 }, { val: 4 } 
                     ]}
-            ]}
+            ]} 
             const transformed = transformTree(
                 tree,
                 (node) => ({ newVal: node.val * 2 }),

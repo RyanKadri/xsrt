@@ -8,7 +8,11 @@
     "build:viewer": "webpack --config-name viewer-prod",
     "build:bootstrap": "webpack --mode development --config-name bootstrap-scripts",
     "build:extension": "webpack --watch --mode development --config-name compile-extension",
-    "test": "jest --watchAll --runInBand"
+    "build:test": "tsc -p tsconfig.spec.json",
+    "build:test:watch": "tsc -p tsconfig.spec.json --watch",
+    "test": "npm run build:test && jasmine --config=jasmine.json",
+    "test:watch": "mkdir -p dist/spec && rm -r dist/spec && concurrently -p \"[{name}]\" --restart-tries 3 \"npm:build:test:watch\" \"npm:test:watch:build-artifacts\"",
+    "test:watch:build-artifacts": "nodemon -w dist/spec/* --delay 1000ms ./node_modules/.bin/jasmine --config=jasmine.json"
   },
   "author": "",
   "license": "ISC",
@@ -30,7 +34,9 @@
     "dependency-cruiser": "^4.10.0",
     "html-webpack-inline-source-plugin": "0.0.10",
     "html-webpack-plugin": "^3.2.0",
+    "jasmine": "^3.3.1",
     "jest": "^23.6.0",
+    "nodemon": "^1.18.9",
     "raw-loader": "^0.5.1",
     "react-hot-loader": "^4.3.12",
     "ts-jest": "^23.10.5",
@@ -69,6 +75,7 @@
     "react-test-renderer": "^16.6.3",
     "reflect-metadata": "^0.1.12",
     "shortid": "^2.2.14",
+    "tsconfig-paths": "^3.7.0",
     "tslib": "^1.9.3",
     "ua-parser-js": "^0.7.19"
   }

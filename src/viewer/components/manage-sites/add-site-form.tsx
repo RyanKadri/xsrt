@@ -1,7 +1,7 @@
-import { NewSiteTarget } from "@common/db/targets";
 import { Button, createStyles, ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, MenuItem, TextField, Theme, withStyles, WithStyles } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import React, { FormEvent } from "react";
+import { NewSiteTarget } from '../../../common/db/targets';
 
 const styles = (theme: Theme) => createStyles({
     root: {

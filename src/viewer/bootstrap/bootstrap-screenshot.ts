@@ -1,4 +1,4 @@
-import { DomManager } from "@scraper/playback/dom-manager";
+import { DomManager } from '../../scraper/playback/dom-manager';
 import { Recording, SnapshotChunk } from "../../scraper/types/types";
 
 (async function() {

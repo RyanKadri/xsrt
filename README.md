@@ -33,4 +33,4 @@ This project uses an express backend. You can build and debug in VSCode (via lau
 
 ### Chrome Extension
 
-You can run the recording code on most sites (barring some known issues with "unfriendly" CSPs). To build this code, you can run npm run build:extension. Since this is purely a DX tool for this project, I do not plan on adding this to the chrome store. Instead, I would recommend installing it as an unpacked extension
+You can run the recording code on most sites (barring some known issues with "unfriendly" CSPs). To build this code, you can run `npm run build:extension`. Since this is purely a DX tool for this project, I do not plan on adding this to the chrome store. Instead, I would recommend installing it as an unpacked extension

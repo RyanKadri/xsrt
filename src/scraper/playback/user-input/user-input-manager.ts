@@ -1,5 +1,5 @@
-import { groupToMap, pluck } from "@common/utils/functional-utils";
 import { injectable, multiInject } from "inversify";
+import { groupToMap, pluck } from '../../../common/utils/functional-utils';
 import { Group } from "../../../common/utils/type-utils";
 import { RecordedUserInput } from '../../types/event-types';
 import { UserInputInterpolator } from "./interpolation/user-input-interpolator";

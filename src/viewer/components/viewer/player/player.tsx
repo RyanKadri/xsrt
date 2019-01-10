@@ -1,8 +1,8 @@
 import { createStyles, Theme, Typography, withStyles, WithStyles } from "@material-ui/core";
-import { PlaybackManager } from "@scraper/playback/playback-manager";
 import c from 'classnames';
 import React from "react";
 import { between } from "../../../../common/utils/functional-utils";
+import { PlaybackManager } from '../../../../scraper/playback/playback-manager';
 import { RecordedResize } from '../../../../scraper/types/event-types';
 import { RecordedMutationGroup, RecordingMetadata, SnapshotChunk } from "../../../../scraper/types/types";
 import { withDependencies } from "../../../services/with-dependencies";

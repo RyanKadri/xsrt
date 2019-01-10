@@ -1,8 +1,8 @@
-import { NewSiteTarget, SiteTarget } from "@common/db/targets";
 import { createStyles, MuiThemeProvider, withStyles } from "@material-ui/core";
 import CssBaseline from '@material-ui/core/CssBaseline';
 import React, { Fragment } from "react";
 import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
+import { NewSiteTarget, SiteTarget } from '../../../common/db/targets';
 import { TargetApiService } from "../../../viewer/services/sites-api-service";
 import { appTheme } from "../../../viewer/theme/theme";
 import { withDependencies } from "../../services/with-dependencies";

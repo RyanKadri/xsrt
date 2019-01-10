@@ -1,6 +1,5 @@
-import { ComponentType } from "react";
-import { Omit } from "@common/utils/type-utils";
-import React from "react";
+import React, { ComponentType } from "react";
+import { Omit } from '../../common/utils/type-utils';
 import { PlayerContainer } from "../inversify.player";
 
 export function withDependencies<P, K extends keyof P>(DIComponent: ComponentType<P>, dependencies: Dependencies<K>): ComponentType<Omit<P, K>> {

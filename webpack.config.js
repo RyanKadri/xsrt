@@ -32,10 +32,6 @@ const common = (output) => ({
     },
     resolve: {
         extensions: ['.ts', '.js'],
-        alias: {
-            '@common': path.resolve(__dirname, "src/common/"),
-            '@scraper': path.resolve(__dirname, "src/scraper/")
-        }
     }
 });
 

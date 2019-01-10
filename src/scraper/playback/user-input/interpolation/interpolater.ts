@@ -1,4 +1,4 @@
-import { nCopies } from "@common/utils/functional-utils";
+import { nCopies } from '../../../../common/utils/functional-utils';
 import { MapTo } from "../../../../common/utils/type-utils";
 
 export function interpolator<T>(nIntermediate: number, interpolators: InterpolationTypes<T>) {
