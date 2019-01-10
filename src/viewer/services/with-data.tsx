@@ -13,13 +13,12 @@ export function withData<P, K extends keyof P>(DIComponent: ComponentType<P>, re
             super(props);
             this.state = {
                 data: [],
-                loadingResolvers: undefined,
-
+                fieldDependencies: undefined,
             }
         }
 
         render() {
-            if(!this.state.loadingResolvers || this.state.loadingResolvers.length > 0) {
+            if(!this.state.fieldDependencies || this.state.fieldDependencies.length > 0) {
                 return <Typography variant="body1">Loading</Typography>
             } else {
                 const newProps = {...this.props as any};
@@ -32,6 +31,7 @@ export function withData<P, K extends keyof P>(DIComponent: ComponentType<P>, re
 
         componentDidUpdate(oldProps: Omit<P, K> & { routeParams: RouteComponentProps }) {
             if(oldProps.routeParams.location.pathname !== this.props.routeParams.location.pathname) {
+                this.cleanupDependencies()
                 this.update()
             }
         }
@@ -41,6 +41,15 @@ export function withData<P, K extends keyof P>(DIComponent: ComponentType<P>, re
         }
 
         componentWillUnmount() {
+            this.cleanupDependencies();
+        }
+
+        private cleanupDependencies() {
+            if(this.state.fieldDependencies) {
+                this.state.fieldDependencies.forEach(dep => {
+                    dep.state.unwatch(dep.watchId);
+                })
+            }
         }
 
         private update() {
@@ -57,19 +66,19 @@ export function withData<P, K extends keyof P>(DIComponent: ComponentType<P>, re
                                 state.upsert([data])
                             }
                         });
-                    state.watch(resolverOptions.criteria, (items: any[]) => {
+                    const watchId = state.watch(resolverOptions.criteria, (items: any[]) => {
                         this.setState(oldState => ({
-                            loadingResolvers: (oldState.loadingResolvers || []).filter(prom => prom.field !== field),
+                            fieldDependencies: (oldState.fieldDependencies || []).filter(prom => prom.field !== field),
                             data: [
                                 ...oldState.data.filter(({ field: dataField }) => dataField !== field ),
                                 { field, value: resolverOptions.unique ? items[0] : items } // TODO - Need to handle some errors here
                             ]
                         }))
                     })
-                    return { field, resolver: resolvePromise };
+                    return { field, resolver: resolvePromise, state, watchId };
                 });
             this.setState({
-                loadingResolvers
+                fieldDependencies: loadingResolvers
             })
         }
     }
@@ -89,9 +98,11 @@ export interface Resolver<T> {
 }
 
 interface WithDataState {
-    loadingResolvers?: {
+    fieldDependencies?: {
         field: string;
         resolver: Promise<void>;
+        watchId: number;
+        state: IState<any>;
     }[]
     data: {
         field: string;

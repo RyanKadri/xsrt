@@ -7,7 +7,6 @@ export interface ServerInitializer {
     initialize(app: Express): Promise<void>
 }
 
-//TODO - Revisit this interface. Can / should this be abstracted any more?
 export const IRouteHandler = Symbol('RouteHandler');
 export interface RouteHandler {
     readonly base: string;

@@ -2,6 +2,7 @@ import containerCSS from '!raw-loader!./container.css';
 import { formatPlayerTime } from "../../viewer/components/utils/format-utils";
 import { RecorderInitializer } from '../recorder-initializer';
 import { ScraperConfig } from '../scraper-config';
+import { hideNodeAttr } from '../utils/utils';
 import containerHTML from './widget.html';
 
 (function bootstrapScraper() {
@@ -80,7 +81,7 @@ import containerHTML from './widget.html';
         const container = document.createElement('div');
         container.id = containerId;
         container.appendChild(el('style', containerCSS));
-        container.setAttribute('screen-scrape-ignore', 'true'); //TODO - Ignore this too
+        container.setAttribute(hideNodeAttr, 'true');
         document.body.appendChild(container);
         
         const shadow = container.attachShadow({ mode: 'open' });

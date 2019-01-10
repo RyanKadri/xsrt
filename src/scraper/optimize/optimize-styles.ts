@@ -57,7 +57,7 @@ function replaceUrlsInRules(rules: ScrapedStyleRule[], context: OptimizationCont
 function replaceUrls(rule: ScrapedStyleRule, context: OptimizationContext): Partial<ScrapedStyleRule> {
     return (rule.references || [])
         .reduce((curr, ref, i) => {
-            const refNum = context.assets.findIndex(asset => asset === normalizeUrl(ref, rule.source));
+            const refNum = context.assets.findIndex(asset => asset === toAbsoluteUrl(ref, rule.source));
             curr.references[i] = '' + refNum
             return {
                 text: curr.text.replace(ref, `##${refNum}##`),
@@ -70,7 +70,7 @@ function extractStyleUrls(rules: ScrapedStyleRule[], context: OptimizationContex
     const newContext = [...context.assets];
     rules.forEach(rule => {
         (rule.references || [])
-            .map(ref => normalizeUrl(ref, rule.source))
+            .map(ref => toAbsoluteUrl(ref, rule.source))
             .forEach(ref => {
                 if(!newContext.includes(ref)) {
                     newContext.push(ref);
@@ -106,7 +106,7 @@ function isLinkStylesheet(styleEl: ScrapedHtmlElement) {
 }
 
 // TODO - Speaking of normalizing, we should probably normalize relative paths for deduping as well...
-export function normalizeUrl(url: string, source?: string) {
+function toAbsoluteUrl(url: string, source?: string) {
     return urlIsAbsolute(url) || source === undefined
         ? url
         : source.replace(/\/[^\/]*?$/, '/' + url);

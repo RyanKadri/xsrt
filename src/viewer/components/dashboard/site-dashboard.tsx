@@ -28,7 +28,6 @@ class _SiteDashboardView extends React.Component<DashboardViewProps, DashboardSt
         }
     }
     
-    // TODO. More fully flesh out url
     render() {
         const { classes } = this.props;
         return <div className={ classes.root }>{ 

@@ -1,5 +1,7 @@
 /* Pause CSS Animations when player is paused.
- * TODO - Shoud I apply a class to animating elements instead? Probably...
+ * TODO - Shoud I apply a class to animating elements instead? 
+ * Probably... Although pausing can be a little slow. The hard part in that case would be finding
+ * elements with animating CSS props
  */
 body.__app-icu-paused *, body.__app-icu-paused *:after {
     animation-play-state: paused !important;

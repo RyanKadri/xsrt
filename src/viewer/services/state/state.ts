@@ -3,6 +3,7 @@ import { MapTo } from '../../../common/utils/type-utils';
 
 export interface IState<T> {
     watch(criteria: (item: T) => boolean, cb: ListenerCallback<T>): number;
+    unwatch(watchId: number): void;
     upsert(items: T[]): void;
     delete(items: T[]): void;
 }
@@ -16,6 +17,10 @@ export abstract class SimpleState<T extends { [id in C]: string }, C extends key
     
     watch(criteria: ListenerCriteria<T>, cb: ListenerCallback<T>) {
         return this.listeners.push({ criteria, callback: cb }) - 1;
+    }
+
+    unwatch() {
+        this.listeners
     }
 
     upsert(items: T[]) {

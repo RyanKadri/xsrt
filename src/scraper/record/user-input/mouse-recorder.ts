@@ -1,10 +1,8 @@
 import { injectable } from "inversify";
+import { TweakableConfigs } from '../../../viewer/services/tweakable-configs';
 import { RecordedMouseEvent } from '../../types/event-types';
 import { ScrapedElement } from "../../types/types";
 import { RecordedEventContext, UserInputRecorder } from "./input-recorder";
-
-// TODO - Move debounce to more natural spot?
-const debounceThresholdMs = 100;
 
 @injectable()
 export class MouseRecorder implements UserInputRecorder<MouseEvent, RecordedMouseEvent> {
@@ -15,8 +13,12 @@ export class MouseRecorder implements UserInputRecorder<MouseEvent, RecordedMous
     private lastTime = 0;
     private lastHovered?: ScrapedElement;
 
+    constructor(
+        private uxTweaks: TweakableConfigs
+    ) {}
+
     handle(evt: MouseEvent, { time, target }: RecordedEventContext): Partial<RecordedMouseEvent> | null {
-        if(evt.type === 'mousemove' && target === this.lastHovered && time - this.lastTime < debounceThresholdMs) {
+        if(evt.type === 'mousemove' && target === this.lastHovered && time - this.lastTime < this.uxTweaks.mouseMoveDebounce) {
             return null;
         } else {
             this.lastHovered = target;

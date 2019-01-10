@@ -48,9 +48,10 @@ export function toJson(data: any) {
     return globals.JSON.stringify(data, (key, val) => key === 'domElement' ? undefined : val);
 }
 
+export const hideNodeAttr = 'screen-scrape-ignore'
 export function nodeIsHidden(node: Node) {
     return isElementNode(node) 
-        ? node.hasAttribute('screen-scrape-ignore')
+        ? node.hasAttribute(hideNodeAttr)
         : false;
 }
 

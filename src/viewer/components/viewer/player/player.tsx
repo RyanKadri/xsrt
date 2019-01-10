@@ -119,9 +119,10 @@ class _RecordingPlayer extends React.PureComponent<RecordingPlayerProps, PlayerS
 
     private initializeIframe(snapshot: SnapshotChunk) {
         const currDocument = this.iframe.current && this.iframe.current.contentDocument
-        // TODO. Should I think about case where recording is not ready?
         if(currDocument) {
             this.props.playbackManager.initialize(currDocument, snapshot);
+        } else {
+            throw new Error("Could not initialize player")
         }
     }
     
