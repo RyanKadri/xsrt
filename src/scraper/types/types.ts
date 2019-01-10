@@ -5,7 +5,7 @@ export type ScrapedElement = ScrapedHtmlElement | ScrapedTextElement;
 export type OptimizedElement = OptimizedHtmlElementInfo | OptimizedTextElementInfo;
 
 export interface ScrapedHtmlElement extends OptimizedHtmlElementInfo {
-    domElement: Element;
+    domElement?: Element;
     attributes: ScrapedAttribute[];
     children: ScrapedElement[];
 }

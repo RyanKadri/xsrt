@@ -67,7 +67,7 @@ describe(`input-utils`, () => {
         })
     })
 
-    describe(mergeMaps, () => {
+    describe(mergeMaps.name, () => {
         it(`Merges maps`, () => {
             const map1 = {
                 test1: ['hello']

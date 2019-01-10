@@ -22,7 +22,7 @@ export class RecordingDomManager {
     traverseNode(node: Comment): undefined
     traverseNode(node: Node): ScrapedElement | undefined
     traverseNode(node: Node): ScrapedElement | undefined {
-        return transformTree(node, node => {
+        return transformTree<Node, ScrapedElement>(node, node => {
             const result = isElementNode(node) ? this.extractElement(node) 
                 : isTextNode(node) ? this.extractText(node)
                 : undefined;

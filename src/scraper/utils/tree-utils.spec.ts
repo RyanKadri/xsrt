@@ -11,7 +11,7 @@ describe('tree-utils', () => {
             ]} 
             const transformed = transformTree(
                 tree,
-                (node) => ({ newVal: node.val * 2 }),
+                (node: ValNode) => ({ newVal: node.val * 2 }) as Partial<NewNode>,
                 node => node.children
             );
             expect(transformed).toEqual({
@@ -65,4 +65,9 @@ describe('tree-utils', () => {
 interface ValNode {
     val: number;
     children?: ValNode[];
+}
+
+interface NewNode {
+    newVal: number;
+    children?: NewNode[];
 }

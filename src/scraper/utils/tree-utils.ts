@@ -1,4 +1,5 @@
-export function transformTree<T, R>(root: T, transformNode: (node: T) => R, fetchChildren: FetchChildrenCallback<T>): R {
+
+export function transformTree<T, R>(root: T, transformNode: (node: T) => Partial<R> | undefined, fetchChildren: FetchChildrenCallback<T>): R {
     const children = fetchChildren(root);
     const transformedChildren = children ? children.map(child => transformTree(child, transformNode, fetchChildren)): undefined;
     const currentNode = transformNode(root) as any;
