@@ -2,8 +2,8 @@ import { injectable } from 'inversify';
 
 @injectable()
 export class TweakableConfigs {
-    readonly regionIdleTime = 5000;
-    readonly annotationEventDebounce = 500;
-    readonly idealBuffer = 5000;
-    readonly mouseMoveDebounce = 100;
+    readonly regionIdleTime: number = 5000;
+    readonly annotationEventDebounce: number = 500;
+    readonly idealBuffer: number = 5000;
+    readonly mouseMoveDebounce: number = 100;
 }

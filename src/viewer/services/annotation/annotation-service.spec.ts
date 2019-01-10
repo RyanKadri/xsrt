@@ -10,7 +10,7 @@ describe(AnnotationService.name, () => {
             annotate() {
                 return { description: 'something' }
             } 
-        }], { annotationEventDebounce: 500, regionIdleTime: 5000, idealBuffer: 5000 });
+        }], { annotationEventDebounce: 500, regionIdleTime: 5000, idealBuffer: 5000, mouseMoveDebounce: 1000 });
          
         const annotations = service.annotate({ 
             inputs: 
