@@ -1,12 +1,12 @@
 import { inject, injectable } from "inversify";
 import { ScraperConfig, ScraperConfigToken } from "../../scraper-config";
-import { AddDescriptor, RecordedMutation, RecordedMutationGroup } from '../../types/types';
+import { AddDescriptor, RecordedMutation, RecordedMutationGroup } from "../../types/types";
 import { EventService } from "../../utils/event-service";
 import { TimeManager } from "../../utils/time-manager";
 import { treeReduce } from "../../utils/tree-utils";
 import { MutationOptimizer } from "./mutation-optimizer";
 
-export const chunkMutationLimit = Symbol('chunkMutationLimit');
+export const chunkMutationLimit = Symbol("chunkMutationLimit");
 
 @injectable()
 export class MutationTracker {
@@ -25,12 +25,12 @@ export class MutationTracker {
         this.mutations.push({
             timestamp: this.timeManager.currentTime(),
             mutations: this.optimizer.optimizeMutationGroup(mutations)
-        })
+        });
 
         this.numMutations += this.calcNumMutations(mutations);
 
-        if(this.numMutations >= this.config.mutationsPerChunk) {
-            this.eventService.dispatch({ type: chunkMutationLimit, payload: this.numMutations })
+        if (this.numMutations >= this.config.mutationsPerChunk) {
+            this.eventService.dispatch({ type: chunkMutationLimit, payload: this.numMutations });
         }
     }
 
@@ -43,25 +43,25 @@ export class MutationTracker {
 
     private calcNumMutations(mutations: RecordedMutation[]): number {
         return mutations.reduce((acc, el) => {
-            switch(el.type) {
-                case 'attribute':
-                case 'change-text':
+            switch (el.type) {
+                case "attribute":
+                case "change-text":
                     return acc + 1;
-                case 'children':
-                    return acc + this.calcNumAdditions(el.additions) + el.removals.length
+                case "children":
+                    return acc + this.calcNumAdditions(el.additions) + el.removals.length;
             }
-        }, 0)
+        }, 0);
     }
 
     private calcNumAdditions(additions: AddDescriptor[]) {
         return additions.reduce((sum, addition) => {
             const numNodes = treeReduce(
-                addition.data, 
-                (numNodes) => numNodes + 1,
-                addition => addition.type === 'element' ? addition.children : undefined, 
+                addition.data,
+                (totalNodes) => totalNodes + 1,
+                addNode => addNode.type === "element" ? addNode.children : undefined,
                 0
-            )
-            return sum + numNodes
-        }, 0)
+            );
+            return sum + numNodes;
+        }, 0);
     }
 }

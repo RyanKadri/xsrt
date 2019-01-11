@@ -11,7 +11,13 @@
         "arrow-parens": false,
         "object-literal-sort-keys": false,
         "trailing-comma": false,
-        "interface-name": false
+        "interface-name": false,
+        "array-type": [true, "array"],
+        "member-ordering": false,
+        "class-name": false,
+        "object-literal-key-quotes": [true, "as-needed"],
+        "variable-name": false,
+        "max-classes-per-file": false
     },
     "rulesDirectory": []
 }

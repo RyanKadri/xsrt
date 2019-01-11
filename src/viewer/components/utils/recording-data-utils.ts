@@ -1,12 +1,11 @@
 import { between, pipe, pluck } from "../../../common/utils/functional-utils";
 import { Group } from "../../../common/utils/type-utils";
-import { RecordedUserInput } from '../../../scraper/types/event-types';
-import { RecordedMutationGroup } from '../../../scraper/types/types';
+import { RecordedUserInput } from "../../../scraper/types/event-types";
+import { RecordedMutationGroup } from "../../../scraper/types/types";
 
-export function eventsBetween(changes: RecordedMutationGroup[], inputGroups: UserInputGroup[], fromTime: number, toTime: number)
-    : RecordingEvents {
-    const timeInRange = pipe(pluck('timestamp'), eventTime => between(eventTime, fromTime, toTime)); 
-        
+export function eventsBetween(changes: RecordedMutationGroup[], inputGroups: UserInputGroup[], fromTime: number, toTime: number): RecordingEvents {
+    const timeInRange = pipe(pluck("timestamp"), eventTime => between(eventTime, fromTime, toTime));
+
     return {
         changes: changes.filter(timeInRange),
         inputs: inputGroups.map(group => ({

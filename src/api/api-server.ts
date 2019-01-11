@@ -1,6 +1,6 @@
-import { ApiContainer } from "./api-inversify";
 import { ExpressServer } from "../common/server/express-server";
+import { ApiContainer } from "./api-inversify";
 
-(async function() {
+(async () => {
     ApiContainer.get(ExpressServer).start();
-})()
+})();

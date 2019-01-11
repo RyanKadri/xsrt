@@ -1,10 +1,10 @@
 import { model, Schema } from "mongoose";
-import shortid from 'shortid';
-import { Without } from '../utils/type-utils';
+import shortid from "shortid";
+import { Without } from "../utils/type-utils";
 
 const siteSchema = new Schema({
     _id: {
-        'type': String,
+        type: String,
         default: shortid.generate
     },
     name: {
@@ -14,7 +14,7 @@ const siteSchema = new Schema({
     identifiedBy: {
         type: String,
         required: true,
-        enum: ['host']
+        enum: ["host"]
     },
     identifier: {
         type: String,
@@ -24,9 +24,9 @@ const siteSchema = new Schema({
         type: String,
         required: true
     }
-}, { strict: true, collection: 'targets' })
+}, { strict: true, collection: "targets" });
 
-export const Target = model('Target', siteSchema);
+export const Target = model("Target", siteSchema);
 
 export interface SiteTarget {
     _id: string;
@@ -36,4 +36,4 @@ export interface SiteTarget {
     url: string;
 }
 
-export type NewSiteTarget = Without<SiteTarget, '_id'>
+export type NewSiteTarget = Without<SiteTarget, "_id">;

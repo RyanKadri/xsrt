@@ -1,7 +1,6 @@
-import { DecoratorContainer } from "./inversify.decorators";
 import { ExpressServer } from "../common/server/express-server";
+import { DecoratorContainer } from "./inversify.decorators";
 
-(async function() {
+(async () => {
     await DecoratorContainer.get(ExpressServer).start();
-})()
-
+})();

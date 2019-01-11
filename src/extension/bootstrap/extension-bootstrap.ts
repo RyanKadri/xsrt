@@ -6,32 +6,32 @@ import { ExtensionMessage, ExtensionMessageResponse } from "../content/site-chan
 const recorder = new RecorderInitializer();
 const autoStart = recorder.checkAutoStart();
 
-window.addEventListener('message', async (message) => {
-    if(message.source !== window || message.data.type !== ExtensionMessage.type) {
+window.addEventListener("message", async (message) => {
+    if (message.source !== window || message.data.type !== ExtensionMessage.type) {
         return;
     } else {
         const request: ExtensionMessage<CommandMessage> = message.data;
         const command = request.payload;
-        if(command.command === "startRecording") {
-            if(!autoStart) {
+        if (command.command === "startRecording") {
+            if (!autoStart) {
                 recorder.initialize(command.config);
             } else {
-                throw new Error('Tried to start the recorder but it was already recording');
+                throw new Error("Tried to start the recorder but it was already recording");
             }
-        } else if(command.command === 'stopRecording') {
+        } else if (command.command === "stopRecording") {
             await recorder.stop();
         }
-        window.postMessage(new ExtensionMessageResponse(request.id), location.origin)
+        window.postMessage(new ExtensionMessageResponse(request.id), location.origin);
     }
-}) 
+});
 
 export type ExtensionRequest = StartScrapingRequest | StopScrapingRequest;
 
 export interface StartScrapingRequest {
-    type: 'startScraping';
+    type: "startScraping";
     config: ScraperConfig;
 }
 
 export interface StopScrapingRequest {
-    type: 'stopScraping';
+    type: "stopScraping";
 }

@@ -1,35 +1,37 @@
 import { injectable } from "inversify";
+import { LoggingService } from "../../../common/utils/log-service";
 import { shouldTraverseNode } from "../../filter/filter-dom";
 import { RecordingDomManager } from "../../traverse/traverse-dom";
-import { AttributeMutation, ChangeChildrenMutation, ChangeTextMutation, RecordedMutation } from '../../types/types';
+import { AttributeMutation, ChangeChildrenMutation, ChangeTextMutation, RecordedMutation } from "../../types/types";
 
 @injectable()
 export class MutationTransformer {
 
     constructor(
         private domWalker: RecordingDomManager,
+        private logger: LoggingService
     ) {}
 
     transformMutation(mutation: MutationRecord): RecordedMutation[] {
         const targetEl = this.domWalker.fetchManagedNode(mutation.target, false);
-        if(!targetEl) {
-            console.log(mutation.target)
+        if (!targetEl) {
+            this.logger.info(mutation.target);
             return [];
         }
         const target = targetEl.id;
-        if(mutation.type === 'attributes') {
+        if (mutation.type === "attributes") {
             return [ this.attributeMutation(mutation, target) ];
-        } else if(mutation.type === 'characterData') {
+        } else if (mutation.type === "characterData") {
             return [ this.textMutation(mutation, target) ];
         } else {
             const res: RecordedMutation[] = [];
-            if(mutation.removedNodes && mutation.removedNodes.length > 0) {
+            if (mutation.removedNodes && mutation.removedNodes.length > 0) {
                 const removal = this.removeChildrenMutation(mutation, target);
-                if(removal) {
+                if (removal) {
                     res.push(removal);
                 }
             }
-            if(mutation.addedNodes && mutation.addedNodes.length > 0) {
+            if (mutation.addedNodes && mutation.addedNodes.length > 0) {
                 res.push(this.addChildrenMutation(mutation, target));
             }
             return res;
@@ -37,9 +39,9 @@ export class MutationTransformer {
     }
 
     private attributeMutation(mutation: MutationRecord, target: number): AttributeMutation {
-        const name = mutation.attributeName!
+        const name = mutation.attributeName!;
         return {
-            type: 'attribute',
+            type: "attribute",
             target,
             name,
             val: (mutation.target as HTMLElement).getAttribute(name)!
@@ -50,20 +52,20 @@ export class MutationTransformer {
         return {
             type: "change-text",
             target,
-            update: mutation.target.textContent || ''
-        }
+            update: mutation.target.textContent || ""
+        };
     }
 
     private removeChildrenMutation(mutation: MutationRecord, target: number): ChangeChildrenMutation | null {
         const removal = {
-            type: "children" as 'children',
+            type: "children" as "children",
             target,
             removals: Array.from(mutation.removedNodes)
                 .filter(shouldTraverseNode)
                 .filter(node => this.domWalker.isManaged(node))
                 .map(node => this.domWalker.fetchManagedNode(node)!),
             additions: []
-        }
+        };
         return removal.removals.length > 0 ? removal : null;
     }
 
@@ -73,24 +75,24 @@ export class MutationTransformer {
             .map(addition => {
                 const processed = this.domWalker.traverseNode(addition)!;
                 let before: Node | null | undefined = processed.domElement;
-                while(before && !this.domWalker.isManaged(before.nextSibling)) {
+                while (before && !this.domWalker.isManaged(before.nextSibling)) {
                     before = before.nextSibling;
                 }
 
                 let beforeId: number | null = null;
-                if(before && before.nextSibling) {
+                if (before && before.nextSibling) {
                     beforeId = this.domWalker.fetchManagedNode(before.nextSibling).id;
                 }
                 return {
                     before: beforeId,
                     data: processed
-                }
+                };
             });
         return {
-            type: 'children',
+            type: "children",
             target,
             additions,
             removals: []
-        }
+        };
     }
 }

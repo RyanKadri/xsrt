@@ -1,12 +1,11 @@
+import { listenForCommands } from "./commands";
 import { fetchConfig } from "./config";
 import { bootstrapScraper } from "./page-bootstrap";
-import { listenForCommands } from "./commands";
 
-(async function() {
+(async () => {
     listenForCommands();
     const config = await fetchConfig();
-    if(config.shouldInject) {
+    if (config.shouldInject) {
         await bootstrapScraper();
     }
-})()
-
+})();

@@ -1,23 +1,23 @@
 import { ScrapedAttribute, ScrapedHtmlElement, ScrapedTextElement } from "../types/types";
 
-export function transformElement(el: ScrapedHtmlElement):  ScrapedHtmlElement {
+export function transformElement(el: ScrapedHtmlElement): ScrapedHtmlElement {
     return {
         ...el,
         attributes: el.attributes
             .filter(filterAttribute)
             .map(transformAttribute)
-    }
+    };
 }
 
-//Placeholder in case we need to do text transformations in the future (I kind of doubt it)
+// Placeholder in case we need to do text transformations in the future (I kind of doubt it)
 export function transformText(el: ScrapedTextElement) {
     return el;
 }
 
 function filterAttribute(attr: ScrapedAttribute) {
-    if(/^on[a-z]+/.test(attr.name)) {
+    if (/^on[a-z]+/.test(attr.name)) {
         return false;
-    } else if(/^javascript:/i.test(attr.value)) {
+    } else if (/^javascript:/i.test(attr.value)) {
         return false;
     } else {
         return true;
@@ -26,7 +26,7 @@ function filterAttribute(attr: ScrapedAttribute) {
 
 function transformAttribute(attr: ScrapedAttribute) {
     let newVal;
-    if(attr.name === 'href') {
+    if (attr.name === "href") {
         newVal = "";
     }
     return { ...attr, newVal };

@@ -1,4 +1,4 @@
-// Note. These types have to be a separate file from site-channel so they can be imported 
+// Note. These types have to be a separate file from site-channel so they can be imported
 // without side effects from the page-side script
 
 export class ExtensionMessage<P = any> {

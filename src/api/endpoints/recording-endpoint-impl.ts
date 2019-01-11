@@ -1,21 +1,21 @@
-import Axios from 'axios';
-import * as parser from 'ua-parser-js';
-import { Recording as RecordingSchema } from '../../common/db/recording';
-import { NewSiteTarget, Target } from '../../common/db/targets';
-import { errorInvalidCommand, errorNotFound, implement } from '../../common/server/implement-route';
-import { RouteImplementation } from '../../common/server/route-types';
-import { Without } from '../../common/utils/type-utils';
-import { Recording, UADetails } from '../../scraper/types/types';
-import { recordingEndpoint } from './recordings-endpoint-metadata';
+import Axios from "axios";
+import * as parser from "ua-parser-js";
+import { Recording as RecordingSchema } from "../../common/db/recording";
+import { NewSiteTarget, Target } from "../../common/db/targets";
+import { errorInvalidCommand, errorNotFound, implement } from "../../common/server/implement-route";
+import { RouteImplementation } from "../../common/server/route-types";
+import { Without } from "../../common/utils/type-utils";
+import { Recording, UADetails } from "../../scraper/types/types";
+import { recordingEndpoint } from "./recordings-endpoint-metadata";
 
 export const recordingEndpointImpl = implement(recordingEndpoint, {
-    async fetchRecording({ recordingId }) { 
-        const recordings: Recording[] = await RecordingSchema.aggregate([ 
-            { $match: { "_id": recordingId }},
-            //{ $unwind: "$chunks" },
-            { $lookup: { 
+    async fetchRecording({ recordingId }) {
+        const recordings: Recording[] = await RecordingSchema.aggregate([
+            { $match: { _id: recordingId }},
+            // { $unwind: "$chunks" },
+            { $lookup: {
                 from: "recordingChunks",
-                localField: "chunks", 
+                localField: "chunks",
                 foreignField: "_id",
                 as: "chunks",
             }},
@@ -29,51 +29,51 @@ export const recordingEndpointImpl = implement(recordingEndpoint, {
         return recordings[0];
     },
     async deleteRecording({ recordingId }) {
-        const data = await RecordingSchema.findByIdAndDelete(recordingId)
-        if(data) {
+        const data = await RecordingSchema.findByIdAndDelete(recordingId);
+        if (data) {
             return data.toObject();
         } else {
             return errorNotFound(`Recording ${recordingId} does not exist`);
         }
     },
     async patchRecording({ patchData, recordingId, config }) {
-        if(patchData.finalized && patchData.metadata) {
+        if (patchData.finalized && patchData.metadata) {
             Axios.post(`${config.decorateUrl}/decorate/thumbnails`, { recordingId })
                 .catch(e => console.error(e));
 
             const recording = await RecordingSchema.findByIdAndUpdate(recordingId, { $set: {
                 finalized: true,
-                'metadata.duration': patchData.metadata.duration
-            }})
-            if(recording) {
-                return { success: true }
+                "metadata.duration": patchData.metadata.duration
+            }});
+            if (recording) {
+                return { success: true };
             } else {
                 return errorNotFound(`Recording ${recordingId} does not exist`);
             }
         } else {
-            return errorInvalidCommand('Unknown command' );
+            return errorInvalidCommand("Unknown command" );
         }
     },
-    async filterRecordings({ site }) {
-        const res = await RecordingSchema.find(
-            { 'metadata.site': site, finalized: true },
+    async filterRecordings({ site: siteId }) {
+        const sites = await RecordingSchema.find(
+            { "metadata.site": siteId, finalized: true },
             { metadata: 1, thumbnail: 1 })
-        .sort({ 'metadata.startTime': -1 })
-        .limit(15)
-        return res.map(res => res.toObject());
+        .sort({ "metadata.startTime": -1 })
+        .limit(15);
+        return sites.map(site => site.toObject());
     },
     async createRecording({ recording: bodyData, userAgent }) {
         const host = bodyData.url.hostname;
         const ua = new parser.UAParser(userAgent || "");
 
-        const existingSite = await Target.findOne({ identifiedBy: 'host', identifier: host });
+        const existingSite = await Target.findOne({ identifiedBy: "host", identifier: host });
         let site = existingSite;
-        if(!site) {
-            const newTarget: NewSiteTarget = { name: host, identifiedBy: 'host', identifier: host, url: host };
-            site = await new Target(newTarget).save()
+        if (!site) {
+            const newTarget: NewSiteTarget = { name: host, identifiedBy: "host", identifier: host, url: host };
+            site = await new Target(newTarget).save();
         }
-        const uaDetails = extractUADetails(ua)
-        const recordingData: Without<Recording, "_id"> = { 
+        const uaDetails = extractUADetails(ua);
+        const recordingData: Without<Recording, "_id"> = {
             metadata: { site: site._id, startTime: bodyData.startTime, duration: 0, uaDetails },
             chunks: []
         };
@@ -82,19 +82,19 @@ export const recordingEndpointImpl = implement(recordingEndpoint, {
         return { _id: res._id };
     },
     async deleteMany({ deleteRequest }) {
-        if(deleteRequest.ids) {
-            await RecordingSchema.deleteMany({ _id: { $in: deleteRequest.ids } }).exec()
-            return { success: true }
+        if (deleteRequest.ids) {
+            await RecordingSchema.deleteMany({ _id: { $in: deleteRequest.ids } }).exec();
+            return { success: true };
         } else {
             return errorInvalidCommand(`Unsure how to process this deletion request`);
         }
     }
-} as RouteImplementation<typeof recordingEndpoint>)
+} as RouteImplementation<typeof recordingEndpoint>);
 
 const extractUADetails = (ua: any): UADetails => {
     return {
         browser: ua.getBrowser(),
         os: ua.getOS(),
         device: ua.getDevice(),
-    }
-}
+    };
+};

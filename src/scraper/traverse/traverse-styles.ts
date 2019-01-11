@@ -5,7 +5,7 @@ import { matchesMedia } from "../utils/utils";
 
 export function extractStyleInfo(styleSheet: CSSStyleSheet): ScrapedStyleRule[] {
     return extractRules(styleSheet)
-                .map(transformRule)
+                .map(transformRule);
 }
 
 function extractRules(styleSheet: CSSStyleSheet): ScrapedStyleRule[] {
@@ -16,7 +16,7 @@ function extractRules(styleSheet: CSSStyleSheet): ScrapedStyleRule[] {
 function rulesPerSheet(sheet: CSSStyleSheet) {
     return Array.from(sheet.rules)
         .filter(shouldIncludeRule)
-        .map(rule => rule instanceof CSSImportRule ? unpackImport(rule) : extractRule(rule, sheet))
+        .map(rule => rule instanceof CSSImportRule ? unpackImport(rule) : extractRule(rule, sheet));
 }
 
 function unpackImport(rule: CSSImportRule) {
@@ -24,10 +24,10 @@ function unpackImport(rule: CSSImportRule) {
 }
 
 function extractRule(rule: CSSRule, sheet: CSSStyleSheet): ScrapedStyleRule | ScrapedStyleRule[] {
-    if(rule instanceof CSSMediaRule || rule instanceof CSSSupportsRule) {
-        return Array.from(rule.cssRules).map(innerRule => extractRule(innerRule, sheet)).flat(1)
+    if (rule instanceof CSSMediaRule || rule instanceof CSSSupportsRule) {
+        return Array.from(rule.cssRules).map(innerRule => extractRule(innerRule, sheet)).flat(1);
     } else {
-        return { 
+        return {
             text: rule.cssText,
             source: sheet.href || undefined,
             ...extractExtras(rule)
@@ -36,15 +36,15 @@ function extractRule(rule: CSSRule, sheet: CSSStyleSheet): ScrapedStyleRule | Sc
 }
 
 function extractExtras(rule: CSSRule) {
-    if(rule instanceof CSSStyleRule) {
-        return { type: 'style', selector: rule.selectorText };
-    } else if(rule instanceof CSSKeyframeRule || rule instanceof CSSKeyframesRule) {
-        return { type: 'keyframe' };
-    } else if(rule instanceof CSSFontFaceRule) {
-        return { type: 'font-face', src: (rule.style as CSSStyleDeclaration & { src: string }).src }
-    } else if(rule instanceof CSSImportRule) {
-        return { type: 'import', src: rule.href }
+    if (rule instanceof CSSStyleRule) {
+        return { type: "style", selector: rule.selectorText };
+    } else if (rule instanceof CSSKeyframeRule || rule instanceof CSSKeyframesRule) {
+        return { type: "keyframe" };
+    } else if (rule instanceof CSSFontFaceRule) {
+        return { type: "font-face", src: (rule.style as CSSStyleDeclaration & { src: string }).src };
+    } else if (rule instanceof CSSImportRule) {
+        return { type: "import", src: rule.href };
     } else {
-        throw new Error('Unsure how to handle rule: ' + rule.cssText);
+        throw new Error("Unsure how to handle rule: " + rule.cssText);
     }
 }

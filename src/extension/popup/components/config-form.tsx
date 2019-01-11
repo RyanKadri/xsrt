@@ -5,17 +5,17 @@ import { ExtensionConfig } from "../../config/extension-config";
 
 const styles = (theme: Theme) => createStyles({
     form: {
-        display: 'flex',
-        flexWrap: 'wrap'
+        display: "flex",
+        flexWrap: "wrap"
     },
     formField: {
-        width: '100%'
+        width: "100%"
     },
     submitButton: {
-        marginLeft: 'auto',
+        marginLeft: "auto",
         marginTop: theme.spacing.unit
     }
-})
+});
 
 class _ConfigForm extends React.Component<ConfigFormProps, ConfigFormState> {
 
@@ -23,11 +23,11 @@ class _ConfigForm extends React.Component<ConfigFormProps, ConfigFormState> {
         super(props);
         this.state = {
             config: props.config
-        }
+        };
     }
 
     render() {
-        const { classes } = this.props
+        const { classes } = this.props;
         const { config } = this.state;
         return <ExpansionPanel defaultExpanded={ false }>
             <ExpansionPanelSummary expandIcon={ <ExpandMoreIcon /> }>
@@ -35,24 +35,27 @@ class _ConfigForm extends React.Component<ConfigFormProps, ConfigFormState> {
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
                 <form className={ classes.form } onSubmit={ this.onSubmit }>
-                    <FormControlLabel 
+                    <FormControlLabel
                         className={ classes.formField }
-                        control={ <Switch checked={ config.debugMode } onChange={ this.updateField('debugMode') } />}
+                        control={ <Switch checked={ config.debugMode } onChange={ this.updateField("debugMode") } />}
                         label="Debug Mode" />
                     <FormControlLabel
                         className={ classes.formField }
-                        control={ <Switch checked={ config.shouldInject } onChange={ this.updateField("shouldInject") } /> }
+                        control={
+                            <Switch checked={ config.shouldInject }
+                                    onChange={ this.updateField("shouldInject") }
+                            /> }
                         label="Passively Record" />
-                    <TextField 
+                    <TextField
                         className={ classes.formField }
                         label="Backend URL"
                         value={ config.backendUrl }
-                        onChange={ this.updateField('backendUrl') } />
+                        onChange={ this.updateField("backendUrl") } />
 
                     <Button className={ classes.submitButton } color="primary" type="submit">Submit</Button>
                 </form>
             </ExpansionPanelDetails>
-        </ExpansionPanel>
+        </ExpansionPanel>;
     }
 
     private updateField = (field: keyof ExtensionConfig) => {
@@ -61,10 +64,10 @@ class _ConfigForm extends React.Component<ConfigFormProps, ConfigFormState> {
             this.setState(oldState => ({
                 config: {
                     ...oldState.config,
-                    [field]: target.type === 'checkbox' ? target.checked : target.value
+                    [field]: target.type === "checkbox" ? target.checked : target.value
                 }
-            }))
-        }
+            }));
+        };
     }
 
     private onSubmit = (evt: FormEvent) => {
@@ -73,7 +76,7 @@ class _ConfigForm extends React.Component<ConfigFormProps, ConfigFormState> {
     }
 }
 
-export const ConfigForm = withStyles(styles)(_ConfigForm)
+export const ConfigForm = withStyles(styles)(_ConfigForm);
 
 export interface ConfigFormProps extends WithStyles<typeof styles> {
     config: ExtensionConfig;

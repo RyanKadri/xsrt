@@ -1,11 +1,11 @@
-import { SiteTarget } from '../../common/db/targets';
-import { defineEndpoint, RequestBodyUnwrap, RouteParamUnwrap, Type } from '../../common/server/route-types';
+import { SiteTarget } from "../../common/db/targets";
+import { defineEndpoint, RequestBodyUnwrap, RouteParamUnwrap, Type } from "../../common/server/route-types";
 
-const singleTargetUrl = '/targets/:targetId';
-const multiTargetUrl = '/targets';
+const singleTargetUrl = "/targets/:targetId";
+const multiTargetUrl = "/targets";
 export const siteTargetEndpoint = defineEndpoint({
     fetchSiteTarget: {
-        method: 'get',
+        method: "get",
         url: singleTargetUrl,
         request: {
             targetId: new RouteParamUnwrap("targetId"),
@@ -13,7 +13,7 @@ export const siteTargetEndpoint = defineEndpoint({
         response: Type<SiteTarget>()
     },
     deleteSiteTarget: {
-        method: 'delete',
+        method: "delete",
         url: singleTargetUrl,
         request: {
             targetId: new RouteParamUnwrap("targetId"),
@@ -21,13 +21,13 @@ export const siteTargetEndpoint = defineEndpoint({
         response: Type<SiteTarget>()
     },
     filterTargets: {
-        method: 'get',
+        method: "get",
         url: multiTargetUrl,
         request: {},
         response: Type<SiteTarget[]>()
     },
     createSiteTarget: {
-        method: 'post',
+        method: "post",
         url: multiTargetUrl,
         request: {
             target: new RequestBodyUnwrap<Partial<SiteTarget>>()

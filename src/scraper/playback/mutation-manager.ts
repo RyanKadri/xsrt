@@ -1,10 +1,10 @@
 import { injectable } from "inversify";
-import { AttributeMutation, ChangeTextMutation, OptimizedChildrenMutation, OptimizedMutation, RecordedMutationGroup } from '../types/types';
+import { AttributeMutation, ChangeTextMutation, OptimizedChildrenMutation, OptimizedMutation, RecordedMutationGroup } from "../types/types";
 import { DomManager } from "./dom-manager";
 
 @injectable()
 export class MutationManager {
-    
+
     constructor(
         private domManager: DomManager
     ) { }
@@ -13,34 +13,34 @@ export class MutationManager {
         changeGroup.forEach(group => {
             group.mutations.forEach(mutation => {
                 this.applyChange(mutation);
-            })
-        })
+            });
+        });
     }
 
     private applyChange(mutation: OptimizedMutation) {
-        switch(mutation.type) {
-            case 'attribute':
+        switch (mutation.type) {
+            case "attribute":
                 return this.attributeChange(mutation, mutation.target);
-            case 'change-text':
+            case "change-text":
                 return this.textChange(mutation, mutation.target);
-            case 'children':
-                if(mutation.removals && mutation.removals.length > 0) {
+            case "children":
+                if (mutation.removals && mutation.removals.length > 0) {
                     this.removeChildren(mutation, mutation.target);
                 }
-                if(mutation.additions && mutation.additions.length > 0) {
+                if (mutation.additions && mutation.additions.length > 0) {
                     this.addChildren(mutation, mutation.target);
                 }
                 return;
-            default: 
+            default:
                 return;
         }
     }
 
     private attributeChange(mutation: AttributeMutation, target: number) {
-        if(mutation.val !== null) {
+        if (mutation.val !== null) {
             this.domManager.setAttribute(target, mutation.name, mutation.val);
         } else {
-            this.domManager.removeAttribute(target, mutation.name)
+            this.domManager.removeAttribute(target, mutation.name);
         }
     }
 
@@ -51,13 +51,13 @@ export class MutationManager {
     private removeChildren(mutation: OptimizedChildrenMutation, target: number) {
         (mutation.removals || []).forEach(removal => {
             this.domManager.removeChild(target, removal);
-        })
+        });
     }
 
     private addChildren(mutation: OptimizedChildrenMutation, target: number) {
         (mutation.additions || []).forEach(add => {
-            //TODO - The undefined namespace isn't quite right here
+            // TODO - The undefined namespace isn't quite right here
             this.domManager.serializeToElement(target, add.data, add.before);
-        })
+        });
     }
 }

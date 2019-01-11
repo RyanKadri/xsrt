@@ -16,15 +16,15 @@ export class MutationRecorder {
     }
 
     start() {
-        if(this.running) throw new Error('Recorder is already running');
+        if (this.running) { throw new Error("Recorder is already running"); }
         this.running = true;
-        this.observer.observe(document.documentElement!, { 
+        this.observer.observe(document.documentElement!, {
             attributes: true,
             childList: true,
             characterData: true,
             subtree: true,
             attributeOldValue: true,
-            characterDataOldValue: true 
+            characterDataOldValue: true
         });
     }
 
@@ -33,7 +33,7 @@ export class MutationRecorder {
     }
 
     stop() {
-        if(!this.running) throw new Error('Recorder is already stopped');
+        if (!this.running) { throw new Error("Recorder is already stopped"); }
         this.running = false;
 
         this.observer.disconnect();
@@ -43,7 +43,7 @@ export class MutationRecorder {
     private recordMutation = (mutations: MutationRecord[]) => {
         this.mutationTracker.record(
             mutations.map(mutation => this.transformer.transformMutation(mutation)).flat(Infinity)
-        )
+        );
     }
-    
+
 }

@@ -21,10 +21,10 @@ export class PlaybackManager {
     }
 
     togglePause(shouldPause: boolean) {
-        if(shouldPause) {
+        if (shouldPause) {
             this.domManager.mutateDocument(document => document.body.classList.add(pausedClass));
         } else {
-            this.domManager.mutateDocument(document => document.body.classList.remove(pausedClass))
+            this.domManager.mutateDocument(document => document.body.classList.remove(pausedClass));
         }
     }
 

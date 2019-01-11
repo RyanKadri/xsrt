@@ -4,20 +4,18 @@ import { RecordingStatus } from "../popup-root";
 
 export class ConfigStorageService {
 
-    constructor() { }
-
     fetchConfig(): Promise<ExtensionConfig> {
         return new Promise<ExtensionConfig>((resolve) => {
-            const defaultConfig: ExtensionConfig = { 
+            const defaultConfig: ExtensionConfig = {
                 debugMode: true,
                 shouldInject: false,
-                backendUrl: 'localhost:3001',
+                backendUrl: "localhost:3001",
                 mutationsPerChunk: 1500,
                 inputsPerChunk: 1000
-            }
+            };
             chrome.storage.local.get({ config: defaultConfig }, (res) => {
                 resolve(res.config as ExtensionConfig);
-            })
+            });
         });
     }
 
@@ -25,23 +23,23 @@ export class ConfigStorageService {
         return new Promise<RecordingStatus>((resolve) => {
             chrome.runtime.sendMessage(new FetchStatusRequest(), (resp) => {
                 resolve(resp);
-            })
-        })
+            });
+        });
     }
 
     saveConfig(config: ExtensionConfig): Promise<void> {
         return new Promise<void>((resolve) => {
             chrome.storage.local.set({ config }, () => {
                 resolve();
-            })
-        })
+            });
+        });
     }
 
     saveRunState(runState?: RecordingStatus) {
         return new Promise<RecordingStatus>((resolve) => {
             chrome.runtime.sendMessage(new SaveStatusRequest(runState), resp => {
-                resolve(resp)
-            })
-        })
+                resolve(resp);
+            });
+        });
     }
 }

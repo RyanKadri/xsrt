@@ -11,10 +11,10 @@ export class PseudoClassManager {
 
     constructor(
         private domManager: DomManager
-    ) { 
+    ) {
         Object.values(CSS_PSEUDO_CLASSES).forEach(pseudo => {
             this.classTracker.set(pseudo.replacementClass, new Set());
-        })
+        });
     }
 
     hoverTarget(target: number) {
@@ -43,10 +43,11 @@ export class PseudoClassManager {
         const applicableElements = this.classTracker.get(pseudoClass.replacementClass)!;
         applicableElements.forEach(el => {
             el.classList.remove(pseudoClass.replacementClass);
-        })
+        });
     }
 
-    // I remove with a diff here because removing all classes and re-adding (even synchronously) seems to hurt performance
+    // I remove with a diff here because removing all classes and re-adding (even synchronously)
+    // seems to hurt performance
     private applyPseudoClass(pseudoClass: PseudoClassReplacer, target: number, propogateUp = false, skipBase = false) {
         const clss = pseudoClass.replacementClass;
         const toRemove = new Set(this.classTracker.get(clss) || []);
@@ -55,7 +56,7 @@ export class PseudoClassManager {
         this.domManager.mutateElement(target, (node) => {
             let curr: HTMLElement = node;
             do {
-                if(!skipBase) {
+                if (!skipBase) {
                     curr.classList.add(clss);
                     applied.add(curr);
                     toRemove.delete(curr);
@@ -63,10 +64,10 @@ export class PseudoClassManager {
                     skipBase = false;
                 }
                 curr = curr.parentElement!;
-            } while(curr && propogateUp);
+            } while (curr && propogateUp);
 
-            toRemove.forEach((oldElement) => oldElement.classList.remove(clss))
+            toRemove.forEach((oldElement) => oldElement.classList.remove(clss));
             this.classTracker.set(clss, applied);
-        })
+        });
     }
 }

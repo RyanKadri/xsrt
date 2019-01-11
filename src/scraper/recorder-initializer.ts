@@ -1,4 +1,4 @@
-import 'reflect-metadata';
+import "reflect-metadata";
 import { RecorderApiService } from "./api/recorder-api-service";
 import { RecordingStateService } from "./api/recording-state-service";
 import { RecorderContainer } from "./inversify.recorder";
@@ -16,10 +16,10 @@ export class RecorderInitializer {
         const activeRecordingId = this.recordingState.fetchRecordingId();
         const pendingRecordChunk = this.recordingState.fetchPendingChunk();
 
-        if(activeConfig && activeRecordingId) {
+        if (activeConfig && activeRecordingId) {
             this.initialize(activeConfig);
 
-            if(pendingRecordChunk) {
+            if (pendingRecordChunk) {
                 this.apiService!.postToBackend(pendingRecordChunk, activeRecordingId, activeConfig)
                     .then(() => this.recordingState.removePendingChunk());
             }
@@ -34,17 +34,17 @@ export class RecorderInitializer {
         this.orchestrator = RecorderContainer.get(RecorderOrchestrator);
         this.recordingState = RecorderContainer.get(RecordingStateService);
         this.apiService = RecorderContainer.get(RecorderApiService);
-        
+
         this.recordingState.storeConfig(config);
         this.orchestrator.initialize();
     }
 
     async stop() {
-        if(this.orchestrator) {
+        if (this.orchestrator) {
             await this.orchestrator.onStop(false);
-            this.recordingState.closeRecording()
+            this.recordingState.closeRecording();
         } else {
-            throw new Error('Trying to stop recorder before starting');
+            throw new Error("Trying to stop recorder before starting");
         }
     }
 }

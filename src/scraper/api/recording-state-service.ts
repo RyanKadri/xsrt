@@ -11,7 +11,7 @@ const localStoragePendingChunk = "xsrt.recording.pendingChunk";
 @injectable()
 export class RecordingStateService {
     storeConfig(config: ScraperConfig): void {
-        localStorage.setItem(localStorageScrapeConfig, JSON.stringify(config))
+        localStorage.setItem(localStorageScrapeConfig, JSON.stringify(config));
     }
 
     recordRecordingId(_id: string): void {
@@ -23,23 +23,23 @@ export class RecordingStateService {
     }
 
     storePendingChunk(chunk: Without<RecordingChunk, "_id">) {
-        localStorage.setItem(localStoragePendingChunk, JSON.stringify(chunk))
+        localStorage.setItem(localStoragePendingChunk, JSON.stringify(chunk));
     }
 
     removePendingChunk(): void {
         localStorage.removeItem(localStoragePendingChunk);
     }
-    
+
     fetchActiveConfig(): ScraperConfig {
         const config = localStorage.getItem(localStorageScrapeConfig);
-        return config ? JSON.parse(config) : undefined
+        return config ? JSON.parse(config) : undefined;
     }
-    
+
     fetchRecordingId(): string | undefined {
         const recordingId = localStorage.getItem(localStorageRecordingId);
         return recordingId ? recordingId : undefined;
     }
-    
+
     fetchPendingChunk(): RecordingChunk | undefined {
         const pendingChunk = localStorage.getItem(localStoragePendingChunk);
         return pendingChunk ? JSON.parse(pendingChunk) : undefined;
@@ -47,7 +47,7 @@ export class RecordingStateService {
 
     fetchStartTime() {
         const startTime = localStorage.getItem(localStorageRecordingStart);
-        return startTime ? parseInt(startTime) : undefined;
+        return startTime ? parseInt(startTime, 10) : undefined;
     }
 
     closeRecording() {
@@ -56,7 +56,7 @@ export class RecordingStateService {
         localStorage.removeItem(localStorageScrapeConfig);
         localStorage.removeItem(localStoragePendingChunk);
     }
-    
+
 }
 
 export interface RecordingInfo {

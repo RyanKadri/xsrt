@@ -3,7 +3,7 @@ import { postToSite } from "./site-channel";
 
 export function listenForCommands() {
     chrome.runtime.onMessage.addListener((message: CommandMessage, _, sendResponse) => {
-        if(message.command === 'startRecording' || message.command === 'stopRecording') {
+        if (message.command === "startRecording" || message.command === "stopRecording") {
             postToSite(message)
                 .then(resp => sendResponse(resp));
         }
@@ -13,16 +13,16 @@ export function listenForCommands() {
 export type CommandMessage = StartRecording | StopRecording | RecordingInfo;
 
 export class StartRecording {
-    readonly command = 'startRecording';
+    readonly command = "startRecording";
     constructor(
         public config: ScraperConfig
-    ){}
+    ) {}
 }
 
 export class StopRecording {
-    readonly command = 'stopRecording';
+    readonly command = "stopRecording";
 }
 
 export class RecordingInfo {
-    readonly command = 'recordingInfo';
+    readonly command = "recordingInfo";
 }

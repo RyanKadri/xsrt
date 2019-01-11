@@ -1,10 +1,10 @@
 import { injectable, multiInject } from "inversify";
-import { groupToMap, pluck } from '../../../common/utils/functional-utils';
+import { groupToMap, pluck } from "../../../common/utils/functional-utils";
 import { Group } from "../../../common/utils/type-utils";
-import { RecordedUserInput } from '../../types/event-types';
+import { RecordedUserInput } from "../../types/event-types";
 import { UserInputInterpolator } from "./interpolation/user-input-interpolator";
 
-export const IPlaybackHandler = Symbol('IPlaybackHandler');
+export const IPlaybackHandler = Symbol("IPlaybackHandler");
 
 @injectable()
 export class UserInputPlaybackManager {
@@ -13,9 +13,9 @@ export class UserInputPlaybackManager {
 
     constructor(
         private interpolationManager: UserInputInterpolator,
-        @multiInject(IPlaybackHandler) channelHandlers: UserInputPlaybackHelper[] 
+        @multiInject(IPlaybackHandler) channelHandlers: UserInputPlaybackHelper[]
     ) {
-        this.channelHandlers = groupToMap(channelHandlers, pluck('channels'))
+        this.channelHandlers = groupToMap(channelHandlers, pluck("channels"));
     }
 
     simulateUserInputs(groups: Group<RecordedUserInput>[]) {
@@ -24,8 +24,8 @@ export class UserInputPlaybackManager {
             const interpolatedUpdates = this.interpolationManager.interpolate(group.name, group.elements);
             handlers.forEach(handler => {
                 handler.simulateInput(interpolatedUpdates);
-            })
-        })
+            });
+        });
     }
 
 }

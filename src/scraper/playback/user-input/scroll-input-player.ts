@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { RecordedScrollEvent } from '../../types/event-types';
+import { RecordedScrollEvent } from "../../types/event-types";
 import { DomManager } from "../dom-manager";
 import { UserInputPlaybackHelper } from "./user-input-manager";
 
@@ -8,21 +8,21 @@ export class ScrollEventPlayer implements UserInputPlaybackHelper<RecordedScroll
 
     constructor(
         private domManager: DomManager,
-    ){}
+    ) {}
 
-    channels = ['scroll'];
+    channels = ["scroll"];
 
     simulateInput(updates: RecordedScrollEvent[]) {
         const lastUpdate = updates[updates.length - 1];
-        if(lastUpdate.target) {
+        if (lastUpdate.target) {
             this.domManager.mutateElement(lastUpdate.target, (node) => {
                 node.scrollTop = lastUpdate.scrollY;
                 node.scrollLeft = lastUpdate.scrollX;
-            })
+            });
         } else {
             this.domManager.mutateDocument(document => {
                 document.documentElement!.scroll(lastUpdate.scrollX, lastUpdate.scrollY);
-            })
+            });
         }
     }
 }

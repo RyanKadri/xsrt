@@ -8,11 +8,11 @@ export class MongoInitializer implements ServerInitializer {
     constructor(
         @inject(IServerConfig) private config: ServerConfig
     ) {}
-    
+
     async initialize() {
         try {
             await connect(this.config.mongoUrl, { useNewUrlParser: true });
-        } catch(e) {
+        } catch (e) {
             console.log(`Error connecting to Mongo ${e.message}`);
             throw e;
         }

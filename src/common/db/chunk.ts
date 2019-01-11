@@ -21,7 +21,7 @@ const chunkSchema = new Schema({
     type: {
         type: String,
         required: true,
-        enum: ['diff', 'snapshot']
+        enum: ["diff", "snapshot"]
     },
     snapshot: {
         type: SchemaTypes.Mixed,
@@ -40,7 +40,6 @@ const chunkSchema = new Schema({
         required: false,
     }
 
-}, { strict: true, collection: 'recordingChunks' })
+}, { strict: true, collection: "recordingChunks" });
 
-export const Chunk = model('Chunk', chunkSchema);
-
+export const Chunk = model("Chunk", chunkSchema);

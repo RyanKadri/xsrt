@@ -1,4 +1,4 @@
-import { injectable } from 'inversify';
+import { injectable } from "inversify";
 import { Without } from "../common/utils/type-utils";
 import { RecordingOptimizer } from "./optimize/optimize";
 import { MutationRecorder } from "./record/dom-changes/mutation-recorder";
@@ -29,7 +29,7 @@ export class Recorder implements IScraper {
                     ...snapshot,
                     changes: this.mutationRecorder.dump(),
                     inputs: this.inputRecorder.dump(),
-                    metadata: { 
+                    metadata: {
                         ...snapshot.metadata,
                         startTime,
                         stopTime
@@ -40,8 +40,8 @@ export class Recorder implements IScraper {
     }
 
     private syncSnapshot(): Without<UnoptimizedSnapshotChunk, "_id"> {
-        return { 
-            type: 'snapshot',
+        return {
+            type: "snapshot",
             snapshot: {
                 root: this.domWalker.traverseNode(document.documentElement!),
                 documentMetadata: extractMetadata(document, location)
@@ -52,7 +52,7 @@ export class Recorder implements IScraper {
             },
             changes: [],
             inputs: {},
-        }
+        };
     }
 
     async record() {
@@ -63,8 +63,8 @@ export class Recorder implements IScraper {
     dumpDiff(finalize: boolean): PendingDiffChunk {
         const startTime = this.lastChunk!;
         const stopTime = this.lastChunk = this.timeManager.currentTime();
-        
-        const type = 'diff';
+
+        const type = "diff";
         return {
             assets: [],
             type,

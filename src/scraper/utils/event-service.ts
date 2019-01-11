@@ -7,12 +7,12 @@ export class EventService {
 
     dispatch(evt: ScrapeEvent) {
         const listeners = this.handlers.get(evt.type);
-        if(listeners) {
-            listeners.forEach(listener => listener(evt.payload))
+        if (listeners) {
+            listeners.forEach(listener => listener(evt.payload));
         }
     }
 
-    addEventListener<T extends ScrapeEvent>(type: T['type'], callback: ListenerCallback<T['payload']>) {
+    addEventListener<T extends ScrapeEvent>(type: T["type"], callback: ListenerCallback<T["payload"]>) {
         const prevListeners = this.handlers.get(type);
         this.handlers.set(type, (prevListeners || []).concat(callback));
     }

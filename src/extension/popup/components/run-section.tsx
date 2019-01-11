@@ -7,26 +7,26 @@ const styles = (theme: Theme) => createStyles({
     root: {
         padding: 2 * theme.spacing.unit
     }
-})
+});
 const _RunSection = (props: RunSectionProps) => {
     const { classes, elapsedTime } = props;
     return <div className={ classes.root }>
         <Typography variant="body1">{ duration(elapsedTime) }</Typography>
         { Controls( props ) }
-    </div>
-}
+    </div>;
+};
 
 const duration = (elapsedTime?: number) => {
     return elapsedTime && elapsedTime > 0
             ? `Recording: ${formatPlayerTime(elapsedTime)}`
-            : 'Not Recording'
-}
+            : "Not Recording";
+};
 
 const Controls = (props: RunSectionProps) => {
     return props.status.recording
         ? <Button color="secondary" onClick={ props.onStop }>Stop</Button>
-        : <Button color="primary" onClick={ props.onStart }>Start</Button>
-}
+        : <Button color="primary" onClick={ props.onStart }>Start</Button>;
+};
 
 export const RunSection = withStyles(styles)(_RunSection);
 

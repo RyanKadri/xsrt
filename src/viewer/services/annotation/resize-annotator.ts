@@ -1,15 +1,15 @@
 import { injectable } from "inversify";
-import { RecordedResize } from '../../../scraper/types/event-types';
+import { RecordedResize } from "../../../scraper/types/event-types";
 import { InputAnnotator } from "./annotation-service";
 
 @injectable()
 export class ResizeAnnotator implements InputAnnotator<RecordedResize> {
-    readonly listen = 'input';
-    readonly type = 'resize';
+    readonly listen = "input";
+    readonly type = "resize";
 
     annotate(resize: RecordedResize) {
-        return { 
+        return {
             description: `User resized view to ${resize.width} x ${ resize.height }`,
-        }
+        };
     }
 }

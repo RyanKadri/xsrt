@@ -4,22 +4,22 @@ import { RecordingAnnotation } from "../../../services/annotation/annotation-ser
 
 const styles = (theme: Theme) => createStyles({
     root: {
-        position: 'absolute',
+        position: "absolute",
         right: 0,
-        height: '100%',
+        height: "100%",
         padding: theme.spacing.unit,
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'flex-end',
-        backgroundColor: 'rgba(0,0,0,0.5)',
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "flex-end",
+        backgroundColor: "rgba(0,0,0,0.5)",
         width: 240,
-        overflowY: 'auto'
+        overflowY: "auto"
     },
     notification: {
         padding: theme.spacing.unit,
         marginTop: theme.spacing.unit
     }
-})
+});
 
 class _AnnotationSidebar extends React.Component<AnnotationOverlayProps> {
 
@@ -33,13 +33,13 @@ class _AnnotationSidebar extends React.Component<AnnotationOverlayProps> {
                     </Paper>
                 ))
             }</div>
-        </Fade>
+        </Fade>;
     }
 }
 
-export const AnnotationSidebar = withStyles(styles)(_AnnotationSidebar)
+export const AnnotationSidebar = withStyles(styles)(_AnnotationSidebar);
 
 export interface AnnotationOverlayProps extends WithStyles<typeof styles> {
     expanded: boolean;
-    annotations: RecordingAnnotation[]
+    annotations: RecordingAnnotation[];
 }

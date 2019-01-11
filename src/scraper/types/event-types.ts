@@ -1,9 +1,9 @@
-import { MapTo } from '../../common/utils/type-utils';
+import { MapTo } from "../../common/utils/type-utils";
 
 export type RecordedKeyEvent = RecordedKeyUp | RecordedKeyDown;
 
 export type RecordedUserInput = RecordedMouseEvent | RecordedScrollEvent | RecordedInputChangeEvent
-                                 | RecordedFocusEvent | RecordedResize | RecordedKeyEvent | RecordedUnloadEvent
+                                 | RecordedFocusEvent | RecordedResize | RecordedKeyEvent | RecordedUnloadEvent;
 
 export interface BaseUserInput {
     timestamp: number;
@@ -12,17 +12,17 @@ export interface BaseUserInput {
 
 export type RecordedInputChannels = MapTo<RecordedUserInput[]>;
 
-const keyup = 'keyup';
-const keydown = 'keydown';
+const keyup = "keyup";
+const keydown = "keydown";
 
 export interface RecordedInputChangeEvent extends BaseUserInput {
-    type: 'input' | 'change',
+    type: "input" | "change";
     target: number;
     value: string | boolean;
 }
 
 export interface RecordedKeyUp extends BaseKeyEvent {
-    type: typeof keyup
+    type: typeof keyup;
 }
 
 export interface RecordedKeyDown extends BaseKeyEvent {
@@ -36,11 +36,11 @@ interface BaseKeyEvent extends BaseUserInput {
 export type RecordedMouseEvent = RecordedMouseMove | RecordedMouseButton;
 
 export interface RecordedMouseMove extends BaseMouseEvent {
-    type: 'mousemove';
+    type: "mousemove";
 }
 
 export interface RecordedMouseButton extends BaseMouseEvent {
-    type: 'mouseup' | 'mousedown';
+    type: "mouseup" | "mousedown";
     button: number;
     buttonDown: boolean;
 }
@@ -52,23 +52,23 @@ export interface BaseMouseEvent extends BaseUserInput {
 }
 
 export interface RecordedResize extends BaseUserInput {
-    type: 'resize';
+    type: "resize";
     height: number;
     width: number;
 }
 
 export interface RecordedScrollEvent extends BaseUserInput {
-    type: 'scroll';
+    type: "scroll";
     target: number | null;
     scrollX: number;
     scrollY: number;
 }
 
 export interface RecordedFocusEvent extends BaseUserInput {
-    type: 'focus' | 'blur';
+    type: "focus" | "blur";
     target?: number;
 }
 
 export interface RecordedUnloadEvent extends BaseUserInput {
-    type: 'unload';
+    type: "unload";
 }

@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import shortid from 'shortid';
+import shortid from "shortid";
 
 const assetSchema = new Schema({
     _id: {
@@ -30,16 +30,16 @@ const assetSchema = new Schema({
         type: String,
         required: true
     }
-}, { strict: true, collection: 'assets' })
+}, { strict: true, collection: "assets" });
 
-export const Asset = model('Asset', assetSchema);
+export const Asset = model("Asset", assetSchema);
 
 export interface ProxiedAsset {
     _id: string;
     url: string;
     hash: string;
     headers: ProxyHeader[];
-    content: string
+    content: string;
 }
 
 export interface ProxyHeader {

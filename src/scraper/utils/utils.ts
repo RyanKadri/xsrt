@@ -4,22 +4,22 @@ export function toDataUrl(blob: Blob) {
         fr.onload = () => resolve(fr.result as string);
         fr.onerror = reject;
         fr.readAsDataURL(blob);
-    })
+    });
 }
 
 export async function toBlobUrl(dataUrl: string) {
     try {
         const blob = await (await fetch(dataUrl)).blob();
         return URL.createObjectURL(blob);
-    } catch(e) {
+    } catch (e) {
         return dataUrl;
     }
 }
 
 export function matchesMedia(media: MediaList | string[]) {
-    if(!media || media.length === 0 || (media.length === 1 && !media[0])) return true;
+    if (!media || media.length === 0 || (media.length === 1 && !media[0])) { return true; }
     let conditions: string[];
-    if(media instanceof MediaList) {
+    if (media instanceof MediaList) {
         conditions = Array.from(media);
     } else {
         conditions = media;
@@ -27,30 +27,30 @@ export function matchesMedia(media: MediaList | string[]) {
     return conditions.some(condition => window.matchMedia(condition).matches);
 }
 
-//Leaving this on the page intentionally. You seem to lose some window globals when you remove it.
-export const recoverGlobals = (function() {
+// Leaving this on the page intentionally. You seem to lose some window globals when you remove it.
+export const recoverGlobals = (() => {
     let globals: Window;
     let iframe: HTMLIFrameElement;
-    return function() {
-        if(!globals) {
-            iframe = document.createElement('iframe');
+    return () => {
+        if (!globals) {
+            iframe = document.createElement("iframe");
             document.body.appendChild(iframe);
             globals = iframe.contentWindow as Window;
-            iframe.style.display = 'none';
+            iframe.style.display = "none";
         }
         return globals;
-    }
-})()
+    };
+})();
 
 // At least one site I've seen overwrites JSON (cough cough Facebook). Why????
 export function toJson(data: any) {
     const globals = recoverGlobals() as Window & { JSON: JSON };
-    return globals.JSON.stringify(data, (key, val) => key === 'domElement' ? undefined : val);
+    return globals.JSON.stringify(data, (key, val) => key === "domElement" ? undefined : val);
 }
 
-export const hideNodeAttr = 'screen-scrape-ignore'
+export const hideNodeAttr = "screen-scrape-ignore";
 export function nodeIsHidden(node: Node) {
-    return isElementNode(node) 
+    return isElementNode(node)
         ? node.hasAttribute(hideNodeAttr)
         : false;
 }
@@ -60,5 +60,5 @@ export function isElementNode(node: Node): node is HTMLElement {
 }
 
 export function isTextNode(node: Node): node is Element {
-    return node.nodeType === document.TEXT_NODE
+    return node.nodeType === document.TEXT_NODE;
 }

@@ -11,8 +11,8 @@ export class TimeManager {
     private recordingStart?: number;
     private _sessionStart?: number;
 
-    get sessionStart () {
-        if(!this._sessionStart || !this.recordingStart) {
+    get sessionStart() {
+        if (!this._sessionStart || !this.recordingStart) {
             throw new Error("TimeManager not yet started");
         }
         return this._sessionStart - this.recordingStart;
@@ -21,7 +21,7 @@ export class TimeManager {
     start() {
         const recordingStart = this.recordingState.fetchStartTime();
 
-        if(recordingStart) {
+        if (recordingStart) {
             this.recordingStart = recordingStart;
             this._sessionStart = Date.now();
         } else {

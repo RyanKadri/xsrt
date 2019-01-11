@@ -1,5 +1,6 @@
 import { inject, injectable } from "inversify";
 import { pluck, sortAsc } from "../common/utils/functional-utils";
+import { LoggingService } from "../common/utils/log-service";
 import { Without } from "../common/utils/type-utils";
 import { RecorderApiService } from "./api/recorder-api-service";
 import { RecordingInfo, RecordingStateService } from "./api/recording-state-service";
@@ -10,7 +11,7 @@ import { ScraperConfig, ScraperConfigToken } from "./scraper-config";
 import { PendingDiffChunk, PendingSnapshotChunk, RecordingChunk, SnapshotChunk } from "./types/types";
 import { EventService } from "./utils/event-service";
 
-const unloadEvent = "unload"
+const unloadEvent = "unload";
 
 @injectable()
 export class RecorderOrchestrator {
@@ -21,25 +22,26 @@ export class RecorderOrchestrator {
         private recorder: Recorder,
         @inject(ScraperConfigToken) private config: ScraperConfig,
         private eventService: EventService,
+        private logger: LoggingService
     ) { }
 
-    private initInfoTask?: Promise<RecordingInfo>
+    private initInfoTask?: Promise<RecordingInfo>;
     private initInfo?: RecordingInfo;
-    private initSnapshotTask?: Promise<Without<SnapshotChunk, "_id">>
+    private initSnapshotTask?: Promise<Without<SnapshotChunk, "_id">>;
     private latestEnd = 0;
 
     private sentInitChunk = false;
 
     initialize() {
-        
+
         this.recorder.record();
         this.initInfoTask = this.recorderApi.startRecording()
             .then(info => this.initInfo = info);
-        
+
         // At the moment, this needs to run after the previous line so the event trackers can record unload events
         // It feels fragile though. Maybe there's a better (but not annoying way)
         window.addEventListener(unloadEvent, this.onUnload);
-        this.initSnapshotTask = this.recorder.createSnapshotChunk()
+        this.initSnapshotTask = this.recorder.createSnapshotChunk();
 
         Promise.all([this.initSnapshotTask, this.initInfoTask])
             .then(([ optimized ]) => {
@@ -47,8 +49,8 @@ export class RecorderOrchestrator {
                     this.reportChunk(optimized, false);
             }).then(() => {
                 this.startCollectingDiffs();
-            })
-        
+            });
+
     }
 
     onUnload = () => {
@@ -57,17 +59,17 @@ export class RecorderOrchestrator {
 
     onStop = async (isUnloading: boolean) => {
 
-        if(isUnloading && !this.sentInitChunk) {
+        if (isUnloading && !this.sentInitChunk) {
             // TODO - Potentially handle this by sending an unoptimized snapshot to the server and optimizing there.
             // Need to think about data constraints and access to underlying dom elements (for call reduction)
             this.reportErr(new Error(`Requested data was not ready by the time the page was closed`));
         }
         const leftovers = this.recorder.dumpDiff(isUnloading);
 
-        if(!isUnloading) {
+        if (!isUnloading) {
             const snapshot = await this.initSnapshotTask!;
             const initInfo = await this.initInfoTask;
-            const chunk = this.sentInitChunk ? leftovers : this.mergeLeftovers(snapshot, leftovers)
+            const chunk = this.sentInitChunk ? leftovers : this.mergeLeftovers(snapshot, leftovers);
             window.removeEventListener(unloadEvent, this.onUnload);
             await this.reportChunk(chunk, isUnloading);
             this.recorderApi.finalizeRecording(initInfo!._id, this.config, this.latestEnd);
@@ -81,7 +83,7 @@ export class RecorderOrchestrator {
         this.eventService.addEventListener(chunkMutationLimit, () => {
             const diff = this.recorder.dumpDiff(false);
             this.reportChunk(diff, false);
-        })
+        });
     }
 
     private mergeLeftovers(snapshot: PendingSnapshotChunk, diff: PendingDiffChunk): PendingSnapshotChunk {
@@ -89,21 +91,21 @@ export class RecorderOrchestrator {
             ...snapshot,
             changes: snapshot.changes.concat(diff.changes),
             inputs: mergeMaps(snapshot.inputs, diff.inputs, sortAsc(pluck("timestamp")))
-        }
+        };
     }
 
     private reportChunk(chunk: Without<RecordingChunk, "_id">, unloading: boolean) {
-        if(!this.initInfo) throw new Error('Tried to report chunk but did not have required reporting metadata');
+        if (!this.initInfo) { throw new Error("Tried to report chunk but did not have required reporting metadata"); }
 
-        if(!unloading) {
+        if (!unloading) {
             this.latestEnd = Math.max(chunk.metadata.stopTime, this.latestEnd),
             this.recorderApi.postToBackend(chunk, this.initInfo._id, this.config);
         } else {
-            this.recorderState.storePendingChunk(chunk)
+            this.recorderState.storePendingChunk(chunk);
         }
     }
 
     private reportErr(err: Error) {
-        console.log(err);
+        this.logger.error(err);
     }
 }

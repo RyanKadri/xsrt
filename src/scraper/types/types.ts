@@ -1,5 +1,5 @@
 import { Without } from "../../common/utils/type-utils";
-import { RecordedInputChannels } from './event-types';
+import { RecordedInputChannels } from "./event-types";
 
 export type ScrapedElement = ScrapedHtmlElement | ScrapedTextElement;
 export type OptimizedElement = OptimizedHtmlElementInfo | OptimizedTextElementInfo;
@@ -20,36 +20,37 @@ export interface ScrapedAttribute {
     references?: number[];
 }
 
-export type ScrapedStyleRule = ScrapedMediaRule | ScrapedFontFaceRule | ScrapedSupportsRule | BasicRule | ImportRule | KeyframesRule;
+export type ScrapedStyleRule = ScrapedMediaRule | ScrapedFontFaceRule | ScrapedSupportsRule
+                                | BasicRule | ImportRule | KeyframesRule;
 
 export interface ScrapedMediaRule extends BaseScrapedRule {
     conditions: string[];
-    type: 'media';
+    type: "media";
 }
 
 export interface ScrapedFontFaceRule extends BaseScrapedRule {
     src: string;
-    type: 'font-face';
+    type: "font-face";
 }
 
 export interface ScrapedSupportsRule extends BaseScrapedRule {
     condition: string;
-    type: 'supports';
+    type: "supports";
 }
 
 export interface ImportRule extends BaseScrapedRule {
     conditions: string[];
     src: string;
-    type: 'import';
+    type: "import";
 }
 
 export interface BasicRule extends BaseScrapedRule {
-    type: 'style';
+    type: "style";
     selector: string;
 }
 
 export interface KeyframesRule extends BaseScrapedRule {
-    type: 'keyframe';
+    type: "keyframe";
 }
 
 interface BaseScrapedRule {
@@ -63,13 +64,13 @@ export interface RecordingOverview {
     metadata: RecordingMetadata;
     thumbnail?: string;
     chunks: ChunkOverview[];
-    finalized?: boolean
+    finalized?: boolean;
 }
 
 export interface ChunkOverview {
     _id: string;
-    type: 'snapshot' | 'diff';
-    metadata: ChunkMetadata
+    type: "snapshot" | "diff";
+    metadata: ChunkMetadata;
 }
 
 export interface Recording extends RecordingOverview {
@@ -92,30 +93,30 @@ export interface UADetails {
 
     os: {
         name: string;
-    }
+    };
 
     device: {
         vendor: string;
-    }
+    };
 }
 
 export type RecordingChunk = SnapshotChunk | DiffChunk;
 
 export interface UnoptimizedSnapshotChunk extends BaseSnapshot {
-    type: 'snapshot';
-    snapshot: UnoptimizedRootSnapshot
+    type: "snapshot";
+    snapshot: UnoptimizedRootSnapshot;
 }
 
-export type PendingSnapshotChunk = Without<SnapshotChunk, "_id">
-export type PendingDiffChunk = Without<DiffChunk, "_id">
+export type PendingSnapshotChunk = Without<SnapshotChunk, "_id">;
+export type PendingDiffChunk = Without<DiffChunk, "_id">;
 
 export interface SnapshotChunk extends BaseSnapshotWithAssets {
-    type: 'snapshot';
+    type: "snapshot";
     snapshot: RootSnapshot;
 }
 
 export interface DiffChunk extends BaseSnapshotWithAssets {
-    type: 'diff';
+    type: "diff";
 }
 
 export interface BaseSnapshotWithAssets extends BaseSnapshot {
@@ -148,7 +149,7 @@ export interface DocumentMetadata {
 
 export interface ChunkMetadata {
     startTime: number;
-    stopTime: number; 
+    stopTime: number;
 }
 
 export interface LocationMetadata {
@@ -164,7 +165,7 @@ export interface OptimizedStyleRule {
 }
 
 export interface OptimizedHtmlElementInfo {
-    type: 'element';
+    type: "element";
     id: number;
     value?: string | number;
     tag: string;
@@ -173,12 +174,12 @@ export interface OptimizedHtmlElementInfo {
 }
 
 export interface OptimizedStyleElement extends OptimizedHtmlElementInfo {
-    tag: 'style';
-    rules: OptimizedStyleRule[]
+    tag: "style";
+    rules: OptimizedStyleRule[];
 }
 
 export interface OptimizedTextElementInfo {
-    type: 'text',
+    type: "text";
     id: number;
     content: string;
 }
@@ -197,19 +198,19 @@ export interface BaseMutation {
 }
 
 export interface AttributeMutation extends BaseMutation {
-    type: 'attribute',
+    type: "attribute";
     name: string;
     val: string;
 }
 
 export interface OptimizedChildrenMutation extends BaseMutation {
-    type: 'children',
+    type: "children";
     additions?: AddDescriptor[];
     removals?: number[];
 }
 
 export interface ChangeChildrenMutation extends BaseMutation {
-    type: 'children';
+    type: "children";
     additions: AddDescriptor[];
     removals: ScrapedElement[];
 }
@@ -220,6 +221,6 @@ export interface AddDescriptor {
 }
 
 export interface ChangeTextMutation extends BaseMutation {
-    type: 'change-text';
+    type: "change-text";
     update: string;
 }

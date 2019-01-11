@@ -1,11 +1,11 @@
 import { Schema, model } from "mongoose";
-import shortid from 'shortid';
+import shortid from "shortid";
 
 const recordingSchema = new Schema({
     _id: {
-        'type': String,
+        type: String,
         default: shortid.generate
     }
-}, { strict: false, collection: 'recordings' })
+}, { strict: false, collection: "recordings" });
 
-export const Recording = model('Recording', recordingSchema);
+export const Recording = model("Recording", recordingSchema);

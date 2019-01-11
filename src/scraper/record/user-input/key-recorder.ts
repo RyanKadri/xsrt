@@ -4,9 +4,9 @@ import { UserInputRecorder } from "./input-recorder";
 
 @injectable()
 export class KeystrokeRecorder implements UserInputRecorder<KeyboardEvent, RecordedKeyEvent> {
-    readonly channels = ['keyup', 'keydown'];
-    readonly listen = 'document';
-    activeKeys = new Map<string, number>()
+    readonly channels = ["keyup", "keydown"];
+    readonly listen = "document";
+    activeKeys = new Map<string, number>();
 
     handle(evt: KeyboardEvent) {
         return {
@@ -14,4 +14,3 @@ export class KeystrokeRecorder implements UserInputRecorder<KeyboardEvent, Recor
         } as Partial<RecordedKeyEvent>;
     }
 }
-

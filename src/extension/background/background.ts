@@ -1,6 +1,6 @@
 import { listenCommands, loadConfig } from "./config";
 
-(async function() {
+(async () => {
   const config = await loadConfig();
   listenCommands(config);
-})()
+})();

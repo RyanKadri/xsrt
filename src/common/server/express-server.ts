@@ -1,13 +1,14 @@
 import express, { Express, Router } from "express";
 import { inject, injectable, multiInject, optional } from "inversify";
-import { RouterSetupFn } from './route-types';
+import { LoggingService } from '../utils/log-service';
+import { RouterSetupFn } from "./route-types";
 
-export const IServerInitializer = Symbol('ServerInitializer');
+export const IServerInitializer = Symbol("ServerInitializer");
 export interface ServerInitializer {
-    initialize(app: Express): Promise<void>
+    initialize(app: Express): Promise<void>;
 }
 
-export const IRouteHandler = Symbol('RouteHandler');
+export const IRouteHandler = Symbol("RouteHandler");
 export interface RouteHandler {
     readonly base: string;
     decorateRouter(router: Router): void;
@@ -16,7 +17,7 @@ export interface RouteHandler {
 export const IServerConfig = Symbol("ServerConfig");
 export interface ServerConfig {
     port: number;
-    mongoUrl: string; //Should this be in the service-specific configs?
+    mongoUrl: string; // Should this be in the service-specific configs?
 }
 
 export const IRouteImplementation = Symbol("RouteImplementation");
@@ -28,7 +29,8 @@ export class ExpressServer {
         @multiInject(IServerInitializer) private initializers: ServerInitializer[],
         @optional() @multiInject(IRouteHandler) private routeHandlers: RouteHandler[],
         @optional() @multiInject(IRouteImplementation) private routeImplementations: RouterSetupFn[],
-        @inject(IServerConfig) private config: ServerConfig
+        @inject(IServerConfig) private config: ServerConfig,
+        private logger: LoggingService
     ) { }
 
     async start(): Promise<void> {
@@ -37,14 +39,14 @@ export class ExpressServer {
 
         this.routeHandlers.forEach(handler => {
             const router = Router();
-            handler.decorateRouter(router)
+            handler.decorateRouter(router);
             app.use(handler.base, router);
-        })
+        });
         this.routeImplementations.forEach(impl => {
             const router = Router();
             impl(router);
-            app.use("/api", router)
-        })
-        app.listen(this.config.port, () => console.log(`Server listening on port ${this.config.port}`))
+            app.use("/api", router);
+        });
+        app.listen(this.config.port, () => this.logger.info(`Server listening on port ${this.config.port}`));
     }
 }

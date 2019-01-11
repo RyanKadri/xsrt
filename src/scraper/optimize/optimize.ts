@@ -12,46 +12,49 @@ export class RecordingOptimizer {
     ) {}
 
     async optimize(data: UnoptimizedSnapshotChunk): Promise<Without<SnapshotChunk, "_id">> {
-        if(data.type === 'snapshot') {
+        if (data.type === "snapshot") {
             const { context, root } = this.optimizeSubtree(data.snapshot.root, { assets: [] });
             const assets = await this.resolver.resolveAssets(context.assets);
-            return { 
+            return {
                 ...data,
-                snapshot: { 
-                    documentMetadata: data.snapshot.documentMetadata, 
+                snapshot: {
+                    documentMetadata: data.snapshot.documentMetadata,
                     root: await root as OptimizedHtmlElementInfo
                 },
                 assets
             };
         } else {
-            throw new Error('Not sure yet how to optimize diff chunks')
+            throw new Error("Not sure yet how to optimize diff chunks");
         }
     }
-    
+
     private optimizeSubtree = (root: ScrapedElement, inContext: OptimizationContext): OptimizationResult => {
-        let { nodeTask, context } = optimizeNode(root, inContext);
-        if(root.type === 'element') {
+        const optResult = optimizeNode(root, inContext);
+        let { context } = optResult;
+        const { nodeTask } = optResult;
+
+        if (root.type === "element") {
             const childTasks: (OptimizedElement | Promise<OptimizedElement>)[] = [];
-            for(const child of root.children) {
+            for (const child of root.children) {
                 const optimizationResult = this.optimizeSubtree(child, context);
                 context = optimizationResult.context;
                 childTasks.push(optimizationResult.root);
             }
             return {
                 root: Promise.all([nodeTask, ...childTasks])
-                    .then(([root, ...children]) => ({
-                        ...root,
+                    .then(([taskRoot, ...children]) => ({
+                        ...taskRoot,
                         children
                     })),
                 context
-            }
+            };
         } else {
             return {
                 root: nodeTask,
                 context
-            } as OptimizationResult
+            } as OptimizationResult;
         }
-    } 
+    }
 }
 
 export interface OptimizationContext {
@@ -63,7 +66,7 @@ export interface OptimizationResult {
     context: OptimizationContext;
 }
 
-export interface NodeOptimizationResult { 
-    nodeTask: OptimizedElement | Promise<OptimizedElement>,
+export interface NodeOptimizationResult {
+    nodeTask: OptimizedElement | Promise<OptimizedElement>;
     context: OptimizationContext;
 }

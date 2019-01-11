@@ -1,5 +1,5 @@
-import { IServerConfig } from '../../common/server/express-server';
-import { defineEndpoint, RequestBodyUnwrap, RequestHeader, RouteParamUnwrap, Type } from '../../common/server/route-types';
+import { IServerConfig } from "../../common/server/express-server";
+import { defineEndpoint, RequestBodyUnwrap, RequestHeader, RouteParamUnwrap, Type } from "../../common/server/route-types";
 
 export const assetEndpoint = defineEndpoint({
     fetchAsset: {
@@ -11,7 +11,7 @@ export const assetEndpoint = defineEndpoint({
         response: Type<any>()
     },
     createAsset: {
-        url: '/proxy',
+        url: "/proxy",
         method: "post",
         request: {
             proxyReq: new RequestBodyUnwrap<{urls: string[]}>(),

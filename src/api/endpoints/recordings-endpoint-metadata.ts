@@ -1,7 +1,7 @@
-import { IServerConfig } from '../../common/server/express-server';
-import { defineEndpoint, RequestBodyUnwrap, RequestHeader, RequestParamUnwrap, RouteParamUnwrap, Type } from '../../common/server/route-types';
-import { DeepPartial } from '../../common/utils/type-utils';
-import { LocationMetadata, Recording, RecordingOverview } from '../../scraper/types/types';
+import { IServerConfig } from "../../common/server/express-server";
+import { defineEndpoint, RequestBodyUnwrap, RequestHeader, RequestParamUnwrap, RouteParamUnwrap, Type } from "../../common/server/route-types";
+import { DeepPartial } from "../../common/utils/type-utils";
+import { LocationMetadata, Recording, RecordingOverview } from "../../scraper/types/types";
 
 const recordingIdParam = "recordingId";
 const singleRecordingUrl = `/recordings/:${recordingIdParam}`;
@@ -10,7 +10,7 @@ const recordingId = new RouteParamUnwrap(recordingIdParam);
 
 export const recordingEndpoint = defineEndpoint({
     fetchRecording: {
-        method: 'get',
+        method: "get",
         url: singleRecordingUrl,
         request: {
             recordingId
@@ -18,7 +18,7 @@ export const recordingEndpoint = defineEndpoint({
         response: Type<Recording>()
     },
     deleteRecording: {
-        method: 'delete',
+        method: "delete",
         url: singleRecordingUrl,
         request: {
             recordingId
@@ -26,7 +26,7 @@ export const recordingEndpoint = defineEndpoint({
         response: Type<Recording>()
     },
     patchRecording: {
-        method: 'patch',
+        method: "patch",
         url: singleRecordingUrl,
         request: {
             recordingId,
@@ -37,12 +37,12 @@ export const recordingEndpoint = defineEndpoint({
     },
     filterRecordings: {
         url: multiRecordingUrl,
-        method: 'get',
+        method: "get",
         request: { site: new RequestParamUnwrap("site") },
         response: Type<RecordingOverview[]>()
     },
     createRecording: {
-        method: 'post',
+        method: "post",
         url: multiRecordingUrl,
         request: {
             recording: new RequestBodyUnwrap<CreateRecordingRequest>(),
@@ -51,12 +51,12 @@ export const recordingEndpoint = defineEndpoint({
         response: Type<{ _id: string }>()
     },
     deleteMany: {
-        method: 'post',
+        method: "post",
         url: "/recordings/delete-many",
         request: { deleteRequest: new RequestBodyUnwrap<DeleteManyRecordingsRequest>() },
         response: Type<{ success: boolean }>()
     }
-})
+});
 
 export interface CreateRecordingRequest {
     url: LocationMetadata;
