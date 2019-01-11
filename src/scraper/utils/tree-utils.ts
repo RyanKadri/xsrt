@@ -1,7 +1,10 @@
 
-export function transformTree<T, R>(root: T, transformNode: (node: T) => Partial<R> | undefined, fetchChildren: FetchChildrenCallback<T>): R {
+export function transformTree<T, R>(
+    root: T, transformNode: (node: T) => Partial<R> | undefined,
+    fetchChildren: FetchChildrenCallback<T>
+): R {
     const children = fetchChildren(root);
-    const transformedChildren = children !== undefined 
+    const transformedChildren = children !== undefined
         ? children.map(child => transformTree(child, transformNode, fetchChildren))
         : undefined;
     const currentNode = transformNode(root) as any;
@@ -11,7 +14,9 @@ export function transformTree<T, R>(root: T, transformNode: (node: T) => Partial
     };
 }
 
-export function findInTree<T>(root: T, predicate: (node: T) => boolean, fetchChildren: FetchChildrenCallback<T>): T | undefined {
+export function findInTree<T>(
+    root: T, predicate: (node: T) => boolean, fetchChildren: FetchChildrenCallback<T>
+): T | undefined {
     if (predicate(root)) {
         return root;
     } else {
@@ -26,7 +31,9 @@ export function findInTree<T>(root: T, predicate: (node: T) => boolean, fetchChi
     }
 }
 
-export function treeReduce<T, R>(root: T, reducer: (acc: R, node: T) => R, fetchChildren: FetchChildrenCallback<T>, init: R) {
+export function treeReduce<T, R>(
+    root: T, reducer: (acc: R, node: T) => R, fetchChildren: FetchChildrenCallback<T>, init: R
+) {
     let res = reducer(init, root);
     const children = fetchChildren(root);
     for (const child of children || []) {

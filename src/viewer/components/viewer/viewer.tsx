@@ -5,6 +5,7 @@ import { between } from "../../../common/utils/functional-utils";
 import { RecordedMutationGroup, RecordingMetadata, SnapshotChunk } from "../../../scraper/types/types";
 import { RecordingAnnotation } from "../../services/annotation/annotation-service";
 import { Region } from "../../services/regions-service";
+import { TweakableConfigs } from "../../services/tweakable-configs";
 import { UIConfigService } from "../../services/ui-config-service";
 import { withDependencies } from "../../services/with-dependencies";
 import { formatPlayerTime } from "../utils/format-utils";
@@ -15,13 +16,14 @@ import { RecordingControls } from "./footer-controls/footer-controls";
 import { RecordingPlayer } from "./player/player";
 import { ViewerSettingsPopover } from "./viewer-settings";
 
+const backgroundGreyInd = 800;
 const styles = (theme: Theme) => createStyles({
     recordingSpace: {
         width: "100%",
         flexGrow: 1,
         display: "flex",
         position: "relative",
-        backgroundColor: theme.palette.grey[800],
+        backgroundColor: theme.palette.grey[backgroundGreyInd],
         justifyContent: "center",
         alignItems: "center"
     },
@@ -72,7 +74,8 @@ class _RecordingViewer extends React.PureComponent<ViewerProps, ViewerState> {
                                     lockUI={ this.state.settings.blockViewerOnPause }
                                 />
                                 { actionPrompt
-                                    ? <ActionPrompt prompt={ actionPrompt.prompt } onPromptClicked={ actionPrompt.action } />
+                                    ? <ActionPrompt prompt={ actionPrompt.prompt }
+                                                    onPromptClicked={ actionPrompt.action } />
                                     : null
                                 }
                                 <AnnotationSidebar
@@ -189,7 +192,11 @@ class _RecordingViewer extends React.PureComponent<ViewerProps, ViewerState> {
             between(this.state.playerTime, region.start, region.end)
         );
 
-        const regionTooShort = !currRegion || currRegion.end - currRegion.start < 3000;
+        const regionLength = currRegion === undefined
+            ? 0
+            : currRegion.end - currRegion.start;
+
+        const regionTooShort = regionLength < this.props.uiTweaks.minSkippableRegion;
 
         return (!currRegion || currRegion.type !== "idle" || regionTooShort)
             ? null
@@ -221,11 +228,13 @@ class _RecordingViewer extends React.PureComponent<ViewerProps, ViewerState> {
 
 export const RecordingViewer = withStyles(styles)(
     withDependencies(_RecordingViewer, {
-        uiConfig: UIConfigService
+        uiConfig: UIConfigService,
+        uiTweaks: TweakableConfigs
     }));
 
 export interface ViewerProps extends WithStyles<typeof styles> {
     uiConfig: UIConfigService;
+    uiTweaks: TweakableConfigs;
 
     snapshots: SnapshotChunk[];
     inputs: UserInputGroup[];

@@ -1,4 +1,5 @@
 import defaultStyles from "!raw-loader!./default-styles.css";
+import { LoggingService } from "../../common/utils/log-service";
 import { OptimizedElement, OptimizedHtmlElementInfo, OptimizedStyleElement, OptimizedStyleRule, OptimizedTextElementInfo, ScrapedAttribute, SnapshotChunk } from "../types/types";
 import { toBlobUrl } from "../utils/utils";
 
@@ -6,6 +7,10 @@ import { toBlobUrl } from "../utils/utils";
 // (for testability and separation of concerns)
 export const IDomManager = Symbol("DomManager");
 export class DomManager {
+
+    constructor(
+        private logger: LoggingService
+    ) {}
 
     private _document?: Document;
 
@@ -25,7 +30,7 @@ export class DomManager {
     }
 
     async createInitialDocument(data: SnapshotChunk): Promise<void> {
-        console.debug("Initialized playback iframe");
+        this.logger.debug("Initialized playback iframe");
         this.assets = await this.adjustReferences(data.assets);
 
         const docType = `<!DOCTYPE ${ data.snapshot.documentMetadata.docType }>`;
@@ -57,7 +62,7 @@ export class DomManager {
         if (targetNode) {
             targetNode.textContent = newText;
         } else {
-            console.warn(`No node found for target ${target} and text: ${newText}`);
+            this.logger.warn(`No node found for target ${target} and text: ${newText}`);
         }
     }
 
@@ -135,7 +140,7 @@ export class DomManager {
                 ns = currNS;
             }
         }
-        const created = ns !== undefined
+        const created = ns !== ""
             ? this.document.createElementNS(ns, node.tag)
             : this.document.createElement(node.tag) as Element;
 

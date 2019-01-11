@@ -19,6 +19,7 @@ window.addEventListener("message", (message) => {
         activeMessages.delete(data.id);
         resolver(data.payload);
     } else {
+        // tslint:disable-next-line:no-console
         console.error("Expected resolver for id: " + data.id);
     }
 });

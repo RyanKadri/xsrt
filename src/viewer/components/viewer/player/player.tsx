@@ -8,7 +8,7 @@ import { RecordedMutationGroup, RecordingMetadata, SnapshotChunk } from "../../.
 import { withDependencies } from "../../../services/with-dependencies";
 import { eventsBetween, UserInputGroup } from "../../utils/recording-data-utils";
 
-const styles = (theme: Theme) => createStyles({
+const styles = (_: Theme) => createStyles({
     horizExpand: {
         width: "100%",
         height: "100%",
@@ -19,7 +19,6 @@ const styles = (theme: Theme) => createStyles({
     playerContainer: {
         display: "flex",
         position: "absolute",
-        background: theme.palette.grey[800],
         overflow: "hidden",
     },
 
@@ -70,7 +69,9 @@ class _RecordingPlayer extends React.PureComponent<RecordingPlayerProps, PlayerS
             { this.props.error ? <div className={ classes.errorOverlay } >
                 <Typography variant="h2" color="inherit">{ this.props.error }</Typography>
             </div> : null}
-            <iframe className={ c(classes.player, classes.horizExpand) } ref={this.iframe} src="about:blank" style={ this.iframeDimensions() }></iframe>
+            <iframe className={ c(classes.player, classes.horizExpand) }
+                    style={ this.iframeDimensions() }
+                    ref={this.iframe} src="about:blank" ></iframe>
         </div>;
     }
 
@@ -79,15 +80,28 @@ class _RecordingPlayer extends React.PureComponent<RecordingPlayerProps, PlayerS
     }
 
     componentDidUpdate(prevProps: RecordingPlayerProps) {
-        const prevTime = prevProps.currentTime <= this.props.currentTime ? prevProps.currentTime : 0;
+        const prevTime = prevProps.currentTime <= this.props.currentTime
+            ? prevProps.currentTime
+            : 0;
+
         const snapshots = this.props.snapshots
-            .filter(snapshot => between(snapshot.metadata.startTime, prevTime, this.props.currentTime));
+            .filter(snapshot =>
+                between(snapshot.metadata.startTime, prevTime, this.props.currentTime)
+            );
+
         const lastSnapshot = snapshots[snapshots.length - 1];
 
-        const adjustedPrevTime = lastSnapshot ? lastSnapshot.metadata.startTime : prevTime;
-        const { inputs, changes } = eventsBetween(this.props.changes, this.props.inputs, adjustedPrevTime, this.props.currentTime);
+        const adjustedPrevTime = lastSnapshot
+            ? lastSnapshot.metadata.startTime
+            : prevTime;
 
-        if (this.props.currentTime < prevProps.currentTime || (lastSnapshot !== undefined && lastSnapshot !== this.state.currentSnapshot)) {
+        const { inputs, changes } = eventsBetween(
+            this.props.changes, this.props.inputs, adjustedPrevTime, this.props.currentTime
+        );
+
+        if (this.props.currentTime < prevProps.currentTime ||
+            (lastSnapshot !== undefined && lastSnapshot !== this.state.currentSnapshot)
+        ) {
             this.setState({ currentSnapshot: lastSnapshot });
             this.initializeIframe(lastSnapshot);
         }

@@ -1,8 +1,8 @@
-import { injectable, multiInject } from "inversify";
+import { inject, injectable, multiInject } from "inversify";
 import { debounce } from "../../../common/utils/functional-utils";
 import { RecordedUserInput } from "../../../scraper/types/event-types";
 import { RecordingEvents } from "../../components/utils/recording-data-utils";
-import { TweakableConfigs } from "../tweakable-configs";
+import { ITweakableConfigs, TweakableConfigs } from "../tweakable-configs";
 
 export const IInputAnnotator = Symbol("IInputAnnotator");
 
@@ -11,7 +11,7 @@ export class AnnotationService {
 
     constructor(
         @multiInject(IInputAnnotator) private annotators: InputAnnotator[],
-        private uxTweaks: TweakableConfigs
+        @inject(ITweakableConfigs) private uxTweaks: Pick<TweakableConfigs, "annotationEventDebounce">
     ) {}
 
     annotate(events: RecordingEvents): RecordingAnnotation[] {

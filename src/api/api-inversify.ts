@@ -1,5 +1,4 @@
 import { Container } from "inversify";
-import "reflect-metadata";
 import { IRouteImplementation, IServerConfig, IServerInitializer } from "../common/server/express-server";
 import { MongoInitializer } from "../common/server/mongo-initializer";
 import { ApiServerConfig, ApiServerInitializer } from "./api-server-conf";

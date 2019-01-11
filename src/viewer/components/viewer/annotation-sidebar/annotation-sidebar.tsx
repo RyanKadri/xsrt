@@ -23,12 +23,13 @@ const styles = (theme: Theme) => createStyles({
 
 class _AnnotationSidebar extends React.Component<AnnotationOverlayProps> {
 
+    private readonly sidebarElevation = 6;
     render() {
         const { classes, expanded, annotations } = this.props;
         return <Fade in={expanded}>
             <div className={ classes.root }>{
                 annotations.map((annotation, i) => (
-                    <Paper key={ i } elevation={ 6 } classes={{ root: classes.notification }}>
+                    <Paper key={ i } elevation={ this.sidebarElevation } classes={{ root: classes.notification }}>
                         <Typography variant="body1">{ annotation.description }</Typography>
                     </Paper>
                 ))

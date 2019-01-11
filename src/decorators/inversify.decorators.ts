@@ -1,9 +1,8 @@
-import "reflect-metadata";
 import { Container } from "inversify";
-import { IServerConfig, IRouteHandler, IServerInitializer } from "../common/server/express-server";
-import { DecoratorConfig, ExpressInitializer } from "./decorator-server-config";
-import { ThumbnailRouteHandler } from "./compile-thumbnail/endpoints/thumbnail-endpoints";
+import { IRouteHandler, IServerConfig, IServerInitializer } from "../common/server/express-server";
 import { MongoInitializer } from "../common/server/mongo-initializer";
+import { ThumbnailRouteHandler } from "./compile-thumbnail/endpoints/thumbnail-endpoints";
+import { DecoratorConfig, ExpressInitializer } from "./decorator-server-config";
 
 const DecoratorContainer = new Container({ autoBindInjectable: true, defaultScope: "Singleton" });
 

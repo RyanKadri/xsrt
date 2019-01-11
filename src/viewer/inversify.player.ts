@@ -1,4 +1,5 @@
 import { Container } from "inversify";
+import { LoggingService } from "../common/utils/log-service";
 import { DomManager } from "../scraper/playback/dom-manager";
 import { FocusPlayer } from "../scraper/playback/user-input/focus-player";
 import { InputChangePlayer } from "../scraper/playback/user-input/input-change-player";
@@ -16,7 +17,7 @@ import { ITweakableConfigs, TweakableConfigs } from "./services/tweakable-config
 const PlayerContainer = new Container({ autoBindInjectable: true, defaultScope: "Singleton" });
 
 // I do this because I want to access the DomManager from non-container parts of the app.
-PlayerContainer.bind(DomManager).toConstantValue(new DomManager());
+PlayerContainer.bind(DomManager).toConstantValue(new DomManager(new LoggingService({ debugMode: true })));
 
 PlayerContainer.bind(IPlaybackHandler).to(MouseEventPlayer);
 PlayerContainer.bind(IPlaybackHandler).to(ScrollEventPlayer);

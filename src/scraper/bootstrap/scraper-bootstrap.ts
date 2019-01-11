@@ -5,6 +5,7 @@ import { ScraperConfig } from "../scraper-config";
 import { hideNodeAttr } from "../utils/utils";
 import containerHTML from "./widget.html";
 
+const timeUpdateInterval = 500;
 (function bootstrapScraper() {
 
     let timerId: number | undefined;
@@ -69,7 +70,7 @@ import containerHTML from "./widget.html";
         return window.setInterval(() => {
             const now = Date.now();
             elapsedTime.textContent = formatPlayerTime(now - start);
-        }, 500);
+        }, timeUpdateInterval);
     }
 
     function toggleDialogMode() {

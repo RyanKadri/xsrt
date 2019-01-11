@@ -1,17 +1,25 @@
-import { inject, injectable } from "inversify";
+import { inject, injectable, optional } from "inversify";
 import { ScraperConfig, ScraperConfigToken } from "../../scraper/scraper-config";
 
 @injectable()
 export class LoggingService {
 
     constructor(
-        @inject(ScraperConfigToken) private config: Pick<ScraperConfig, "debugMode">
-    ) {}
+        @optional() @inject(ScraperConfigToken) private config: Pick<ScraperConfig, "debugMode">
+    ) {
+        if (!config) {
+            this.config = {
+                debugMode: true
+            };
+        }
+    }
 
+    // tslint:disable:no-console
     info = this.createLogger(console.log);
     warn = this.createLogger(console.warn);
     error = this.createLogger(console.error);
     debug = this.createLogger(console.debug);
+    // tslint:enable:no-console
 
     private createLogger(logFn: typeof console.log) {
         const log: {

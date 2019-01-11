@@ -5,6 +5,7 @@ import { RecordingAnnotation } from "../../../../services/annotation/annotation-
 import { Region } from "../../../../services/regions-service";
 import { footerRenderDebounce } from "../footer-controls";
 
+const mediumGreyInd = 500;
 const styles = (theme: Theme) => createStyles({
     progressBarContainer: {
         width: "100%",
@@ -24,7 +25,7 @@ const styles = (theme: Theme) => createStyles({
     },
     bufferBar: {
         height: 3,
-        backgroundColor: theme.palette.grey[500],
+        backgroundColor: theme.palette.grey[mediumGreyInd],
         zIndex: 1
     },
     regionsBar: {

@@ -10,7 +10,9 @@ export function convertMapToGroups<T>(map: MapTo<T[]>): Group<T>[] {
         });
 }
 
-export function mergeGroups<T>(oldInputs: Group<T>[], newInputs: Group<T>[], sortFn: (a: T, b: T) => number): Group<T>[] {
+export function mergeGroups<T>(
+    oldInputs: Group<T>[], newInputs: Group<T>[], sortFn: (a: T, b: T) => number
+): Group<T>[] {
     const groupMap = new Map<string, T[]>();
     for (const group of oldInputs) {
         groupMap.set(group.name, group.elements);

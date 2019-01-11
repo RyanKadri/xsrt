@@ -3,6 +3,9 @@ import { Browser, launch, LaunchOptions } from "puppeteer";
 import { ViewportSize } from "../../../viewer/bootstrap/bootstrap-screenshot";
 import { DecoratorConfig } from "../../decorator-server-config";
 
+// tslint:disable-next-line:max-line-length
+const defaultUA = "Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1";
+
 @injectable()
 export class ThumbnailCompiler {
 
@@ -30,7 +33,7 @@ export class ThumbnailCompiler {
     async createThumbnail(forRecording: string) {
         const page = await this.newPage();
         try {
-            await page.setUserAgent("Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1");
+            await page.setUserAgent(defaultUA);
             await page.goto(`${this.decoratorConfig.staticScreenshotUrl}?recording=${forRecording}`);
             await page.waitForFunction(`window['targetViewport']`, { polling: 100 });
 

@@ -1,6 +1,6 @@
 import express, { Express, Router } from "express";
 import { inject, injectable, multiInject, optional } from "inversify";
-import { LoggingService } from '../utils/log-service';
+import { LoggingService } from "../utils/log-service";
 import { RouterSetupFn } from "./route-types";
 
 export const IServerInitializer = Symbol("ServerInitializer");

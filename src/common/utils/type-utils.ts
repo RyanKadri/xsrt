@@ -5,6 +5,7 @@ export type Without<T, K> = Pick<T, Exclude<keyof T, K>>;
 export type Omit<T, K extends keyof any> = T extends any ? Pick<T, Exclude<keyof T, K>> : never;
 
 export type DeepPartial<T> = {
+    // tslint:disable-next-line:array-type
     [P in keyof T]?: T[P] extends Array<infer U>
       ? DeepPartial<U>[]
       : T[P] extends ReadonlyArray<infer U2>

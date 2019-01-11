@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { ExpressServer } from "../common/server/express-server";
 import { DecoratorContainer } from "./inversify.decorators";
 

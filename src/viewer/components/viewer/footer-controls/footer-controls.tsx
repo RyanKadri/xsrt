@@ -12,10 +12,11 @@ import { formatPlayerTime } from "../../utils/format-utils";
 import { ProgressBar } from "./progress-bar/progress-bar";
 
 export const footerRenderDebounce = 100;
+const darkGreyInd = 900;
 
 const styles = (theme: Theme) => createStyles({
     controls: {
-        backgroundColor: theme.palette.grey[900],
+        backgroundColor: theme.palette.grey[darkGreyInd],
         color: theme.palette.primary.contrastText,
         display: "flex",
         flexWrap: "wrap",

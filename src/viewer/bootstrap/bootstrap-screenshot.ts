@@ -1,10 +1,11 @@
+import { LoggingService } from "../../common/utils/log-service";
 import { DomManager } from "../../scraper/playback/dom-manager";
 import { Recording, SnapshotChunk } from "../../scraper/types/types";
 
 (async () => {
     const urlMatch = location.search.match(/recording=([a-zA-Z0-9_\-]+)/);
     if (urlMatch) {
-        const domManager = new DomManager();
+        const domManager = new DomManager(new LoggingService({ debugMode: false }));
         domManager.initialize(document);
 
         const recording = urlMatch[1];

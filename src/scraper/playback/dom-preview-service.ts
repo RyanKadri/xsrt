@@ -51,15 +51,15 @@ export class DomPreviewService {
     private convertToPreview(el: ScrapedElement | OptimizedElement): DomNodePreview {
         return el.type === "text"
                 ? { type: "text", content: el.content }
-                : { 
+                : {
                     type: "element",
                     tag: el.tag,
                     attributes: toKeyValMap(
-                        (el.attributes || []), 
+                        (el.attributes || []),
                         attr => attr.name,
                         attr => attr.value
                     )
-                }
+                };
     }
 
     private searchForNode(target: number, root: ScrapedElement | OptimizedElement) {

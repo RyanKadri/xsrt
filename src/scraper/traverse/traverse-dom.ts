@@ -43,7 +43,10 @@ export class RecordingDomManager {
     fetchManagedNode(node: Node, strict: false): ScrapedElement | undefined;
     fetchManagedNode(node: Node, strict: boolean = true): ScrapedElement | undefined {
         const res = this.nodeMapping.get(node);
-        if (!res && strict) { throw new Error("Could not find managed node for: " + node.textContent); } // TODO - Make this less bad
+        if (!res && strict) {
+            // TODO - Make this error message less bad
+            throw new Error("Could not find managed node for: " + node.textContent);
+        }
         return res;
     }
 

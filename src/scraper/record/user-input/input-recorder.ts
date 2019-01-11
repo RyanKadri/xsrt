@@ -84,16 +84,15 @@ export class CompleteInputRecorder {
             }
         };
 
-        
         this.listenerTarget(recorder).addEventListener(groupName, handleEvent, { capture: true });
         this.listeners.push({ channel: groupName, listener: handleEvent });
     }
 
     private nodeIsManaged(node: Node) {
         return !nodeIsHidden(node)
-             && this.domWalker.isManaged(node)
+             && this.domWalker.isManaged(node);
     }
-    
+
     private listenerTarget(recorder: UserInputRecorder) {
         return recorder.listen === "document" ? document : window;
     }

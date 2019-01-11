@@ -15,7 +15,7 @@ export function groupToMap<T, S>(elements: T[], groupSelector: (el: T) => S) {
 
 export function group<T, S>(elements: T[], groupSelector: (el: T) => S): { group: StripArray<S>, items: T[] }[] {
     return Array.from(groupToMap(elements, groupSelector).entries())
-        .map(([group, items]) => ({ group, items }));
+        .map(([mapKey, items]) => ({ group: mapKey, items }));
 }
 
 export function reverseFind<T>(arr: T[], pred: (item: T) => boolean) {
@@ -69,4 +69,5 @@ export function toKeyValMap<T, R>(arr: T[], keyFn: (el: T) => string, valFn: (el
 }
 
 export const identity = <T>(a: T) => a;
-export const noop = () => {}
+
+export const noop = () => { return; };

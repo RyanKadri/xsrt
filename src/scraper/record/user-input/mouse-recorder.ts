@@ -1,5 +1,5 @@
-import { injectable } from "inversify";
-import { TweakableConfigs } from "../../../viewer/services/tweakable-configs";
+import { inject, injectable } from "inversify";
+import { ITweakableConfigs, TweakableConfigs } from "../../../viewer/services/tweakable-configs";
 import { RecordedMouseEvent } from "../../types/event-types";
 import { ScrapedElement } from "../../types/types";
 import { RecordedEventContext, UserInputRecorder } from "./input-recorder";
@@ -14,7 +14,7 @@ export class MouseRecorder implements UserInputRecorder<MouseEvent, RecordedMous
     private lastHovered?: ScrapedElement;
 
     constructor(
-        private uxTweaks: TweakableConfigs
+        @inject(ITweakableConfigs) private uxTweaks: TweakableConfigs
     ) {}
 
     handle(evt: MouseEvent, { time, target }: RecordedEventContext): Partial<RecordedMouseEvent> | null {

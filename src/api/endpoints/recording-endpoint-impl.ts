@@ -1,15 +1,26 @@
 import Axios from "axios";
+import { injectable } from "inversify";
 import * as parser from "ua-parser-js";
 import { Recording as RecordingSchema } from "../../common/db/recording";
 import { NewSiteTarget, Target } from "../../common/db/targets";
 import { errorInvalidCommand, errorNotFound, implement } from "../../common/server/implement-route";
 import { RouteImplementation } from "../../common/server/route-types";
+import { LoggingService } from "../../common/utils/log-service";
 import { Without } from "../../common/utils/type-utils";
 import { Recording, UADetails } from "../../scraper/types/types";
 import { recordingEndpoint } from "./recordings-endpoint-metadata";
 
-export const recordingEndpointImpl = implement(recordingEndpoint, {
-    async fetchRecording({ recordingId }) {
+const defaultNumRecordings = 15;
+type RecordingEndpointType = RouteImplementation<typeof recordingEndpoint>;
+
+@injectable()
+export class RecordingEndpoint implements RecordingEndpointType {
+
+    constructor(
+        private logger: LoggingService
+    ) {}
+
+    fetchRecording: RecordingEndpointType["fetchRecording"] = async ({ recordingId }) => {
         const recordings: Recording[] = await RecordingSchema.aggregate([
             { $match: { _id: recordingId }},
             // { $unwind: "$chunks" },
@@ -27,19 +38,19 @@ export const recordingEndpointImpl = implement(recordingEndpoint, {
             }}
         ]).exec();
         return recordings[0];
-    },
-    async deleteRecording({ recordingId }) {
+    }
+    deleteRecording: RecordingEndpointType["deleteRecording"] = async ({ recordingId }) => {
         const data = await RecordingSchema.findByIdAndDelete(recordingId);
         if (data) {
             return data.toObject();
         } else {
             return errorNotFound(`Recording ${recordingId} does not exist`);
         }
-    },
-    async patchRecording({ patchData, recordingId, config }) {
+    }
+    patchRecording: RecordingEndpointType["patchRecording"] = async ({ patchData, recordingId, config }) => {
         if (patchData.finalized && patchData.metadata) {
             Axios.post(`${config.decorateUrl}/decorate/thumbnails`, { recordingId })
-                .catch(e => console.error(e));
+                .catch(e => this.logger.error(e));
 
             const recording = await RecordingSchema.findByIdAndUpdate(recordingId, { $set: {
                 finalized: true,
@@ -53,16 +64,16 @@ export const recordingEndpointImpl = implement(recordingEndpoint, {
         } else {
             return errorInvalidCommand("Unknown command" );
         }
-    },
-    async filterRecordings({ site: siteId }) {
+    }
+    filterRecordings: RecordingEndpointType["filterRecordings"] = async ({ site: siteId }) => {
         const sites = await RecordingSchema.find(
             { "metadata.site": siteId, finalized: true },
             { metadata: 1, thumbnail: 1 })
         .sort({ "metadata.startTime": -1 })
-        .limit(15);
+        .limit(defaultNumRecordings);
         return sites.map(site => site.toObject());
-    },
-    async createRecording({ recording: bodyData, userAgent }) {
+    }
+    createRecording: RecordingEndpointType["createRecording"] = async ({ recording: bodyData, userAgent }) => {
         const host = bodyData.url.hostname;
         const ua = new parser.UAParser(userAgent || "");
 
@@ -80,8 +91,8 @@ export const recordingEndpointImpl = implement(recordingEndpoint, {
         const recording = new RecordingSchema(recordingData);
         const res = await recording.save();
         return { _id: res._id };
-    },
-    async deleteMany({ deleteRequest }) {
+    }
+    deleteMany: RecordingEndpointType["deleteMany"] = async ({ deleteRequest }) => {
         if (deleteRequest.ids) {
             await RecordingSchema.deleteMany({ _id: { $in: deleteRequest.ids } }).exec();
             return { success: true };
@@ -89,7 +100,9 @@ export const recordingEndpointImpl = implement(recordingEndpoint, {
             return errorInvalidCommand(`Unsure how to process this deletion request`);
         }
     }
-} as RouteImplementation<typeof recordingEndpoint>);
+}
+
+export const recordingEndpointImpl = implement(recordingEndpoint, RecordingEndpoint);
 
 const extractUADetails = (ua: any): UADetails => {
     return {

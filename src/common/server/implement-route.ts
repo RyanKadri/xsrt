@@ -1,25 +1,31 @@
 import { Request, Response, Router } from "express";
+import { interfaces } from "inversify";
 import { ApiContainer } from "../../api/api-inversify";
 import { MapTo } from "../utils/type-utils";
+import { HttpResponseCodes } from "./http-codes";
 import { EndpointDefinition, ExplicitResponse, ResponseHeader, RouteImplementation } from "./route-types";
 
-export const implement = <T extends EndpointDefinition>(endpointDef: T, implementations: RouteImplementation<T>) => {
+export const implement = <T extends EndpointDefinition>(
+    endpointDef: T, implementations: RouteImplementation<T> | interfaces.Newable<RouteImplementation<T>>
+) => {
     return (router: Router) => {
-        const definitions = Object.entries(implementations);
-        definitions.forEach(([key, impl]) => {
-            const definition = endpointDef[key];
+        const concreteImpl: RouteImplementation<T> = typeof implementations === "function"
+            ? ApiContainer.get(implementations)
+            : implementations;
+        const definitions = Object.entries(endpointDef);
+        definitions.forEach(([action, definition]) => {
             const route = router[definition.method].bind(router);
-            const implementation = impl;
+            const implementation = concreteImpl[action];
 
             if (definition && implementation) {
                 route(definition.url, async (req: Request, resp: Response) => {
                     try {
                     const injected = Object.entries(definition.request)
-                        .reduce((acc, [ key, injector ]) => {
+                        .reduce((acc, [ prop, injector ]) => {
                             if (injector.read) {
-                                acc[key] = injector.read(req);
+                                acc[prop] = injector.read(req);
                             } else {
-                                acc[key] = ApiContainer.get(injector);
+                                acc[prop] = ApiContainer.get(injector);
                             }
                             return acc;
                         }, {} as MapTo<any>);
@@ -43,7 +49,9 @@ export const implement = <T extends EndpointDefinition>(endpointDef: T, implemen
                             resp.json(res);
                         }
                     } catch (e) {
-                        resp.status(500).json({ error: e.message });
+                        resp
+                            .status(HttpResponseCodes.INTERNAL_SERVER_ERROR)
+                            .json({ error: e.message });
                     }
                 });
             }
@@ -59,8 +67,8 @@ export const errorResponse = (code: number, message: string, headers: ResponseHe
     return new ExplicitResponse<any>({ type: "error", code, message, headers });
 };
 
-export const errorNotFound = errorResponse.bind(undefined, 404);
-export const errorInvalidCommand = errorResponse.bind(undefined, 400);
+export const errorNotFound = errorResponse.bind(undefined, HttpResponseCodes.CONTENT_NOT_FOUND);
+export const errorInvalidCommand = errorResponse.bind(undefined, HttpResponseCodes.INVALID_COMMAND);
 
 export const downloadResponse = (data: any, headers: ResponseHeader[]) => {
     return new ExplicitResponse<any>({ type: "download", data , headers });
