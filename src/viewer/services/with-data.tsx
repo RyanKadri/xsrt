@@ -1,10 +1,10 @@
-import { Typography } from '@material-ui/core';
+import { Typography } from "@material-ui/core";
 import { interfaces } from "inversify";
 import React, { ComponentType } from "react";
 import { RouteComponentProps } from "react-router";
 import { Omit, StripArray } from "../../common/utils/type-utils";
 import { PlayerContainer } from "../inversify.player";
-import { IState } from './state/state';
+import { IState } from "./state/state";
 
 export function withData<P, K extends keyof P>(DIComponent: ComponentType<P>, resolvers: DataResolvers<P, K>): ComponentType<Omit<P, K> & { routeParams: RouteComponentProps }> {
     return class WithData extends React.Component<Omit<P, K> & { routeParams: RouteComponentProps }, WithDataState> {
@@ -86,7 +86,7 @@ export function withData<P, K extends keyof P>(DIComponent: ComponentType<P>, re
 
 export type DataResolvers<T, K extends keyof T> = { [key in K]: DataResolver<T, K> }
 
-export type DataResolver<T, K extends keyof T> = {
+export interface DataResolver<T, K extends keyof T> {
     resolver: interfaces.Newable<Resolver<StripArray<T[K]>>>;
     state: interfaces.Newable<IState<StripArray<T[K]>>>;
     criteria: (item: T) => boolean;

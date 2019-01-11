@@ -1,0 +1,18 @@
+{
+    "reporter": [
+        "html"
+    ],
+    "extension": [
+        ".ts",
+        ".tsx"
+    ],
+    "include": [
+        "dist/**/*.js"
+    ],
+    "all": true,
+    "instrument": true,
+    "sourceMaps": false,
+    "exclude": [
+        "**/*.d.ts"
+    ]
+}

@@ -1,14 +1,14 @@
-import { injectable } from 'inversify';
+import { inject, injectable } from 'inversify';
 import { RecordedUserInput } from '../../scraper/types/event-types';
 import { RecordedMutationGroup } from '../../scraper/types/types';
 import { RecordingEvents } from '../components/utils/recording-data-utils';
-import { TweakableConfigs } from './tweakable-configs';
+import { ITweakableConfigs, TweakableConfigs } from './tweakable-configs';
 
 @injectable()
 export class RegionService {
 
     constructor(
-        private uxTweaks: TweakableConfigs
+        @inject(ITweakableConfigs) private uxTweaks: Pick<TweakableConfigs, "regionIdleTime">
     ) { }
 
     splitRegions(events: RecordingEvents, lastKnownTime: number): Region[] {

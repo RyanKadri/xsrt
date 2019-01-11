@@ -11,6 +11,7 @@ import { IInputAnnotator } from "./services/annotation/annotation-service";
 import { InputEventAnnotator } from "./services/annotation/input-annotator";
 import { ResizeAnnotator } from "./services/annotation/resize-annotator";
 import { UnloadAnnotator } from './services/annotation/unload-annotator';
+import { ITweakableConfigs, TweakableConfigs } from './services/tweakable-configs';
 
 const PlayerContainer = new Container({ autoBindInjectable: true, defaultScope: "Singleton" });
 
@@ -28,6 +29,7 @@ PlayerContainer.bind(IInterpolationHelper).to(MouseInterpolationHelper);
 PlayerContainer.bind(IInputAnnotator).to(ResizeAnnotator);
 PlayerContainer.bind(IInputAnnotator).to(InputEventAnnotator);
 PlayerContainer.bind(IInputAnnotator).to(UnloadAnnotator);
+PlayerContainer.bind(ITweakableConfigs).to(TweakableConfigs);
 
 export { PlayerContainer };
 

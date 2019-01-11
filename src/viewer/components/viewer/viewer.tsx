@@ -186,7 +186,7 @@ class _RecordingViewer extends React.PureComponent<ViewerProps, ViewerState> {
 
     formActionPrompt() {
         const currRegion = this.props.regions.find(region => 
-            between(region.start, region.end)(this.state.playerTime)
+            between(this.state.playerTime, region.start, region.end)
         )
 
         const regionTooShort = !currRegion || currRegion.end - currRegion.start < 3000;

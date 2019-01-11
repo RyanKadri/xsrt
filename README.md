@@ -29,7 +29,7 @@ This is a standard React app. It builds with webpack and can run in the webpack 
 
 ### Recording API Server (Backend)
 
-This project uses an express backend. You can build and debug in VSCode (via launch configs). This will be updated shortly to allow for a simpler `npm run ***` start.
+This project uses an express backend. You can build and run with `npm run start:backend`
 
 ### Chrome Extension
 

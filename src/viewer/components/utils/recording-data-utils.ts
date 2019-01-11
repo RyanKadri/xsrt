@@ -5,7 +5,7 @@ import { RecordedMutationGroup } from '../../../scraper/types/types';
 
 export function eventsBetween(changes: RecordedMutationGroup[], inputGroups: UserInputGroup[], fromTime: number, toTime: number)
     : RecordingEvents {
-    const timeInRange = pipe(pluck('timestamp'), between(fromTime, toTime)); 
+    const timeInRange = pipe(pluck('timestamp'), eventTime => between(eventTime, fromTime, toTime)); 
         
     return {
         changes: changes.filter(timeInRange),

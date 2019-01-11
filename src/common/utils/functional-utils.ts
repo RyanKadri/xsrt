@@ -28,7 +28,7 @@ export function reverseFind<T>(arr: T[], pred: (item: T) => boolean) {
     return undefined;
 }
 
-export const between = (from: number, to: number) => (num: number) => num >= from && num <= to;
+export const between = (num: number, from: number, to: number) => num >= from && num <= to;
 export const pluck = <T = any, K extends keyof T = any>(key: K) => (item: T) => item[key]; 
 export const pipe = <A, B, C>(fn1: (a: A) => B, fn2: (b: B) => C) => (a1: A) => {
     return fn2(fn1(a1));
@@ -67,3 +67,5 @@ export function toKeyValMap<T, R>(arr: T[], keyFn: (el: T) => string, valFn: (el
         return acc;
     }, {} as MapTo<R>)
 }
+
+export const identity = <T>(a: T) => a;

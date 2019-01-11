@@ -81,7 +81,7 @@ class _RecordingPlayer extends React.PureComponent<RecordingPlayerProps, PlayerS
     componentDidUpdate(prevProps: RecordingPlayerProps) { 
         const prevTime = prevProps.currentTime <= this.props.currentTime ? prevProps.currentTime : 0;
         const snapshots = this.props.snapshots
-            .filter(snapshot => between(prevTime, this.props.currentTime)(snapshot.metadata.startTime));
+            .filter(snapshot => between(snapshot.metadata.startTime, prevTime, this.props.currentTime));
         const lastSnapshot = snapshots[snapshots.length - 1];
         
         const adjustedPrevTime = lastSnapshot ? lastSnapshot.metadata.startTime : prevTime;

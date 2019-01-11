@@ -15,14 +15,14 @@ export class LoggingService {
 
     private createLogger(logFn: typeof console.log) {
         const log: {
-            (context: Function, message: any, ...args: any[]): void
-            (message: any, ...args: any[]): void
-        } = (first: any, second?: any, ...args: any[]) => {
+            (context: Function, message: any): void
+            (message: any): void
+        } = (first: any, second?: any) => {
             if(this.config.debugMode) {
                 if(typeof first === 'function') {
-                    logFn(`${first.name}: ${second}`, ...args);
+                    logFn(`${first.name}: ${second}`);
                 } else {
-                    logFn(first, second, ...args)
+                    logFn(first);
                 }
             }
         };

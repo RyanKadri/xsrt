@@ -18,8 +18,8 @@ export class DomPreviewService {
         const snapshotChunk = reverseFind(this.snapshots, snapshot => snapshot.metadata.startTime < time)!;
         const relevantChanges = this.changes.filter(pipe(
             pluck('timestamp'),
-            between(snapshotChunk.metadata.startTime, time
-        )));
+            eventTime => between(eventTime, snapshotChunk.metadata.startTime, time)
+        ));
 
         const snapshotNode = this.searchForNode(target, snapshotChunk.snapshot.root);
         let preview: DomNodePreview = snapshotNode 
