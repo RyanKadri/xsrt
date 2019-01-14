@@ -1,11 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import "reflect-metadata";
+import { DependencyContext } from "../../viewer/services/with-dependencies";
+import { ExtensionContainer } from "./inversify.extension";
 import { PopupRoot } from "./popup-root";
-import { ConfigStorageService } from "./services/config-storage-service";
-
-const configService = new ConfigStorageService();
 
 ReactDOM.render(
-    <PopupRoot configService={configService} />,
-    document.getElementById('popup-root')
-); 
+    <DependencyContext.Provider value={ ExtensionContainer }>
+        <PopupRoot />
+    </DependencyContext.Provider>,
+    document.getElementById("popup-root")
+);

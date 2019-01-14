@@ -7,7 +7,7 @@
         ".tsx"
     ],
     "include": [
-        "dist/**/*.js"
+        "dist/spec/**/*.js"
     ],
     "all": true,
     "instrument": true,

@@ -42,9 +42,4 @@ export function treeReduce<T, R>(
     return res;
 }
 
-export function treeForEach<T>(root: T, op: (node: T) => void, fetchChildren: FetchChildrenCallback<T>) {
-    op(root);
-    (fetchChildren(root) || []).forEach(node => treeForEach(node, op, fetchChildren));
-}
-
 type FetchChildrenCallback<T> = (node: T) => (T[] | undefined);

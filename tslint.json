@@ -20,7 +20,16 @@
         "max-classes-per-file": false,
         "max-line-length": [true, { "limit": 120, "ignore-pattern": "^import {(.*?)}" }],
         "no-magic-numbers": [true, -1, 0, 1, 2, 100],
-        "one-variable-per-declaration": false
+        "one-variable-per-declaration": false,
+        "ban": [
+            true,
+            "eval",
+            { "name": ["Date", "now"], "message": "Use @injectable DateManager instead" }
+        ]
     },
-    "rulesDirectory": []
+    "linterOptions": {
+        "exclude": [
+            "**/*.spec.ts"
+        ]
+    }
 }

@@ -4,29 +4,30 @@ import { pluck, sortAsc } from "../../../common/utils/functional-utils";
 import { Group } from "../../../common/utils/type-utils";
 import { DomPreviewService } from "../../../scraper/playback/dom-preview-service";
 import { convertMapToGroups, mergeGroups } from "../../../scraper/record/user-input/input-utils";
-import { RecordedUserInput } from '../../../scraper/types/event-types';
+import { RecordedUserInput } from "../../../scraper/types/event-types";
 import { RecordedMutationGroup, Recording, RecordingChunk, SnapshotChunk } from "../../../scraper/types/types";
 import { AnnotationService, RecordingAnnotation } from "../../services/annotation/annotation-service";
 import { ChunkApiService } from "../../services/chunk-api-service";
 import { RecordingResolver } from "../../services/recording-service";
-import { Region, RegionService } from '../../services/regions-service';
-import { RecordingState } from '../../services/state/recording-state';
-import { TweakableConfigs } from '../../services/tweakable-configs';
+import { Region, RegionService } from "../../services/regions-service";
+import { RecordingState } from "../../services/state/recording-state";
+import { TweakableConfigs } from "../../services/tweakable-configs";
 import { withData } from "../../services/with-data";
 import { withDependencies } from "../../services/with-dependencies";
+import { topNavHeight } from "../app-root/top-nav/top-nav";
 import { eventsBetween } from "../utils/recording-data-utils";
 import { RecordingViewer } from "./viewer";
 
 const styles = (theme: Theme) => createStyles({
     root: {
-        display: 'flex',
-        flexDirection: 'column',
+        display: "flex",
+        flexDirection: "column",
         minHeight: 480,
-        height: `calc(100vh - ${theme.spacing.unit * 8}px)`
+        height: `calc(100vh - ${theme.spacing.unit * topNavHeight}px)`
     }
-})
+});
 
-//TODO - This data-passing pattern may need to be rethought if/when there's a standalone viewer
+// TODO - This data-passing pattern may need to be rethought if/when there's a standalone viewer
 class _RecordingView extends React.Component<RecordingViewProps, RecordingViewState> {
 
     constructor(props: RecordingViewProps) {
@@ -41,13 +42,13 @@ class _RecordingView extends React.Component<RecordingViewProps, RecordingViewSt
             inputs: [],
             annotations: [],
             regions: []
-        }
+        };
     }
 
     render() {
         const { classes, recording } = this.props;
         return <div className={ classes.root }>
-            <RecordingViewer 
+            <RecordingViewer
                 changes={ this.state.changes }
                 inputs={ this.state.inputs }
                 snapshots={ this.state.snapshots }
@@ -59,36 +60,38 @@ class _RecordingView extends React.Component<RecordingViewProps, RecordingViewSt
                 bufferPos={ this.state.bufferPos }
                 onUpdateTime={ this.updateBuffer }
                 duration={ this.calcEnd() } />
-        </div>
+        </div>;
     }
 
     componentDidMount() {
-        this.updateBuffer()
+        this.updateBuffer();
     }
 
-    private sortByTimestamp = sortAsc(pluck('timestamp'));
+    private sortByTimestamp = sortAsc(pluck("timestamp"));
     private sortSnapshot = sortAsc<SnapshotChunk>(snap => snap.metadata.startTime);
 
     private updateBuffer = async (time = 0) => {
-        const chunksToGrab = this.props.recording.chunks.filter(chunk => 
-            chunk.metadata.startTime - time < this.props.uiTweaks.idealBuffer && !this.state.requestedChunks.includes(chunk._id));
+        const chunksToGrab = this.props.recording.chunks.filter(chunk =>
+            chunk.metadata.startTime - time < this.props.uiTweaks.idealBuffer
+                && !this.state.requestedChunks.includes(chunk._id)
+        );
 
         this.setState(oldState => ({
             requestedChunks: oldState.requestedChunks.concat(chunksToGrab.map(chunk => chunk._id))
-        }))
+        }));
 
         chunksToGrab.forEach(async chunkShell => {
-            const chunk = await this.props.chunkService.fetchChunk(chunkShell._id)
+            const chunk = await this.props.chunkService.fetchChunk(chunkShell._id);
             this.processChunk(chunk);
         });
     }
 
     private processChunk(chunk: RecordingChunk) {
         this.setState(oldState => {
-            const snapshots = oldState.snapshots.concat(chunk.type === 'snapshot' ? chunk : [])
-                .sort(this.sortSnapshot)
+            const snapshots = oldState.snapshots.concat(chunk.type === "snapshot" ? chunk : [])
+                .sort(this.sortSnapshot);
             const changes = oldState.changes.concat(chunk.changes)
-                .sort(this.sortByTimestamp)
+                .sort(this.sortByTimestamp);
             const inputs = mergeGroups(oldState.inputs, convertMapToGroups(chunk.inputs), this.sortByTimestamp);
 
             const retrievedChunks = oldState.retrievedChunks.concat(chunk._id);
@@ -98,25 +101,25 @@ class _RecordingView extends React.Component<RecordingViewProps, RecordingViewSt
             this.props.previewService.registerUpdate({
                 changes,
                 snapshots
-            })
+            });
             const annotations = this.props.annotationService.annotate(allEvents);
             const regions = this.props.regionService.splitRegions(allEvents, bufferPos);
             return {
-                snapshots,  
-                changes, 
+                snapshots,
+                changes,
                 inputs,
                 annotations,
                 retrievedChunks,
                 bufferPos,
                 regions
-            }
-        })
+            };
+        });
     }
 
     private calcEnd() {
         return Math.max(
             ...this.props.recording.chunks.map(chunk => chunk.metadata.stopTime)
-        )
+        );
     }
 
     private calcBuffer(retrievedChunks: string[]) {
@@ -124,22 +127,22 @@ class _RecordingView extends React.Component<RecordingViewProps, RecordingViewSt
         const minStopNotFetched = Math.min(...chunks
             .filter(chunk => !retrievedChunks.includes(chunk._id))
             .map(chunk => chunk.metadata.stopTime)
-        )
+        );
         const maxReady = Math.max(...chunks
             .filter(chunk => retrievedChunks.includes(chunk._id))
             .map(chunk => chunk.metadata.stopTime)
             .filter(start => start < minStopNotFetched)
-        )
+        );
         return maxReady;
     }
 }
 
 export const RecordingView = withStyles(styles)(
     withDependencies(
-        withData(_RecordingView, { recording: 
-            { resolver: RecordingResolver, state: RecordingState, criteria: () => true, unique: true } 
+        withData(_RecordingView, { recording:
+            { resolver: RecordingResolver, state: RecordingState, criteria: () => true, unique: true }
         }),
-        { 
+        {
             chunkService: ChunkApiService,
             annotationService: AnnotationService,
             previewService: DomPreviewService,
@@ -147,7 +150,7 @@ export const RecordingView = withStyles(styles)(
             uiTweaks: TweakableConfigs
         }
     )
-)
+);
 
 export interface RecordingViewProps extends WithStyles<typeof styles> {
     recording: Recording;
@@ -155,7 +158,7 @@ export interface RecordingViewProps extends WithStyles<typeof styles> {
     annotationService: AnnotationService;
     previewService: DomPreviewService;
     regionService: RegionService;
-    uiTweaks: TweakableConfigs
+    uiTweaks: TweakableConfigs;
 }
 
 export interface RecordingViewState {

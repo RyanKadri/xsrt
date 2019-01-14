@@ -1,17 +1,26 @@
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { RecordingStateService } from "../api/recording-state-service";
+
+@injectable()
+export class DateManager {
+    now() {
+        // tslint:disable-next-line:ban
+        return Date.now();
+    }
+}
 
 @injectable()
 export class TimeManager {
 
     constructor(
-        private recordingState: RecordingStateService
+        @inject(RecordingStateService) private recordingState: Pick<RecordingStateService, "fetchStartTime">,
+        private dateManager: DateManager
     ) {}
 
     private recordingStart?: number;
     private _sessionStart?: number;
 
-    get sessionStart() {
+    fetchSessionStart() {
         if (!this._sessionStart || !this.recordingStart) {
             throw new Error("TimeManager not yet started");
         }
@@ -23,14 +32,14 @@ export class TimeManager {
 
         if (recordingStart) {
             this.recordingStart = recordingStart;
-            this._sessionStart = Date.now();
+            this._sessionStart = this.dateManager.now();
         } else {
-            this.recordingStart = this._sessionStart = Date.now();
+            this.recordingStart = this._sessionStart = this.dateManager.now();
         }
     }
 
     currentTime() {
-        return Date.now() - this.recordingStart!;
+        return this.dateManager.now() - this.recordingStart!;
     }
 
     stop() {

@@ -1,7 +1,9 @@
+import { injectable } from "inversify";
 import { FetchStatusRequest, SaveStatusRequest } from "../../background/config";
 import { ExtensionConfig } from "../../config/extension-config";
 import { RecordingStatus } from "../popup-root";
 
+@injectable()
 export class ConfigStorageService {
 
     fetchConfig(): Promise<ExtensionConfig> {

@@ -3,10 +3,11 @@
     "compilerOptions": {
         "module": "commonjs",
         "outDir": "dist/spec",
-        "sourceMap": true
+        "sourceMap": false
     },
     "include": [
         "src/**/*.ts",
+        "src/**/*.tsx"
     ],
     "exclude": []
 }

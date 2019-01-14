@@ -10,7 +10,7 @@ const styles = (theme: Theme) => createStyles({
     root: {
         color: theme.palette.text.primary
     }
-})
+});
 
 const Link = (link: SidebarEntry, nestedClass: string, onClose: () => void) => (
     link.type === "link"
@@ -20,41 +20,40 @@ const Link = (link: SidebarEntry, nestedClass: string, onClose: () => void) => (
 
     :   <List subheader={<ListSubheader component="div">{ link.heading }</ListSubheader>}
               key={ link.heading } className={ nestedClass }>
-            { link.children.map(link => Link(link, nestedClass, onClose)) }
+            { link.children.map(child => Link(child, nestedClass, onClose)) }
         </List>
-)
+);
 
 const _SideBar = ({ expanded, sites, classes, onClose }: SidebarProps) => {
     return <Drawer variant="temporary" anchor="left" open={expanded} className={ classes.root } onClose={ onClose }>
         <List color="inherit" component="nav">
             { sidebarLinks(sites).map(link => Link(link, classes.nested, onClose)) }
         </List>
-    </Drawer>
-}
+    </Drawer>;
+};
 
 const sidebarLinks = (sites: SiteTarget[]) => {
-    return [ 
-        { type: 'link', to: '/dashboard', text: 'Dashboard' },
-        { type: 'link', to: '/sites', text: 'Manage Sites' },
-        { type: 'group', heading: 'Sites', children: (sites || []).map(site => (
-            { type: 'link' as 'link', to: `/dashboard/${site._id}`, text: site.name }
+    return [
+        { type: "link", to: "/dashboard", text: "Dashboard" },
+        { type: "link", to: "/sites", text: "Manage Sites" },
+        { type: "group", heading: "Sites", children: (sites || []).map(site => (
+            { type: "link" as "link", to: `/dashboard/${site._id}`, text: site.name }
         ))}
     ] as SidebarEntry[];
-}
-
+};
 
 export const Sidebar = withStyles(styles, { withTheme: true })(_SideBar);
 
 type SidebarEntry = SidebarGroup | SidebarLink;
 
 interface SidebarLink {
-    type: 'link'
+    type: "link";
     to: string;
     text: string;
 }
 
 interface SidebarGroup {
-    type: 'group';
+    type: "group";
     heading: string;
     children: SidebarEntry[];
 }

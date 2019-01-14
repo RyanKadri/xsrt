@@ -2,10 +2,12 @@ import containerCSS from "!raw-loader!./container.css";
 import { formatPlayerTime } from "../../viewer/components/utils/format-utils";
 import { RecorderInitializer } from "../recorder-initializer";
 import { ScraperConfig } from "../scraper-config";
+import { DateManager } from "../utils/time-manager";
 import { hideNodeAttr } from "../utils/utils";
 import containerHTML from "./widget.html";
 
 const timeUpdateInterval = 500;
+const dateManager = new DateManager();
 (function bootstrapScraper() {
 
     let timerId: number | undefined;
@@ -66,9 +68,9 @@ const timeUpdateInterval = 500;
     function startTimer() {
         elapsedTime.textContent = formatPlayerTime(0);
 
-        const start = Date.now();
+        const start = dateManager.now();
         return window.setInterval(() => {
-            const now = Date.now();
+            const now = dateManager.now();
             elapsedTime.textContent = formatPlayerTime(now - start);
         }, timeUpdateInterval);
     }

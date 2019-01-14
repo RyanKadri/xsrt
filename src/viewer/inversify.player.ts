@@ -8,6 +8,7 @@ import { IInterpolationHelper } from "../scraper/playback/user-input/interpolati
 import { MouseEventPlayer } from "../scraper/playback/user-input/mouse-input-player";
 import { ScrollEventPlayer } from "../scraper/playback/user-input/scroll-input-player";
 import { IPlaybackHandler } from "../scraper/playback/user-input/user-input-manager";
+import { ScraperConfigToken } from "../scraper/scraper-config";
 import { IInputAnnotator } from "./services/annotation/annotation-service";
 import { InputEventAnnotator } from "./services/annotation/input-annotator";
 import { ResizeAnnotator } from "./services/annotation/resize-annotator";
@@ -16,8 +17,10 @@ import { ITweakableConfigs, TweakableConfigs } from "./services/tweakable-config
 
 const PlayerContainer = new Container({ autoBindInjectable: true, defaultScope: "Singleton" });
 
+PlayerContainer.bind(ScraperConfigToken).toConstantValue({ debugMode: false });
+
 // I do this because I want to access the DomManager from non-container parts of the app.
-PlayerContainer.bind(DomManager).toConstantValue(new DomManager(new LoggingService({ debugMode: true })));
+PlayerContainer.bind(DomManager).toConstantValue(new DomManager(PlayerContainer.get(LoggingService)));
 
 PlayerContainer.bind(IPlaybackHandler).to(MouseEventPlayer);
 PlayerContainer.bind(IPlaybackHandler).to(ScrollEventPlayer);

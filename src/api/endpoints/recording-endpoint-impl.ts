@@ -1,13 +1,15 @@
 import Axios from "axios";
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import * as parser from "ua-parser-js";
 import { Recording as RecordingSchema } from "../../common/db/recording";
 import { NewSiteTarget, Target } from "../../common/db/targets";
+import { IServerConfig } from "../../common/server/express-server";
 import { errorInvalidCommand, errorNotFound, implement } from "../../common/server/implement-route";
 import { RouteImplementation } from "../../common/server/route-types";
 import { LoggingService } from "../../common/utils/log-service";
 import { Without } from "../../common/utils/type-utils";
 import { Recording, UADetails } from "../../scraper/types/types";
+import { ApiServerConfig } from "../api-server-conf";
 import { recordingEndpoint } from "./recordings-endpoint-metadata";
 
 const defaultNumRecordings = 15;
@@ -17,7 +19,8 @@ type RecordingEndpointType = RouteImplementation<typeof recordingEndpoint>;
 export class RecordingEndpoint implements RecordingEndpointType {
 
     constructor(
-        private logger: LoggingService
+        private logger: LoggingService,
+        @inject(IServerConfig) private config: ApiServerConfig
     ) {}
 
     fetchRecording: RecordingEndpointType["fetchRecording"] = async ({ recordingId }) => {
@@ -47,9 +50,9 @@ export class RecordingEndpoint implements RecordingEndpointType {
             return errorNotFound(`Recording ${recordingId} does not exist`);
         }
     }
-    patchRecording: RecordingEndpointType["patchRecording"] = async ({ patchData, recordingId, config }) => {
+    patchRecording: RecordingEndpointType["patchRecording"] = async ({ patchData, recordingId }) => {
         if (patchData.finalized && patchData.metadata) {
-            Axios.post(`${config.decorateUrl}/decorate/thumbnails`, { recordingId })
+            Axios.post(`${this.config.decorateUrl}/decorate/thumbnails`, { recordingId })
                 .catch(e => this.logger.error(e));
 
             const recording = await RecordingSchema.findByIdAndUpdate(recordingId, { $set: {

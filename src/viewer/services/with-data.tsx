@@ -1,15 +1,20 @@
 import { Typography } from "@material-ui/core";
-import { interfaces } from "inversify";
+import { Container, interfaces } from "inversify";
 import React, { ComponentType } from "react";
 import { RouteComponentProps } from "react-router";
 import { Omit, StripArray } from "../../common/utils/type-utils";
-import { PlayerContainer } from "../inversify.player";
 import { IState } from "./state/state";
+import { DependencyContext } from "./with-dependencies";
 
 export function withData<P, K extends keyof P>(
     DIComponent: ComponentType<P>, resolvers: DataResolvers<P, K>
 ): ComponentType<Omit<P, K> & { routeParams: RouteComponentProps }> {
-    return class WithData extends React.Component<Omit<P, K> & { routeParams: RouteComponentProps }, WithDataState> {
+    return class WithData extends React.Component<
+        Omit<P, K> & { routeParams: RouteComponentProps },
+        WithDataState
+    > {
+
+        static contextType = DependencyContext;
 
         constructor(props: Omit<P, K> & { routeParams: RouteComponentProps }) {
             super(props);
@@ -55,11 +60,12 @@ export function withData<P, K extends keyof P>(
         }
 
         private update() {
+            const container: Container = this.context;
             const loadingResolvers = Object.entries(resolvers)
                 .map(([field, resolverOpts]) => {
                     const resolverOptions = resolverOpts as DataResolver<any, any>;
-                    const resolver = PlayerContainer.get<Resolver<any>>(resolverOptions.resolver);
-                    const state = PlayerContainer.get<IState<any>>(resolverOptions.state);
+                    const resolver = container.get<Resolver<any>>(resolverOptions.resolver);
+                    const state = container.get<IState<any>>(resolverOptions.state);
                     const resolvePromise = resolver.resolve(this.props.routeParams)
                         .then(data => {
                             if (Array.isArray(data)) {

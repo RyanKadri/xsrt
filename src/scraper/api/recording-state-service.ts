@@ -14,7 +14,7 @@ export class RecordingStateService {
         localStorage.setItem(localStorageScrapeConfig, JSON.stringify(config));
     }
 
-    recordRecordingId(_id: string): void {
+    saveRecordingId(_id: string): void {
         localStorage.setItem(localStorageRecordingId, _id);
     }
 

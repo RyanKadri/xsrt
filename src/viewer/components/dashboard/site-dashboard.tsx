@@ -1,12 +1,13 @@
 import { createStyles, Dialog, Theme, Typography, withStyles, WithStyles } from "@material-ui/core";
-import ExternalLink from '@material-ui/icons/OpenInBrowserSharp';
+import ExternalLink from "@material-ui/icons/OpenInBrowserSharp";
 import React, { Fragment } from "react";
-import { SiteTarget } from '../../../common/db/targets';
+import { SiteTarget } from "../../../common/db/targets";
+import { LoggingService } from "../../../common/utils/log-service";
 import { RecordingOverview } from "../../../scraper/types/types";
 import { RecordingApiService, RecordingMetadataResolver } from "../../services/recording-service";
-import { RecordingState } from '../../services/state/recording-overview-state';
+import { RecordingState } from "../../services/state/recording-overview-state";
 import { withData } from "../../services/with-data";
-import { withDependencies } from '../../services/with-dependencies';
+import { withDependencies } from "../../services/with-dependencies";
 import { RecordingTable } from "./recording-table/recording-table";
 
 const styles = (theme: Theme) => createStyles({
@@ -20,17 +21,17 @@ const styles = (theme: Theme) => createStyles({
 
 class _SiteDashboardView extends React.Component<DashboardViewProps, DashboardState> {
 
-    constructor(props: DashboardViewProps) { 
+    constructor(props: DashboardViewProps) {
         super(props);
         this.state = {
             preview: undefined,
             selected: []
-        }
+        };
     }
-    
+
     render() {
         const { classes } = this.props;
-        return <div className={ classes.root }>{ 
+        return <div className={ classes.root }>{
             !this.props.site
                 ? <Typography variant="body1">This site no longer exists</Typography>
                 : <Fragment>
@@ -40,38 +41,38 @@ class _SiteDashboardView extends React.Component<DashboardViewProps, DashboardSt
                             <ExternalLink />
                         </a>
                     </Typography>
-                    { this.props.recordings.length === 0 
+                    { this.props.recordings.length === 0
                       ? <Typography variant="body1">No recordings yet...</Typography>
-                      : <RecordingTable 
+                      : <RecordingTable
                             recordings={ this.props.recordings }
                             selected={ this.state.selected }
                             onPreview={ this.onPreview }
                             onToggleSelect={ this.onToggleSelect }
                             onToggleSelectAll={ this.onToggleSelectAll }
                             onDeleteSelected={ this.onDeleteSelected }
-                        /> 
+                        />
                     }
-                    <Dialog maxWidth='lg'
+                    <Dialog maxWidth="lg"
                         open={ this.state.preview !== undefined }
                         onClose={ this.onClose }>{
-                        this.state.preview && this.state.preview.thumbnail 
+                        this.state.preview && this.state.preview.thumbnail
                             ? <img src={`/screenshots/${this.state.preview!.thumbnail}`}></img>
                             : <p>No image</p>
                     }</Dialog>
                 </Fragment>
-        }</div>
+        }</div>;
     }
 
     private onPreview = (preview: RecordingOverview) => {
         this.setState({
             preview
-        })
+        });
     }
 
     private onClose = () => {
         this.setState({
             preview: undefined
-        })
+        });
     }
 
     private onToggleSelect = (recording: RecordingOverview) => {
@@ -79,7 +80,7 @@ class _SiteDashboardView extends React.Component<DashboardViewProps, DashboardSt
             selected: selected.includes(recording)
                 ? selected.filter(rec => rec !== recording)
                 : selected.concat(recording)
-        }))
+        }));
     }
 
     private onToggleSelectAll = (shouldSelect: boolean) => {
@@ -87,15 +88,15 @@ class _SiteDashboardView extends React.Component<DashboardViewProps, DashboardSt
             selected: shouldSelect
                 ? this.props.recordings
                 : []
-        }))
+        }));
     }
 
     private onDeleteSelected = async () => {
         try {
             await this.props.recordingsApi.deleteRecordings(this.state.selected);
-            this.setState(({ selected: [] }))
-        } catch(e) {
-
+            this.setState(({ selected: [] }));
+        } catch (e) {
+            this.props.logger.error(e);
         }
     }
 
@@ -109,17 +110,21 @@ export const SiteDashboardView = withStyles(styles)(
             criteria: () => true,
             unique: false
         } }),
-        { recordingsApi: RecordingApiService }
+        {
+            recordingsApi: RecordingApiService,
+            logger: LoggingService
+        }
     )
-)
+);
 
 interface DashboardViewProps extends WithStyles<typeof styles> {
     recordings: RecordingOverview[];
     site: SiteTarget;
-    recordingsApi: RecordingApiService
+    recordingsApi: RecordingApiService;
+    logger: LoggingService;
 }
 
 interface DashboardState {
     preview?: RecordingOverview;
-    selected: RecordingOverview[]
+    selected: RecordingOverview[];
 }

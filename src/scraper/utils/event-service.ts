@@ -3,16 +3,16 @@ import { chunkMutationLimit } from "../record/dom-changes/mutation-tracker";
 
 @injectable()
 export class EventService {
-    private handlers = new Map<symbol, ListenerCallback<any>[]>();
+    private handlers = new Map<string, ListenerCallback<any, any>[]>();
 
-    dispatch(evt: ScrapeEvent) {
+    dispatch<T extends Event<any>>(evt: T) {
         const listeners = this.handlers.get(evt.type);
         if (listeners) {
-            listeners.forEach(listener => listener(evt.payload));
+            listeners.forEach(listener => listener(evt));
         }
     }
 
-    addEventListener<T extends ScrapeEvent>(type: T["type"], callback: ListenerCallback<T["payload"]>) {
+    addEventListener<E extends Event<any>>(type: E["type"], callback: ListenerCallback<E["payload"], E["type"]>) {
         const prevListeners = this.handlers.get(type);
         this.handlers.set(type, (prevListeners || []).concat(callback));
     }
@@ -25,4 +25,9 @@ export interface MutationLimitExceeded {
     payload: number;
 }
 
-type ListenerCallback<T> = (payload: T) => void;
+export interface Event<P, T = string> {
+    type: T;
+    payload: P;
+}
+
+type ListenerCallback<P, T> = (event: Event<P, T>) => void;

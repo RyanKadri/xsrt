@@ -1,5 +1,7 @@
 import { createStyles, CssBaseline, MuiThemeProvider, Paper, Typography, withStyles, WithStyles } from "@material-ui/core";
 import React, { Fragment } from "react";
+import { DateManager } from "../../scraper/utils/time-manager";
+import { withDependencies } from "../../viewer/services/with-dependencies";
 import { appTheme } from "../../viewer/theme/theme";
 import { ExtensionConfig } from "../config/extension-config";
 import { fetchTab } from "../utils/utils";
@@ -39,7 +41,7 @@ class _PopupRoot extends React.Component<RootProps, RootState> {
                     ? <Typography variant="body1">Loading Config</Typography>
                     : <Fragment>
                         <RunSection
-                            elapsedTime={this.state.elapsedTime}
+                            elapsedTime={ this.state.elapsedTime }
                             status={ this.state.runState }
                             onStart={ this.onStart }
                             onStop={ this.onStop }
@@ -72,7 +74,7 @@ class _PopupRoot extends React.Component<RootProps, RootState> {
         this.setState({
             runState: {
                 recording: true,
-                startTime: Date.now(),
+                startTime: this.props.dateManager.now(),
             },
             elapsedTime: 0,
         }, this.saveRunState);
@@ -82,7 +84,9 @@ class _PopupRoot extends React.Component<RootProps, RootState> {
     private startTimer() {
         const timerId = window.setInterval(() => {
             if (this.state.runState && this.state.runState.recording) {
-                this.setState(oldState => ({ elapsedTime: Date.now() - oldState.runState!.startTime! }));
+                this.setState(oldState => ({
+                    elapsedTime: this.props.dateManager.now() - oldState.runState!.startTime!
+                }));
             }
         }, 100);
         this.setState({ timerId });
@@ -106,10 +110,16 @@ class _PopupRoot extends React.Component<RootProps, RootState> {
     }
 }
 
-export const PopupRoot = withStyles(styles)(_PopupRoot);
+export const PopupRoot = withStyles(styles)(
+    withDependencies(_PopupRoot, {
+        configService: ConfigStorageService,
+        dateManager: DateManager
+    })
+);
 
 export interface RootProps extends WithStyles<typeof styles> {
     configService: ConfigStorageService;
+    dateManager: DateManager;
 }
 
 export interface RootState {

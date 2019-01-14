@@ -1,4 +1,6 @@
 import { Container } from "inversify";
+import { RecordingApi, recordingEndpoint } from "../api/endpoints/recordings-endpoint-metadata";
+import { createApi } from "../common/server/create-api";
 import { FocusRecorder } from "./record/user-input/focus-recorder";
 import { HtmlInputRecorder } from "./record/user-input/input-event-recorder";
 import { IUserInputRecorder } from "./record/user-input/input-recorder";
@@ -17,4 +19,5 @@ RecorderContainer.bind(IUserInputRecorder).to(ResizeRecorder);
 RecorderContainer.bind(IUserInputRecorder).to(KeystrokeRecorder);
 RecorderContainer.bind(IUserInputRecorder).to(UnloadRecorder);
 
+RecorderContainer.bind(RecordingApi).toConstantValue(createApi(recordingEndpoint));
 export { RecorderContainer };

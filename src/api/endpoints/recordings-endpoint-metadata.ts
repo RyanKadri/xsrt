@@ -1,4 +1,3 @@
-import { IServerConfig } from "../../common/server/express-server";
 import { defineEndpoint, RequestBodyUnwrap, RequestHeader, RequestParamUnwrap, RouteParamUnwrap, Type } from "../../common/server/route-types";
 import { DeepPartial } from "../../common/utils/type-utils";
 import { LocationMetadata, Recording, RecordingOverview } from "../../scraper/types/types";
@@ -8,6 +7,7 @@ const singleRecordingUrl = `/recordings/:${recordingIdParam}`;
 const multiRecordingUrl = `/recordings`;
 const recordingId = new RouteParamUnwrap(recordingIdParam);
 
+export const RecordingApi = Symbol("recordingApi");
 export const recordingEndpoint = defineEndpoint({
     fetchRecording: {
         method: "get",
@@ -30,8 +30,7 @@ export const recordingEndpoint = defineEndpoint({
         url: singleRecordingUrl,
         request: {
             recordingId,
-            patchData: new RequestBodyUnwrap<DeepPartial<Recording>>(),
-            config: IServerConfig
+            patchData: new RequestBodyUnwrap<DeepPartial<Recording>>()
         },
         response: Type<{success: boolean}>()
     },

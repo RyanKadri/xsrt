@@ -24,7 +24,7 @@ export class Recorder implements IScraper {
         return this.optimizer.optimize(this.syncSnapshot())
             .then(snapshot => {
                 const stopTime = this.lastChunk = this.timeManager.currentTime();
-                const startTime = this.timeManager.sessionStart;
+                const startTime = this.timeManager.fetchSessionStart();
                 const chunk = {
                     ...snapshot,
                     changes: this.mutationRecorder.dump(),

@@ -1,12 +1,13 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import 'reflect-metadata';
-import { ScraperConfigToken } from '../scraper/scraper-config';
+import "reflect-metadata";
 import { AppRoot } from "./components/app-root/app-root";
-import { PlayerContainer } from './inversify.player';
+import { PlayerContainer } from "./inversify.player";
+import { DependencyContext } from "./services/with-dependencies";
 
-PlayerContainer.bind(ScraperConfigToken).toConstantValue({ debugMode: false })
 ReactDOM.render(
-    <AppRoot />,
-    document.getElementById('app-root')
+    <DependencyContext.Provider value={PlayerContainer}>
+        <AppRoot />,
+    </DependencyContext.Provider>,
+    document.getElementById("app-root")
 );

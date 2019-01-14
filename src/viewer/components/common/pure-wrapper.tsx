@@ -5,5 +5,5 @@ export function pure<P>(fComp: React.SFC<P>) {
         render() {
             return fComp(this.props, this.context);
         }
-    }
+    };
 }

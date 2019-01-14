@@ -10,6 +10,12 @@
             "problemMatcher": [
                 "$tsc-watch"
             ]
+        },
+        {
+            "label": "externalTest",
+            "type": "shell",
+            "command": "gnome-terminal -- npm run test:watch",
+            "problemMatcher": []
         }
     ]
 }

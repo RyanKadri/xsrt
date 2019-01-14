@@ -1,7 +1,7 @@
 import { IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, Typography, WithStyles, withStyles } from "@material-ui/core";
-import DeleteIcon from '@material-ui/icons/Delete';
+import DeleteIcon from "@material-ui/icons/Delete";
 import React from "react";
-import { SiteTarget } from '../../../common/db/targets';
+import { SiteTarget } from "../../../common/db/targets";
 
 const styles = {
     root: {
@@ -12,7 +12,7 @@ const styles = {
 function SiteListComp({ sites, onDelete }: SiteListProps) {
     return sites.length === 0
         ? <Typography variant="body1">No sites have been configured</Typography>
-        : <List>{ 
+        : <List>{
             sites.map(site => (
                 <ListItem key={site._id}>
                     <ListItemText primary={site.name} secondary={site.identifier} />
@@ -23,12 +23,12 @@ function SiteListComp({ sites, onDelete }: SiteListProps) {
                     </ListItemSecondaryAction>
                 </ListItem>
             ))
-          }</List>
+          }</List>;
 }
 
 export const SiteList = withStyles(styles)(SiteListComp);
 
 export interface SiteListProps extends WithStyles<typeof styles> {
-    sites: SiteTarget[]
+    sites: SiteTarget[];
     onDelete: (site: SiteTarget) => void;
 }

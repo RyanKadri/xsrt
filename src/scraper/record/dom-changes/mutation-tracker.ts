@@ -6,7 +6,7 @@ import { TimeManager } from "../../utils/time-manager";
 import { treeReduce } from "../../utils/tree-utils";
 import { MutationOptimizer } from "./mutation-optimizer";
 
-export const chunkMutationLimit = Symbol("chunkMutationLimit");
+export const chunkMutationLimit = "chunkMutationLimit";
 
 @injectable()
 export class MutationTracker {
