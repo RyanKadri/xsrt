@@ -31,7 +31,7 @@ export class RecorderApiService {
             };
         } else {
             startTime = this.dateManager.now();
-            this.recordingState.recordStartTime(startTime);
+            this.recordingState.saveStartTime(startTime);
             const recording = await this.recordingApi.createRecording({
                 recording: { url: extractUrlMetadata(location), startTime },
                 // TODO - Some headers are specifically set. Not user-agent. Figure out how to ignore this in sig

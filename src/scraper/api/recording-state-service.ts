@@ -1,4 +1,5 @@
 import { injectable } from "inversify";
+import { LocalStorageService } from "../../common/utils/local-storage.service";
 import { Without } from "../../common/utils/type-utils";
 import { ScraperConfig } from "../scraper-config";
 import { RecordingChunk } from "../types/types";
@@ -10,51 +11,52 @@ const localStoragePendingChunk = "xsrt.recording.pendingChunk";
 
 @injectable()
 export class RecordingStateService {
+
+    constructor(
+        private storageService: LocalStorageService
+    ) {}
+
     storeConfig(config: ScraperConfig): void {
-        localStorage.setItem(localStorageScrapeConfig, JSON.stringify(config));
+        this.storageService.saveItem(localStorageScrapeConfig, config);
     }
 
     saveRecordingId(_id: string): void {
-        localStorage.setItem(localStorageRecordingId, _id);
+        this.storageService.saveItem(localStorageRecordingId, _id);
     }
 
-    recordStartTime(startTime: number): void {
-        localStorage.setItem(localStorageRecordingStart, `${startTime}`);
+    saveStartTime(startTime: number): void {
+        this.storageService.saveItem(localStorageRecordingStart, startTime);
     }
 
-    storePendingChunk(chunk: Without<RecordingChunk, "_id">) {
-        localStorage.setItem(localStoragePendingChunk, JSON.stringify(chunk));
+    savePendingChunk(chunk: Without<RecordingChunk, "_id">) {
+        this.storageService.saveItem(localStoragePendingChunk, chunk);
     }
 
     removePendingChunk(): void {
-        localStorage.removeItem(localStoragePendingChunk);
+        this.storageService.removeItem(localStoragePendingChunk);
     }
 
     fetchActiveConfig(): ScraperConfig {
-        const config = localStorage.getItem(localStorageScrapeConfig);
-        return config ? JSON.parse(config) : undefined;
+        return this.storageService.fetchItem(localStorageScrapeConfig, { type: "object" });
     }
 
     fetchRecordingId(): string | undefined {
-        const recordingId = localStorage.getItem(localStorageRecordingId);
-        return recordingId ? recordingId : undefined;
+        return this.storageService.fetchItem(localStorageRecordingId);
     }
 
     fetchPendingChunk(): RecordingChunk | undefined {
-        const pendingChunk = localStorage.getItem(localStoragePendingChunk);
-        return pendingChunk ? JSON.parse(pendingChunk) : undefined;
+        return this.storageService.fetchItem(localStoragePendingChunk, { type: "object" });
     }
 
     fetchStartTime() {
-        const startTime = localStorage.getItem(localStorageRecordingStart);
-        return startTime ? parseInt(startTime, 10) : undefined;
+        return this.storageService.fetchItem(localStorageRecordingStart, { type: "number" });
     }
 
     closeRecording() {
-        localStorage.removeItem(localStorageRecordingId);
-        localStorage.removeItem(localStorageRecordingStart);
-        localStorage.removeItem(localStorageScrapeConfig);
-        localStorage.removeItem(localStoragePendingChunk);
+        this.storageService.removeItem(localStorageRecordingId);
+        this.storageService.removeItem(localStorageRecordingStart);
+        this.storageService.removeItem(localStorageScrapeConfig);
+        this.storageService.removeItem(localStoragePendingChunk);
     }
 
 }

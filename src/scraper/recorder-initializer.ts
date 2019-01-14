@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import { LocalStorageService } from "../common/utils/local-storage.service";
 import { RecorderApiService } from "./api/recorder-api-service";
 import { RecordingStateService } from "./api/recording-state-service";
 import { RecorderContainer } from "./inversify.recorder";
@@ -7,7 +8,7 @@ import { ScraperConfig, ScraperConfigToken as ConfigToken } from "./scraper-conf
 
 export class RecorderInitializer {
 
-    private recordingState = new RecordingStateService();
+    private recordingState = new RecordingStateService(new LocalStorageService());
     private apiService?: RecorderApiService;
     private orchestrator?: RecorderOrchestrator;
 

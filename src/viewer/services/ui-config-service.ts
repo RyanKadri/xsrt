@@ -1,4 +1,5 @@
 import { injectable } from "inversify";
+import { LocalStorageService } from "../../common/utils/local-storage.service";
 import { allowedRecordingTableColumns } from "../components/dashboard/recording-table/available-columns";
 import { RecordingTableSettings } from "../components/dashboard/recording-table/recording-table-settings";
 import { ViewerSettings } from "../components/viewer/viewer";
@@ -19,33 +20,31 @@ const defaultViewerSettings: ViewerSettings = {
 @injectable()
 export class UIConfigService {
 
+    constructor(
+        private storageService: LocalStorageService
+    ) { }
+
     saveRecordingsTableConfig(settings: RecordingTableSettings) {
-        localStorage.setItem(localStorageTableSettings, JSON.stringify(settings));
+        this.storageService.saveItem(localStorageTableSettings, settings);
     }
 
     loadRecordingsTableConfig(): RecordingTableSettings {
-        const stored = localStorage.getItem(localStorageTableSettings);
-        if (stored) {
-            return JSON.parse(stored);
-        } else {
-            const defaultConfig = defaultRecordingTableColumns;
-            this.saveRecordingsTableConfig(defaultConfig);
-            return defaultConfig;
-        }
+        return this.storageService.fetchWithDefault(
+            localStorageTableSettings,
+            defaultRecordingTableColumns,
+            { writeBack: true}
+        );
     }
 
     saveViewerConfig(config: ViewerSettings) {
-        localStorage.setItem(localStorageViewerSettings, JSON.stringify(config));
+        this.storageService.saveItem(localStorageViewerSettings, config);
     }
 
     loadViewerConfig(): ViewerSettings {
-        const stored = localStorage.getItem(localStorageViewerSettings);
-        if (stored) {
-            return JSON.parse(stored);
-        } else {
-            const defaultConfig = defaultViewerSettings;
-            this.saveViewerConfig(defaultConfig);
-            return defaultConfig;
-        }
+        return this.storageService.fetchWithDefault(
+            localStorageViewerSettings,
+            defaultViewerSettings,
+            { writeBack: true }
+        );
     }
 }

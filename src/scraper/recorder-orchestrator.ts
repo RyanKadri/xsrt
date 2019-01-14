@@ -101,7 +101,7 @@ export class RecorderOrchestrator {
             this.latestEnd = Math.max(chunk.metadata.stopTime, this.latestEnd),
             this.recorderApi.postToBackend(chunk, this.initInfo._id, this.config);
         } else {
-            this.recorderState.storePendingChunk(chunk);
+            this.recorderState.savePendingChunk(chunk);
         }
     }
 

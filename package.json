@@ -15,7 +15,7 @@
     "test": "npm run build:test && jasmine --config=jasmine.json",
     "test:coverage": "npm run build:test && nyc jasmine --config=jasmine.json",
     "test:watch": "mkdir -p dist/spec && rm -r dist/spec && concurrently -p \"[{name}]\" --restart-tries 3 \"npm:build:test:watch\" \"npm:test:watch:build-artifacts\"",
-    "test:watch:build-artifacts": "nodemon -w dist/spec/* --delay 1000ms ./node_modules/.bin/jasmine --config=jasmine.json"
+    "test:watch:build-artifacts": "nodemon -w dist/spec --delay 1000ms ./node_modules/.bin/jasmine --config=jasmine.json"
   },
   "author": "Ryan Kadri",
   "license": "MIT",
