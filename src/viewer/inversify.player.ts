@@ -1,4 +1,8 @@
 import { Container } from "inversify";
+import { chunkApiSymbol, chunkEndpointMetadata } from "../api/endpoints/chunk-endpoint-metadata";
+import { recordingApiSymbol, recordingEndpoint } from "../api/endpoints/recordings-endpoint-metadata";
+import { siteTargetApiSymbol, siteTargetEndpoint } from "../api/endpoints/target-endpoint-metadata";
+import { createApi } from "../common/server/create-api";
 import { LoggingService } from "../common/utils/log-service";
 import { DomManager } from "../scraper/playback/dom-manager";
 import { FocusPlayer } from "../scraper/playback/user-input/focus-player";
@@ -33,5 +37,9 @@ PlayerContainer.bind(IInputAnnotator).to(ResizeAnnotator);
 PlayerContainer.bind(IInputAnnotator).to(InputEventAnnotator);
 PlayerContainer.bind(IInputAnnotator).to(UnloadAnnotator);
 PlayerContainer.bind(ITweakableConfigs).to(TweakableConfigs);
+
+PlayerContainer.bind(chunkApiSymbol).toConstantValue(createApi(chunkEndpointMetadata));
+PlayerContainer.bind(siteTargetApiSymbol).toConstantValue(createApi(siteTargetEndpoint));
+PlayerContainer.bind(recordingApiSymbol).toConstantValue(createApi(recordingEndpoint));
 
 export { PlayerContainer };

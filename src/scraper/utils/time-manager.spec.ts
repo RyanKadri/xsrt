@@ -2,7 +2,7 @@ import { TimeManager } from "./time-manager";
 
 describe(TimeManager.name, () => {
     const createDateManager = (time: number) => ({ now(){ return time } });
-    const createRecordingState = (recordStart?: number) => ({ fetchStartTime() { return recordStart } })
+    const createRecordingState = (recordStart?: number | undefined) => ({ fetchStartTime() { return recordStart } })
 
     it('Throws an error if you try to get the recording start time before actually starting', () => {
         const timeManager = new TimeManager(createRecordingState(1), createDateManager(1) );

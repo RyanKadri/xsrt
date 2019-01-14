@@ -13,6 +13,7 @@
     "instrument": true,
     "sourceMaps": false,
     "exclude": [
-        "**/*.d.ts"
+        "**/*.d.ts",
+        "**/*.exp.js"
     ]
 }

@@ -1,5 +1,6 @@
 import { Container } from "inversify";
-import { RecordingApi, recordingEndpoint } from "../api/endpoints/recordings-endpoint-metadata";
+import { assetApiSymbol, assetEndpoint } from "../api/endpoints/proxy-endpoint-metadata";
+import { recordingApiSymbol, recordingEndpoint } from "../api/endpoints/recordings-endpoint-metadata";
 import { createApi } from "../common/server/create-api";
 import { FocusRecorder } from "./record/user-input/focus-recorder";
 import { HtmlInputRecorder } from "./record/user-input/input-event-recorder";
@@ -9,6 +10,7 @@ import { MouseRecorder } from "./record/user-input/mouse-recorder";
 import { ResizeRecorder } from "./record/user-input/resize-recorder";
 import { ScrollRecorder } from "./record/user-input/scroll-recorder";
 import { UnloadRecorder } from "./record/user-input/unload-recorder";
+import { LocationSymbol } from "./traverse/extract-metadata";
 
 const RecorderContainer = new Container({ autoBindInjectable: true, defaultScope: "Singleton" });
 RecorderContainer.bind(IUserInputRecorder).to(MouseRecorder);
@@ -19,5 +21,7 @@ RecorderContainer.bind(IUserInputRecorder).to(ResizeRecorder);
 RecorderContainer.bind(IUserInputRecorder).to(KeystrokeRecorder);
 RecorderContainer.bind(IUserInputRecorder).to(UnloadRecorder);
 
-RecorderContainer.bind(RecordingApi).toConstantValue(createApi(recordingEndpoint));
+RecorderContainer.bind(recordingApiSymbol).toConstantValue(createApi(recordingEndpoint));
+RecorderContainer.bind(assetApiSymbol).toConstantValue(createApi(assetEndpoint));
+RecorderContainer.bind(LocationSymbol).toConstantValue(location);
 export { RecorderContainer };

@@ -21,3 +21,7 @@ export interface Group<T> {
   name: string;
   elements: T[];
 }
+
+export type Interface<T> = {
+    [prop in keyof T]: T[prop];
+};

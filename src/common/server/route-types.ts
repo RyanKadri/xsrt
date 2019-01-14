@@ -7,7 +7,11 @@ export type EndpointApi<T extends EndpointDefinition> = {
 };
 
 export type PayloadApiMethod<T extends PayloadVerbDefinition | UrlVerbDefinition> =
-    (params?: RequestParams<T>) => Promise<NonNullable<T["response"]["type"]>>;
+    (params?: RequestParams<T>, clientOptions?: ApiMethodClientOptions ) => Promise<NonNullable<T["response"]["type"]>>;
+
+export interface ApiMethodClientOptions {
+    clientHeaders: MapTo<string>;
+}
 
 export type RequestParams<T extends PayloadVerbDefinition | UrlVerbDefinition> = {
     [param in keyof T["request"]]: InjectedProp<T["request"][param]>

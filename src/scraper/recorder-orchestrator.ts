@@ -72,7 +72,7 @@ export class RecorderOrchestrator {
             const chunk = this.sentInitChunk ? leftovers : this.mergeLeftovers(snapshot, leftovers);
             window.removeEventListener(unloadEvent, this.onUnload);
             await this.reportChunk(chunk, isUnloading);
-            this.recorderApi.finalizeRecording(initInfo!._id, this.config, this.latestEnd);
+            this.recorderApi.finalizeRecording(initInfo!._id, this.latestEnd);
         } else {
             this.reportChunk(leftovers, isUnloading);
         }
@@ -99,7 +99,7 @@ export class RecorderOrchestrator {
 
         if (!unloading) {
             this.latestEnd = Math.max(chunk.metadata.stopTime, this.latestEnd),
-            this.recorderApi.postToBackend(chunk, this.initInfo._id, this.config);
+            this.recorderApi.postToBackend(chunk, this.initInfo._id, this.config.debugMode);
         } else {
             this.recorderState.savePendingChunk(chunk);
         }

@@ -1,22 +1,24 @@
-import Axios from "axios";
 import { inject, injectable } from "inversify";
-import { ScraperConfig, ScraperConfigToken } from "../scraper-config";
+import { assetApiSymbol, assetEndpoint } from "../../api/endpoints/proxy-endpoint-metadata";
+import { EndpointApi } from "../../common/server/route-types";
 import { toDataUrl } from "../utils/utils";
 
 @injectable()
 export class AssetResolver {
 
     constructor(
-        @inject(ScraperConfigToken) private config: ScraperConfig
+        @inject(assetApiSymbol) private assetApi: EndpointApi<typeof assetEndpoint>
     ) {}
 
     async resolveAssets(assets: string[]): Promise<string[]> {
         try {
-            const requestUrls = assets.map(asset => this.resolveFullRequestUrl(asset));
-            const res = await Axios.post<{assets: string[]}>(
-                `${this.config.backendUrl}/api/proxy`, { urls: requestUrls }
-            );
-            return res.data.assets.map(asset => `/api/proxy/${asset}`);
+            const res = await this.assetApi.createAsset({
+                proxyReq: {
+                    urls: assets.map(asset => this.resolveFullRequestUrl(asset))
+                },
+                userAgent: "temp",
+            });
+            return res.assets.map(asset => `/api/proxy/${asset}`);
         } catch (e) {
             // TODO - How do we want to handle the failing case? Falling back to old link is probably
             // not the best approach

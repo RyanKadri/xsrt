@@ -1,12 +1,17 @@
-import Axios from "axios";
-import { injectable } from "inversify";
-import { RecordingChunk } from "../../scraper/types/types";
+import { inject, injectable } from "inversify";
+import { chunkApiSymbol, chunkEndpointMetadata } from "../../api/endpoints/chunk-endpoint-metadata";
+import { EndpointApi } from "../../common/server/route-types";
 
 @injectable()
 export class ChunkApiService {
 
-    fetchChunk(chunkId: string): Promise<RecordingChunk> {
-        return Axios.get(`/api/chunks/${chunkId}`)
-            .then(resp => resp.data);
+    /* istanbul ignore next */
+    constructor(
+        @inject(chunkApiSymbol) private chunkApi: EndpointApi<typeof chunkEndpointMetadata>
+    ) { }
+
+    /* istanbul ignore next */
+    fetchChunk(chunkId: string) {
+        return this.chunkApi.fetchChunk({ chunkId });
     }
 }

@@ -9,6 +9,7 @@ const localStorageRecordingStart = "xsrt.recording.start";
 const localStorageScrapeConfig = "xsrt.recording.config";
 const localStoragePendingChunk = "xsrt.recording.pendingChunk";
 
+/* istanbul ignore next */
 @injectable()
 export class RecordingStateService {
 

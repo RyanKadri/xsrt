@@ -1,12 +1,11 @@
-import Axios from "axios";
 import { inject, injectable } from "inversify";
-import { RecordingApi, recordingEndpoint } from "../../api/endpoints/recordings-endpoint-metadata";
+import { chunkApiSymbol, chunkEndpointMetadata } from "../../api/endpoints/chunk-endpoint-metadata";
+import { recordingApiSymbol, recordingEndpoint } from "../../api/endpoints/recordings-endpoint-metadata";
 import { EndpointApi } from "../../common/server/route-types";
-import { DeepPartial, Without } from "../../common/utils/type-utils";
+import { Interface, Without } from "../../common/utils/type-utils";
 import { compress } from "../output/output-utils";
-import { ScraperConfig } from "../scraper-config";
-import { extractUrlMetadata } from "../traverse/extract-metadata";
-import { Recording, RecordingChunk } from "../types/types";
+import { extractUrlMetadata, LocationSymbol } from "../traverse/extract-metadata";
+import { RecordingChunk } from "../types/types";
 import { DateManager } from "../utils/time-manager";
 import { toJson } from "../utils/utils";
 import { RecordingInfo, RecordingStateService } from "./recording-state-service";
@@ -15,9 +14,11 @@ import { RecordingInfo, RecordingStateService } from "./recording-state-service"
 export class RecorderApiService {
 
     constructor(
-        private recordingState: RecordingStateService,
-        @inject(RecordingApi) private recordingApi: EndpointApi<typeof recordingEndpoint>,
-        private dateManager: DateManager
+        @inject(RecordingStateService) private recordingState: Interface<RecordingStateService>,
+        @inject(recordingApiSymbol) private recordingApi: EndpointApi<typeof recordingEndpoint>,
+        @inject(chunkApiSymbol) private chunkApi: EndpointApi<typeof chunkEndpointMetadata>,
+        private dateManager: DateManager,
+        @inject(LocationSymbol) private location: Interface<Location>
     ) {}
 
     async startRecording(): Promise<RecordingInfo> {
@@ -33,7 +34,7 @@ export class RecorderApiService {
             startTime = this.dateManager.now();
             this.recordingState.saveStartTime(startTime);
             const recording = await this.recordingApi.createRecording({
-                recording: { url: extractUrlMetadata(location), startTime },
+                recording: { url: extractUrlMetadata(this.location), startTime },
                 // TODO - Some headers are specifically set. Not user-agent. Figure out how to ignore this in sig
                 userAgent: "temp"
             });
@@ -45,26 +46,23 @@ export class RecorderApiService {
         }
     }
 
-    async postToBackend(data: Without<RecordingChunk, "_id">, toRecording: string, config: ScraperConfig) {
-        const serialized = config.debugMode ? toJson(data) : compress(toJson(data));
-        const url = `${config.backendUrl}/api/recordings/${toRecording}/chunks`;
-        const res = await Axios.post(url, serialized, {
-            // Jury's out on whether this is idiomatic
-            headers: Object.assign({},
+    async postToBackend(data: Without<RecordingChunk, "_id">, toRecording: string, debugMode: boolean) {
+        const serialized = debugMode ? toJson(data) : compress(toJson(data));
+        const res = await this.chunkApi.createChunk({ chunk: serialized as any, recordingId: toRecording },
+            { clientHeaders: Object.assign({},
                 {"Content-Type": "application/json"},
-                !config.debugMode ? {"Content-Encoding": "deflate"} : null
-            )
-        });
-        return res.data._id;
+                !debugMode ? {"Content-Encoding": "deflate"} : null
+            )}
+        );
+        return res._id;
     }
 
-    async finalizeRecording(recordingId: string, config: ScraperConfig, stopTime: number) {
-        const finalization: DeepPartial<Recording> = {
+    async finalizeRecording(recordingId: string, stopTime: number) {
+        await this.recordingApi.patchRecording({ recordingId, patchData: {
             finalized: true,
             metadata: {
                 duration: stopTime
             }
-        };
-        await Axios.patch(`${config.backendUrl}/api/recordings/${recordingId}`, finalization);
+        }});
     }
 }

@@ -1,6 +1,7 @@
-import axios from "axios";
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { RouteComponentProps } from "react-router";
+import { recordingApiSymbol, recordingEndpoint } from "../../api/endpoints/recordings-endpoint-metadata";
+import { EndpointApi } from "../../common/server/route-types";
 import { Recording, RecordingOverview } from "../../scraper/types/types";
 import { RecordingState } from "./state/recording-overview-state";
 import { Resolver } from "./with-data";
@@ -8,26 +9,28 @@ import { Resolver } from "./with-data";
 @injectable()
 export class RecordingApiService {
 
+    /* istanbul ignore next */
     constructor(
-        private overviewState: RecordingState
+        private overviewState: RecordingState,
+        @inject(recordingApiSymbol) private recordingApi: EndpointApi<typeof recordingEndpoint>
     ) {}
 
+    /* istanbul ignore next */
     async fetchRecordingData(recording: string): Promise<Recording> {
-        return axios.get(`/api/recordings/${recording}`)
-            .then(resp => resp.data);
+        return this.recordingApi.fetchRecording({ recordingId: recording });
     }
 
-    async fetchAvailableRecordings(id: string): Promise<RecordingOverview[]> {
-        return axios.get(`/api/recordings?site=${id}`)
-            .then(resp => resp.data);
+    /* istanbul ignore next */
+    async fetchAvailableRecordings(siteId: string): Promise<RecordingOverview[]> {
+        return this.recordingApi.filterRecordings({ site: siteId });
     }
 
     async deleteRecordings(selected: RecordingOverview[]): Promise<void> {
         if (selected.length === 1) {
-            await axios.delete(`/api/recordings/${selected[0]._id}`);
+            await this.recordingApi.deleteRecording({ recordingId: selected[0]._id });
         } else {
-            await axios.post("/api/recordings/delete-many", {
-                ids: selected.map(req => req._id)
+            await this.recordingApi.deleteMany({
+                deleteRequest: { ids: selected.map(req => req._id) },
             });
         }
         this.overviewState.delete(selected);

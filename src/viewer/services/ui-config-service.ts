@@ -24,10 +24,12 @@ export class UIConfigService {
         private storageService: LocalStorageService
     ) { }
 
+    /* istanbul ignore next */
     saveRecordingsTableConfig(settings: RecordingTableSettings) {
         this.storageService.saveItem(localStorageTableSettings, settings);
     }
 
+    /* istanbul ignore next */
     loadRecordingsTableConfig(): RecordingTableSettings {
         return this.storageService.fetchWithDefault(
             localStorageTableSettings,
@@ -36,10 +38,12 @@ export class UIConfigService {
         );
     }
 
+    /* istanbul ignore next */
     saveViewerConfig(config: ViewerSettings) {
         this.storageService.saveItem(localStorageViewerSettings, config);
     }
 
+    /* istanbul ignore next */
     loadViewerConfig(): ViewerSettings {
         return this.storageService.fetchWithDefault(
             localStorageViewerSettings,

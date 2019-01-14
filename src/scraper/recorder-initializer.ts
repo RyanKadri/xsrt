@@ -21,7 +21,7 @@ export class RecorderInitializer {
             this.initialize(activeConfig);
 
             if (pendingRecordChunk) {
-                this.apiService!.postToBackend(pendingRecordChunk, activeRecordingId, activeConfig)
+                this.apiService!.postToBackend(pendingRecordChunk, activeRecordingId, activeConfig.debugMode)
                     .then(() => this.recordingState.removePendingChunk());
             }
             return true;

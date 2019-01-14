@@ -1,20 +1,24 @@
 import Axios from "axios";
-import { EndpointApi, EndpointDefinition, PayloadVerbDefinition, RequestBodyUnwrap, RequestParams, RequestParamUnwrap, RouteParamUnwrap, UrlVerbDefinition } from "./route-types";
+import { ApiMethodClientOptions, EndpointApi, EndpointDefinition, PayloadVerbDefinition, RequestBodyUnwrap, RequestHeader, RequestParams, RequestParamUnwrap, RouteParamUnwrap, UrlVerbDefinition } from "./route-types";
 
 export const createApi = <T extends EndpointDefinition>(endpointDef: T) => {
     return Object.entries(endpointDef)
         .reduce((acc, [action, actionDef]) => {
-            acc[action] = (params: RequestParams<typeof actionDef> = {}) => {
+            acc[action] = (
+                params: RequestParams<typeof actionDef> = {},
+                options: ApiMethodClientOptions = { clientHeaders: {}}
+            ) => {
                 const query = extractQueryParams(actionDef, params);
                 const routeParam = extractRouteParams(actionDef, params);
                 const body = extractBody(actionDef, params);
+                const headers = extractHeaders(actionDef, params, options);
                 const url = replaceRouteParams(actionDef.url, routeParam);
                 if (actionDef.method === "get" || actionDef.method === "delete") {
                     const httpMethod = Axios[actionDef.method] as typeof Axios["get"];
-                    return httpMethod(url, { params: query }).then(resp => resp.data);
+                    return httpMethod(url, { params: query, headers }).then(resp => resp.data);
                 } else if (actionDef.method === "patch" || actionDef.method === "post" || actionDef.method === "put") {
                     const httpMethod = Axios[actionDef.method] as typeof Axios["post"];
-                    return httpMethod(url, body).then(resp => resp.data);
+                    return httpMethod(url, body, { headers }).then(resp => resp.data);
                 } else {
                     throw new Error("Something went wrong");
                 }
@@ -41,6 +45,22 @@ const extractRouteParams = (actionDef: PayloadVerbDefinition | UrlVerbDefinition
             }
             return acc;
         }, {} as RequestParams<any>);
+};
+
+const extractHeaders = (
+    actionDef: PayloadVerbDefinition | UrlVerbDefinition, params: RequestParams<any>, options: ApiMethodClientOptions
+) => {
+    const requiredHeaders = Object.entries(actionDef.request)
+        .reduce((acc, [key, def]) => {
+            if (def[key] instanceof RequestHeader) {
+                acc[key] = params[key];
+            }
+            return acc;
+        }, {} as RequestParams<any>);
+    return {
+        ...requiredHeaders,
+        ...options.clientHeaders
+    };
 };
 
 const extractBody = (actionDef: PayloadVerbDefinition | UrlVerbDefinition, params: RequestParams<any>) => {

@@ -7,7 +7,7 @@ const singleRecordingUrl = `/recordings/:${recordingIdParam}`;
 const multiRecordingUrl = `/recordings`;
 const recordingId = new RouteParamUnwrap(recordingIdParam);
 
-export const RecordingApi = Symbol("recordingApi");
+export const recordingApiSymbol = Symbol("recordingApi");
 export const recordingEndpoint = defineEndpoint({
     fetchRecording: {
         method: "get",
@@ -63,5 +63,5 @@ export interface CreateRecordingRequest {
 }
 
 export interface DeleteManyRecordingsRequest {
-    ids: number[];
+    ids: string[];
 }

@@ -1,6 +1,6 @@
-import { IServerConfig } from "../../common/server/express-server";
 import { defineEndpoint, RequestBodyUnwrap, RequestHeader, RouteParamUnwrap, Type } from "../../common/server/route-types";
 
+export const assetApiSymbol = Symbol("AssetApiSymbol");
 export const assetEndpoint = defineEndpoint({
     fetchAsset: {
         url: "/proxy/:assetId",
@@ -15,8 +15,7 @@ export const assetEndpoint = defineEndpoint({
         method: "post",
         request: {
             proxyReq: new RequestBodyUnwrap<{urls: string[]}>(),
-            userAgent: new RequestHeader("user-agent"),
-            config: IServerConfig
+            userAgent: new RequestHeader("user-agent")
         },
         response: Type<{ assets: string[]}>()
     }

@@ -1,23 +1,28 @@
-import { injectable } from "inversify";
-import { siteTargetEndpoint } from "../../api/endpoints/target-endpoint-metadata";
+import { inject, injectable } from "inversify";
+import { siteTargetApiSymbol, siteTargetEndpoint } from "../../api/endpoints/target-endpoint-metadata";
 import { SiteTarget } from "../../common/db/targets";
-import { createApi } from "../../common/server/create-api";
+import { EndpointApi } from "../../common/server/route-types";
 import { Without } from "../../common/utils/type-utils";
-
-export const targetApiService = createApi(siteTargetEndpoint);
 
 @injectable()
 export class TargetApiService {
-    private readonly siteApi = createApi(siteTargetEndpoint);
 
+    /* istanbul ignore next */
+    constructor(
+        @inject(siteTargetApiSymbol) private siteApi: EndpointApi<typeof siteTargetEndpoint>
+    ) { }
+
+    /* istanbul ignore next */
     deleteSite(site: SiteTarget): any {
         return this.siteApi.deleteSiteTarget({ targetId: site._id });
     }
 
+    /* istanbul ignore next */
     fetchSites(): Promise<SiteTarget[]> {
         return this.siteApi.filterTargets();
     }
 
+    /* istanbul ignore next */
     createSite(newSite: Without<SiteTarget, "_id">) {
         return this.siteApi.createSiteTarget({ target: newSite});
     }

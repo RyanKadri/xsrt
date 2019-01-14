@@ -3,6 +3,8 @@ import { defineEndpoint, RequestBodyUnwrap, RouteParamUnwrap, Type } from "../..
 
 const singleTargetUrl = "/targets/:targetId";
 const multiTargetUrl = "/targets";
+
+export const siteTargetApiSymbol = Symbol("siteTargetApi");
 export const siteTargetEndpoint = defineEndpoint({
     fetchSiteTarget: {
         method: "get",

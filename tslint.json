@@ -27,7 +27,8 @@
             { "name": ["Date", "now"], "message": "Use @injectable DateManager instead" },
             { "name": ["localStorage", "getItem"], "message": "Use @injectable local storage service instead" },
             { "name": ["localStorage", "setItem"], "message": "Use @injectable local storage service instead" },
-            { "name": ["localStorage", "removeItem"], "message": "Use @injectable local storage service instead" }
+            { "name": ["localStorage", "removeItem"], "message": "Use @injectable local storage service instead" },
+            { "name": ["Math", "random"], "message": "Use @injectable local storage service instead" }
         ]
     },
     "linterOptions": {

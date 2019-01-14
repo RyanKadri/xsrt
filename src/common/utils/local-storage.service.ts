@@ -13,9 +13,9 @@ export class LocalStorageService {
         }
     }
 
-    fetchItem(key: string, options?: { type: "string" }): string;
-    fetchItem(key: string, options?: { type: "number" }): number;
-    fetchItem(key: string, options?: { type: "boolean" }): boolean;
+    fetchItem(key: string, options?: { type: "string" }): string | undefined;
+    fetchItem(key: string, options?: { type: "number" }): number | undefined;
+    fetchItem(key: string, options?: { type: "boolean" }): boolean | undefined;
     fetchItem(key: string, options?: { type: "object" }): any;
     fetchItem(key: string, options: FetchOptions = { type: "string" }): any {
         // tslint:disable-next-line:ban

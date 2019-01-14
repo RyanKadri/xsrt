@@ -3,9 +3,9 @@ import { Recording } from "../../common/db/recording";
 import { errorNotFound, implement } from "../../common/server/implement-route";
 import { RouteImplementation } from "../../common/server/route-types";
 import { RecordingChunk } from "../../scraper/types/types";
-import { chunkEndpoint } from "./chunk-endpoint-metadata";
+import { chunkEndpointMetadata } from "./chunk-endpoint-metadata";
 
-export const chunkEndpointImplementation = implement(chunkEndpoint, {
+export const chunkEndpointImplementation = implement(chunkEndpointMetadata, {
     createChunk: (async ({ chunk, recordingId }) => {
         const savedChunk = await new Chunk(chunk).save();
         const doc = await Recording.findByIdAndUpdate(recordingId, {
@@ -26,4 +26,4 @@ export const chunkEndpointImplementation = implement(chunkEndpoint, {
             return errorNotFound(`Could not find chunk ${chunkId }`);
         }
     })
-} as RouteImplementation<typeof chunkEndpoint>);
+} as RouteImplementation<typeof chunkEndpointMetadata>);
