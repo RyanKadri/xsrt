@@ -14,7 +14,8 @@
     "sourceMaps": true,
     "exclude": [
         "**/*.d.ts",
-        "**/*.exp.js"
+        "**/*.exp.js",
+        "**/*.spec.ts"
     ],
     "require": [
         "./spec/support/init.js"

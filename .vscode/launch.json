@@ -12,7 +12,8 @@
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen",
             "args": ["--config=jasmine.json"],
-            "preLaunchTask": "tsc: watch - tsconfig.spec.json",
+            "runtimeArgs": ["--require", "./spec/support/init.js"],
+            //"preLaunchTask": "tsc: watch - tsconfig.spec.json",
             "sourceMaps": true
         },
         {

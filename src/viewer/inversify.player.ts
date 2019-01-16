@@ -2,7 +2,7 @@ import { Container } from "inversify";
 import { chunkApiSymbol, chunkEndpointMetadata } from "../api/endpoints/chunk-endpoint-metadata";
 import { recordingApiSymbol, recordingEndpoint } from "../api/endpoints/recordings-endpoint-metadata";
 import { siteTargetApiSymbol, siteTargetEndpoint } from "../api/endpoints/target-endpoint-metadata";
-import { createApi } from "../common/server/create-api";
+import { ApiCreationService } from "../common/server/create-api";
 import { LoggingService } from "../common/utils/log-service";
 import { DomManager } from "../scraper/playback/dom-manager";
 import { FocusPlayer } from "../scraper/playback/user-input/focus-player";
@@ -26,20 +26,23 @@ PlayerContainer.bind(ScraperConfigToken).toConstantValue({ debugMode: false });
 // I do this because I want to access the DomManager from non-container parts of the app.
 PlayerContainer.bind(DomManager).toConstantValue(new DomManager(PlayerContainer.get(LoggingService)));
 
-PlayerContainer.bind(IPlaybackHandler).to(MouseEventPlayer);
-PlayerContainer.bind(IPlaybackHandler).to(ScrollEventPlayer);
-PlayerContainer.bind(IPlaybackHandler).to(InputChangePlayer);
-PlayerContainer.bind(IPlaybackHandler).to(FocusPlayer);
-
 PlayerContainer.bind(IInterpolationHelper).to(MouseInterpolationHelper);
 
-PlayerContainer.bind(IInputAnnotator).to(ResizeAnnotator);
-PlayerContainer.bind(IInputAnnotator).to(InputEventAnnotator);
-PlayerContainer.bind(IInputAnnotator).to(UnloadAnnotator);
+[
+    MouseEventPlayer, ScrollEventPlayer, InputChangePlayer,
+    FocusPlayer
+].forEach(player => PlayerContainer.bind(IPlaybackHandler).to(player));
+
+[
+    ResizeAnnotator, InputEventAnnotator, UnloadAnnotator
+].forEach(annotator => PlayerContainer.bind(IInputAnnotator).to(annotator));
+
 PlayerContainer.bind(ITweakableConfigs).to(TweakableConfigs);
 
-PlayerContainer.bind(chunkApiSymbol).toConstantValue(createApi(chunkEndpointMetadata));
-PlayerContainer.bind(siteTargetApiSymbol).toConstantValue(createApi(siteTargetEndpoint));
-PlayerContainer.bind(recordingApiSymbol).toConstantValue(createApi(recordingEndpoint));
+const apiCreator = PlayerContainer.get(ApiCreationService);
+
+PlayerContainer.bind(chunkApiSymbol).toConstantValue(apiCreator.createApi(chunkEndpointMetadata));
+PlayerContainer.bind(siteTargetApiSymbol).toConstantValue(apiCreator.createApi(siteTargetEndpoint));
+PlayerContainer.bind(recordingApiSymbol).toConstantValue(apiCreator.createApi(recordingEndpoint));
 
 export { PlayerContainer };

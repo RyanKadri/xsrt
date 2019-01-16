@@ -1,8 +1,9 @@
+import Axios from "axios";
 import { Container } from "inversify";
 import { assetApiSymbol, assetEndpoint } from "../api/endpoints/proxy-endpoint-metadata";
 import { recordingApiSymbol, recordingEndpoint } from "../api/endpoints/recordings-endpoint-metadata";
-import { createApi } from "../common/server/create-api";
-import { DocumentSymbol, LocalStorageSymbol, LocationSymbol, WindowSymbol } from "./inversify.recorder.tokens";
+import { ApiCreationService } from "../common/server/create-api";
+import { AxiosSymbol, DocumentSymbol, LocalStorageSymbol, LocationSymbol, WindowSymbol } from "./inversify.recorder.tokens";
 import { FocusRecorder } from "./record/user-input/focus-recorder";
 import { HtmlInputRecorder } from "./record/user-input/input-event-recorder";
 import { IUserInputRecorder } from "./record/user-input/input-recorder";
@@ -13,19 +14,23 @@ import { ScrollRecorder } from "./record/user-input/scroll-recorder";
 import { UnloadRecorder } from "./record/user-input/unload-recorder";
 
 const RecorderContainer = new Container({ autoBindInjectable: true, defaultScope: "Singleton" });
-RecorderContainer.bind(IUserInputRecorder).to(MouseRecorder);
-RecorderContainer.bind(IUserInputRecorder).to(ScrollRecorder);
-RecorderContainer.bind(IUserInputRecorder).to(HtmlInputRecorder);
-RecorderContainer.bind(IUserInputRecorder).to(FocusRecorder);
-RecorderContainer.bind(IUserInputRecorder).to(ResizeRecorder);
-RecorderContainer.bind(IUserInputRecorder).to(KeystrokeRecorder);
-RecorderContainer.bind(IUserInputRecorder).to(UnloadRecorder);
+[
+    { symbol: LocationSymbol, val: location },
+    { symbol: DocumentSymbol, val: document },
+    { symbol: WindowSymbol, val: window },
+    { symbol: LocalStorageSymbol, val: localStorage },
+    { symbol: AxiosSymbol, val: Axios }
+].forEach(({ symbol, val }) => RecorderContainer.bind(symbol).toConstantValue(val));
 
-RecorderContainer.bind(recordingApiSymbol).toConstantValue(createApi(recordingEndpoint));
-RecorderContainer.bind(assetApiSymbol).toConstantValue(createApi(assetEndpoint));
+[
+    MouseRecorder, ScrollRecorder, HtmlInputRecorder,
+    FocusRecorder, ResizeRecorder, KeystrokeRecorder,
+    UnloadRecorder
+].forEach(recorder => RecorderContainer.bind(IUserInputRecorder).to(recorder));
 
-RecorderContainer.bind(LocationSymbol).toConstantValue(location);
-RecorderContainer.bind(DocumentSymbol).toConstantValue(document);
-RecorderContainer.bind(WindowSymbol).toConstantValue(window);
-RecorderContainer.bind(LocalStorageSymbol).toConstantValue(localStorage);
+const apiCreator = RecorderContainer.get(ApiCreationService);
+
+RecorderContainer.bind(recordingApiSymbol).toConstantValue(apiCreator.createApi(recordingEndpoint));
+RecorderContainer.bind(assetApiSymbol).toConstantValue(apiCreator.createApi(assetEndpoint));
+
 export { RecorderContainer };

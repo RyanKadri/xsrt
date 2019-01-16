@@ -1,5 +1,5 @@
 import { Request, Router } from "express";
-import { MapTo } from "../utils/type-utils";
+import { Interface, MapTo } from "../utils/type-utils";
 
 export type EndpointApi<T extends EndpointDefinition> = {
     [action in keyof T]: PayloadApiMethod<T[action]>
@@ -134,6 +134,6 @@ export class RequestHeader implements RequestUnwrapper<string | undefined> {
     }
 }
 
-interface RequestUnwrapper<T> {
-    read(request: Request): T;
+export interface RequestUnwrapper<T> {
+    read(request: Interface<Request>): T;
 }

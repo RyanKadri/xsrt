@@ -6,7 +6,7 @@ import { join } from "path";
 import { promisify } from "util";
 import { Asset, ProxiedAsset } from "../../common/db/asset";
 import { IServerConfig } from "../../common/server/express-server";
-import { downloadResponse, errorNotFound, implement } from "../../common/server/implement-route";
+import { downloadResponse, errorNotFound } from "../../common/server/request-handler";
 import { RouteImplementation } from "../../common/server/route-types";
 import { ApiServerConfig } from "../api-server-conf";
 import { assetEndpoint } from "./proxy-endpoint-metadata";
@@ -80,5 +80,3 @@ export class AssetEndpoint implements AssetEndpointType {
         return asset.save();
     }
 }
-
-export const assetEndpointImpl = implement(assetEndpoint, AssetEndpoint);
