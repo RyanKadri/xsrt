@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
 import { between, pipe, pluck, reverseFind, toKeyValMap } from "../../common/utils/functional-utils";
-import { OptimizedElement, RecordedMutationGroup, ScrapedElement, SnapshotChunk } from "../types/types";
+import { OptimizedElement, OptimizedMutation, RecordedMutationGroup, ScrapedElement, SnapshotChunk } from "../types/types";
 import { findInTree } from "../utils/tree-utils";
 
 @injectable()
@@ -28,23 +28,28 @@ export class DomPreviewService {
 
         for (const changeGroup of relevantChanges) {
             for (const mutation of changeGroup.mutations) {
-                if (mutation.type === "attribute" && mutation.target === target) {
-                    const htmlPreview = (preview as HtmlNodePreview);
-                    htmlPreview.attributes[mutation.name] = mutation.val;
-                } else if (mutation.type === "change-text" && mutation.target === target) {
-                    const textPreview = (preview as TextNodePreview);
-                    textPreview.content = mutation.update;
-                } else if (mutation.type === "children" && mutation.additions) {
-                    for (const addition of mutation.additions) {
-                        const newAddition = this.searchForNode(target, addition.data);
-                        if (newAddition) {
-                            preview = this.convertToPreview(newAddition);
-                        }
-                    }
-                }
+                preview = this.updatePreview(mutation, preview, target);
             }
         }
 
+        return preview;
+    }
+
+    private updatePreview(mutation: OptimizedMutation, preview: DomNodePreview, target: number) {
+        if (mutation.type === "attribute" && mutation.target === target) {
+            const htmlPreview = (preview as HtmlNodePreview);
+            htmlPreview.attributes[mutation.name] = mutation.val;
+        } else if (mutation.type === "change-text" && mutation.target === target) {
+            const textPreview = (preview as TextNodePreview);
+            textPreview.content = mutation.update;
+        } else if (mutation.type === "children" && mutation.additions) {
+            for (const addition of mutation.additions) {
+                const newAddition = this.searchForNode(target, addition.data);
+                if (newAddition) {
+                    preview = this.convertToPreview(newAddition);
+                }
+            }
+        }
         return preview;
     }
 

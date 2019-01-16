@@ -39,7 +39,7 @@ const extractRequestPart = (
             }
             return acc;
         }, {} as RequestParams<any>);
-}
+};
 const extractQueryParams = (actionDef: PayloadVerbDefinition | UrlVerbDefinition, params: RequestParams<any>) => {
     return extractRequestPart(actionDef, params, "request-param");
 };

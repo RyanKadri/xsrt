@@ -65,6 +65,8 @@ export class MutationOptimizer {
     // and changetext optimizations. For instance, does
     // [add] -> [change-text] -> [remove]
     // get properly optimized to a no-op?
+
+    // tslint:disable-next-line:cyclomatic-complexity
     optimizeChildMutations(childMutations: ChangeChildrenMutation[]) {
         const allAdded = new Set<number>();
         const allRemoved = new Set<number>();

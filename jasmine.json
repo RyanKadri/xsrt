@@ -1,8 +1,9 @@
 {
-  "spec_dir": "dist/spec",
+  "spec_dir": "src",
   "spec_files": [
     "../../spec/support/init.js",
-    "**/*[sS]pec.js"
+    "**/*[sS]pec.ts",
+    "**/*[sS]pec.tsx"
   ],
   "stopSpecOnExpectationFailure": false,
   "random": true

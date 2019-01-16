@@ -127,24 +127,13 @@ export class DomManager {
     }
 
     private createElement(node: OptimizedHtmlElementInfo, currNS = "") {
-        const attributes = node.attributes || [];
-        const nsAttr = (attributes).find(attr => attr.name === "xmlns");
-        let ns: string;
-        if (nsAttr) {
-            ns = nsAttr.value;
-        } else {
-            const impNamespace = this.fetchImplicitNamespace(node);
-            if (impNamespace) {
-                ns = impNamespace;
-            } else {
-                ns = currNS;
-            }
-        }
+
+        const ns = this.nodeNamespace(node, currNS);
         const created = ns !== ""
             ? this.document.createElementNS(ns, node.tag)
             : this.document.createElement(node.tag) as Element;
 
-        attributes.forEach(attr => this._setAttribute(created, attr));
+        (node.attributes || []).forEach(attr => this._setAttribute(created, attr));
         if (node.children) {
             node.children.forEach(child => this._serializeToElement(created, child, ns));
         }
@@ -152,21 +141,36 @@ export class DomManager {
             (created as HTMLInputElement).value = "" + node.value;
         }
         if (node.tag === "style") {
-            const rules = (node as OptimizedStyleElement).rules;
             let firstChild = created.firstChild;
             if (!firstChild) {
                 firstChild = this.document.createTextNode("");
                 created.appendChild(firstChild);
             }
-            if (rules) {
-                firstChild.textContent = this.serializeStyles((node as OptimizedStyleElement).rules);
-            } else {
-                firstChild.textContent = node.children.length > 0
-                    ? (node.children[0] as OptimizedTextElementInfo).content
-                    : "";
-            }
+            firstChild.textContent = this.serializeStyleText(node as OptimizedStyleElement);
         }
         return created;
+    }
+
+    private serializeStyleText(node: OptimizedStyleElement) {
+        const rules = node.rules;
+        if (rules) {
+            return this.serializeStyles(rules);
+        } else {
+            return node.children.length > 0
+                ? (node.children[0] as OptimizedTextElementInfo).content
+                : "";
+        }
+    }
+
+    private nodeNamespace(node: OptimizedHtmlElementInfo, parentNamespace: string) {
+        const attributes = node.attributes || [];
+        const nsAttr = (attributes).find(attr => attr.name === "xmlns");
+        if (nsAttr) {
+            return nsAttr.value;
+        } else {
+            const impNamespace = this.fetchImplicitNamespace(node);
+            return impNamespace !== undefined ? impNamespace : parentNamespace;
+        }
     }
 
     private serializeStyles(styles: OptimizedStyleRule[]) {

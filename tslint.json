@@ -21,6 +21,8 @@
         "max-line-length": [true, { "limit": 120, "ignore-pattern": "^import {(.*?)}" }],
         "no-magic-numbers": [true, -1, 0, 1, 2, 100],
         "one-variable-per-declaration": false,
+        "max-file-line-count": [true, 300],
+        "cyclomatic-complexity": [true, 10],
         "ban": [
             true,
             "eval",

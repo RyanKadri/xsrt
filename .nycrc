@@ -7,13 +7,16 @@
         ".tsx"
     ],
     "include": [
-        "dist/spec/**/*.js"
+        "src/**/*.ts",
+        "src/**/*.tsx"
     ],
     "all": true,
-    "instrument": true,
-    "sourceMaps": false,
+    "sourceMaps": true,
     "exclude": [
         "**/*.d.ts",
         "**/*.exp.js"
+    ],
+    "require": [
+        "./spec/support/init.js"
     ]
 }
