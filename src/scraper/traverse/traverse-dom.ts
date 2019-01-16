@@ -4,7 +4,7 @@ import { ScraperConfig, ScraperConfigToken } from "../scraper-config";
 import { transformElement, transformText } from "../transform/transform-dom";
 import { ScrapedElement, ScrapedHtmlElement, ScrapedTextElement } from "../types/types";
 import { transformTree } from "../utils/tree-utils";
-import { isElementNode, isTextNode } from "../utils/utils";
+import { isElementNode, isTextNode, nodeIsHidden } from "../utils/utils";
 
 @injectable()
 export class RecordingDomManager {
@@ -56,6 +56,10 @@ export class RecordingDomManager {
 
     isManaged(node: Node | null | undefined) {
         return node !== undefined && node !== null && this.nodeMapping.has(node);
+    }
+
+    isHidden(node: Node) {
+        return nodeIsHidden(node);
     }
 
     dump() {

@@ -1,5 +1,6 @@
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { LoggingService } from "../../../common/utils/log-service";
+import { Interface } from "../../../common/utils/type-utils";
 import { shouldTraverseNode } from "../../filter/filter-dom";
 import { RecordingDomManager } from "../../traverse/traverse-dom";
 import { AttributeMutation, ChangeChildrenMutation, ChangeTextMutation, RecordedMutation } from "../../types/types";
@@ -8,8 +9,8 @@ import { AttributeMutation, ChangeChildrenMutation, ChangeTextMutation, Recorded
 export class MutationTransformer {
 
     constructor(
-        private domWalker: RecordingDomManager,
-        private logger: LoggingService
+        @inject(RecordingDomManager) private domWalker: Interface<RecordingDomManager>,
+        @inject(LoggingService) private logger: Interface<LoggingService>
     ) {}
 
     transformMutation(mutation: MutationRecord): RecordedMutation[] {

@@ -20,6 +20,7 @@ export class AssetEndpoint implements AssetEndpointType {
     constructor(
         @inject(IServerConfig) private config: ApiServerConfig
     ) { }
+
     fetchAsset: AssetEndpointType["fetchAsset"] = async ({ assetId }) => {
         const assetDoc = await Asset.findById(assetId);
         if (assetDoc) {

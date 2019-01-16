@@ -1,5 +1,4 @@
 import { Request, Router } from "express";
-import { interfaces } from "inversify";
 import { MapTo } from "../utils/type-utils";
 
 export type EndpointApi<T extends EndpointDefinition> = {
@@ -90,8 +89,7 @@ export interface PayloadVerbDefinition<T = any> {
 export type GetDeleteInjectionParam = DefaultInjectionParam | RequestParamUnwrap;
 export type PostPutInjectionParam<T> = DefaultInjectionParam | RequestBodyUnwrap<T>;
 
-type DefaultInjectionParam = RouteParamUnwrap | RequestHeader
-                                | symbol | interfaces.Newable<any>;
+type DefaultInjectionParam = RouteParamUnwrap | RequestHeader;
 
 export class RequestBodyUnwrap<T> implements RequestUnwrapper<T> {
     readonly type = "body";

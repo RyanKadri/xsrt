@@ -1,6 +1,5 @@
 import { DocumentMetadata } from "../types/types";
 
-export const LocationSymbol = Symbol("Location");
 export function extractMetadata(document: Document, location: Location): DocumentMetadata {
     return {
         docType: (document.doctype && document.doctype.name) || "html",

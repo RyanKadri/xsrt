@@ -1,5 +1,5 @@
 import Axios from "axios";
-import { ApiMethodClientOptions, EndpointApi, EndpointDefinition, PayloadVerbDefinition, RequestBodyUnwrap, RequestHeader, RequestParams, RequestParamUnwrap, RouteParamUnwrap, UrlVerbDefinition } from "./route-types";
+import { ApiMethodClientOptions, EndpointApi, EndpointDefinition, GetDeleteInjectionParam, PayloadVerbDefinition, PostPutInjectionParam, RequestBodyUnwrap, RequestHeader, RequestParams, RouteParamUnwrap, UrlVerbDefinition } from "./route-types";
 
 export const createApi = <T extends EndpointDefinition>(endpointDef: T) => {
     return Object.entries(endpointDef)
@@ -27,14 +27,21 @@ export const createApi = <T extends EndpointDefinition>(endpointDef: T) => {
         }, {} as EndpointApi<T>);
 };
 
-const extractQueryParams = (actionDef: PayloadVerbDefinition | UrlVerbDefinition, params: RequestParams<any>) => {
+const extractRequestPart = (
+    actionDef: PayloadVerbDefinition | UrlVerbDefinition,
+    params: RequestParams<typeof actionDef>,
+    partType: (PostPutInjectionParam<any> | GetDeleteInjectionParam)["type"]
+) => {
     return Object.entries(actionDef.request)
         .reduce((acc, [key, def]) => {
-            if (def[key] instanceof RequestParamUnwrap) {
+            if (def[key].type === partType) {
                 acc[key] = params[key];
             }
             return acc;
         }, {} as RequestParams<any>);
+}
+const extractQueryParams = (actionDef: PayloadVerbDefinition | UrlVerbDefinition, params: RequestParams<any>) => {
+    return extractRequestPart(actionDef, params, "request-param");
 };
 
 const extractRouteParams = (actionDef: PayloadVerbDefinition | UrlVerbDefinition, params: RequestParams<any>) => {

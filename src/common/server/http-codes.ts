@@ -1,3 +1,4 @@
+/* istanbul-ignore-next */
 export enum HttpResponseCodes {
     INTERNAL_SERVER_ERROR = 500,
     CONTENT_NOT_FOUND = 404,

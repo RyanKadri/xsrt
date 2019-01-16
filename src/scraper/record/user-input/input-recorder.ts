@@ -1,25 +1,63 @@
-import { injectable, multiInject } from "inversify";
+import { inject, injectable, multiInject } from "inversify";
 import { group, pluck } from "../../../common/utils/functional-utils";
-import { MapTo } from "../../../common/utils/type-utils";
+import { Interface, MapTo } from "../../../common/utils/type-utils";
 import { RecordingDomManager } from "../../traverse/traverse-dom";
 import { RecordedInputChannels, RecordedUserInput } from "../../types/event-types";
 import { ScrapedElement } from "../../types/types";
 import { TimeManager } from "../../utils/time-manager";
-import { nodeIsHidden } from "../../utils/utils";
+import { GlobalEventService } from "./global-event-service";
 
 export const IUserInputRecorder = Symbol.for("IUserInputRecorder");
+
+@injectable()
+export class EventCallbackCreator {
+
+    constructor(
+        @inject(RecordingDomManager) private domWalker: Interface<RecordingDomManager>,
+        @inject(TimeManager) private timeManager: Interface<TimeManager>
+    ) { }
+
+    createEventCb = (recorder: UserInputRecorder) =>
+        (event: Event) => {
+            const target = event.target && this.nodeIsManaged(event.target as Node)
+                ? this.domWalker.fetchManagedNode(event.target as Node)
+                : undefined;
+
+            const context: RecordedEventContext = {
+                target,
+                time: this.timeManager.currentTime()
+            };
+
+            const res = recorder.handle(event, context);
+            if (res) {
+                return {
+                    type: event.type,
+                    target: context.target ? context.target.id : null,
+                    timestamp: context.time,
+                    ...res,
+                } as RecordedUserInput;
+            } else {
+                return undefined;
+            }
+        }
+
+    private nodeIsManaged(node: Node) {
+        return !this.domWalker.isHidden(node)
+             && this.domWalker.isManaged(node);
+    }
+}
 
 @injectable()
 export class CompleteInputRecorder {
 
     private events: RecordedInputChannels = {};
     private handlers: MapTo<UserInputRecorder> = {};
-    private listeners: { channel: string, listener: (e: Event) => void }[] = [];
+    private listenerIds: number[] = [];
 
     constructor(
-        private domWalker: RecordingDomManager,
-        private timeManager: TimeManager,
-        @multiInject(IUserInputRecorder) recorders: UserInputRecorder<Event, RecordedUserInput>[]
+        @multiInject(IUserInputRecorder) recorders: UserInputRecorder<Event, RecordedUserInput>[],
+        @inject(GlobalEventService) private globalEventService: Interface<GlobalEventService>,
+        @inject(EventCallbackCreator) private eventCallbackCreator: Interface<EventCallbackCreator>
     ) {
         this.handlers = group(recorders, pluck("channels"))
             .reduce((acc, el) => {
@@ -55,47 +93,25 @@ export class CompleteInputRecorder {
                 rec.stop();
             }
         });
-        this.listeners.forEach(({channel, listener}) => {
-            this.listenerTarget(this.handlers[channel]).removeEventListener(channel, listener, { capture: true });
+        this.listenerIds.forEach(listener => {
+            this.globalEventService.removeEventListener(listener);
         });
         return this.dump();
     }
 
     private createEventHandler = (groupName: string) => {
         const recorder = this.handlers[groupName];
-        const handleEvent = (event: Event) => {
-            const target = event.target && this.nodeIsManaged(event.target as Node)
-                ? this.domWalker.fetchManagedNode(event.target as Node)
-                : undefined;
-
-            const context: RecordedEventContext = {
-                target,
-                time: this.timeManager.currentTime()
-            };
-
-            const res = recorder.handle(event, context);
+        const eventCb = this.eventCallbackCreator.createEventCb(recorder);
+        const wrappedCb = (evt: Event) => {
+            const res = eventCb(evt);
             if (res) {
-                this.events[res.type || groupName].push({
-                    type: event.type,
-                    target: context.target ? context.target.id : undefined,
-                    timestamp: context.time,
-                    ...res,
-                } as RecordedUserInput);
+                this.events[res.type || groupName].push(res);
             }
         };
-
-        this.listenerTarget(recorder).addEventListener(groupName, handleEvent, { capture: true });
-        this.listeners.push({ channel: groupName, listener: handleEvent });
+        const id = this.globalEventService.addEventListener(groupName, wrappedCb, { capture: true });
+        this.listenerIds.push(id);
     }
 
-    private nodeIsManaged(node: Node) {
-        return !nodeIsHidden(node)
-             && this.domWalker.isManaged(node);
-    }
-
-    private listenerTarget(recorder: UserInputRecorder) {
-        return recorder.listen === "document" ? document : window;
-    }
 }
 
 export interface UserInputRecorder<EventType = Event, RecordedType = RecordedUserInput> {

@@ -11,7 +11,7 @@ export class ScrollRecorder implements UserInputRecorder<UIEvent, RecordedScroll
         const domElement = target ? target.domElement : undefined;
         if (target && !domElement) { throw new Error(`Could not read scroll pos from ${target}`); }
         return {
-            target: target ? target.id : null,
+            target: target ? target.id : undefined,
             scrollX: domElement ? domElement.scrollLeft : window.scrollX,
             scrollY: domElement ? domElement.scrollTop : window.scrollY
         };

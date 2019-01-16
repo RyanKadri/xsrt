@@ -10,11 +10,11 @@ export class MouseRecorder implements UserInputRecorder<MouseEvent, RecordedMous
     readonly channels = ["mouseup", "mousedown", "mousemove"];
     readonly listen = "document";
 
-    private lastTime = 0;
+    private lastTime = -Infinity;
     private lastHovered?: ScrapedElement;
 
     constructor(
-        @inject(ITweakableConfigs) private uxTweaks: TweakableConfigs
+        @inject(ITweakableConfigs) private uxTweaks: Pick<TweakableConfigs, "mouseMoveDebounce">
     ) {}
 
     handle(evt: MouseEvent, { time, target }: RecordedEventContext): Partial<RecordedMouseEvent> | null {
