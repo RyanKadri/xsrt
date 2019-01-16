@@ -123,7 +123,7 @@ export class RequestParamUnwrap implements RequestUnwrapper<string | undefined> 
 }
 
 export class RequestHeader implements RequestUnwrapper<string | undefined> {
-    readonly type = "request-param";
+    readonly type = "header";
 
     constructor(
         private header: string

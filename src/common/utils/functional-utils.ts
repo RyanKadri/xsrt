@@ -61,6 +61,17 @@ export const debounce = <T>(elements: T[], debounceTime: number, timeFetcher: (e
     return elementGroups;
 };
 
+// TODO - Is there a better way to type this so we can get type inference?
+export function mapDictionary<D extends MapTo<T>, T, R>(
+    dict: D, mapper: (val: T, key: keyof D) => R
+): { [k in keyof D]: R } {
+    return Object.entries(dict)
+        .reduce((acc, [key, val]: [keyof D, T]) => {
+            acc[key] = mapper(val, key);
+            return acc;
+        }, {} as {[ k in keyof D]: R});
+}
+
 export function toKeyValMap<T, R>(arr: T[], keyFn: (el: T) => string, valFn: (el: T) => R): MapTo<R> {
     return arr.reduce((acc, el) => {
         acc[keyFn(el)] = valFn(el);

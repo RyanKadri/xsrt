@@ -1,4 +1,4 @@
-import { between, debounce, group, groupToMap, identity, noop, pipe, reverseFind, toKeyValMap } from "./functional-utils";
+import { between, debounce, group, groupToMap, identity, mapDictionary, noop, pipe, reverseFind, toKeyValMap } from "./functional-utils";
 
 describe(groupToMap.name, () => {
     it("Groups a set of elements based on a selector function", () => {
@@ -81,6 +81,20 @@ describe(toKeyValMap.name, () => {
         expect(dictionary).toEqual({ 123: "Bob", 234: "Jones" });
     });
 });
+
+describe(mapDictionary.name, () => {
+    it("Creates a key-val object with the same keys from the original but values mapped using a mapper function", () =>{
+        const orig = { test: "abc", thingy: "hello"};
+        const mapped = mapDictionary(orig, (val: string) => val.length);
+        expect(mapped).toEqual({ test: 3, thingy: 5 });
+    });
+
+    it("Passes the key as the second argument to the mapper", () => {
+        const orig = { first: "Hello", second: "World" };
+        const mapped = mapDictionary(orig, (val, key) => `${key}:${val}`);
+        expect(mapped).toEqual({ first: "first:Hello", second: "second:World" });
+    })
+})
 
 describe(identity.name, () => {
     it("Returns itself (convenience fn)", () => {

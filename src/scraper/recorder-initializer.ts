@@ -8,7 +8,7 @@ import { ScraperConfig, ScraperConfigToken as ConfigToken } from "./scraper-conf
 
 export class RecorderInitializer {
 
-    private recordingState = new RecordingStateService(new LocalStorageService());
+    private recordingState = new RecordingStateService(new LocalStorageService(localStorage));
     private apiService?: RecorderApiService;
     private orchestrator?: RecorderOrchestrator;
 

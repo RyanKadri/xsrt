@@ -2,7 +2,7 @@ import { Container } from "inversify";
 import { assetApiSymbol, assetEndpoint } from "../api/endpoints/proxy-endpoint-metadata";
 import { recordingApiSymbol, recordingEndpoint } from "../api/endpoints/recordings-endpoint-metadata";
 import { createApi } from "../common/server/create-api";
-import { DocumentSymbol, LocationSymbol, WindowSymbol } from "./inversify.recorder.tokens";
+import { DocumentSymbol, LocalStorageSymbol, LocationSymbol, WindowSymbol } from "./inversify.recorder.tokens";
 import { FocusRecorder } from "./record/user-input/focus-recorder";
 import { HtmlInputRecorder } from "./record/user-input/input-event-recorder";
 import { IUserInputRecorder } from "./record/user-input/input-recorder";
@@ -27,4 +27,5 @@ RecorderContainer.bind(assetApiSymbol).toConstantValue(createApi(assetEndpoint))
 RecorderContainer.bind(LocationSymbol).toConstantValue(location);
 RecorderContainer.bind(DocumentSymbol).toConstantValue(document);
 RecorderContainer.bind(WindowSymbol).toConstantValue(window);
+RecorderContainer.bind(LocalStorageSymbol).toConstantValue(localStorage);
 export { RecorderContainer };

@@ -1,15 +1,19 @@
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
+import { LocalStorageSymbol } from "../../scraper/inversify.recorder.tokens";
+import { Interface } from "./type-utils";
 
 @injectable()
 export class LocalStorageService {
 
+    constructor(
+        @inject(LocalStorageSymbol) private localStorage: Interface<Storage>
+    ) { }
+
     saveItem(key: string, val: string | number | boolean | object) {
         if (typeof val === "object") {
-            // tslint:disable-next-line:ban
-            localStorage.setItem(key, JSON.stringify(val));
+            this.localStorage.setItem(key, JSON.stringify(val));
         } else {
-            // tslint:disable-next-line:ban
-            localStorage.setItem(key, `${val}`);
+            this.localStorage.setItem(key, `${val}`);
         }
     }
 
@@ -18,8 +22,7 @@ export class LocalStorageService {
     fetchItem(key: string, options?: { type: "boolean" }): boolean | undefined;
     fetchItem(key: string, options?: { type: "object" }): any;
     fetchItem(key: string, options: FetchOptions = { type: "string" }): any {
-        // tslint:disable-next-line:ban
-        const val = localStorage.getItem(key);
+        const val = this.localStorage.getItem(key);
         if (val === null) {
             return undefined;
         } else if (options.type === "object") {
@@ -51,8 +54,7 @@ export class LocalStorageService {
     }
 
     removeItem(key: string) {
-        // tslint:disable-next-line:ban
-        localStorage.removeItem(key);
+        this.localStorage.removeItem(key);
     }
 }
 
