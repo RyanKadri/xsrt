@@ -12,12 +12,12 @@ This project is still very much in early development. It is not yet intended for
 
 ## Privacy Concerns
 
-Some would argue that this code makes it easier for companies to intrude on their customers' privacy. There is definitely some validity to that concern. I the existence of this project is useful for the following reasons:
+Some would argue that this code makes it easier for companies to intrude on their customers' privacy. There is definitely some validity to that concern. I think the existence of this project is useful for the following reasons:
 
-* Similar session recording tools already exist and are proprietary (Hotjar, Hoverowl, LogRocket for example). Making this project open source and developing in the open are hopefully a step in the right direction
-* Watching videos of your users while they are on your site is not actually an efficient way to gather bulk information. It is more useful for one-off bug-tracking and user assistance cases.
-* Persistent / hidden tracking across many domains is more of a danger to privacy than tracking on a single site (I would argue).
-* This project can by default respect Do Not Track headers and other privacy guidelines
+* Similar session recording tools already exist and are proprietary (Hotjar, Hoverowl, LogRocket for example). Making this project open source is hopefully a step in the right direction
+* Watching recorded user sessions is not an efficient way to invade user privacy. It is more useful for one-off bug-tracking and user assistance.
+* Persistent high-level tracking across many domains is more of a danger to privacy than in-depth tracking on a single site.
+* This project can respect Do Not Track headers and other privacy guidelines
 
 ## Setup
 
