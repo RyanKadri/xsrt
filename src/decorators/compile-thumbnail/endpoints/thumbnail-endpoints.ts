@@ -1,39 +1,28 @@
-import { Request, Response, Router } from "express";
-import { injectable } from "inversify";
 import { Recording } from "../../../common/db/recording";
-import { RouteHandler } from "../../../common/server/express-server";
+import { RouteImplementation } from "../../../common/server/route-types";
 import { LoggingService } from "../../../common/utils/log-service";
 import { ThumbnailCompiler } from "../compiler/to-image";
+import { thumbnailEndpointMetadata } from "./thumbnail-endpoint-metadata";
 
-@injectable()
-export class ThumbnailRouteHandler implements RouteHandler {
+type ThumbnailEndpointType = RouteImplementation<typeof thumbnailEndpointMetadata>;
 
+export class ThumbnailEndpoint implements ThumbnailEndpointType {
     constructor(
         private thumbnailCompiler: ThumbnailCompiler,
         private logger: LoggingService
     ) {}
-    readonly base = "/decorate";
 
-    decorateRouter(router: Router) {
-        router.route("/thumbnails")
-            .post(this.compileThumbnail);
-
-        router.route("/thumbnails/:recordingId")
-            .delete(this.deleteThumbnail);
+    compileThumbnail: ThumbnailEndpointType["compileThumbnail"] = async ({ recordingId }) => {
+        const path = await this.thumbnailCompiler.createThumbnail(recordingId);
+        await Recording.findByIdAndUpdate(recordingId, { $set: { thumbnail: path } });
+        return { success: true };
     }
 
-    private compileThumbnail = async (req: Request, resp: Response) => {
-        const recordingId = req.body.recordingId;
-        try {
-            const path = await this.thumbnailCompiler.createThumbnail(recordingId);
-            await Recording.findByIdAndUpdate(recordingId, { $set: { thumbnail: path } });
-            resp.json({ success: true });
-        } catch (e) {
-            resp.json({ error: e.message });
-        }
+    deleteThumbnail: ThumbnailEndpointType["deleteThumbnail"] = async ({ recordingId }) => {
+        this.logger.info(`Deleting thumbnail for recording: ${recordingId}`);
+        // TODO - Actually remove thumbnail
+        await Recording.findByIdAndUpdate(recordingId, { $set: { thumbnail: null } });
+        return { success: true };
     }
 
-    private deleteThumbnail = (req: Request, resp: Response) => {
-        this.logger.info([req, resp]);
-    }
 }
