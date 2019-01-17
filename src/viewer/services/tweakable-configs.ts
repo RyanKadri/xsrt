@@ -1,6 +1,5 @@
 import { injectable } from "inversify";
 
-export const ITweakableConfigs = Symbol("TweakableConfigs");
 /* istanbul ignore next */
 @injectable()
 export class TweakableConfigs {

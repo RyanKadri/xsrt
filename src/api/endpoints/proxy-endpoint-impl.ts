@@ -1,7 +1,7 @@
 import axios from "axios";
 import { createHash } from "crypto";
 import { createWriteStream, mkdir, rename, WriteStream } from "fs";
-import { inject } from "inversify";
+import { inject, injectable } from "inversify";
 import { join } from "path";
 import { promisify } from "util";
 import { Asset, ProxiedAsset } from "../../common/db/asset";
@@ -15,6 +15,8 @@ const mkdirFs = promisify(mkdir);
 const renameFs = promisify(rename);
 
 type AssetEndpointType = RouteImplementation<typeof assetEndpoint>;
+
+@injectable()
 export class AssetEndpoint implements AssetEndpointType {
 
     constructor(
@@ -38,8 +40,6 @@ export class AssetEndpoint implements AssetEndpointType {
 
     private proxySingleAsset = async (url: URL, userAgent = "") => {
         const proxyRes = await axios.get(url.href, { responseType: "stream", headers: { ["User-Agent"]: userAgent } });
-        const headers = Object.entries(proxyRes.headers)
-            .map(([name, value]) => ({ name, value }));
         const dataStream: WriteStream = proxyRes.data;
 
         // TODO - May need to watch for overwrite collisions here. Consider shortid?
@@ -71,6 +71,8 @@ export class AssetEndpoint implements AssetEndpointType {
         const renamed = join(saveDir, `${safeHash}-${baseName}`);
         await renameFs(savePath, renamed);
 
+        const headers = Object.entries(proxyRes.headers)
+            .map(([name, value]) => ({ name, value }));
         const asset = new Asset({
             url,
             hash: contentHash,

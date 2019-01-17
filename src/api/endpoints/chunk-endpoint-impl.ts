@@ -1,3 +1,4 @@
+import { injectable } from "inversify";
 import { Chunk } from "../../common/db/chunk";
 import { Recording } from "../../common/db/recording";
 import { errorNotFound } from "../../common/server/request-handler";
@@ -7,6 +8,7 @@ import { chunkEndpointMetadata } from "./chunk-endpoint-metadata";
 
 type ChunkEndpointType = RouteImplementation<typeof chunkEndpointMetadata>;
 
+@injectable()
 export class ChunkEndpoint implements ChunkEndpointType {
     createChunk: ChunkEndpointType["createChunk"] = (async ({ chunk, recordingId }) => {
         const savedChunk = await new Chunk(chunk).save();

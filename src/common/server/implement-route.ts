@@ -1,14 +1,15 @@
 import { Request, Response, Router } from "express";
 import { injectable, interfaces } from "inversify";
-import { ApiContainer } from "../../api/api-inversify";
+import { DependencyInjector } from "../services/dependency-injector";
 import { RequestHandler } from "./request-handler";
-import { EndpointDefinition, RouteImplementation } from "./route-types";
+import { EndpointDefinition, MethodImplementation, RouteImplementation } from "./route-types";
 
 @injectable()
 export class RouteImplementer {
 
     constructor(
-        private requestHandler: RequestHandler
+        private requestHandler: RequestHandler,
+        private diContainer: DependencyInjector
     ) { }
 
     implement<T extends EndpointDefinition>(
@@ -16,7 +17,7 @@ export class RouteImplementer {
     ) {
         return (router: Router) => {
             const concreteImpl: RouteImplementation<T> = typeof implementations === "function"
-                ? ApiContainer.get(implementations)
+                ? this.diContainer.inject(implementations)
                 : implementations;
 
             Object.entries(endpointDef)
@@ -26,7 +27,12 @@ export class RouteImplementer {
 
                 if (definition && implementation) {
                     route(definition.url, (req: Request, resp: Response) =>
-                        this.requestHandler.handle(definition.request, implementation, req, resp)
+                        this.requestHandler.handle(
+                            definition.request,
+                            implementation as MethodImplementation<any>,
+                            req,
+                            resp
+                        )
                     );
                 }
             });

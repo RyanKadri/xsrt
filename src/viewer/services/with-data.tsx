@@ -1,7 +1,8 @@
 import { Typography } from "@material-ui/core";
-import { Container, interfaces } from "inversify";
+import { interfaces } from "inversify";
 import React, { ComponentType } from "react";
 import { RouteComponentProps } from "react-router";
+import { DependencyInjector } from "../../common/services/dependency-injector";
 import { Omit, StripArray } from "../../common/utils/type-utils";
 import { IState } from "./state/state";
 import { DependencyContext } from "./with-dependencies";
@@ -60,14 +61,14 @@ export function withData<P, K extends keyof P>(
         }
 
         private update() {
-            const container: Container = this.context;
+            const container: DependencyInjector = this.context;
             const loadingResolvers = Object.entries(resolvers)
                 .map(([field, resolverOpts]) => {
                     const resolverOptions = resolverOpts as DataResolver<any, any>;
-                    const resolver = container.get<Resolver<any>>(resolverOptions.resolver);
-                    const state = container.get<IState<any>>(resolverOptions.state);
+                    const resolver = container.inject<Resolver<any>>(resolverOptions.resolver);
+                    const state = container.inject<IState<any>>(resolverOptions.state);
                     const resolvePromise = resolver.resolve(this.props.routeParams)
-                        .then(data => {
+                        .then((data: any) => {
                             if (Array.isArray(data)) {
                                 state.upsert(data);
                             } else {

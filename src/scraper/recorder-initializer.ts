@@ -1,8 +1,9 @@
 import "reflect-metadata";
+import { constant, initializeApp } from "../common/services/app-initializer";
 import { LocalStorageService } from "../common/utils/local-storage.service";
 import { RecorderApiService } from "./api/recorder-api-service";
 import { RecordingStateService } from "./api/recording-state-service";
-import { RecorderContainer } from "./inversify.recorder";
+import { diConfig } from "./di.recorder";
 import { RecorderOrchestrator } from "./recorder-orchestrator";
 import { ScraperConfig, ScraperConfigToken as ConfigToken } from "./scraper-config";
 
@@ -31,10 +32,14 @@ export class RecorderInitializer {
     }
 
     initialize(config: ScraperConfig) {
-        RecorderContainer.bind(ConfigToken).toConstantValue(config);
-        this.orchestrator = RecorderContainer.get(RecorderOrchestrator);
-        this.recordingState = RecorderContainer.get(RecordingStateService);
-        this.apiService = RecorderContainer.get(RecorderApiService);
+        const injector = initializeApp([
+            constant(ConfigToken, config),
+            ...diConfig
+        ]);
+
+        this.orchestrator = injector.inject(RecorderOrchestrator);
+        this.recordingState = injector.inject(RecordingStateService);
+        this.apiService = injector.inject(RecorderApiService);
 
         this.recordingState.storeConfig(config);
         this.orchestrator.initialize();

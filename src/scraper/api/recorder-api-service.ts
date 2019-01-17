@@ -3,7 +3,7 @@ import { chunkApiSymbol, chunkEndpointMetadata } from "../../api/endpoints/chunk
 import { recordingApiSymbol, recordingEndpoint } from "../../api/endpoints/recordings-endpoint-metadata";
 import { EndpointApi } from "../../common/server/route-types";
 import { Interface, Without } from "../../common/utils/type-utils";
-import { LocationSymbol } from "../inversify.recorder.tokens";
+import { LocationSymbol } from "../di.tokens";
 import { compress } from "../output/output-utils";
 import { extractUrlMetadata } from "../traverse/extract-metadata";
 import { RecordingChunk } from "../types/types";

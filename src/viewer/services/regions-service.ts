@@ -2,13 +2,13 @@ import { inject, injectable } from "inversify";
 import { RecordedUserInput } from "../../scraper/types/event-types";
 import { RecordedMutationGroup } from "../../scraper/types/types";
 import { RecordingEvents } from "../components/utils/recording-data-utils";
-import { ITweakableConfigs, TweakableConfigs } from "./tweakable-configs";
+import { TweakableConfigs } from "./tweakable-configs";
 
 @injectable()
 export class RegionService {
 
     constructor(
-        @inject(ITweakableConfigs) private uxTweaks: Pick<TweakableConfigs, "regionIdleTime">
+        @inject(TweakableConfigs) private uxTweaks: Pick<TweakableConfigs, "regionIdleTime">
     ) { }
 
     splitRegions(events: RecordingEvents, regionEndTime: number): Region[] {

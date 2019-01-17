@@ -1,3 +1,4 @@
+import { injectable } from "inversify";
 import { Target } from "../../common/db/targets";
 import { errorNotFound } from "../../common/server/request-handler";
 import { RouteImplementation } from "../../common/server/route-types";
@@ -5,6 +6,7 @@ import { siteTargetEndpoint } from "./target-endpoint-metadata";
 
 type TargetEndpointType = RouteImplementation<typeof siteTargetEndpoint>;
 
+@injectable()
 export class TargetEndpoint implements TargetEndpointType {
 
     fetchSiteTarget: TargetEndpointType["fetchSiteTarget"] = async ({ targetId }) => {

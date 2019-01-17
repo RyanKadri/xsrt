@@ -1,5 +1,5 @@
 import { inject, injectable } from "inversify";
-import { LocalStorageSymbol } from "../../scraper/inversify.recorder.tokens";
+import { LocalStorageSymbol } from "../../scraper/di.tokens";
 import { Interface } from "./type-utils";
 
 @injectable()

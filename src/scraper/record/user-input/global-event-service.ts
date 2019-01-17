@@ -1,6 +1,6 @@
 import { inject, injectable } from "inversify";
 import { Interface } from "../../../common/utils/type-utils";
-import { DocumentSymbol, WindowSymbol } from "../../inversify.recorder.tokens";
+import { DocumentSymbol, WindowSymbol } from "../../di.tokens";
 
 @injectable()
 export class GlobalEventService {

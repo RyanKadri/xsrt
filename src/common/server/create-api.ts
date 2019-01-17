@@ -1,6 +1,6 @@
 import { AxiosStatic } from "axios";
 import { inject, injectable } from "inversify";
-import { AxiosSymbol } from "../../scraper/inversify.recorder.tokens";
+import { AxiosSymbol } from "../../scraper/di.tokens";
 import { mapDictionary } from "../utils/functional-utils";
 import { Interface } from "../utils/type-utils";
 import { ApiRequestPartExtractor } from "./api-request-extractor";
