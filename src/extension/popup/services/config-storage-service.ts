@@ -11,7 +11,7 @@ export class ConfigStorageService {
             const defaultConfig: ExtensionConfig = {
                 debugMode: true,
                 shouldInject: false,
-                backendUrl: "localhost:3001",
+                backendUrl: "http://localhost:3001",
                 mutationsPerChunk: 1500,
                 inputsPerChunk: 1000
             };

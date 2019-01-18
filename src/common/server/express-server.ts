@@ -47,6 +47,9 @@ export class ExpressServer {
             impl(router);
             app.use("/api", router);
         });
-        app.listen(this.config.port, () => this.logger.info(`Server listening on port ${this.config.port}`));
+        app.get("/test", (_, resp) => resp.json({ success: true }));
+        app.listen(this.config.port,
+            () => this.logger.info(`Server listening on port ${this.config.port}`)
+        );
     }
 }

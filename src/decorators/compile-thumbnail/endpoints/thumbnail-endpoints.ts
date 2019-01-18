@@ -1,3 +1,4 @@
+import { injectable } from "inversify";
 import { Recording } from "../../../common/db/recording";
 import { RouteImplementation } from "../../../common/server/route-types";
 import { LoggingService } from "../../../common/utils/log-service";
@@ -6,6 +7,7 @@ import { thumbnailEndpointMetadata } from "./thumbnail-endpoint-metadata";
 
 type ThumbnailEndpointType = RouteImplementation<typeof thumbnailEndpointMetadata>;
 
+@injectable()
 export class ThumbnailEndpoint implements ThumbnailEndpointType {
     constructor(
         private thumbnailCompiler: ThumbnailCompiler,

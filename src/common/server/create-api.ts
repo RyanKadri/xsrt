@@ -1,6 +1,7 @@
 import { AxiosStatic } from "axios";
 import { inject, injectable } from "inversify";
 import { AxiosSymbol } from "../../scraper/di.tokens";
+import { ScraperConfig, ScraperConfigToken } from "../../scraper/scraper-config";
 import { mapDictionary } from "../utils/functional-utils";
 import { Interface } from "../utils/type-utils";
 import { ApiRequestPartExtractor } from "./api-request-extractor";
@@ -11,7 +12,8 @@ export class ApiCreationService {
 
     constructor(
         @inject(AxiosSymbol) private Axios: Interface<AxiosStatic>,
-        @inject(ApiRequestPartExtractor) private extractor: Interface<ApiRequestPartExtractor>
+        @inject(ApiRequestPartExtractor) private extractor: Interface<ApiRequestPartExtractor>,
+        @inject(ScraperConfigToken) private config: Pick<ScraperConfig, "backendUrl">
     ) {}
 
     createApi = <T extends EndpointDefinition>(endpointDef: T) => {
@@ -49,6 +51,6 @@ export class ApiCreationService {
         return Object.entries(replacements)
             .reduce((acc, [key, val]) => {
                 return acc.replace(new RegExp(`:${key}`, "g"), val);
-            }, `/api/${url}`);
+            }, `${this.config.backendUrl || ""}/api${url}`);
     }
 }

@@ -1,11 +1,18 @@
 {
   "name": "xsrt",
   "version": "0.1.1",
-  "description": "",
+  "description": "A Cross-Session Screen Recording tool (XSRT) also known as exert",
+  "repository": {
+      "type": "git",
+      "url": "https://github.com/RyanKadri/xsrt"
+  },
   "main": "src/viewer/index.tsx",
   "scripts": {
     "start:viewer": "webpack-dev-server --config-name viewer-dev",
-    "start:backend": "npm run build:backend && concurrently -p \"[{name}]\" \"node ./dist/backend/api/api-server.js\" \"node ./dist/backend/decorators/decorator-server.js\"",
+    "start:api": "npm run build:backend && npm run run:api",
+    "run:api": "node ./dist/backend/api/api-server.js",
+    "start:decorator": "npm run build:backend && npm run run:viewer",
+    "run:viewer": "node ./dist/backend/decorators/decorator-server.js",
     "build:backend": "tsc -p tsconfig.api.json",
     "build:viewer": "webpack --config-name viewer-prod",
     "build:tools": "webpack --mode development --config-name bootstrap-scripts",
@@ -70,7 +77,7 @@
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "inversify": "^5.0.1",
-    "mongoose": "^5.3.13",
+    "mongoose": "^5.4.5",
     "pako": "^1.0.6",
     "puppeteer": "^1.10.0",
     "react": "^16.6.0",

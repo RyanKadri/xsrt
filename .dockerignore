@@ -1,0 +1,13 @@
+.git
+*Dockerfile*
+*docker-compose*
+node_modules/
+dist/
+coverage/
+.nyc_output/
+.vscode/
+design/
+docs/
+scripts/
+spec/
+.env

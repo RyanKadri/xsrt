@@ -6,9 +6,9 @@ import { ServerConfig, ServerInitializer } from "../common/server/express-server
 
 @injectable()
 export class ApiServerConfig implements ServerConfig {
-    readonly port = 3001;
-    readonly mongoUrl = `mongodb://localhost:27017/recordings`;
-    readonly decorateUrl = `http://localhost:3002`;
+    readonly port = parseInt(process.env.API_PORT!, 10);
+    readonly mongoUrl = `${process.env.MONGO_URL}`;
+    readonly decorateUrl = `${process.env.DECORATOR_URL}`;
     readonly assetDir = "/var/www/record-service.jane/assets";
 }
 

@@ -1,0 +1,45 @@
+version: '3.7'
+services:
+    mongo:
+        image: mongo:4.0
+        volumes:
+            - mongo-data:/data/db
+        ports:
+           - "27017:27017"
+        expose:
+            - 27017
+    app:
+        ports:
+            - "${API_PORT}:${API_PORT}"
+        links:
+            - mongo
+            - decorator
+        depends_on:
+            - mongo
+            - decorator
+        environment:
+            - MONGO_URL=mongodb://mongo/recordings
+            - DECORATOR_URL=http://decorator:${DECORATOR_PORT}
+            - API_PORT=${API_PORT}
+        build:
+            context: .
+            target: api
+            args:
+                port: "${API_PORT}"
+    decorator:
+        ports:
+            - "${DECORATOR_PORT}:${DECORATOR_PORT}"
+        links:
+            - mongo
+        depends_on:
+            - mongo
+        environment:
+            - MONGO_URL=mongodb://mongo/recordings
+            - DECORATOR_PORT=${DECORATOR_PORT}
+        build:
+            context: .
+            target: decorator
+            args:
+                port: "${DECORATOR_PORT}"
+volumes:
+    mongo-data:

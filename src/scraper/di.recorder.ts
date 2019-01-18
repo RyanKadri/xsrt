@@ -1,5 +1,6 @@
 /* istanbul ignore file */
 import Axios from "axios";
+import { chunkApiSymbol, chunkEndpointMetadata } from "../api/endpoints/chunk-endpoint-metadata";
 import { assetApiSymbol, assetEndpoint } from "../api/endpoints/proxy-endpoint-metadata";
 import { recordingApiSymbol, recordingEndpoint } from "../api/endpoints/recordings-endpoint-metadata";
 import { apiDef, constant, dependencyGroup } from "../common/services/app-initializer";
@@ -25,5 +26,6 @@ export const diConfig = [
         UnloadRecorder
     ]),
     apiDef(recordingApiSymbol, recordingEndpoint),
-    apiDef(assetApiSymbol, assetEndpoint)
+    apiDef(assetApiSymbol, assetEndpoint),
+    apiDef(chunkApiSymbol, chunkEndpointMetadata),
 ];

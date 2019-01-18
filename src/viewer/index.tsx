@@ -10,7 +10,7 @@ const injector = initializeApp(diConfig);
 
 ReactDOM.render(
     <DependencyContext.Provider value={injector}>
-        <AppRoot />,
+        <AppRoot />
     </DependencyContext.Provider>,
     document.getElementById("app-root")
 );
