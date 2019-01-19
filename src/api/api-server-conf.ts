@@ -9,7 +9,7 @@ export class ApiServerConfig implements ServerConfig {
     readonly port = parseInt(process.env.API_PORT!, 10);
     readonly mongoUrl = `${process.env.MONGO_URL}`;
     readonly decorateUrl = `${process.env.DECORATOR_URL}`;
-    readonly assetDir = "/var/www/record-service.jane/assets";
+    readonly assetDir = `${process.env.STORAGE_LOCATION}/assets`;
 }
 
 @injectable()

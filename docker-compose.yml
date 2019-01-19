@@ -4,13 +4,13 @@ services:
         image: mongo:4.0
         volumes:
             - mongo-data:/data/db
-        ports:
-           - "27017:27017"
         expose:
             - 27017
     app:
+        expose:
+            - ${API_PORT}
         ports:
-            - "${API_PORT}:${API_PORT}"
+            - ${API_PORT}:${API_PORT}
         links:
             - mongo
             - decorator
@@ -27,8 +27,10 @@ services:
             args:
                 port: "${API_PORT}"
     decorator:
+        expose:
+            - ${DECORATOR_PORT}
         ports:
-            - "${DECORATOR_PORT}:${DECORATOR_PORT}"
+            - ${DECORATOR_PORT}:${DECORATOR_PORT}
         links:
             - mongo
         depends_on:
@@ -41,5 +43,22 @@ services:
             target: decorator
             args:
                 port: "${DECORATOR_PORT}"
+    static:
+        ports:
+            - ${STATIC_PORT}:443
+        volumes:
+            - stored-files:${STORAGE_LOCATION}
+        links:
+            - decorator
+            - app
+        build:
+            context: .
+            target: static-frontend
+        environment:
+            - FRONTEND_HOSTNAME=${FRONTEND_HOSTNAME}
+            - STORAGE_LOCATION=${STORAGE_LOCATION}
+            - API_SERVER=http://app:${API_PORT}
+        command: /bin/sh -c "envsubst '$${STORAGE_LOCATION},$${FRONTEND_HOSTNAME},$${API_SERVER}' < /etc/nginx/conf.d/xsrt.template > /etc/nginx/conf.d/recorder.conf && exec nginx -g 'daemon off;'"
 volumes:
     mongo-data:
+    stored-files:
