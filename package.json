@@ -8,17 +8,20 @@
   },
   "main": "src/viewer/index.tsx",
   "scripts": {
+    "build:viewer": "webpack --config-name viewer-prod",
     "start:viewer": "webpack-dev-server --config-name viewer-dev",
-    "start:api": "npm run build:backend && npm run run:api",
-    "run:api": "node ./dist/backend/api-service.bundle.js",
-    "start:decorator": "npm run build:backend && npm run run:viewer",
-    "run:viewer": "node ./dist/backend/decorator-service.bundle.js",
+
     "build:backend": "webpack --config-name compile-backend",
     "build:backend:watch": "npm run build:backend -- --watch",
-    "build:viewer": "webpack --config-name viewer-prod",
+    "start:api": "npm run build:backend && npm run run:api",
+    "run:api": "node ./dist/backend/api-service.bundle.js",
+    "start:decorator": "npm run build:backend && npm run run:decorator",
+    "run:decorator": "node ./dist/backend/decorator-service.bundle.js",
+
+    "build:docker": "concurrently \"npm:build:backend:watch\" \"npm:start:viewer\"",
     "build:tools": "webpack --mode development --config-name bootstrap-scripts",
     "build:extension": "webpack --watch --mode development --config-name compile-extension",
-    "build:docker": "concurrently \"npm:build:backend:watch\" \"npm:start:viewer\"",
+
     "test": "node --require ./spec/support/init.js ./node_modules/.bin/jasmine --config=jasmine.json",
     "test:coverage": "nyc ./node_modules/.bin/jasmine --config=jasmine.json",
     "test:watch": "nodemon -w src -e ts,tsx --exec \"node --require ./spec/support/init.js ./node_modules/.bin/jasmine --config=jasmine.json\"",

@@ -9,22 +9,12 @@ services:
             - 9229:9229
         volumes:
             - 'app:/app/'
-        build:
-            context: .
-            target: api
-            args:
-                port: "${API_PORT}"
         command: npx nodemon --delay 1000ms --inspect=0.0.0.0:9229 --on-change-only -w ./backend ./backend/api-service.bundle.js
     decorator:
         ports:
             - ${DECORATOR_PORT}:${DECORATOR_PORT}
         volumes:
             - 'app:/app/'
-        build:
-            context: .
-            target: decorator
-            args:
-                port: "${DECORATOR_PORT}"
         command: npx nodemon --delay 1000ms --on-change-only -w ./backend ./backend/decorator-service.bundle.js
     builder:
         build:
@@ -47,8 +37,5 @@ services:
             - 'app:/app'
         environment:
             - APP_ROOT=/app/web #This may be a bit of a hack. It can go away if mounting a subdirectory of a named volume becomes a thing
-        build:
-            context: .
-            target: static-frontend
 volumes:
     app:

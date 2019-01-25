@@ -21,7 +21,7 @@ Some would argue that this code makes it easier for companies to intrude on thei
 * Persistent high-level tracking across many domains is more of a danger to privacy than in-depth tracking on a single site.
 * This project can respect Do Not Track headers and other privacy guidelines
 
-## Setup
+## Local Setup
 
 There are a few components to this project. All share the same package.json so a single `npm install` should be sufficient to install all dependencies.
 
@@ -31,8 +31,28 @@ This is a standard React app. It builds with webpack and can run in the webpack 
 
 ### Recording API Server (Backend)
 
-This project uses an express backend. You can build and run with `npm run start:backend`
+This project uses an express backend. You can build and run with `npm run start:api`
+
+### Decorator Server (Backend)
+
+This project uses an express backend. You can build and run with `npm run start:decorator`
 
 ### Chrome Extension
 
 You can run the recording code on most sites (barring some known issues with "unfriendly" CSPs). To build this code, you can run `npm run build:extension`. Since this is purely a DX tool for this project, I do not plan on adding this to the chrome store. Instead, I would recommend installing it as an unpacked extension
+
+## Docker Setup
+
+You can set up all of the components to this project by running `sh ./scripts/start-docker.sh` if you just want to play around.
+
+If you want to develop with all components in docker, you can run `sh ./scripts/start-docker-dev.sh`.
+This Docker setup includes a Webpack dev server with live reloading and will restart the backend containers when
+you update backend code.
+
+## Contributing
+
+I would love contributions to this project. I could use help in the following areas:
+* Documentation
+* Testing
+* Docker and General CI/CD
+* General Features/Improvements

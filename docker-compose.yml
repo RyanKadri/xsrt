@@ -20,6 +20,11 @@ services:
             - DECORATOR_URL=http://decorator:${DECORATOR_PORT}
             - API_PORT=${API_PORT}
             - STORAGE_LOCATION=${STORAGE_LOCATION}
+        build:
+            context: .
+            target: api
+            args:
+                port: "${API_PORT}"
     decorator:
         expose:
             - ${DECORATOR_PORT}
@@ -30,6 +35,11 @@ services:
         environment:
             - MONGO_URL=mongodb://mongo/recordings
             - DECORATOR_PORT=${DECORATOR_PORT}
+        build:
+            context: .
+            target: decorator
+            args:
+                port: "${DECORATOR_PORT}"
     static:
         ports:
             - ${STATIC_PORT}:80
@@ -43,6 +53,9 @@ services:
             - STORAGE_LOCATION=${STORAGE_LOCATION}
             - API_SERVER=http://app:${API_PORT}
             - APP_ROOT=/app
+        build:
+            context: .
+            target: static-frontend
         command: /bin/sh -c "envsubst '$${STORAGE_LOCATION},$${FRONTEND_HOSTNAME},$${API_SERVER},$${APP_ROOT}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && exec nginx -g 'daemon off;'"
 volumes:
     mongo-data:
