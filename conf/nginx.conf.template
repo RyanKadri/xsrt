@@ -28,15 +28,14 @@ http {
     #gzip  on;
 
     server {
-        listen 80 default_server;
-        listen [::]:80;
+
         listen 443 default_server ssl http2;
         listen [::]:443 ssl;
 
         root ${APP_ROOT};
 
         ssl_certificate /etc/ssl/certs/cert.crt;
-        ssl_certificate_key /etc/ssl/private/cert.key;
+        ssl_certificate_key /etc/ssl/certs/cert.key;
         index index.html index.htm index.nginx-debian.html;
 
         server_name ${FRONTEND_HOSTNAME};

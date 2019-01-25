@@ -23,6 +23,9 @@ Some would argue that this code makes it easier for companies to intrude on thei
 
 ## Local Setup
 
+There are a number of environment variables you can set when standing up this project. 
+You can copy `.env-example` to `.env` and tweak it as you see fit.
+
 There are a few components to this project. All share the same package.json so a single `npm install` should be sufficient to install all dependencies.
 
 ### Recording Viewer (Frontend)
@@ -42,6 +45,14 @@ This project uses an express backend. You can build and run with `npm run start:
 You can run the recording code on most sites (barring some known issues with "unfriendly" CSPs). To build this code, you can run `npm run build:extension`. Since this is purely a DX tool for this project, I do not plan on adding this to the chrome store. Instead, I would recommend installing it as an unpacked extension
 
 ## Docker Setup
+
+To run this entire docker-compose application including the Nginx frontend, you will need SSL certs. You can put
+existing certs (key and cert file) in `./secret/certs` or can run `sh ./scripts/create-certs-if-needed.sh` to create
+self-signed certificates. If you do this, your browser will complain about your certificate not being valid.
+That should be fine for local development. 
+
+If you do not choose to have your `STATIC_PORT` environment variable be `443` (default HTTPS), you will need to specifically
+enter `https://localhost:<Your Port>`  
 
 You can set up all of the components to this project by running `sh ./scripts/start-docker.sh` if you just want to play around.
 
