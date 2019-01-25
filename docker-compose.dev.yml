@@ -30,10 +30,18 @@ services:
         build:
             context: .
             target: dev-builder
-        command: npm run build:docker:watch
+        command: npm run build:docker
         volumes:
             - '.:/app'
             - 'app:/app/dist'
+        expose:
+            - ${WEBPACK_PORT}
+        ports:
+            - ${WEBPACK_PORT}:${WEBPACK_PORT}
+        environment:
+            - WEBPACK_PORT=${WEBPACK_PORT}
+            - STATIC_ASSET_SERVER=http://static:${STATIC_PORT}/
+            - API_SERVER=http://app:${API_PORT}/
     static:
         volumes:
             - 'app:/app'

@@ -37,7 +37,7 @@ FROM builder as frontend-builder
 RUN npm run build:viewer
 
 FROM builder as dev-builder
-RUN npm run build:docker
+RUN npm run build:backend && npm run build:viewer
 
 # Frontend Nginx reverse proxy
 FROM nginx:1.15.8 as static-frontend

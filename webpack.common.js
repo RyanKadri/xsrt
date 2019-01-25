@@ -72,11 +72,13 @@ const viewerDev = merge(frontendCommon, {
 
     devServer: {
         contentBase: path.join(__dirname, 'src/viewer'),
-        port: 3000,
-        publicPath: 'http://localhost:3000/',
+        port: process.env.WEBPACK_PORT,
+        publicPath: `http://localhost:${process.env.WEBPACK_PORT}/`,
         historyApiFallback: true,
         hot: false,
         inline: true,
+        host: '0.0.0.0',
+        disableHostCheck: true,
         proxy: {
             '/api': process.env.API_SERVER,
             '/screenshots': process.env.STATIC_ASSET_SERVER,
