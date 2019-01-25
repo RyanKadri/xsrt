@@ -41,7 +41,7 @@ RUN npm run build:docker
 
 # Frontend Nginx reverse proxy
 FROM nginx:1.15.8 as static-frontend
-COPY conf/xsrt.template /etc/nginx/conf.d
+COPY conf/nginx.conf.template /etc/nginx
 COPY ./secret/certs/cert.crt /etc/ssl/certs/
 COPY ./secret/certs/cert.key /etc/ssl/private/
 COPY --from=frontend-builder /app/dist/web /app
