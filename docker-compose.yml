@@ -9,8 +9,6 @@ services:
     app:
         expose:
             - ${API_PORT}
-        ports:
-            - ${API_PORT}:${API_PORT}
         links:
             - mongo
             - decorator
@@ -21,6 +19,7 @@ services:
             - MONGO_URL=mongodb://mongo/recordings
             - DECORATOR_URL=http://decorator:${DECORATOR_PORT}
             - API_PORT=${API_PORT}
+            - STORAGE_LOCATION=${STORAGE_LOCATION}
         build:
             context: .
             target: api
@@ -29,8 +28,6 @@ services:
     decorator:
         expose:
             - ${DECORATOR_PORT}
-        ports:
-            - ${DECORATOR_PORT}:${DECORATOR_PORT}
         links:
             - mongo
         depends_on:
@@ -58,7 +55,8 @@ services:
             - FRONTEND_HOSTNAME=${FRONTEND_HOSTNAME}
             - STORAGE_LOCATION=${STORAGE_LOCATION}
             - API_SERVER=http://app:${API_PORT}
-        command: /bin/sh -c "envsubst '$${STORAGE_LOCATION},$${FRONTEND_HOSTNAME},$${API_SERVER}' < /etc/nginx/conf.d/xsrt.template > /etc/nginx/conf.d/recorder.conf && exec nginx -g 'daemon off;'"
+            - APP_ROOT=/app
+        command: /bin/sh -c "envsubst '$${STORAGE_LOCATION},$${FRONTEND_HOSTNAME},$${API_SERVER},$${APP_ROOT}' < /etc/nginx/conf.d/xsrt.template > /etc/nginx/conf.d/recorder.conf && exec nginx -g 'daemon off;'"
 volumes:
     mongo-data:
     stored-files:

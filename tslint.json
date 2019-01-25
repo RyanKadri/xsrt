@@ -31,7 +31,8 @@
             { "name": ["localStorage", "setItem"], "message": "Use @injectable local storage service instead" },
             { "name": ["localStorage", "removeItem"], "message": "Use @injectable local storage service instead" },
             { "name": ["Math", "random"], "message": "Use @injectable local storage service instead" }
-        ]
+        ],
+        "no-implicit-dependencies": true
     },
     "linterOptions": {
         "exclude": [

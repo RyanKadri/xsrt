@@ -9,7 +9,7 @@ server {
 	listen 443 default_server ssl http2;
 	listen [::]:443 ssl;
 
-	root /app;
+	root ${APP_ROOT};
 
 	ssl_certificate /etc/ssl/certs/cert.crt;
 	ssl_certificate_key /etc/ssl/private/cert.key;

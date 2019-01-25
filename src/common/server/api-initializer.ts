@@ -1,8 +1,11 @@
+import dotenv from "dotenv";
 import { interfaces } from "inversify";
 import { constantWithDeps, DIInitializer, initializeApp } from "../services/app-initializer";
 import { IRouteImplementation } from "./express-server";
 import { RouteImplementer } from "./implement-route";
 import { EndpointDefinition, RouteImplementation } from "./route-types";
+
+dotenv.load();
 
 export function initializeApi(initializers: ApiInitializer[]) {
     return initializeApp(initializers.map(init => (

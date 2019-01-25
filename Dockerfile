@@ -3,14 +3,15 @@ FROM node:11.0.0 as builder
 WORKDIR /app/
 
 COPY package*.json ./
+COPY webpack* ./
+COPY tsconfig*.json ./
 
 RUN npm set progress=false
 RUN npm install --no-audit --no-optional
+COPY src src
 
 # Backend build environment
 FROM builder as backend-builder
-COPY src src
-COPY tsconfig*.json ./
 RUN npm run build:backend
 
 # Base image for api and decorator servers
@@ -23,22 +24,22 @@ COPY --from=backend-builder /app/node_modules ./node_modules
 FROM backend-base as api
 ARG port
 EXPOSE ${port}
-CMD ["node", "api/api-server.js"]
+CMD ["node", "api-service.bundle.js"]
 
 # Decorator app server
 FROM backend-base as decorator
 ARG port
 EXPOSE ${port}
-CMD ["node", "decorators/decorator-server.js"]
+CMD ["node", "decorator-service.bundle.js"]
 
 # Frontend build environment
 FROM builder as frontend-builder
-
-COPY src src
-COPY webpack.* ./
-COPY tsconfig*.json ./
 RUN npm run build:viewer
 
+FROM builder as dev-builder
+RUN npm run build:docker
+
+# Frontend Nginx reverse proxy
 FROM nginx:1.15.8 as static-frontend
 COPY conf/xsrt.template /etc/nginx/conf.d
 COPY ./secret/certs/cert.crt /etc/ssl/certs/

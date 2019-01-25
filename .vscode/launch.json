@@ -6,6 +6,15 @@
     "configurations": [
         {
             "type": "node",
+            "request": "attach",
+            "name": "Attach to Remote",
+            "address": "127.0.0.1",
+            "port": 9229,
+            "sourceMaps": true,
+            "restart": true
+        },
+        {
+            "type": "node",
             "request": "launch",
             "name": "Test All",
             "program": "${workspaceFolder}/node_modules/.bin/jasmine",
@@ -13,7 +22,6 @@
             "internalConsoleOptions": "neverOpen",
             "args": ["--config=jasmine.json"],
             "runtimeArgs": ["--require", "./spec/support/init.js"],
-            //"preLaunchTask": "tsc: watch - tsconfig.spec.json",
             "sourceMaps": true
         },
         {
@@ -34,13 +42,11 @@
             "type": "node",
             "request": "launch",
             "name": "Start API",
-            "program": "${workspaceFolder}/dist/backend/api/api-server.js",
-            "preLaunchTask": "tsc: watch - tsconfig.api.json",
+            "program": "${workspaceFolder}/src/api/api-server.ts",
             "outFiles": [
-                "${workspaceFolder}/dist/api"
+                "${workspaceFolder}/dist/backend/api-service.bundle.js"
             ],
             "sourceMaps": true,
-            "protocol": "inspector",
         },
         {
             "type": "node",

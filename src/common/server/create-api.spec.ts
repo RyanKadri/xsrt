@@ -13,8 +13,8 @@ describe(ApiCreationService.name, () => {
             extractHeaders: {},
             extractQueryParams: { debugMode: true }
         });
-        const service = new ApiCreationService(mockAxios, extractor);
-        const api = service.createApi({ fetchTest: { method: "get", url: "thing/:testId", response: Type<any>(),
+        const service = new ApiCreationService(mockAxios, extractor, { backendUrl: "" });
+        const api = service.createApi({ fetchTest: { method: "get", url: "/thing/:testId", response: Type<any>(),
             request: { testId: new RouteParamUnwrap("testId"), debugMode: new RequestParamUnwrap("debugMode") }
         }});
         api.fetchTest({ testId: 123, debugMode: true });
