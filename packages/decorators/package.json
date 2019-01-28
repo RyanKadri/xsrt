@@ -1,6 +1,6 @@
 {
     "name": "@xsrt/decorators",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "Backend services for post-processing recordings",
     "author": "Ryan Kadri <ryankadri1@gmail.com>",
     "license": "ISC",
@@ -16,9 +16,9 @@
         "access": "public"
     },
     "dependencies": {
-        "puppeteer": "^1.10.0",
-        "@xsrt/common": "0.1.0",
-        "inversify": "^5.0.1"
+        "@xsrt/common": "^0.2.0",
+        "inversify": "^5.0.1",
+        "puppeteer": "^1.10.0"
     },
     "scripts": {
         "test": "echo \"Error: run tests from root\" && exit 1",

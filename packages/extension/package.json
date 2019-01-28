@@ -1,6 +1,6 @@
 {
     "name": "@xsrt/extension",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "A chrome extension for testing XSRT on arbitrary sites",
     "author": "Ryan Kadri <ryankadri1@gmail.com>",
     "license": "ISC",
@@ -21,14 +21,14 @@
         "@types/react-router-dom": "^4.3.1"
     },
     "dependencies": {
-        "@xsrt/common": "0.1.0",
-        "@xsrt/recorder": "0.1.0",
-        "@xsrt/common-frontend": "0.1.0",
+        "@material-ui/core": "^3.6.0",
+        "@material-ui/icons": "^3.0.1",
+        "@xsrt/common": "^0.2.0",
+        "@xsrt/common-frontend": "^0.2.0",
+        "@xsrt/recorder": "^0.2.0",
         "react": "^16.6.0",
         "react-dom": "^16.6.0",
-        "reflect-metadata": "^0.1.12",
-        "@material-ui/core": "^3.6.0",
-        "@material-ui/icons": "^3.0.1"
+        "reflect-metadata": "^0.1.12"
     },
     "scripts": {
         "test": "echo \"Error: run tests from root\" && exit 1",
