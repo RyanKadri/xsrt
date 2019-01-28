@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { endpointDef } from "../common/server/api-initializer";
+import { ApiInitializer, endpointDef } from "../common/server/api-initializer";
 import { IServerConfig, IServerInitializer } from "../common/server/express-server";
 import { MongoInitializer } from "../common/server/mongo-initializer";
 import { dependencyGroup, implementationChoice } from "../common/services/app-initializer";
@@ -13,7 +13,7 @@ import { recordingEndpoint } from "./endpoints/recordings-endpoint-metadata";
 import { TargetEndpoint } from "./endpoints/target-endpoint-impl";
 import { siteTargetEndpoint } from "./endpoints/target-endpoint-metadata";
 
-export const apiDiConfig = [
+export const apiDiConfig: ApiInitializer[] = [
     implementationChoice(IServerConfig, ApiServerConfig),
     dependencyGroup(IServerInitializer, [
         MongoInitializer, ApiServerInitializer

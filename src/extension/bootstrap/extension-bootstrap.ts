@@ -1,5 +1,5 @@
+import { ScraperConfig } from "../../scraper/config/scraper-config";
 import { RecorderInitializer } from "../../scraper/recorder-initializer";
-import { ScraperConfig } from "../../scraper/scraper-config";
 import { CommandMessage } from "../content/commands";
 import { ExtensionMessage, ExtensionMessageResponse } from "../content/site-channel-types";
 

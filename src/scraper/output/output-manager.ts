@@ -1,6 +1,6 @@
 import { Without } from "../../common/utils/type-utils";
 // import * as template from "../../viewer/index.html";
-import { ScraperConfig } from "../scraper-config";
+import { ScraperConfig } from "../config/scraper-config";
 import { SnapshotChunk } from "../types/types";
 import { toJson } from "../utils/utils";
 import { triggerDownload } from "./output-utils";

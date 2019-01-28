@@ -1,4 +1,4 @@
-import { ScraperConfig } from "../../scraper/scraper-config";
+import { ScraperConfig } from "../../scraper/config/scraper-config";
 import { postToSite } from "./site-channel";
 
 export function listenForCommands() {

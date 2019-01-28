@@ -1,5 +1,5 @@
 import { inject, injectable, optional } from "inversify";
-import { ScraperConfig, ScraperConfigToken } from "../../scraper/scraper-config";
+import { ScraperConfig, ScraperConfigToken } from "../../scraper/config/scraper-config";
 
 @injectable()
 export class LoggingService {

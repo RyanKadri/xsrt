@@ -1,7 +1,7 @@
 import { injectable } from "inversify";
 import { LocalStorageService } from "../../common/utils/local-storage.service";
 import { Without } from "../../common/utils/type-utils";
-import { ScraperConfig } from "../scraper-config";
+import { ScraperConfig } from "../config/scraper-config";
 import { RecordingChunk } from "../types/types";
 
 const localStorageRecordingId = "xsrt.recording.id";

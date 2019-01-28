@@ -1,4 +1,4 @@
-import { ScraperConfig } from "../../scraper/scraper-config";
+import { ScraperConfig } from "../../scraper/config/scraper-config";
 
 export interface ExtensionConfig extends ScraperConfig {
     shouldInject: boolean;

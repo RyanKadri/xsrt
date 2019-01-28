@@ -1,6 +1,6 @@
 import { inject, injectable } from "inversify";
+import { ScraperConfig, ScraperConfigToken } from "../config/scraper-config";
 import { shouldTraverseNode } from "../filter/filter-dom";
-import { ScraperConfig, ScraperConfigToken } from "../scraper-config";
 import { transformElement, transformText } from "../transform/transform-dom";
 import { ScrapedElement, ScrapedHtmlElement, ScrapedTextElement } from "../types/types";
 import { transformTree } from "../utils/tree-utils";

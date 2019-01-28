@@ -3,9 +3,9 @@ import { constant, initializeApp } from "../common/services/app-initializer";
 import { LocalStorageService } from "../common/utils/local-storage.service";
 import { RecorderApiService } from "./api/recorder-api-service";
 import { RecordingStateService } from "./api/recording-state-service";
+import { ScraperConfig, ScraperConfigToken as ConfigToken } from "./config/scraper-config";
 import { diConfig } from "./di.recorder";
 import { RecorderOrchestrator } from "./recorder-orchestrator";
-import { ScraperConfig, ScraperConfigToken as ConfigToken } from "./scraper-config";
 
 export class RecorderInitializer {
 
@@ -16,15 +16,10 @@ export class RecorderInitializer {
     checkAutoStart(): boolean {
         const activeConfig = this.recordingState.fetchActiveConfig();
         const activeRecordingId = this.recordingState.fetchRecordingId();
-        const pendingRecordChunk = this.recordingState.fetchPendingChunk();
 
         if (activeConfig && activeRecordingId) {
             this.initialize(activeConfig);
 
-            if (pendingRecordChunk) {
-                this.apiService!.postToBackend(pendingRecordChunk, activeRecordingId, activeConfig.debugMode)
-                    .then(() => this.recordingState.removePendingChunk());
-            }
             return true;
         } else {
             return false;
@@ -36,6 +31,14 @@ export class RecorderInitializer {
             constant(ConfigToken, config),
             ...diConfig
         ]);
+
+        const pendingRecordChunk = this.recordingState.fetchPendingChunk();
+        if (pendingRecordChunk) {
+            const activeConfig = this.recordingState.fetchActiveConfig();
+            const activeRecordingId = this.recordingState.fetchRecordingId();
+            this.apiService!.postToBackend(pendingRecordChunk, activeRecordingId!, activeConfig.debugMode)
+                .then(() => this.recordingState.removePendingChunk());
+        }
 
         this.orchestrator = injector.inject(RecorderOrchestrator);
         this.recordingState = injector.inject(RecordingStateService);

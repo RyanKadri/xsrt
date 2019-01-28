@@ -1,7 +1,7 @@
 {
   "name": "xsrt",
   "version": "0.1.1",
-  "description": "A Cross-Session Screen Recording tool (XSRT) also known as exert",
+  "description": "A Cross-Session Screen Recording tool (XSRT)",
   "repository": {
     "type": "git",
     "url": "https://github.com/RyanKadri/xsrt"
@@ -28,7 +28,7 @@
     "lint": "tslint --project tsconfig.json"
   },
   "author": "Ryan Kadri",
-  "license": "MIT",
+  "license": "",
   "devDependencies": {
     "@types/chrome": "0.0.75",
     "@types/classnames": "^2.2.6",

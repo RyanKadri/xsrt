@@ -1,13 +1,11 @@
+import { defaultConfig } from "../../scraper/config/default-config";
 import { ExtensionConfig } from "../config/extension-config";
 import { RecordingStatus } from "../popup/popup-root";
 
 export function loadConfig(): ExtensionConfig {
     return {
         shouldInject: true,
-        backendUrl: "http://localhost:3001",
-        debugMode: true,
-        mutationsPerChunk: 1500,
-        inputsPerChunk: 1000
+        ...defaultConfig
     };
 }
 

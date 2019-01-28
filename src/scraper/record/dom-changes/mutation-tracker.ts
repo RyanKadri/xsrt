@@ -1,5 +1,5 @@
 import { inject, injectable } from "inversify";
-import { ScraperConfig, ScraperConfigToken } from "../../scraper-config";
+import { ScraperConfig, ScraperConfigToken } from "../../config/scraper-config";
 import { AddDescriptor, RecordedMutation, RecordedMutationGroup } from "../../types/types";
 import { EventService } from "../../utils/event-service";
 import { TimeManager } from "../../utils/time-manager";

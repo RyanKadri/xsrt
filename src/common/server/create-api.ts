@@ -1,7 +1,7 @@
 import { AxiosStatic } from "axios";
 import { inject, injectable } from "inversify";
+import { ScraperConfig, ScraperConfigToken } from "../../scraper/config/scraper-config";
 import { AxiosSymbol } from "../../scraper/di.tokens";
-import { ScraperConfig, ScraperConfigToken } from "../../scraper/scraper-config";
 import { mapDictionary } from "../utils/functional-utils";
 import { Interface } from "../utils/type-utils";
 import { ApiRequestPartExtractor } from "./api-request-extractor";

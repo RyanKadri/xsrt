@@ -4,10 +4,10 @@ import { LoggingService } from "../common/utils/log-service";
 import { Without } from "../common/utils/type-utils";
 import { RecorderApiService } from "./api/recorder-api-service";
 import { RecordingInfo, RecordingStateService } from "./api/recording-state-service";
+import { ScraperConfig, ScraperConfigToken } from "./config/scraper-config";
 import { chunkMutationLimit } from "./record/dom-changes/mutation-tracker";
 import { mergeMaps } from "./record/user-input/input-utils";
 import { Recorder } from "./recorder";
-import { ScraperConfig, ScraperConfigToken } from "./scraper-config";
 import { PendingDiffChunk, PendingSnapshotChunk, RecordingChunk, SnapshotChunk } from "./types/types";
 import { EventService } from "./utils/event-service";
 
