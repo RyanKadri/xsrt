@@ -5,6 +5,7 @@
     "author": "Ryan Kadri <ryankadri1@gmail.com>",
     "license": "ISC",
     "typings": "lib/decorators.d.ts",
+    "private": true,
     "directories": {
         "lib": "lib"
     },

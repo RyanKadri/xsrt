@@ -12,9 +12,7 @@
     "files": [
         "lib"
     ],
-    "publishConfig": {
-        "access": "public"
-    },
+    "private": true,
     "devDependencies": {
         "@types/react": "^16.4.18",
         "@types/react-dom": "^16.0.9",
