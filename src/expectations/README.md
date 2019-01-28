@@ -1,1 +1,0 @@
-This directory contains tests for assumptions about DOM and external systems that I do not control. These tests do not always need to be run.

@@ -1,0 +1,27 @@
+{
+    "name": "@xsrt/recorder",
+    "version": "0.1.0",
+    "description": "The client-side recorder for XSRT",
+    "author": "Ryan Kadri <ryankadri1@gmail.com>",
+    "license": "ISC",
+    "typings": "src/public_api.ts",
+    "directories": {
+        "lib": "lib"
+    },
+    "files": [
+        "lib"
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
+    "dependencies": {
+        "@xsrt/common": "0.1.0",
+        "reflect-metadata": "^0.1.12",
+        "inversify": "^5.0.1"
+    },
+    "scripts": {
+        "test": "echo \"Error: run tests from root\" && exit 1",
+        "tsc": "tsc"
+    },
+    "gitHead": "179c318fa443265abd6af14cb92955b78681ab9c"
+}

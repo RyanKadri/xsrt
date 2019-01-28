@@ -1,0 +1,9 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "outDir": "./lib",
+    },
+    "include": [
+        "./src", "../common/src/endpoint/chunk-endpoint-metadata.ts", "../common/src/endpoint/target-endpoint-metadata.ts", "../common/src/endpoint/recordings-endpoint-metadata.ts", "../common/src/endpoint/proxy-endpoint-metadata.ts"
+    ]
+}

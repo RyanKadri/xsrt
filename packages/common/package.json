@@ -1,0 +1,27 @@
+{
+    "name": "@xsrt/common",
+    "version": "0.1.0",
+    "description": "Shared code and types for XSRT components",
+    "author": "Ryan Kadri <ryankadri1@gmail.com>",
+    "license": "ISC",
+    "typings": "src/index.ts",
+    "main": "lib/index.js",
+    "directories": {
+        "lib": "lib"
+    },
+    "files": [
+        "lib"
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
+    "dependencies": {
+        "axios": "^0.18.0",
+        "inversify": "^5.0.1"
+    },
+    "scripts": {
+        "test": "echo \"Error: run tests from root\" && exit 1",
+        "tsc": "tsc"
+    },
+    "gitHead": "179c318fa443265abd6af14cb92955b78681ab9c"
+}

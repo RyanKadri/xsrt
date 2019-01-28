@@ -3,9 +3,9 @@
     "target": "es2018",
     "module": "es2015",
     "lib": ["dom", "es2018", "esnext.array"],
-    "outDir": "./dist/",
-    "downlevelIteration": true,
+    "declaration": true,
 
+    "skipLibCheck": true,
     "strict": true,
     "noImplicitAny": true,
     "alwaysStrict": true,
@@ -13,17 +13,21 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
+
     "moduleResolution": "node",
-    "esModuleInterop": true,
-    "jsx": "react",
     "resolveJsonModule": true,
     "sourceMap": true,
     "importHelpers": true,
 
-    "baseUrl": "./src",
+    "esModuleInterop": true,
+    "jsx": "react",
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "downlevelIteration": true
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/module.d.ts"],
-  "exclude": ["src/**/*.spec.ts", "src/**/*.exp.ts"]
+  "exclude": [
+      "node_modules",
+      "**/*.spec.ts",
+      "**/*.exp.ts"
+  ]
 }
