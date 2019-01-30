@@ -30,17 +30,17 @@ export class RecorderInitializer {
             ...diConfig
         ]);
 
+        this.orchestrator = injector.inject(RecorderOrchestrator);
+        this.recordingState = injector.inject(RecordingStateService);
+        this.apiService = injector.inject(RecorderApiService);
+
         const pendingRecordChunk = this.recordingState.fetchPendingChunk();
         if (pendingRecordChunk) {
             const activeConfig = this.recordingState.fetchActiveConfig();
             const activeRecordingId = this.recordingState.fetchRecordingId();
-            this.apiService!.postToBackend(pendingRecordChunk, activeRecordingId!, activeConfig.debugMode)
+            this.apiService.postToBackend(pendingRecordChunk, activeRecordingId!, activeConfig.debugMode)
                 .then(() => this.recordingState.removePendingChunk());
         }
-
-        this.orchestrator = injector.inject(RecorderOrchestrator);
-        this.recordingState = injector.inject(RecordingStateService);
-        this.apiService = injector.inject(RecorderApiService);
 
         this.recordingState.storeConfig(config);
         this.orchestrator.initialize();
