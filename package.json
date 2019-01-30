@@ -19,7 +19,7 @@
     "run:decorator": "node ./packages/decorators/dist/decorator-server.js",
     "build:docker": "concurrently \"npm:build:backend:watch\" \"npm:start:viewer\"",
     "build:recorder": "tsc -b packages/recorder",
-    "publish:recorder": "npm run build:recorder && lerna publish",
+    "publish:all": "npm run build:recorder && npm run build:extension && lerna publish",
     "build:tools": "webpack --mode development --config-name bootstrap-scripts",
     "build:extension": "webpack --config-name compile-extension",
     "test": "node --require ./spec/support/init.js ./node_modules/.bin/jasmine --config=jasmine.json",
