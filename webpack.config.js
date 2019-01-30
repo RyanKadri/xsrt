@@ -15,7 +15,7 @@ const common = (output, tsconfig) => ({
         publicPath: "/",
     },
     plugins: [
-        // new CleanWebpackPlugin([output], { beforeEmit: true } ),
+        new CleanWebpackPlugin([output], { beforeEmit: true } ),
     ],
     module: {
         rules: [
@@ -118,7 +118,7 @@ const bootstrapScripts = merge(common('dist/bootstrap', "packages/viewer/tsconfi
     },
 });
 
-const compileExtension = merge(common('dist/extension', 'packages/extension/tsconfig.json'), {
+const compileExtension = merge(common('packages/extension/dist', 'packages/extension/tsconfig.json'), {
     name: 'compile-extension',
     resolve: {
         extensions: ['.tsx', '.html'],
@@ -130,8 +130,10 @@ const compileExtension = merge(common('dist/extension', 'packages/extension/tsco
         ['popup']: './packages/extension/src/popup/index.tsx'
     },
     plugins: [
-        new CopyWebpackPlugin([{ from: "./packages/extension/src/**/*.{json,png,html,svg}", to: './', flatten: true } ])
-    ]
+        new CopyWebpackPlugin([{ from: "./packages/extension/src/**/*.{json,png,html,svg}", to: './', flatten: true } ]),
+        new BundleAnalyzerPlugin({ analyzerMode: 'static' }),
+    ],
+    mode: "production"
 });
 
 module.exports = [

@@ -4,14 +4,13 @@
     "description": "A chrome extension for testing XSRT on arbitrary sites",
     "author": "Ryan Kadri <ryankadri1@gmail.com>",
     "license": "ISC",
-    "typings": "lib/decorators.d.ts",
     "directories": {
-        "lib": "lib"
+        "lib": "dist"
     },
     "files": [
-        "lib"
+        "dist"
     ],
-    "private": true,
+    "private": false,
     "publishConfig": {
         "access": "public"
     },
