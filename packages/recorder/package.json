@@ -25,9 +25,5 @@
         "reflect-metadata": "^0.1.12",
         "axios": "^0.18.0"
     },
-    "scripts": {
-        "test": "echo \"Error: run tests from root\" && exit 1",
-        "tsc": "tsc"
-    },
     "gitHead": "179c318fa443265abd6af14cb92955b78681ab9c"
 }

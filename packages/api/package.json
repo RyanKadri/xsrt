@@ -4,11 +4,7 @@
     "description": "The server-side REST API for XSRT",
     "author": "Ryan Kadri <ryankadri1@gmail.com>",
     "license": "ISC",
-    "typings": "lib/api.d.ts",
     "private": true,
-    "directories": {
-        "lib": "lib"
-    },
     "dependencies": {
         "@xsrt/common": "^0.2.1",
         "@xsrt/common-backend": "^0.2.1",
@@ -23,12 +19,5 @@
     "files": [
         "lib"
     ],
-    "publishConfig": {
-        "access": "public"
-    },
-    "scripts": {
-        "test": "echo \"Error: run tests from root\" && exit 1",
-        "tsc": "tsc"
-    },
     "gitHead": "179c318fa443265abd6af14cb92955b78681ab9c"
 }

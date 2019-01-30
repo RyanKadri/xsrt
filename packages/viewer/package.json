@@ -4,8 +4,6 @@
     "description": "Web frontend for ",
     "author": "Ryan Kadri <ryankadri1@gmail.com>",
     "license": "ISC",
-    "main": "lib/index.js",
-    "typings": "lib/decorators.d.ts",
     "directories": {
         "lib": "lib"
     },
@@ -13,9 +11,6 @@
         "lib"
     ],
     "private": true,
-    "publishConfig": {
-        "access": "public"
-    },
     "devDependencies": {
         "@types/react": "^16.4.18",
         "@types/react-dom": "^16.0.9",
@@ -36,10 +31,6 @@
         "react-router": "^4.3.1",
         "react-router-dom": "^4.3.1",
         "reflect-metadata": "^0.1.12"
-    },
-    "scripts": {
-        "test": "echo \"Error: run tests from root\" && exit 1",
-        "tsc": "tsc"
     },
     "gitHead": "179c318fa443265abd6af14cb92955b78681ab9c"
 }

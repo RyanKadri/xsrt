@@ -10,7 +10,6 @@
     "files": [
         "dist"
     ],
-    "private": false,
     "publishConfig": {
         "access": "public"
     },
@@ -29,10 +28,6 @@
         "react": "^16.6.0",
         "react-dom": "^16.6.0",
         "reflect-metadata": "^0.1.12"
-    },
-    "scripts": {
-        "test": "echo \"Error: run tests from root\" && exit 1",
-        "tsc": "tsc"
     },
     "gitHead": "179c318fa443265abd6af14cb92955b78681ab9c"
 }
