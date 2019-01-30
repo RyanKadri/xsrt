@@ -1,14 +1,13 @@
 {
     "name": "@xsrt/decorators",
-    "version": "0.2.1",
+    "version": "0.3.0",
     "description": "Backend services for post-processing recordings",
     "author": "Ryan Kadri <ryankadri1@gmail.com>",
     "license": "ISC",
     "private": true,
-
     "dependencies": {
-        "@xsrt/common": "^0.2.1",
-        "@xsrt/common-backend": "^0.2.1",
+        "@xsrt/common": "^0.3.0",
+        "@xsrt/common-backend": "^0.3.0",
         "inversify": "^5.0.1",
         "puppeteer": "^1.10.0"
     },
