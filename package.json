@@ -11,7 +11,7 @@
   "scripts": {
     "build:viewer": "webpack --config-name viewer-prod",
     "start:viewer": "webpack-dev-server --config-name viewer-dev",
-    "build:backend": "webpack --config-name compile-backend",
+    "build:backend": "tsc -b packages/api packages/decorators",
     "build:backend:watch": "npm run build:backend -- --watch",
     "start:api": "npm run build:backend && npm run run:api",
     "run:api": "node ./dist/backend/api-service.bundle.js",

@@ -4,7 +4,8 @@
     "description": "The client-side recorder for XSRT",
     "author": "Ryan Kadri <ryankadri1@gmail.com>",
     "license": "ISC",
-    "typings": "src/public_api.ts",
+    "module": "lib/public_api.js",
+    "typings": "lib/public_api.d.ts",
     "directories": {
         "lib": "lib"
     },

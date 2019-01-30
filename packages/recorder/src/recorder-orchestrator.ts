@@ -1,5 +1,5 @@
 import { LoggingService, PendingDiffChunk, PendingSnapshotChunk, pluck, RecordingChunk, ScraperConfig, ScraperConfigToken, SnapshotChunk, sortAsc, Without } from "@xsrt/common";
-import { mergeMaps } from "@xsrt/common/src/utils/input-utils";
+import { mergeMaps } from "@xsrt/common";
 import { inject, injectable } from "inversify";
 import { RecorderApiService } from "./api/recorder-api-service";
 import { RecordingInfo, RecordingStateService } from "./api/recording-state-service";
