@@ -11,6 +11,7 @@
     },
     "dependencies": {
         "@xsrt/common": "^0.2.0",
+        "@xsrt/common-backend": "^0.2.0",
         "axios": "^0.18.0",
         "body-parser": "^1.18.3",
         "cors": "^2.8.5",

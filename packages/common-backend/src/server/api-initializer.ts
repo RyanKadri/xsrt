@@ -1,9 +1,9 @@
+import { constantWithDeps, DIInitializer, EndpointDefinition, initializeApp } from "@xsrt/common";
 import dotenv from "dotenv";
 import { interfaces } from "inversify";
-import { constantWithDeps, DIInitializer, initializeApp } from "../services/app-initializer";
 import { IRouteImplementation } from "./express-server";
 import { RouteImplementer } from "./implement-route";
-import { EndpointDefinition, RouteImplementation } from "./route-types";
+import { RouteImplementation } from "./route-types";
 
 dotenv.load();
 

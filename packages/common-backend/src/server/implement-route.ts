@@ -1,8 +1,8 @@
+import { DependencyInjector, EndpointDefinition } from "@xsrt/common";
 import { Request, Response, Router } from "express";
 import { injectable, interfaces } from "inversify";
-import { DependencyInjector } from "../services/dependency-injector";
 import { RequestHandler } from "./request-handler";
-import { EndpointDefinition, MethodImplementation, RouteImplementation } from "./route-types";
+import { MethodImplementation, RouteImplementation } from "./route-types";
 
 @injectable()
 export class RouteImplementer {

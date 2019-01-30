@@ -1,8 +1,5 @@
-import { Without } from "../../common/utils/type-utils";
-// import * as template from "../../viewer/index.html";
-import { ScraperConfig } from "../config/scraper-config";
-import { SnapshotChunk } from "../types/types";
-import { toJson } from "../utils/utils";
+import { ScraperConfig, SnapshotChunk, Without } from "@xsrt/common";
+import { toJson } from "../utils/dom-utils";
 import { triggerDownload } from "./output-utils";
 
 // function serializeToViewer(data: Without<SnapshotChunk, "_id">) {

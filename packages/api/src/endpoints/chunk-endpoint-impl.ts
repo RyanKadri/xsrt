@@ -1,4 +1,5 @@
-import { Chunk, chunkEndpointMetadata, errorNotFound, RecordingChunk, RecordingSchema, RouteImplementation } from "@xsrt/common";
+import { chunkEndpointMetadata, RecordingChunk } from "@xsrt/common";
+import { Chunk, errorNotFound, RecordingSchema, RouteImplementation } from "@xsrt/common-backend";
 import { injectable } from "inversify";
 
 type ChunkEndpointType = RouteImplementation<typeof chunkEndpointMetadata>;

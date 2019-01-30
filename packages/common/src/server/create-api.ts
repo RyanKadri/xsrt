@@ -2,10 +2,10 @@ import { AxiosStatic } from "axios";
 import { inject, injectable } from "inversify";
 import { ScraperConfig, ScraperConfigToken } from "../config/scraper-config";
 import { AxiosSymbol } from "../di/di.tokens";
+import { ApiMethodClientOptions, EndpointDefinition, PayloadVerbDefinition, RequestParams, UrlVerbDefinition } from "../endpoint/types";
 import { mapDictionary } from "../utils/functional-utils";
 import { Interface } from "../utils/type-utils";
 import { ApiRequestPartExtractor } from "./api-request-extractor";
-import { ApiMethodClientOptions, EndpointDefinition, PayloadVerbDefinition, RequestParams, UrlVerbDefinition } from "./route-types";
 
 @injectable()
 export class ApiCreationService {

@@ -17,6 +17,7 @@
     },
     "dependencies": {
         "@xsrt/common": "^0.2.0",
+        "@xsrt/common-backend": "^0.2.0",
         "inversify": "^5.0.1",
         "puppeteer": "^1.10.0"
     },

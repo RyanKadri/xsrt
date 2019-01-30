@@ -1,0 +1,19 @@
+{
+    "files": [],
+    "references": [
+        { "path": "./api" },
+        { "path": "./common" },
+        { "path": "./common-backend" },
+        { "path": "./common-frontend" },
+        { "path": "./decorators" },
+        { "path": "./extension" },
+        { "path": "./recorder" },
+        { "path": "./viewer" }
+    ],
+    "compilerOptions": {
+        "paths": {
+            "@xsrt/common": ["./common"],
+            "@xsrt/common-frontend": ["./common-frontend"]
+        }
+    }
+}

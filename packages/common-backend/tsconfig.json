@@ -4,12 +4,10 @@
         "outDir": "lib",
         "rootDir": "src"
     },
-    "references": [
-        { "path": "../common" },
-        { "path": "../common-frontend" },
-        { "path": "../recorder" },
-    ],
     "include": [
         "src"
+    ],
+    "references": [
+        { "path": "../common" }
     ]
 }

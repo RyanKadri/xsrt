@@ -1,5 +1,6 @@
 /* istanbul ignore file */
-import { ApiInitializer, dependencyGroup, endpointDef, implementationChoice, IServerConfig, IServerInitializer, MongoInitializer } from "@xsrt/common";
+import { dependencyGroup, implementationChoice } from "@xsrt/common";
+import { ApiInitializer, endpointDef, IServerConfig, IServerInitializer, MongoInitializer } from "@xsrt/common-backend";
 import { thumbnailEndpointMetadata } from "../../common/src/endpoint/thumbnail-endpoint-metadata";
 import { ThumbnailEndpoint } from "./compile-thumbnail/endpoints/thumbnail-endpoints";
 import { DecoratorConfig, ExpressInitializer } from "./decorator-server-config";

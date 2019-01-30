@@ -1,4 +1,4 @@
-import { ServerConfig, ServerInitializer } from "@xsrt/common";
+import { ServerConfig, ServerInitializer } from "@xsrt/common-backend";
 import bodyParser from "body-parser";
 import cors from "cors";
 import { Express } from "express";

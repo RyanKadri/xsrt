@@ -1,4 +1,4 @@
-import { ExpressServer, initializeApi } from "@xsrt/common";
+import { ExpressServer, initializeApi } from "@xsrt/common-backend";
 import "reflect-metadata";
 import { apiDiConfig } from "./di.api";
 

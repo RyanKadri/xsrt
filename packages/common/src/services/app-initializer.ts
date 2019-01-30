@@ -1,6 +1,7 @@
+import "reflect-metadata";
 import { Container, interfaces } from "inversify";
+import { EndpointDefinition } from "../endpoint/types";
 import { ApiCreationService } from "../server/create-api";
-import { EndpointDefinition } from "../server/route-types";
 import { Interface } from "../utils/type-utils";
 import { DependencyInjector } from "./dependency-injector";
 

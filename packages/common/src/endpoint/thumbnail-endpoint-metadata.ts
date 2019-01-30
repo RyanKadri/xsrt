@@ -1,4 +1,4 @@
-import { defineEndpoint, RouteParamUnwrap, Type } from "../server/route-types";
+import { defineEndpoint, RouteParamUnwrap, Type } from "./types";
 
 export const thumbnailEndpointMetadata = defineEndpoint({
     compileThumbnail: {

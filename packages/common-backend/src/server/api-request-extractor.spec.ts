@@ -1,4 +1,4 @@
-import { ApiRequestPartExtractor } from "./api-request-extractor";
+import { ApiRequestPartExtractor } from "@xsrt/common";
 import { RequestBodyUnwrap, RequestParamUnwrap, RouteParamUnwrap } from "./route-types";
 
 describe(ApiRequestPartExtractor.name, () => {

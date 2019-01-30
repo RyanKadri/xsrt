@@ -229,3 +229,13 @@ export interface ViewportSize {
     height: number;
     width: number;
 }
+
+export interface SiteTarget {
+    _id: string;
+    name: string;
+    identifiedBy: "host";
+    identifier: string;
+    url: string;
+}
+
+export type NewSiteTarget = Without<SiteTarget, "_id">;

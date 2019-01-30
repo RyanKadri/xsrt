@@ -1,7 +1,7 @@
 import { AxiosResponse, AxiosStatic } from "axios";
+import { RequestParamUnwrap, RouteParamUnwrap, Type } from "../endpoint/types";
 import { ApiRequestPartExtractor } from "./api-request-extractor";
 import { ApiCreationService } from './create-api';
-import { RequestParamUnwrap, RouteParamUnwrap, Type } from "./route-types";
 
 describe(ApiCreationService.name, () => {
     it('Makes an http call with the proper URL (given passed route params)', () => {

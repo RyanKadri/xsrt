@@ -1,6 +1,6 @@
-import { defineEndpoint, RequestBodyUnwrap, RequestHeader, RequestParamUnwrap, RouteParamUnwrap, Type } from "../server/route-types";
 import { LocationMetadata, Recording, RecordingOverview } from "../types/types";
 import { DeepPartial } from "../utils/type-utils";
+import { defineEndpoint, RequestBodyUnwrap, RequestHeader, RequestParamUnwrap, RouteParamUnwrap, Type } from "./types";
 
 const recordingIdParam = "recordingId";
 const singleRecordingUrl = `/recordings/:${recordingIdParam}`;

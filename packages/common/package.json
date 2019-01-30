@@ -4,8 +4,9 @@
     "description": "Shared code and types for XSRT components",
     "author": "Ryan Kadri <ryankadri1@gmail.com>",
     "license": "ISC",
-    "typings": "src/index.ts",
+    "typings": "lib/index.d.ts",
     "main": "lib/index.js",
+    "sideEffects": false,
     "directories": {
         "lib": "lib"
     },
@@ -17,7 +18,8 @@
     },
     "dependencies": {
         "axios": "^0.18.0",
-        "inversify": "^5.0.1"
+        "inversify": "^5.0.1",
+        "reflect-metadata": "^0.1.12"
     },
     "scripts": {
         "test": "echo \"Error: run tests from root\" && exit 1",

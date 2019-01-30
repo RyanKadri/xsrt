@@ -4,6 +4,7 @@
     "description": "Web frontend for ",
     "author": "Ryan Kadri <ryankadri1@gmail.com>",
     "license": "ISC",
+    "main": "lib/index.js",
     "typings": "lib/decorators.d.ts",
     "directories": {
         "lib": "lib"

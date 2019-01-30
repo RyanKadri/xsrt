@@ -4,6 +4,8 @@
     "module": "es2015",
     "lib": ["dom", "es2018", "esnext.array"],
     "declaration": true,
+    "composite": true,
+    "declarationMap": true,
 
     "skipLibCheck": true,
     "strict": true,
@@ -28,6 +30,7 @@
   "exclude": [
       "node_modules",
       "**/*.spec.ts",
-      "**/*.exp.ts"
+      "**/*.exp.ts",
+      "**/node_modules/**"
   ]
 }

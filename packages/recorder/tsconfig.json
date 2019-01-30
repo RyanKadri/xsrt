@@ -1,9 +1,11 @@
 {
-    "extends": "../../tsconfig.json",
+    "extends": "../tsconfig.settings.json",
     "compilerOptions": {
-        "outDir": "./lib",
+        "outDir": "lib",
+        "rootDir": "src"
     },
-    "files": [
-        "./src/public_api.ts"
-    ]
+    "references": [
+        { "path": "../common"}
+    ],
+    "include": ["src"]
 }

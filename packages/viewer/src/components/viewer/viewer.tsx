@@ -1,7 +1,6 @@
 import { CircularProgress, createStyles, Theme, withStyles, WithStyles } from "@material-ui/core";
-import { between, RecordedMutationGroup, RecordingMetadata, SnapshotChunk } from "@xsrt/common";
+import { between, formatPlayerTime, RecordedMutationGroup, RecordingMetadata, SnapshotChunk } from "@xsrt/common";
 import { withDependencies } from "@xsrt/common-frontend";
-import { formatPlayerTime } from "@xsrt/common/src/utils/format-utils";
 import * as React from "react";
 import { Fragment } from "react";
 import { RecordingAnnotation } from "../../services/annotation/annotation-service";

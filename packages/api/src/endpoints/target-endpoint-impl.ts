@@ -1,4 +1,5 @@
-import { errorNotFound, RouteImplementation, siteTargetEndpoint, Target } from "@xsrt/common";
+import { siteTargetEndpoint } from "@xsrt/common";
+import { errorNotFound, RouteImplementation, Target } from "@xsrt/common-backend";
 import { injectable } from "inversify";
 
 type TargetEndpointType = RouteImplementation<typeof siteTargetEndpoint>;

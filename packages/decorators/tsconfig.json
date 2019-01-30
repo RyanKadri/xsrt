@@ -1,9 +1,14 @@
 {
-    "extends": "../../tsconfig.json",
+    "extends": "../tsconfig.settings.json",
     "compilerOptions": {
-        "outDir": "./lib",
+        "outDir": "lib",
+        "rootDir": "src",
     },
+    "references": [
+        { "path": "../common" },
+        { "path": "../common-backend" }
+    ],
     "include": [
-        "./src", "../common/src/endpoint/thumbnail-endpoint-metadata.ts"
+        "src"
     ]
 }

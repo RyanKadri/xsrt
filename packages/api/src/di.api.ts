@@ -1,9 +1,6 @@
 /* istanbul ignore file */
-import { ApiInitializer, dependencyGroup, endpointDef, implementationChoice, IServerConfig, IServerInitializer, MongoInitializer } from "@xsrt/common";
-import { chunkEndpointMetadata } from "@xsrt/common/src/endpoint/chunk-endpoint-metadata";
-import { assetEndpoint } from "@xsrt/common/src/endpoint/proxy-endpoint-metadata";
-import { recordingEndpoint } from "@xsrt/common/src/endpoint/recordings-endpoint-metadata";
-import { siteTargetEndpoint } from "@xsrt/common/src/endpoint/target-endpoint-metadata";
+import { assetEndpoint, chunkEndpointMetadata, dependencyGroup, implementationChoice, recordingEndpoint, siteTargetEndpoint } from "@xsrt/common";
+import { ApiInitializer, endpointDef, IServerConfig, IServerInitializer, MongoInitializer } from "@xsrt/common-backend";
 import { ApiServerConfig, ApiServerInitializer } from "./api-server-conf";
 import { ChunkEndpoint } from "./endpoints/chunk-endpoint-impl";
 import { AssetEndpoint } from "./endpoints/proxy-endpoint-impl";

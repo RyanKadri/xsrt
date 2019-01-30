@@ -1,3 +1,4 @@
+require('dotenv').load();
 const path = require('path');
 const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
@@ -21,8 +22,13 @@ const common = (output) => ({
         rules: [
             {
                 test: /\.tsx?$/,
-                use: 'ts-loader',
-                exclude: /node_modules/
+                use: [{
+                    loader: 'ts-loader',
+                    options: {
+                        configFile: "packages/viewer/tsconfig.json"
+                    }
+                }],
+                exclude: /node_modules/,
             },
             {
                 test: /\.html$/,
@@ -37,7 +43,7 @@ const common = (output) => ({
 
 const frontendCommon = merge(common('dist/web/'), {
     entry: {
-        viewer: './src/viewer/index.tsx',
+        viewer: './packages/viewer/src/index.tsx',
     },
     optimization: {
         splitChunks: {
@@ -55,7 +61,7 @@ const frontendCommon = merge(common('dist/web/'), {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: './src/viewer/index.html',
+            template: './packages/viewer/src/index.html',
             meta: {
                 charset: "UTF-8",
                 viewport: "minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
@@ -69,9 +75,8 @@ const viewerDev = merge(frontendCommon, {
     name: 'viewer-dev',
     plugins: [
     ],
-
     devServer: {
-        contentBase: path.join(__dirname, 'src/viewer'),
+        contentBase: path.join(__dirname, 'packages/viewer/src'),
         port: process.env.WEBPACK_PORT,
         publicPath: `http://localhost:${process.env.WEBPACK_PORT}/`,
         historyApiFallback: true,
@@ -99,8 +104,8 @@ const viewerProd = merge(frontendCommon, {
 const bootstrapScripts = merge(common('dist/bootstrap'), {
     name: 'bootstrap-scripts',
     entry: {
-        ['scraper-bootstrap']: './src/scraper/bootstrap/scraper-bootstrap.ts',
-        ['screenshot-bootstrap']: './src/viewer/bootstrap/bootstrap-screenshot.ts',
+        ['scraper-bootstrap']: './packages/recorder/src/bootstrap/scraper-bootstrap.ts',
+        ['screenshot-bootstrap']: './packages/viewer/src/bootstrap/bootstrap-screenshot.ts',
     },
 });
 
@@ -110,13 +115,13 @@ const compileExtension = merge(common('dist/extension'), {
         extensions: ['.tsx', '.html'],
     },
     entry: {
-        ['bootstrap']: './src/extension/bootstrap/extension-bootstrap.ts',
-        ['background']: './src/extension/background/background.ts',
-        ['content']: './src/extension/content/extension-content.ts',
-        ['popup']: './src/extension/popup/index.tsx'
+        ['bootstrap']: './packages/extension/src/bootstrap/extension-bootstrap.ts',
+        ['background']: './packages/extension/src/background/background.ts',
+        ['content']: './packages/extension/src/content/extension-content.ts',
+        ['popup']: './packages/extension/src/popup/index.tsx'
     },
     plugins: [
-        new CopyWebpackPlugin([{ from: "./src/extension/**/*.{json,png,html,svg}", to: './', flatten: true } ])
+        new CopyWebpackPlugin([{ from: "./packages/extension/src/**/*.{json,png,html,svg}", to: './', flatten: true } ])
     ]
 });
 
@@ -125,8 +130,8 @@ const compileBackend = merge(common('dist/backend'), {
     target: 'node',
     externals: [nodeExternals()],
     entry: {
-        'api-service': './src/api/api-server.ts',
-        'decorator-service': './src/decorators/decorator-server.ts'
+        'api-service': './packages/api/src/api-server.ts',
+        'decorator-service': './packages/decorators/src/decorator-server.ts'
     },
     resolve: {
         extensions: ['.node'],

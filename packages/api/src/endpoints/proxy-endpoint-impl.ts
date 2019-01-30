@@ -1,4 +1,5 @@
-import { Asset, assetEndpoint, downloadResponse, errorNotFound, IServerConfig, ProxiedAsset, RouteImplementation } from "@xsrt/common";
+import { assetEndpoint } from "@xsrt/common";
+import { Asset, downloadResponse, errorNotFound, IServerConfig, ProxiedAsset, RouteImplementation } from "@xsrt/common-backend";
 import axios from "axios";
 import { createHash } from "crypto";
 import { createWriteStream, mkdir, rename, WriteStream } from "fs";

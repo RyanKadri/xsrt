@@ -1,6 +1,6 @@
-import { LoggingService, RecordingSchema, RouteImplementation } from "@xsrt/common";
+import { LoggingService, thumbnailEndpointMetadata } from "@xsrt/common";
+import { RecordingSchema, RouteImplementation } from "@xsrt/common-backend";
 import { injectable } from "inversify";
-import { thumbnailEndpointMetadata } from "../../../../common/src/endpoint/thumbnail-endpoint-metadata";
 import { ThumbnailCompiler } from "../compiler/to-image";
 
 type ThumbnailEndpointType = RouteImplementation<typeof thumbnailEndpointMetadata>;

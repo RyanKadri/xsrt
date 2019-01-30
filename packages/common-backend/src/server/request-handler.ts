@@ -1,10 +1,8 @@
+import { InjectionParamMap, Interface, mapDictionary, RequestUnwrapper } from "@xsrt/common";
 import { Request, Response } from "express";
 import { injectable } from "inversify";
-import { mapDictionary } from "../utils/functional-utils";
-import { Interface } from "../utils/type-utils";
-import { InjectionParamMap } from "./api-request-extractor";
 import { HttpResponseCodes } from "./http-codes";
-import { ExplicitResponse, MethodImplementation, RequestUnwrapper, ResponseHeader } from "./route-types";
+import { ExplicitResponse, MethodImplementation, ResponseHeader } from "./route-types";
 
 @injectable()
 export class RequestHandler {

@@ -5,7 +5,7 @@ import FastRewindSharp from "@material-ui/icons/FastRewindSharp";
 import PauseSharp from "@material-ui/icons/PauseSharp";
 import PlaySharp from "@material-ui/icons/PlayArrowSharp";
 import SettingsIcon from "@material-ui/icons/SettingsSharp";
-import { formatPlayerTime } from "@xsrt/common/src/utils/format-utils";
+import { formatPlayerTime } from "@xsrt/common";
 import * as React from "react";
 import { RecordingAnnotation } from "../../../services/annotation/annotation-service";
 import { Region } from "../../../services/regions-service";

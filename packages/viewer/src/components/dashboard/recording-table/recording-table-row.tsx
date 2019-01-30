@@ -1,6 +1,5 @@
 import { Checkbox, createStyles, TableCell, TableRow, WithStyles, withStyles } from "@material-ui/core";
-import { RecordingOverview } from "@xsrt/common";
-import { formatDate, formatPlayerTime } from "@xsrt/common/src/utils/format-utils";
+import { formatDate, formatPlayerTime, RecordingOverview } from "@xsrt/common";
 import React from "react";
 import { Link } from "react-router-dom";
 import { AvailableRecordingColumn, RecordingColumn } from "./available-columns";

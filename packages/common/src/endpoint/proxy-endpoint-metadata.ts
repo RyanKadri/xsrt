@@ -1,4 +1,4 @@
-import { defineEndpoint, RequestBodyUnwrap, RequestHeader, RouteParamUnwrap, Type } from "../server/route-types";
+import { defineEndpoint, RequestBodyUnwrap, RequestHeader, RouteParamUnwrap, Type } from "./types";
 
 export const assetApiSymbol = Symbol("AssetApiSymbol");
 export const assetEndpoint = defineEndpoint({

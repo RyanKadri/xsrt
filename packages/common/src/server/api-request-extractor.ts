@@ -1,6 +1,5 @@
 import { injectable } from "inversify";
-import { MapTo } from "../utils/type-utils";
-import { GetDeleteInjectionParam, PostPutInjectionParam, RequestParams } from "./route-types";
+import { GetDeleteInjectionParam, InjectionParamMap, PostPutInjectionParam, RequestParams } from "../endpoint/types";
 
 @injectable()
 export class ApiRequestPartExtractor {
@@ -38,5 +37,3 @@ export class ApiRequestPartExtractor {
     }
 
 }
-
-export type InjectionParamMap = MapTo<GetDeleteInjectionParam> | MapTo<PostPutInjectionParam<any>>;
