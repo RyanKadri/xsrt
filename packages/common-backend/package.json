@@ -1,6 +1,6 @@
 {
     "name": "@xsrt/common-backend",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "description": "Shared code and types for XSRT components",
     "author": "Ryan Kadri <ryankadri1@gmail.com>",
     "license": "ISC",
@@ -21,13 +21,13 @@
         "@types/mongoose": "^5.3.1"
     },
     "dependencies": {
+        "@xsrt/common": "^0.2.1",
         "axios": "^0.18.0",
-        "inversify": "^5.0.1",
-        "express": "^4.16.4",
-        "mongoose": "^5.3.1",
-        "shortid": "^2.2.14",
         "dotenv": "^6.1.0",
-        "@xsrt/common": "0.2.0"
+        "express": "^4.16.4",
+        "inversify": "^5.0.1",
+        "mongoose": "^5.3.1",
+        "shortid": "^2.2.14"
     },
     "scripts": {
         "test": "echo \"Error: run tests from root\" && exit 1",

@@ -1,6 +1,6 @@
 {
     "name": "@xsrt/recorder",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "description": "The client-side recorder for XSRT",
     "author": "Ryan Kadri <ryankadri1@gmail.com>",
     "license": "ISC",
@@ -19,10 +19,10 @@
         "@types/pako": "^1.0.0"
     },
     "dependencies": {
-        "@xsrt/common": "^0.2.0",
+        "@xsrt/common": "^0.2.1",
         "inversify": "^5.0.1",
-        "reflect-metadata": "^0.1.12",
-        "pako": "^1.0.6"
+        "pako": "^1.0.6",
+        "reflect-metadata": "^0.1.12"
     },
     "scripts": {
         "test": "echo \"Error: run tests from root\" && exit 1",
