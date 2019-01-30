@@ -14,15 +14,15 @@
     "build:backend": "tsc -b packages/api packages/decorators",
     "build:backend:watch": "npm run build:backend -- --watch",
     "start:api": "npm run build:backend && npm run run:api",
-    "run:api": "node ./dist/backend/api-service.bundle.js",
+    "run:api": "node ./packages/api/dist/api-server.js",
     "start:decorator": "npm run build:backend && npm run run:decorator",
-    "run:decorator": "node ./dist/backend/decorator-service.bundle.js",
+    "run:decorator": "node ./packages/decorators/dist/decorator-server.js",
     "build:docker": "concurrently \"npm:build:backend:watch\" \"npm:start:viewer\"",
     "build:tools": "webpack --mode development --config-name bootstrap-scripts",
     "build:extension": "webpack --watch --mode development --config-name compile-extension",
     "test": "node --require ./spec/support/init.js ./node_modules/.bin/jasmine --config=jasmine.json",
     "test:coverage": "nyc ./node_modules/.bin/jasmine --config=jasmine.json",
-    "test:watch": "nodemon -w src -e ts,tsx --exec \"node --require ./spec/support/init.js ./node_modules/.bin/jasmine --config=jasmine.json\"",
+    "test:watch": "nodemon -w packages --ignore '*/node_modules/**/*' -e ts,tsx --exec \"node --require ./spec/support/init.js ./node_modules/.bin/jasmine --config=jasmine.json\"",
     "lint": "tslint --project packages/tsconfig.json"
   },
   "author": "Ryan Kadri",
@@ -69,8 +69,6 @@
     "webpack-node-externals": "^1.7.2"
   },
   "dependencies": {
-    "buffer": "^5.2.1",
-    "tsconfig-paths": "^3.7.0",
     "tslib": "^1.9.3"
   }
 }

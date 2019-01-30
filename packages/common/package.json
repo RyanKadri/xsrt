@@ -6,6 +6,7 @@
     "license": "ISC",
     "typings": "lib/index.d.ts",
     "module": "lib/index.js",
+    "main": "lib-cjs/index.js",
     "sideEffects": false,
     "directories": {
         "lib": "lib"
@@ -20,7 +21,7 @@
         "axios": "^0.18.0",
         "inversify": "^5.0.1",
         "reflect-metadata": "^0.1.12"
-    },
+},
     "scripts": {
         "test": "echo \"Error: run tests from root\" && exit 1",
         "tsc": "tsc"

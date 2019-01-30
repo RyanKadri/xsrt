@@ -1,4 +1,4 @@
-import { noop } from "../../../common/utils/functional-utils";
+import { noop } from "@xsrt/common";
 import { GlobalEventService } from './global-event-service';
 
 describe(GlobalEventService.name, () => {

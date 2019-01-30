@@ -1,5 +1,5 @@
 import { ApiRequestPartExtractor } from "@xsrt/common";
-import { RequestBodyUnwrap, RequestParamUnwrap, RouteParamUnwrap } from "./route-types";
+import { RequestBodyUnwrap, RequestParamUnwrap, RouteParamUnwrap } from "@xsrt/common";
 
 describe(ApiRequestPartExtractor.name, () => {
     const service = new ApiRequestPartExtractor();

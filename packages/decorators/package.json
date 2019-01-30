@@ -4,26 +4,13 @@
     "description": "Backend services for post-processing recordings",
     "author": "Ryan Kadri <ryankadri1@gmail.com>",
     "license": "ISC",
-    "typings": "lib/decorators.d.ts",
     "private": true,
-    "directories": {
-        "lib": "lib"
-    },
-    "files": [
-        "lib"
-    ],
-    "publishConfig": {
-        "access": "public"
-    },
+
     "dependencies": {
         "@xsrt/common": "^0.2.1",
         "@xsrt/common-backend": "^0.2.1",
         "inversify": "^5.0.1",
         "puppeteer": "^1.10.0"
-    },
-    "scripts": {
-        "test": "echo \"Error: run tests from root\" && exit 1",
-        "tsc": "tsc"
     },
     "gitHead": "179c318fa443265abd6af14cb92955b78681ab9c"
 }

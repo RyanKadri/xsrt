@@ -5,7 +5,8 @@
     "author": "Ryan Kadri <ryankadri1@gmail.com>",
     "license": "ISC",
     "typings": "lib/index.d.ts",
-    "module": "lib/index.ts",
+    "main": "lib-cjs/index.js",
+    "module": "lib/index.js",
     "sideEffects": false,
     "directories": {
         "lib": "lib"

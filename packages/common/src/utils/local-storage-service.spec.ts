@@ -46,7 +46,7 @@ describe(LocalStorageService.name, () => {
     })
 })
 
-function mockLocalStorage(val: string) {
+function mockLocalStorage(val: string | null | undefined) {
     return jasmine.createSpyObj<Storage>("localStorage", {
         getItem: val,
         setItem: undefined

@@ -1,5 +1,5 @@
 import { RecordingDomManager } from "../../traverse/traverse-dom";
-import { ScrapedHtmlElement } from "../../types/types";
+import { ScrapedHtmlElement } from "@xsrt/common";
 import { TimeManager } from "../../utils/time-manager";
 import { GlobalEventService } from "./global-event-service";
 import { CompleteInputRecorder, EventCallbackCreator, UserInputRecorder } from "./input-recorder";

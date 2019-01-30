@@ -22,7 +22,8 @@
         "@xsrt/common": "^0.2.1",
         "inversify": "^5.0.1",
         "pako": "^1.0.6",
-        "reflect-metadata": "^0.1.12"
+        "reflect-metadata": "^0.1.12",
+        "axios": "^0.18.0"
     },
     "scripts": {
         "test": "echo \"Error: run tests from root\" && exit 1",

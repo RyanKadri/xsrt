@@ -1,13 +1,18 @@
 {
-    "extends": "./tsconfig.json",
+    "extends": "./packages/tsconfig.settings.json",
     "compilerOptions": {
         "module": "commonjs",
         "outDir": "dist/spec",
         "sourceMap": true,
+        "baseUrl": "./packages",
+        "skipLibCheck": true,
     },
     "include": [
-        "src/**/*.ts",
-        "src/**/*.tsx",
-        "src/module.d.ts"
+        "packages/**/src/**/*.ts",
+        "packages/**/src/**/*.tsx",
+        "packages/viewer/src/module.d.ts"
+    ],
+    "exclude": [
+        "packages/**/node_modules/**/*"
     ]
 }

@@ -1,6 +1,6 @@
-import { LoggingService } from "../../../common/utils/log-service";
+import { LoggingService } from "@xsrt/common";
 import { RecordingDomManager } from "../../traverse/traverse-dom";
-import { ScrapedHtmlElement } from "../../types/types";
+import { ScrapedHtmlElement } from "@xsrt/common";
 import { MutationTransformer } from './mutation-transformer';
 
 describe(MutationTransformer.name, () => {

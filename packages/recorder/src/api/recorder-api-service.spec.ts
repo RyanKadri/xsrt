@@ -1,5 +1,5 @@
-import { recordingEndpoint } from "../../api/endpoints/recordings-endpoint-metadata";
-import { EndpointApi } from "../../common/server/route-types";
+import { recordingEndpoint } from "@xsrt/common";
+import { EndpointApi } from "@xsrt/common";
 import { RecorderApiService } from './recorder-api-service';
 import { RecordingStateService } from "./recording-state-service";
 

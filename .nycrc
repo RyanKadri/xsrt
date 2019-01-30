@@ -7,8 +7,8 @@
         ".tsx"
     ],
     "include": [
-        "src/**/*.ts",
-        "src/**/*.tsx"
+        "packages/*/src/**/*.ts",
+        "src/*/src/**/*.tsx"
     ],
     "all": true,
     "sourceMaps": true,

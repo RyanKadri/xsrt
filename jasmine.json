@@ -1,10 +1,11 @@
 {
-  "spec_dir": "src",
+  "spec_dir": "packages",
   "spec_files": [
-    "../../spec/support/init.js",
-    "**/*[sS]pec.ts",
-    "**/*[sS]pec.tsx"
+    "**/*.[sS]pec.ts",
+    "**/*.[sS]pec.tsx",
+    "!**/node_modules"
   ],
+
   "stopSpecOnExpectationFailure": false,
   "random": true
 }
