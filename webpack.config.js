@@ -24,7 +24,7 @@ const common = (output, tsconfig) => ({
                 use: [{
                     loader: 'ts-loader',
                     options: {
-                        configFile: tsconfig
+                        configFile: path.resolve(__dirname, tsconfig)
                     }
                 }],
                 exclude: /node_modules/,
@@ -40,7 +40,7 @@ const common = (output, tsconfig) => ({
     }
 });
 
-const frontendCommon = merge(common('dist/web/', "/packages/viewer/tsconfig.json"), {
+const frontendCommon = merge(common('dist/web/', "packages/viewer/tsconfig.json"), {
     entry: {
         viewer: './packages/viewer/src/index.tsx',
     },
@@ -100,7 +100,7 @@ const viewerProd = merge(frontendCommon, {
     mode: 'production'
 });
 
-const recordingClient = merge(common('dist/recorder', "/personal/dev/www/xsrt/packages/recorder/tsconfig.json"), {
+const recordingClient = merge(common('dist/recorder', "packages/recorder/tsconfig.json"), {
     name: 'recording-client',
     plugins: [
         new BundleAnalyzerPlugin({ analyzerMode: 'static' }),
@@ -111,15 +111,14 @@ const recordingClient = merge(common('dist/recorder', "/personal/dev/www/xsrt/pa
     mode: 'production'
 })
 
-const bootstrapScripts = merge(common('dist/bootstrap'), {
+const bootstrapScripts = merge(common('dist/bootstrap', "packages/viewer/tsconfig.json"), {
     name: 'bootstrap-scripts',
     entry: {
-        ['scraper-bootstrap']: './packages/recorder/src/bootstrap/scraper-bootstrap.ts',
         ['screenshot-bootstrap']: './packages/viewer/src/bootstrap/bootstrap-screenshot.ts',
     },
 });
 
-const compileExtension = merge(common('dist/extension', './packages/extension/tsconfig.json'), {
+const compileExtension = merge(common('dist/extension', 'packages/extension/tsconfig.json'), {
     name: 'compile-extension',
     resolve: {
         extensions: ['.tsx', '.html'],
