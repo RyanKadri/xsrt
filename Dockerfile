@@ -3,12 +3,14 @@ FROM node:11.0.0 as builder
 WORKDIR /app/
 
 COPY package*.json ./
-COPY webpack* ./
-COPY tsconfig*.json ./
-
 RUN npm set progress=false
 RUN npm install --no-audit --no-optional
-COPY src src
+COPY packages packages
+RUN npx tsc -b packages/
+COPY lerna.json ./
+RUN npx lerna bootstrap
+
+COPY webpack.config.js ./
 
 # Backend build environment
 FROM builder as backend-builder
@@ -17,20 +19,27 @@ RUN npm run build:backend
 # Base image for api and decorator servers
 FROM node:11.0.0-alpine as backend-base
 WORKDIR /app/
-COPY --from=backend-builder /app/dist/backend .
 COPY --from=backend-builder /app/node_modules ./node_modules
+COPY --from=backend-builder /app/packages/common ./common/
+COPY --from=backend-builder /app/packages/common-backend ./common-backend/
+
 
 # API app server
 FROM backend-base as api
+COPY --from=backend-builder /app/packages/api/dist ./api/dist
+COPY --from=backend-builder /app/packages/api/node_modules ./api/node_modules
+
 ARG port
 EXPOSE ${port}
-CMD ["node", "api-service.bundle.js"]
+CMD ["node", "./api/dist/api-server.js"]
 
 # Decorator app server
 FROM backend-base as decorator
+COPY --from=backend-builder /app/packages/decorators/dist ./decorators/dist
+COPY --from=backend-builder /app/packages/decorators/node_modules ./decorators/node_modules
 ARG port
 EXPOSE ${port}
-CMD ["node", "decorator-service.bundle.js"]
+CMD ["node", "./decorators/dist/decorator-server.js"]
 
 # Frontend build environment
 FROM builder as frontend-builder

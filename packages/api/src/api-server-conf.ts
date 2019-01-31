@@ -12,6 +12,7 @@ export class ApiServerConfig implements ServerConfig {
     readonly assetDir = `${process.env.STORAGE_LOCATION}/assets`;
 }
 
+// TODO - Refactoring this out to a common module will simplify dependencies and reduce duplication
 @injectable()
 export class ApiServerInitializer implements ServerInitializer {
     async initialize(app: Express) {
