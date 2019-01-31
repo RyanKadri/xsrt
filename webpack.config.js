@@ -17,6 +17,7 @@ const common = (output, tsconfig) => ({
     plugins: [
         new CleanWebpackPlugin([output], { beforeEmit: true } ),
     ],
+
     module: {
         rules: [
             {

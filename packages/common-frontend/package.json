@@ -6,6 +6,7 @@
     "license": "ISC",
     "typings": "lib/index.d.ts",
     "module": "lib/index.js",
+    "sideEffects": false,
     "directories": {
         "lib": "lib"
     },

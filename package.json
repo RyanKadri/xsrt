@@ -8,6 +8,7 @@
   },
   "sideEffects": false,
   "scripts": {
+    "initialize": "lerna bootstrap --hoist",
     "build:viewer": "webpack --config-name viewer-prod",
     "start:viewer": "webpack-dev-server --config-name viewer-dev",
     "build:backend": "tsc -b packages/api packages/decorators",

@@ -8,7 +8,7 @@ RUN npm install --no-audit --no-optional
 COPY packages packages
 RUN npx tsc -b packages/
 COPY lerna.json ./
-RUN npx lerna bootstrap
+RUN npx lerna bootstrap --hoist
 
 COPY webpack.config.js ./
 

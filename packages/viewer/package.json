@@ -4,6 +4,7 @@
     "description": "Web frontend for ",
     "author": "Ryan Kadri <ryankadri1@gmail.com>",
     "license": "ISC",
+    "sideEffects": false,
     "directories": {
         "lib": "lib"
     },
