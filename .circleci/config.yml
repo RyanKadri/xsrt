@@ -21,7 +21,7 @@ jobs:
         steps:
             - checkout
             - attach_workspace:
-                at: ./node_modules
+                at: ./
             - run:
                 name: Unit Tests
                 command: npm run test
