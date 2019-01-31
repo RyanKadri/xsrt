@@ -1,18 +1,21 @@
-version: 2
-jobs:
-    initialize:
-        working_directory: ~/xsrt
+version: 2.1
+executors:
+    node-executor:
         docker:
             - image: circleci/node:11.0.0
+        working_directory: /xsrt
+jobs:
+    initialize:
+        executor: node-executor
         steps:
             - checkout
             - run:
                 name: Install dependencies
                 command: npm run initialize
+            - persist_to_workspace:
+                root: xsrt
     test:
-        working_directory: ~/xsrt
-        docker:
-            - image: circleci/node:11.0.0
+        executor: node-executor
         steps:
             - checkout
             - run:
