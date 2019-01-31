@@ -3,7 +3,7 @@ executors:
     node-executor:
         docker:
             - image: circleci/node:11.0.0
-        working_directory: /xsrt
+        working_directory: /tmp/xsrt
 jobs:
     initialize:
         executor: node-executor
