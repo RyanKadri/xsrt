@@ -1,6 +1,8 @@
 {
     "reporter": [
-        "html"
+        "html",
+        "lcov"
+
     ],
     "extension": [
         ".ts",
