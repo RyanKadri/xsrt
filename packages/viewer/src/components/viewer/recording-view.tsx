@@ -14,7 +14,6 @@ import { topNavHeight } from "../app-root/top-nav/top-nav";
 import { eventsBetween } from "../utils/recording-data-utils";
 import { RecordingViewer } from "./viewer";
 
-
 const styles = (theme: Theme) => createStyles({
     root: {
         display: "flex",

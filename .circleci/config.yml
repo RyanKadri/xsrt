@@ -1,0 +1,35 @@
+version: 2
+jobs:
+    initialize:
+        working_directory: ~/xsrt
+        docker:
+            - image: circleci/node:11.0.0
+        steps:
+            - checkout
+            - run:
+                name: Install dependencies
+                command: npm run initialize
+    test:
+        working_directory: ~/xsrt
+        docker:
+            - image: circleci/node:11.0.0
+        steps:
+            - checkout
+            - run:
+                name: Unit Tests
+                command: npm run test
+            - run:
+                name: Lint
+                command: npm run lint
+workflows:
+    version: 2
+    initialize_and_test:
+        jobs:
+            - initialize
+            - test:
+                requires:
+                    - initialize
+                filters:
+                    branches:
+                        only: master
+
