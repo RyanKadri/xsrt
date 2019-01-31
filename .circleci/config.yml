@@ -12,10 +12,16 @@ jobs:
             - run:
                 name: Install dependencies
                 command: npm run initialize
+            - persist_to_workspace:
+                root: ./
+                paths:
+                    - node_modules
     test:
         executor: node-executor
         steps:
             - checkout
+            - attach_workspace:
+                at: ./node_modules
             - run:
                 name: Unit Tests
                 command: npm run test
