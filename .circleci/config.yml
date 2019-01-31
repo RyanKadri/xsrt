@@ -38,6 +38,18 @@ jobs:
             - store_artifacts:
                 path: coverage
                 prefix: coverage
+    publish-npm:
+        executor: node-executor
+        steps:
+            - checkout
+            - attach_workspace:
+                at: ./
+            - run:
+                name: Authenticate NPM
+                command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
+            - run:
+                name: Publish to NPM
+                command: npm run publish
 workflows:
     version: 2
     initialize_and_test:
@@ -48,5 +60,12 @@ workflows:
                     - initialize
                 filters:
                     branches:
-                        only: master
-
+                        only:
+                            - stable
+                            - master
+            - publish-npm:
+                requires:
+                    - test
+                filters:
+                    tags:
+                        only: /^v\..*/
