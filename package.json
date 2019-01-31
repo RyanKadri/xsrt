@@ -8,7 +8,7 @@
   },
   "sideEffects": false,
   "scripts": {
-    "initialize": "npm install && lerna bootstrap --hoist",
+    "initialize": "npm install && lerna bootstrap --hoist && tsc -b packages/common && tsc -b packages",
     "build:viewer": "webpack --config-name viewer-prod",
     "start:viewer": "webpack-dev-server --config-name viewer-dev",
     "build:backend": "tsc -b packages/api packages/decorators",

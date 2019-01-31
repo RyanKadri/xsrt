@@ -4,7 +4,7 @@
     "description": "Shared code and types for backend XSRT services",
     "author": "Ryan Kadri <ryankadri1@gmail.com>",
     "license": "ISC",
-    "typings": "lib/index.d.ts",
+    "typings": "lib-cjs/index.d.ts",
     "main": "lib-cjs/index.js",
     "module": "lib/index.js",
     "sideEffects": false,

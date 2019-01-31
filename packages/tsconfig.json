@@ -9,11 +9,5 @@
         { "path": "./extension" },
         { "path": "./recorder" },
         { "path": "./viewer" }
-    ],
-    "compilerOptions": {
-        "paths": {
-            "@xsrt/common": ["./common"],
-            "@xsrt/common-frontend": ["./common-frontend"]
-        }
-    }
+    ]
 }
