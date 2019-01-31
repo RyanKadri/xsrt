@@ -10,12 +10,12 @@ jobs:
         steps:
             - checkout
             - restore_cache:
-                key: dependency-cache-{{ checksum "package.json "}}
+                key: dependency-cache-{{ checksum "package.json"}}
             - run:
                 name: Install dependencies
                 command: npm run initialize
             - save_cache:
-                key: dependency-cache-{{ checksum "package.json "}}
+                key: dependency-cache-{{ checksum "package.json"}}
                 paths:
                     - node_modules
             - persist_to_workspace:
@@ -38,6 +38,8 @@ jobs:
             - store_artifacts:
                 path: coverage
                 prefix: coverage
+    publish:
+
 workflows:
     version: 2
     initialize_and_test:
