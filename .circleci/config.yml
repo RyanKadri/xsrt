@@ -38,8 +38,6 @@ jobs:
             - store_artifacts:
                 path: coverage
                 prefix: coverage
-    publish:
-
 workflows:
     version: 2
     initialize_and_test:
