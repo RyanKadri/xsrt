@@ -5,17 +5,31 @@
     "tasks": [
         {
             "type": "typescript",
-            "tsconfig": "tsconfig.api.json",
-            "option": "watch",
+            "tsconfig": "./packages/tsconfig.json",
             "problemMatcher": [
                 "$tsc-watch"
-            ]
+            ],
+            "options": {
+                "shell": {
+                    "args": [
+                        "--build",
+                        "--watch"
+                    ]
+                }
+            }
         },
         {
             "label": "externalTest",
             "type": "shell",
             "command": "gnome-terminal -- npm run test:watch",
             "problemMatcher": []
+        },
+        {
+            "type": "typescript",
+            "tsconfig": "packages/api/tsconfig.json",
+            "problemMatcher": [
+                "$tsc"
+            ]
         }
     ]
 }

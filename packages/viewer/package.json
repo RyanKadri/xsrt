@@ -16,7 +16,11 @@
         "@types/react-dom": "^16.0.9",
         "@types/react-router": "^4.3.1",
         "@types/react-router-dom": "^4.3.1",
-        "@types/react-test-renderer": "^16.0.3"
+        "@types/react-test-renderer": "^16.0.3",
+        "enzyme": "^3.8.0",
+        "enzyme-adapter-react-16": "^1.7.1",
+        "@types/enzyme": "^3.1.15",
+        "@types/enzyme-adapter-react-16": "^1.0.3"
     },
     "dependencies": {
         "@material-ui/core": "^3.6.0",

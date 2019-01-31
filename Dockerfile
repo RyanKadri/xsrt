@@ -28,7 +28,6 @@ COPY --from=backend-builder /app/packages/common-backend ./common-backend/
 FROM backend-base as api
 COPY --from=backend-builder /app/packages/api/dist ./api/dist
 COPY --from=backend-builder /app/packages/api/node_modules ./api/node_modules
-
 ARG port
 EXPOSE ${port}
 CMD ["node", "./api/dist/api-server.js"]

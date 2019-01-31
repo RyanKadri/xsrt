@@ -11,3 +11,4 @@ docs/
 scripts/
 spec/
 .env
+lib/

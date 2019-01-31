@@ -33,6 +33,7 @@
                 "${relativeFile}",
                 "--config=jasmine.json"
             ],
+            "runtimeArgs": ["--require", "./spec/support/init.js"],
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen",
             "preLaunchTask": "tsc: watch - tsconfig.spec.json",
@@ -42,9 +43,10 @@
             "type": "node",
             "request": "launch",
             "name": "Start API",
-            "program": "${workspaceFolder}/src/api/api-server.ts",
+            "program": "${workspaceFolder}/packages/api/src/api-server.ts",
+            "preLaunchTask": "tsc: build - packages/api/tsconfig.json",
             "outFiles": [
-                "${workspaceFolder}/dist/backend/api-service.bundle.js"
+                "${workspaceFolder}/packages/api/dist/api-server.js"
             ],
             "sourceMaps": true,
         },
@@ -52,13 +54,12 @@
             "type": "node",
             "request": "launch",
             "name": "Start Decorators",
-            "program": "${workspaceFolder}/dist/backend/decorators/decorator-server.js",
-            "preLaunchTask": "tsc: watch - tsconfig.api.json",
+            "program": "${workspaceFolder}/packages/decorators/src/decorator-server.ts",
+            "preLaunchTask": "tsc: build - packages/decorators/tsconfig.json",
             "outFiles": [
-                "${workspaceFolder}/dist/decorators"
+                "${workspaceFolder}/packages/decorators/dist/decorator-server.js"
             ],
             "sourceMaps": true,
-            "protocol": "inspector",
         }
     ],
     "compounds": [

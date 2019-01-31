@@ -8,14 +8,14 @@ services:
             - ${API_PORT}:${API_PORT}
             - 9229:9229
         volumes:
-            - 'app:/app/'
-        command: npx nodemon --delay 1000ms --inspect=0.0.0.0:9229 --on-change-only -w ./backend ./backend/api-service.bundle.js
+            - '.:/app/'
+        command: npx nodemon --delay 1000ms --inspect=0.0.0.0:9229 -w ./packages/api/dist ./packages/api/dist/api-server.js
     decorator:
         ports:
             - ${DECORATOR_PORT}:${DECORATOR_PORT}
         volumes:
-            - 'app:/app/'
-        command: npx nodemon --delay 1000ms --on-change-only -w ./backend ./backend/decorator-service.bundle.js
+            - '.:/app/'
+        command: npx nodemon --delay 1000ms -w ./packages/decorators/dist ./packages/decorators/dist/decorator-server.js
     builder:
         build:
             context: .
@@ -23,7 +23,6 @@ services:
         command: npm run build:docker
         volumes:
             - '.:/app'
-            - 'app:/app/dist'
         expose:
             - ${WEBPACK_PORT}
         ports:
@@ -34,8 +33,6 @@ services:
             - API_SERVER=http://app:${API_PORT}/
     static:
         volumes:
-            - 'app:/app'
+            - '.:/app'
         environment:
-            - APP_ROOT=/app/web #This may be a bit of a hack. It can go away if mounting a subdirectory of a named volume becomes a thing
-volumes:
-    app:
+            - APP_ROOT=/app/dist/web #This may be a bit of a hack. It can go away if mounting a subdirectory of a named volume becomes a thing
