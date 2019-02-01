@@ -38,18 +38,24 @@ jobs:
             - store_artifacts:
                 path: coverage
                 prefix: coverage
-    publish-npm:
+    publish:
         executor: node-executor
         steps:
             - checkout
             - attach_workspace:
                 at: ./
+            - add_ssh_keys:
+                fingerprints:
+                    - "82:0b:ae:8d:4a:f9:44:8f:a1:ac:22:d8:37:99:d9:58"
             - run:
                 name: Authenticate NPM
                 command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
             - run:
+                name: Update versions
+                command: echo test
+            - run:
                 name: Publish to NPM
-                command: npm run publish
+                command: npm run publish:all
 workflows:
     version: 2
     initialize_and_test:
@@ -63,9 +69,9 @@ workflows:
                         only:
                             - stable
                             - master
-            - publish-npm:
+            - publish:
                 requires:
                     - test
                 filters:
                     tags:
-                        only: /^v\..*/
+                        only: /^v\d\..*/
