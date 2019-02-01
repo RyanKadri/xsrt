@@ -7,4 +7,6 @@ coverage/
 secret/
 lib/
 lib-cjs/
+
 .npmrc
+lerna-debug.log
