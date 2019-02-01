@@ -1,6 +1,6 @@
 {
     "name": "@xsrt/decorators",
-    "version": "0.4.1",
+    "version": "0.4.2",
     "description": "Backend services for post-processing recordings",
     "author": "Ryan Kadri <ryankadri1@gmail.com>",
     "license": "ISC",
