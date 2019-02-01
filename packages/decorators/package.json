@@ -5,6 +5,9 @@
     "author": "Ryan Kadri <ryankadri1@gmail.com>",
     "license": "ISC",
     "private": true,
+    "devDependencies": {
+        "@types/puppeteer": "^1.12.0"
+    },
     "dependencies": {
         "@xsrt/common": "^0.4.0",
         "@xsrt/common-backend": "^0.4.0",
