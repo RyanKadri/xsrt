@@ -37,7 +37,7 @@ export class ThumbnailCompiler {
             await page.goto(`${this.decoratorConfig.staticScreenshotUrl}?recording=${forRecording}`);
             await page.waitForFunction(`window['targetViewport']`, { polling: 100 });
 
-            const targetViewport: ViewportSize = await page.evaluate(`window['targetViewport']`);
+            const targetViewport = await page.evaluate(`window['targetViewport']`) as ViewportSize;
             await page.setViewport({ height: targetViewport.height, width: targetViewport.width });
 
             const fileName = `${forRecording}.png`;
