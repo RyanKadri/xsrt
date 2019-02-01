@@ -66,6 +66,8 @@ workflows:
                         only:
                             - stable
                             - master
+                    tags:
+                        only: /^v\d\..*/
             - publish:
                 requires:
                     - test
