@@ -67,12 +67,12 @@ workflows:
                             - stable
                             - master
                     tags:
-                        only: /^v\d\..*/
+                        only: /^v.*/
             - publish:
                 requires:
                     - test
                 filters:
                     tags:
-                        only: /^v\d\..*/
+                        only: /^v.*/
                     branches:
                         ignore: /.*/
