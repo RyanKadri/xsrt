@@ -1,13 +1,13 @@
 {
     "name": "@xsrt/api",
-    "version": "0.3.1",
+    "version": "0.3.2",
     "description": "The server-side REST API for XSRT",
     "author": "Ryan Kadri <ryankadri1@gmail.com>",
     "license": "ISC",
     "private": true,
     "dependencies": {
-        "@xsrt/common": "^0.3.1",
-        "@xsrt/common-backend": "^0.3.1",
+        "@xsrt/common": "^0.3.2",
+        "@xsrt/common-backend": "^0.3.2",
         "axios": "^0.18.0",
         "body-parser": "^1.18.3",
         "cors": "^2.8.5",

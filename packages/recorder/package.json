@@ -1,6 +1,6 @@
 {
     "name": "@xsrt/recorder",
-    "version": "0.3.1",
+    "version": "0.3.2",
     "description": "The client-side recorder for XSRT",
     "author": "Ryan Kadri <ryankadri1@gmail.com>",
     "license": "ISC",
@@ -19,7 +19,7 @@
         "@types/pako": "^1.0.0"
     },
     "dependencies": {
-        "@xsrt/common": "^0.3.1",
+        "@xsrt/common": "^0.3.2",
         "axios": "^0.18.0",
         "inversify": "^5.0.1",
         "pako": "^1.0.6",
