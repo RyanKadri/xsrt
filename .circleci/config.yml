@@ -9,15 +9,9 @@ jobs:
         executor: node-executor
         steps:
             - checkout
-            - restore_cache:
-                key: dependency-cache-{{ checksum "package.json"}}
             - run:
                 name: Install dependencies
                 command: npm run initialize
-            - save_cache:
-                key: dependency-cache-{{ checksum "package.json"}}
-                paths:
-                    - node_modules
             - persist_to_workspace:
                 root: ./
                 paths:
