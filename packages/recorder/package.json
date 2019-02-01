@@ -1,6 +1,6 @@
 {
     "name": "@xsrt/recorder",
-    "version": "0.3.9",
+    "version": "0.3.10",
     "description": "The client-side recorder for XSRT",
     "author": "Ryan Kadri <ryankadri1@gmail.com>",
     "license": "ISC",
