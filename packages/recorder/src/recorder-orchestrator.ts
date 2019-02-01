@@ -29,7 +29,7 @@ export class RecorderOrchestrator {
     private sentInitChunk = false;
 
     initialize() {
-
+        this.logger.info("Initializing");
         this.recorder.record();
         this.initInfoTask = this.recorderApi.startRecording()
             .then(info => this.initInfo = info);

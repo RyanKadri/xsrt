@@ -70,7 +70,7 @@ workflows:
                             - stable
                             - master
                     tags:
-                        only: /^v.*/
+                        only: /.*/
             - publish:
                 requires:
                     - test
