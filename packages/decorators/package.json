@@ -6,7 +6,7 @@
     "license": "ISC",
     "private": true,
     "devDependencies": {
-        "@types/puppeteer": "^1.12.0"
+        "@types/puppeteer": "^1.11.3"
     },
     "dependencies": {
         "@xsrt/common": "^0.4.0",
