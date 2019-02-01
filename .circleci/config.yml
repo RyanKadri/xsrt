@@ -51,9 +51,6 @@ jobs:
                 name: Authenticate NPM
                 command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > .npmrc
             - run:
-                name: Update versions
-                command: echo test
-            - run:
                 name: Publish to NPM
                 command: npm run publish:all
 workflows:
@@ -75,3 +72,5 @@ workflows:
                 filters:
                     tags:
                         only: /^v\d\..*/
+                    branches:
+                        ignore: /.*/
