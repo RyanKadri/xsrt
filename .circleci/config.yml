@@ -29,9 +29,6 @@ jobs:
             - run:
                 name: Lint
                 command: npm run lint
-            - store_artifacts:
-                path: coverage
-                prefix: coverage
     publish:
         executor: node-executor
         steps:
