@@ -32,6 +32,8 @@ services:
             - STATIC_ASSET_SERVER=http://static:${STATIC_PORT}/
             - API_SERVER=http://app:${API_PORT}/
     static:
+        depends_on:
+            - builder
         volumes:
             - '.:/app'
         environment:

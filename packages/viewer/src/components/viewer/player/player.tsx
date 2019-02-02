@@ -44,6 +44,7 @@ const styles = (_: Theme) => createStyles({
         top: "50%",
         left: "50%",
         position: "absolute",
+        backgroundColor: "white"
     }
 });
 

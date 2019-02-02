@@ -46,7 +46,7 @@ export class RecorderInitializer {
         this.orchestrator.initialize();
     }
 
-    async stop() {
+    stop = async () => {
         if (this.orchestrator) {
             await this.orchestrator.onStop(false);
             this.recordingState.closeRecording();

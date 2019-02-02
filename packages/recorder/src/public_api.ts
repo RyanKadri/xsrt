@@ -1,2 +1,2 @@
-export { initializeRecording } from "./public-starter";
+export { startRecording } from "./public-starter";
 export { RecorderInitializer } from "./recorder-initializer";
