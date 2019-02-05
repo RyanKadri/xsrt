@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { startRecording } from '@xsrt/recorder';
+import { startRecording, RecordingController } from '@xsrt/recorder';
 
 @Component({
   selector: 'app-root',
@@ -8,7 +8,12 @@ import { startRecording } from '@xsrt/recorder';
 })
 export class AppComponent {
 
-  private controller: any;
+  private controller: RecordingController;
+  private recording = false;
+  navItems = [
+    { display: 'TODOs', link: ['/todos'] },
+    { display: 'Home', link: ['/home'] }
+  ];
 
   startRecording() {
     if (this.controller === undefined) {
@@ -16,12 +21,14 @@ export class AppComponent {
         backendUrl: 'http://localhost:3001',
         debugMode: true
       });
+      this.recording = true;
     }
   }
 
   stopRecording() {
     if (this.controller !== undefined) {
       this.controller.stop();
+      this.recording = false;
     }
   }
 }

@@ -1,0 +1,14 @@
+<mat-toolbar color="primary">
+  <button mat-icon-button (click)="openSidebar.emit()">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span class="title">XSRT Angular Integration</span>
+  <div class="action-buttons">
+    <button mat-icon-button (click)="startRecording.emit()" *ngIf="!recording">
+      <mat-icon>videocam</mat-icon>
+    </button>
+    <button mat-icon-button (click)="stopRecording.emit()" *ngIf="recording">
+      <mat-icon>stop</mat-icon>
+    </button>
+  </div>
+</mat-toolbar>

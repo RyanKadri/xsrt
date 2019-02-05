@@ -1,0 +1,9 @@
+:host {
+  display: grid;
+  grid-template-rows: 64px 1fr;
+  min-height: 100vh;
+}
+
+.sidebar {
+  min-width: 180px;
+}
