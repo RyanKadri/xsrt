@@ -1,26 +1,61 @@
 version: '3.7'
 services:
     mongo:
+        image: mongo:4.0
+        volumes:
+            - mongo-data:/data/db
+        expose:
+            - 27017
         ports:
             - 27017:27017
     app:
+        expose:
+            - ${API_PORT}
         ports:
             - ${API_PORT}:${API_PORT}
             - 9229:9229
+        links:
+            - mongo
+            - decorator
+        depends_on:
+            - mongo
+            - decorator
+        environment:
+            - MONGO_URL=mongodb://mongo/recordings
+            - DECORATOR_URL=http://decorator:${DECORATOR_PORT}
+            - API_PORT=${API_PORT}
+            - STORAGE_LOCATION=${STORAGE_LOCATION}
         volumes:
             - '.:/app/'
-        command: npx nodemon --delay 1000ms --inspect=0.0.0.0:9229 -w ./packages/api/dist ./packages/api/dist/api-server.js
-    decorator:
-        ports:
-            - ${DECORATOR_PORT}:${DECORATOR_PORT}
-        volumes:
-            - '.:/app/'
-        command: npx nodemon --delay 1000ms -w ./packages/decorators/dist ./packages/decorators/dist/decorator-server.js
-    builder:
         build:
             context: .
-            target: dev-builder
-        command: npm run build:docker
+            target: dev-api
+            args:
+                port: "${API_PORT}"
+            dockerfile: dev.Dockerfile
+        command: npx nodemon --delay 1000ms --inspect=0.0.0.0:9229 -w ./packages/api/dist ./packages/api/dist/api-server.js
+    decorator:
+        expose:
+            - ${DECORATOR_PORT}
+        ports:
+            - ${DECORATOR_PORT}:${DECORATOR_PORT}
+        links:
+            - mongo
+        depends_on:
+            - mongo
+        environment:
+            - MONGO_URL=mongodb://mongo/recordings
+            - DECORATOR_PORT=${DECORATOR_PORT}
+        volumes:
+            - '.:/app/'
+        build:
+            context: .
+            target: dev-decorator
+            args:
+                port: "${DECORATOR_PORT}"
+            dockerfile: dev.Dockerfile
+        command: npx nodemon --delay 1000ms -w ./packages/decorators/dist ./packages/decorators/dist/decorator-server.js
+    builder:
         volumes:
             - '.:/app'
         expose:
@@ -31,10 +66,32 @@ services:
             - WEBPACK_PORT=${WEBPACK_PORT}
             - STATIC_ASSET_SERVER=http://static:${STATIC_PORT}/
             - API_SERVER=http://app:${API_PORT}/
+        build:
+            context: .
+            target: dev-builder
+            dockerfile: dev.Dockerfile
     static:
+        ports:
+            - ${STATIC_PORT}:443
+        links:
+            - decorator
+            - app
         depends_on:
             - builder
         volumes:
+            - stored-files:${STORAGE_LOCATION}
+            - ./secret/certs:/etc/ssl/certs
             - '.:/app'
         environment:
+            - FRONTEND_HOSTNAME=${FRONTEND_HOSTNAME}
+            - STORAGE_LOCATION=${STORAGE_LOCATION}
+            - API_SERVER=http://app:${API_PORT}
             - APP_ROOT=/app/dist/web #This may be a bit of a hack. It can go away if mounting a subdirectory of a named volume becomes a thing
+        build:
+            context: .
+            target: dev-nginx
+            dockerfile: dev.Dockerfile
+        command: /bin/sh -c "envsubst '$${STORAGE_LOCATION},$${FRONTEND_HOSTNAME},$${API_SERVER},$${APP_ROOT}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && exec nginx -g 'daemon off;'"
+volumes:
+    mongo-data:
+    stored-files:

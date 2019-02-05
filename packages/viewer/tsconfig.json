@@ -1,8 +1,8 @@
 {
     "extends": "../tsconfig.settings.json",
     "compilerOptions": {
-        "outDir": "lib",
-        "rootDir": "src"
+        "outDir": "./lib",
+        "rootDir": "./src",
     },
     "references": [
         { "path": "../common" },
@@ -10,5 +10,9 @@
     ],
     "include": [
         "src"
+    ],
+    "exclude": [
+        "**/*.spec.ts",
+        "**/*.exp.ts",
     ]
 }

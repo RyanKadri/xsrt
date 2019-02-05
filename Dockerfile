@@ -44,11 +44,12 @@ CMD ["node", "./decorators/dist/decorator-server.js"]
 FROM builder as frontend-builder
 RUN npm run build:viewer
 
-FROM builder as dev-builder
-RUN npm run build:backend && npm run build:viewer
-
 # Frontend Nginx reverse proxy
+FROM nginx:1.15.8 as dev-nginx
+COPY conf/nginx.conf.template /etc/nginx
+EXPOSE 443
+
 FROM nginx:1.15.8 as static-frontend
 COPY conf/nginx.conf.template /etc/nginx
-COPY --from=frontend-builder /app/dist/web /app
 EXPOSE 443
+COPY --from=frontend-builder /app/dist/web /app

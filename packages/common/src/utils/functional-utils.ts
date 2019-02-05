@@ -82,3 +82,15 @@ export function toKeyValMap<T, R>(arr: T[], keyFn: (el: T) => string, valFn: (el
 export const identity = <T>(a: T) => a;
 
 export const noop = () => { return; };
+
+export const flatten = <T>(arr: (T | T[])[]): T[] => {
+    const res: T[] = [];
+    for (const el of arr) {
+        if (Array.isArray(el)) {
+            res.push(...flatten(el));
+        } else {
+            res.push(el);
+        }
+    }
+    return res;
+};

@@ -1,6 +1,7 @@
 import { injectable } from "inversify";
 import { MutationTracker } from "./mutation-tracker";
 import { MutationTransformer } from "./mutation-transformer";
+import { flatten, RecordedMutationGroup, RecordedMutation } from "@xsrt/common";
 
 @injectable()
 export class MutationRecorder {
@@ -28,11 +29,11 @@ export class MutationRecorder {
         });
     }
 
-    dump() {
+    dump(): RecordedMutationGroup[] {
         return this.mutationTracker.dump();
     }
 
-    stop() {
+    stop(): RecordedMutationGroup[] {
         if (!this.running) { throw new Error("Recorder is already stopped"); }
         this.running = false;
 
@@ -42,7 +43,7 @@ export class MutationRecorder {
 
     private recordMutation = (mutations: MutationRecord[]) => {
         this.mutationTracker.record(
-            mutations.map(mutation => this.transformer.transformMutation(mutation)).flat(Infinity)
+            flatten<RecordedMutation>(mutations.map(mutation => this.transformer.transformMutation(mutation)))
         );
     }
 

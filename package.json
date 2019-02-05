@@ -25,7 +25,9 @@
     "test": "node --require ./spec/support/init.js ./node_modules/.bin/jasmine --config=jasmine.json",
     "test:coverage": "nyc ./node_modules/.bin/jasmine --config=jasmine.json",
     "test:watch": "nodemon -w packages --ignore '*/node_modules/**/*' -e ts,tsx --exec \"node --require ./spec/support/init.js ./node_modules/.bin/jasmine --config=jasmine.json\"",
-    "lint": "tslint --project tsconfig.spec.json"
+    "lint": "tslint --project tsconfig.spec.json",
+    "docker:dev": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml up",
+    "docker": "docker-compose up"
   },
   "author": "Ryan Kadri",
   "license": "",
@@ -57,7 +59,7 @@
     "ts-loader": "^5.3.0",
     "ts-node": "^7.0.1",
     "tslint": "^5.12.1",
-    "typescript": "^3.1.6",
+    "typescript": "^3.3.1",
     "webpack": "^4.24.0",
     "webpack-bundle-analyzer": "^3.0.3",
     "webpack-cli": "^3.1.2",
