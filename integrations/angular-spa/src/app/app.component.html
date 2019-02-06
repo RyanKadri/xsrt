@@ -1,18 +1,8 @@
 <app-top-nav
   (startRecording)="startRecording()"
   (stopRecording)="stopRecording()"
-  (openSidebar)="sidebar.toggle()"
   [recording]="recording"
 ></app-top-nav>
-<mat-drawer-container class="sidebar-container" autosize>
-  <mat-drawer #sidebar mode="side" class="sidebar">
-    <mat-nav-list role="list">
-      <a mat-list-item role="listitem" *ngFor="let item of navItems" [routerLink]="item.link">
-        {{ item.display }}
-      </a>
-    </mat-nav-list>
-  </mat-drawer>
-  <main>
-    <router-outlet></router-outlet>
-  </main>
-</mat-drawer-container>
+<main>
+  <router-outlet></router-outlet>
+</main>

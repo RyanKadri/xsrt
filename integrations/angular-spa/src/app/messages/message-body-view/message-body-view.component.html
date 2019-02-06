@@ -1,0 +1,11 @@
+<mat-card class="email-container" *ngIf="selectedMessage !== undefined">
+  <mat-card-header>
+    <div mat-card-avatar [ngStyle]="{ 'background-image': 'url(assets/' + selectedMessage.senderThumbnail + ')' }"
+         *ngIf="selectedMessage.senderThumbnail"></div>
+    <mat-card-title>{{ selectedMessage.subject }}</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <p class="body-1">{{ selectedMessage.body }}</p>
+  </mat-card-content>
+</mat-card>
+<mat-spinner *ngIf="selectedMessage === undefined"></mat-spinner>

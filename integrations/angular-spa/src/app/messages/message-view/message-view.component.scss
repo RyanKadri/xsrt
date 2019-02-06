@@ -1,0 +1,15 @@
+:host {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  height: 100%;
+}
+
+.message-selector {
+  background-color: white;
+}
+
+:host .description {
+  font-size: smaller !important;
+  margin-left: 8px !important;
+  color: #666;
+}

@@ -1,7 +1,7 @@
 <mat-toolbar color="primary">
-  <button mat-icon-button (click)="openSidebar.emit()">
-    <mat-icon>menu</mat-icon>
-  </button>
+  <a mat-icon-button [routerLink]="['/home']">
+    <mat-icon>home</mat-icon>
+  </a>
   <span class="title">XSRT Angular Integration</span>
   <div class="action-buttons">
     <button mat-icon-button (click)="startRecording.emit()" *ngIf="!recording">

@@ -1,0 +1,23 @@
+:host {
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+}
+
+.todo-container {
+  min-width: 400px;
+}
+
+mat-list-item, mat-list-option, mat-form-field {
+  width: 100%;
+}
+
+.finished-items mat-list-option {
+  color: #999;
+}
+
+hr {
+  margin: 8px 16px;
+  border: none;
+  border-top: solid 1px #ccc;
+}

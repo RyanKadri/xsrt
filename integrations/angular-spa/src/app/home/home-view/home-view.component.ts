@@ -9,7 +9,18 @@ export class HomeViewComponent implements OnInit {
 
   constructor() { }
 
+  readonly apps: HomeViewApp[] = [
+    { title: 'Reminders', description: 'Manage your TODO list and set up reminders', link: ['/todos'] },
+    { title: 'Messages', description: 'Check your messages', link: ['/messages'] },
+  ];
+
   ngOnInit() {
   }
 
+}
+
+interface HomeViewApp {
+  title: string;
+  description: string;
+  link: string[];
 }

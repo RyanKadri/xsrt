@@ -1,3 +1,12 @@
-<p>
-  home-view works!
-</p>
+<nav class="app-grid">
+  <a class="app-link" *ngFor="let app of apps" [routerLink]="app.link">
+    <mat-card class="app-card">
+      <mat-card-header>
+        <mat-card-title>{{ app.title }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>{{ app.description }}</p>
+      </mat-card-content>
+    </mat-card>
+  </a>
+</nav>

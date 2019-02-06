@@ -8,6 +8,8 @@ import { TopNavComponent } from './top-nav/top-nav.component';
 import { MaterialModule } from './material.module';
 import { TodoModule } from './todo/todo.module';
 import { HomeModule } from './home/home.module';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MessagesModule } from "./messages/messages.module";
 
 @NgModule({
   declarations: [
@@ -20,7 +22,9 @@ import { HomeModule } from './home/home.module';
     AppRoutingModule,
     MaterialModule,
     TodoModule,
-    HomeModule
+    HomeModule,
+    MessagesModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

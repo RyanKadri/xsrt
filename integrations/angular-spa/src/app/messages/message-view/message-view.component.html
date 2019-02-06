@@ -1,0 +1,12 @@
+<nav class="message-selector mat-elevation-z3">
+  <mat-nav-list>
+    <h3 mat-subheader>Messages</h3>
+    <mat-list-item *ngFor="let message of messages">
+      <a matLine class="subject" [routerLink]="['/messages', message.id]">{{ message.subject }}</a>
+      <p matLine class="description">{{ message.body }}</p>
+    </mat-list-item>
+  </mat-nav-list>
+</nav>
+<main>
+  <router-outlet></router-outlet>
+</main>

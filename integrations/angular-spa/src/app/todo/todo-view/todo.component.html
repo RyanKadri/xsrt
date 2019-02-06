@@ -1,3 +1,24 @@
-<p>
-  todo works!
-</p>
+<mat-card class="todo-container">
+  <mat-card-header>
+    <mat-card-title>Todo List</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-form-field appearance="standard">
+      <mat-label>New Item</mat-label>
+      <input matInput [formControl]="newItemField" placeholder="Enter a TODO" type="text"
+              (keydown.enter)="addTodoItem()">
+    </mat-form-field>
+    <mat-selection-list class="active-items" (selectionChange)="markFinished($event)">
+      <mat-list-option *ngFor="let todo of activeTodos" [value]="todo">
+        {{ todo.display }}
+      </mat-list-option>
+    </mat-selection-list>
+    <hr *ngIf="finishedTodos.length > 0 && activeTodos.length > 0" />
+    <mat-selection-list class="finished-items" (selectionChange)="markInProgress($event)">
+        <mat-list-option *ngFor="let todo of finishedTodos" [value]="todo">
+          <mat-icon mat-list-icon (click)="deleteItem(todo); $event.stopPropagation()">delete</mat-icon>
+          {{ todo.display }}
+        </mat-list-option>
+      </mat-selection-list>
+  </mat-card-content>
+</mat-card>
