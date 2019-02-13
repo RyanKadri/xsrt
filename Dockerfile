@@ -8,8 +8,6 @@ RUN npm install --no-audit --no-optional
 COPY packages packages
 COPY lerna.json ./
 RUN npx lerna bootstrap --hoist
-RUN npx tsc -b packages/
-
 COPY webpack.config.js ./
 
 # Backend build environment
@@ -30,7 +28,7 @@ COPY --from=backend-builder /app/packages/api/dist ./api/dist
 COPY --from=backend-builder /app/packages/api/node_modules ./api/node_modules
 ARG port
 EXPOSE ${port}
-CMD ["node", "./api/dist/api-server.js"]
+CMD ["node", "./api/dist/api/src/api-server.js"]
 
 # Decorator app server
 FROM backend-base as decorator
@@ -38,7 +36,7 @@ COPY --from=backend-builder /app/packages/decorators/dist ./decorators/dist
 COPY --from=backend-builder /app/packages/decorators/node_modules ./decorators/node_modules
 ARG port
 EXPOSE ${port}
-CMD ["node", "./decorators/dist/decorator-server.js"]
+CMD ["node", "./decorators/dist/decorators/src/decorator-server.js"]
 
 # Frontend build environment
 FROM builder as frontend-builder

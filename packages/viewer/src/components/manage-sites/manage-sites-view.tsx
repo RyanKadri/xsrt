@@ -27,7 +27,7 @@ const _ManageSitesView = (props: ManageSitesProps) => {
 const AvailableSites = ({ classes, onDelete, sites }: ManageSitesProps) =>
     <div className={ classes.sitesList }>{
         sites
-        ? <SiteList sites={ sites } onDelete={ onDelete }></SiteList>
+        ? <SiteList sites={ sites } onDelete={ onDelete } />
         : <Typography variant="body1">Loading</Typography>
     }</div>;
 

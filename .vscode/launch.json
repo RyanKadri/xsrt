@@ -7,7 +7,7 @@
         {
             "type": "node",
             "request": "attach",
-            "name": "Attach to Remote",
+            "name": "Attach to API Server",
             "address": "127.0.0.1",
             "port": 9229,
             "sourceMaps": true,

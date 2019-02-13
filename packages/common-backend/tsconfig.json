@@ -2,13 +2,14 @@
     "extends": "../tsconfig.settings.json",
     "compilerOptions": {
         "outDir": "lib-cjs",
-        "rootDir": "src",
-        "module": "commonjs"
+        "rootDir": "..",
+        "baseUrl": ".",
+        "module": "commonjs",
+        "paths": {
+            "@xsrt/common": ["../common/src"]
+        }
     },
     "include": [
         "src"
     ],
-    "references": [
-        { "path": "../common/tsconfig.backend.json" }
-    ]
 }

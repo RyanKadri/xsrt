@@ -26,8 +26,23 @@ export class TargetEndpoint implements TargetEndpointType {
     }
 
     filterTargets = async () => {
-        const res = await Target.find({});
-        return res.map(doc => doc.toObject());
+        const res = await Target.aggregate([
+            { $lookup: {
+                from: "recordings",
+                localField: "_id",
+                foreignField: "metadata.site",
+                as: "recordings"
+            } },
+            { $project: {
+                _id: 1,
+                name: 1,
+                identifiedBy: 1,
+                identifier: 1,
+                url: 1,
+                numRecordings: { $size: "$recordings" }
+            } }
+        ]);
+        return res;
     }
 
     createSiteTarget: TargetEndpointType["createSiteTarget"] = async ({ target }) => {

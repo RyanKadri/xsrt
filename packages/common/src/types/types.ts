@@ -236,6 +236,7 @@ export interface SiteTarget {
     identifiedBy: "host";
     identifier: string;
     url: string;
+    numRecordings?: number;
 }
 
 export type NewSiteTarget = Without<SiteTarget, "_id">;

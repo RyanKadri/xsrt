@@ -33,7 +33,7 @@ services:
             args:
                 port: "${API_PORT}"
             dockerfile: dev.Dockerfile
-        command: npx nodemon --delay 1000ms --inspect=0.0.0.0:9229 -w ./packages/api/dist ./packages/api/dist/api-server.js
+        command: npx nodemon --delay 1000ms --inspect=0.0.0.0:9229 -w ./packages/api/dist ./packages/api/dist/api/src/api-server.js
     decorator:
         expose:
             - ${DECORATOR_PORT}
@@ -54,7 +54,7 @@ services:
             args:
                 port: "${DECORATOR_PORT}"
             dockerfile: dev.Dockerfile
-        command: npx nodemon --delay 1000ms -w ./packages/decorators/dist ./packages/decorators/dist/decorator-server.js
+        command: npx nodemon --delay 1000ms -w ./packages/decorators/dist ./packages/decorators/dist/decorators/src/decorator-server.js
     builder:
         volumes:
             - '.:/app'

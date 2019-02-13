@@ -2,10 +2,10 @@
     "extends": "../tsconfig.settings.json",
     "compilerOptions": {
         "outDir": "./lib-cjs",
-        "rootDir": "./src",
+        "rootDir": "../",
         "module": "commonjs"
     },
     "include": [
-        "src"
+        "./src/index.ts"
     ]
 }

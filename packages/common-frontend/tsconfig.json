@@ -2,12 +2,17 @@
     "extends": "../tsconfig.settings.json",
     "compilerOptions": {
         "outDir": "lib",
-        "rootDir": "src"
+        "rootDir": "../",
+        "baseUrl": ".",
+        "paths": {
+            "@xsrt/common": ["../common"]
+        }
     },
-    "references": [
-        { "path": "../common" }
-    ],
     "include": [
-        "src"
+        "./src/index.ts"
+    ],
+    "exclude": [
+        "./node_modules",
+        "../../node_modules"
     ]
 }

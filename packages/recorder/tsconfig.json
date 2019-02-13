@@ -2,11 +2,11 @@
     "extends": "../tsconfig.settings.json",
     "compilerOptions": {
         "outDir": "lib",
-        "rootDir": "src",
-        "baseUrl": "./src",
+        "rootDir": "..",
+        "baseUrl": ".",
+        "paths": {
+            "@xsrt/common": ["../common/src"]
+        }
     },
-    "references": [
-        { "path": "../common"}
-    ],
-    "include": ["src"]
+    "include": ["./src/public_api.ts"]
 }

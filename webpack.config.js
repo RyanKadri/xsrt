@@ -25,7 +25,7 @@ const common = (output, tsconfig) => ({
                 use: [{
                     loader: 'ts-loader',
                     options: {
-                        configFile: path.resolve(__dirname, tsconfig)
+                        configFile: path.resolve(__dirname, tsconfig),
                     }
                 }],
                 exclude: /node_modules/,
@@ -76,7 +76,7 @@ const viewerDev = merge(frontendCommon, {
     plugins: [
     ],
     devServer: {
-        contentBase: path.join(__dirname, 'packages/viewer/src'),
+        contentBase: path.join(__dirname, 'packages/viewer/lib'),
         port: process.env.WEBPACK_PORT,
         publicPath: `http://localhost:${process.env.WEBPACK_PORT}/`,
         historyApiFallback: true,
@@ -85,7 +85,7 @@ const viewerDev = merge(frontendCommon, {
         host: '0.0.0.0',
         disableHostCheck: true,
         proxy: {
-            '/api': process.env.API_SERVER,
+            '/api': process.env.API_SERVER || `http://localhost:${process.env.API_PORT}`,
             '/screenshots': process.env.STATIC_ASSET_SERVER,
             '/assets': process.env.STATIC_ASSET_SERVER,
         },
@@ -119,7 +119,7 @@ const bootstrapScripts = merge(common('dist/bootstrap', "packages/viewer/tsconfi
     },
 });
 
-const compileExtension = merge(common('packages/extension/dist', 'packages/extension/tsconfig.json'), {
+const compileExtension = merge(common('dist/extension', 'packages/extension/tsconfig.json'), {
     name: 'compile-extension',
     resolve: {
         extensions: ['.tsx', '.html'],
