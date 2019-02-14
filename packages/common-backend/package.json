@@ -1,6 +1,6 @@
 {
     "name": "@xsrt/common-backend",
-    "version": "0.5.0",
+    "version": "0.6.0",
     "description": "Shared code and types for backend XSRT services",
     "author": "Ryan Kadri <ryankadri1@gmail.com>",
     "license": "ISC",
@@ -14,7 +14,7 @@
         "@types/mongoose": "^5.3.1"
     },
     "dependencies": {
-        "@xsrt/common": "^0.5.0",
+        "@xsrt/common": "^0.6.0",
         "axios": "^0.18.0",
         "dotenv": "^6.1.0",
         "express": "^4.16.4",
