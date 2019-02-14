@@ -6,6 +6,7 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 const merge = require('webpack-merge');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const nodeExternals = require("webpack-node-externals");
 
 const common = (output, tsconfig) => ({
     devtool: 'source-map',
@@ -15,9 +16,8 @@ const common = (output, tsconfig) => ({
         publicPath: "/",
     },
     plugins: [
-        new CleanWebpackPlugin([output], { beforeEmit: true } ),
+        new CleanWebpackPlugin([output + "/*"], { beforeEmit: true } ),
     ],
-
     module: {
         rules: [
             {
@@ -37,11 +37,17 @@ const common = (output, tsconfig) => ({
         ]
     },
     resolve: {
-        extensions: ['.ts', '.js'],
+        extensions: ['.ts','.js'],
+        alias: {
+            "@xsrt/common": path.resolve(__dirname,  "packages/common/src"),
+            "@xsrt/common-backend": path.resolve(__dirname, "packages/common-backend/src"),
+            "@xsrt/common-frontend": path.resolve(__dirname, "packages/common-frontend/src"),
+            "@xsrt/recorder": path.resolve(__dirname, "packages/common-frontend/src")
+        }
     }
 });
 
-const frontendCommon = merge(common('dist/web/', "packages/viewer/tsconfig.json"), {
+const frontendCommon = merge(common('dist/web', "packages/viewer/tsconfig.json"), {
     entry: {
         viewer: './packages/viewer/src/index.tsx',
     },
@@ -137,10 +143,21 @@ const compileExtension = merge(common('dist/extension', 'packages/extension/tsco
     mode: "production"
 });
 
+const compileBackend = merge(common("dist/backend", "packages/api/tsconfig.json"), {
+    name: 'compile-backend',
+    externals: [nodeExternals()],
+    target: 'node',
+    entry: {
+        ['api-server']: './packages/api/src/api-server.ts',
+        ['decorator-server']: './packages/decorators/src/decorator-server.ts'
+    }
+})
+
 module.exports = [
     viewerDev,
     viewerProd,
     bootstrapScripts,
     compileExtension,
-    recordingClient
+    recordingClient,
+    compileBackend
 ];

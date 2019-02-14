@@ -19,7 +19,7 @@ services:
             - decorator
         depends_on:
             - mongo
-            - decorator
+        restart: unless-stopped
         environment:
             - MONGO_URL=mongodb://mongo/recordings
             - DECORATOR_URL=http://decorator:${DECORATOR_PORT}
@@ -33,7 +33,7 @@ services:
             args:
                 port: "${API_PORT}"
             dockerfile: dev.Dockerfile
-        command: npx nodemon --delay 1000ms --inspect=0.0.0.0:9229 -w ./packages/api/dist ./packages/api/dist/api/src/api-server.js
+        command: npx nodemon --delay 1000ms --inspect=0.0.0.0:9229 -w ./dist/backend ./dist/backend/api-server.bundle.js
     decorator:
         expose:
             - ${DECORATOR_PORT}
@@ -43,6 +43,7 @@ services:
             - mongo
         depends_on:
             - mongo
+        restart: unless-stopped
         environment:
             - MONGO_URL=mongodb://mongo/recordings
             - DECORATOR_PORT=${DECORATOR_PORT}
@@ -54,7 +55,7 @@ services:
             args:
                 port: "${DECORATOR_PORT}"
             dockerfile: dev.Dockerfile
-        command: npx nodemon --delay 1000ms -w ./packages/decorators/dist ./packages/decorators/dist/decorators/src/decorator-server.js
+        command: npx nodemon --delay 1000ms -w ./dist/backend ./dist/backend/decorator-server.bundle.js
     builder:
         volumes:
             - '.:/app'
@@ -70,28 +71,6 @@ services:
             context: .
             target: dev-builder
             dockerfile: dev.Dockerfile
-    static:
-        ports:
-            - ${STATIC_PORT}:443
-        links:
-            - decorator
-            - app
-        depends_on:
-            - builder
-        volumes:
-            - stored-files:${STORAGE_LOCATION}
-            - ./secret/certs:/etc/ssl/certs
-            - '.:/app'
-        environment:
-            - FRONTEND_HOSTNAME=${FRONTEND_HOSTNAME}
-            - STORAGE_LOCATION=${STORAGE_LOCATION}
-            - API_SERVER=http://app:${API_PORT}
-            - APP_ROOT=/app/dist/web #This may be a bit of a hack. It can go away if mounting a subdirectory of a named volume becomes a thing
-        build:
-            context: .
-            target: dev-nginx
-            dockerfile: dev.Dockerfile
-        command: /bin/sh -c "envsubst '$${STORAGE_LOCATION},$${FRONTEND_HOSTNAME},$${API_SERVER},$${APP_ROOT}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && exec nginx -g 'daemon off;'"
 volumes:
     mongo-data:
     stored-files:
