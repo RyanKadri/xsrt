@@ -1,6 +1,6 @@
 {
     "name": "@xsrt/decorators",
-    "version": "0.6.0",
+    "version": "0.7.0",
     "description": "Backend services for post-processing recordings",
     "author": "Ryan Kadri <ryankadri1@gmail.com>",
     "license": "ISC",
@@ -9,8 +9,8 @@
         "@types/puppeteer": "^1.11.3"
     },
     "dependencies": {
-        "@xsrt/common": "^0.6.0",
-        "@xsrt/common-backend": "^0.6.0",
+        "@xsrt/common": "^0.7.0",
+        "@xsrt/common-backend": "^0.7.0",
         "body-parser": "^1.18.3",
         "cors": "^2.8.5",
         "express": "^4.16.4",

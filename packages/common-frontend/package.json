@@ -1,6 +1,6 @@
 {
     "name": "@xsrt/common-frontend",
-    "version": "0.6.0",
+    "version": "0.7.0",
     "description": "Shared XSRT frontend components",
     "author": "Ryan Kadri <ryankadri1@gmail.com>",
     "license": "ISC",
@@ -25,7 +25,7 @@
     },
     "dependencies": {
         "@material-ui/core": "^3.6.0",
-        "@xsrt/common": "^0.6.0",
+        "@xsrt/common": "^0.7.0",
         "axios": "^0.18.0",
         "inversify": "^5.0.1",
         "react": "^16.6.0",
