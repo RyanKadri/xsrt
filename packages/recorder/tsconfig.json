@@ -1,12 +1,14 @@
 {
     "extends": "../tsconfig.settings.json",
     "compilerOptions": {
+        "composite": true,
+        "declaration": true,
+        "declarationMap": true,
         "outDir": "lib",
-        "rootDir": "..",
-        "baseUrl": ".",
-        "paths": {
-            "@xsrt/common": ["../common/src"]
-        }
+        "rootDir": "./src",
     },
-    "include": ["./src/index.ts"]
+    "include": ["src"],
+    "references": [
+        { "path": "../common" }
+    ]
 }

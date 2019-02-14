@@ -125,7 +125,7 @@ const bootstrapScripts = merge(common('dist/bootstrap', "packages/viewer/tsconfi
     },
 });
 
-const compileExtension = merge(common('dist/extension', 'packages/extension/tsconfig.json'), {
+const compileExtension = merge(common('packages/extension/dist', 'packages/extension/tsconfig.json'), {
     name: 'compile-extension',
     resolve: {
         extensions: ['.tsx', '.html'],

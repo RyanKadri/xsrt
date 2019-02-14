@@ -1,14 +1,13 @@
 {
     "extends": "../tsconfig.settings.json",
     "compilerOptions": {
+        "declaration": true,
+        "declarationMap": true,
         "outDir": "./lib",
-        "rootDir": "../"
+        "rootDir": "./src",
+        "composite": true
     },
     "include": [
-        "./src/index.ts"
-    ],
-    "exclude": [
-        "./node_modules",
-        "../../node_modules"
+        "./src"
     ]
 }
