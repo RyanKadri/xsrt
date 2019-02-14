@@ -8,5 +8,5 @@
             "@xsrt/common": ["../common/src"]
         }
     },
-    "include": ["./src/public_api.ts"]
+    "include": ["./src/index.ts"]
 }

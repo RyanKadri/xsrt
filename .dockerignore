@@ -12,3 +12,4 @@ scripts/
 spec/
 .env
 lib/
+lib-cjs/

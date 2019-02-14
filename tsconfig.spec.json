@@ -6,6 +6,12 @@
         "sourceMap": true,
         "baseUrl": "./packages",
         "skipLibCheck": true,
+        "paths": {
+            "@xsrt/common": ["./common/src"],
+            "@xsrt/common-backend": ["./common-backend/src"],
+            "@xsrt/common-frontend": ["./common-frontend/src"],
+            "@xsrt/recorder": ["./recorder/src"],
+        }
     },
     "include": [
         "packages/**/src/**/*.ts",
