@@ -13,6 +13,7 @@
     "files": [
         "lib"
     ],
+    "private": true,
     "publishConfig": {
         "access": "public"
     },

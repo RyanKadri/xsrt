@@ -7,7 +7,6 @@
     "typings": "lib/index.d.ts",
     "module": "lib/index.js",
     "main": "lib-cjs/index.js",
-    "private": true,
     "sideEffects": false,
     "directories": {
         "lib": "lib"
