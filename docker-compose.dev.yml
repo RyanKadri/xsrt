@@ -39,6 +39,7 @@ services:
             - ${DECORATOR_PORT}
         ports:
             - ${DECORATOR_PORT}:${DECORATOR_PORT}
+            - 9230:9230
         links:
             - mongo
         depends_on:
@@ -55,7 +56,7 @@ services:
             args:
                 port: "${DECORATOR_PORT}"
             dockerfile: dev.Dockerfile
-        command: npx nodemon --delay 1000ms -w ./dist/backend ./dist/backend/decorator-server.bundle.js
+        command: npx nodemon --delay 1000ms --inspect=0.0.0.0:9230 -w ./dist/backend ./dist/backend/decorator-server.bundle.js
     builder:
         volumes:
             - '.:/app'

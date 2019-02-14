@@ -145,12 +145,14 @@ const compileExtension = merge(common('dist/extension', 'packages/extension/tsco
 
 const compileBackend = merge(common("dist/backend", "packages/api/tsconfig.json"), {
     name: 'compile-backend',
+    devtool: 'inline-sourcemaps',
     externals: [nodeExternals()],
     target: 'node',
     entry: {
         ['api-server']: './packages/api/src/api-server.ts',
         ['decorator-server']: './packages/decorators/src/decorator-server.ts'
-    }
+    },
+    mode: "development"
 })
 
 module.exports = [

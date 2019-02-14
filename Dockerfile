@@ -12,31 +12,26 @@ COPY webpack.config.js ./
 
 # Backend build environment
 FROM builder as backend-builder
-RUN npm run build:backend
+RUN npm run build:backend -- --mode production
 
 # Base image for api and decorator servers
 FROM node:11.0.0-alpine as backend-base
 WORKDIR /app/
 COPY --from=backend-builder /app/node_modules ./node_modules
-COPY --from=backend-builder /app/packages/common ./common/
-COPY --from=backend-builder /app/packages/common-backend ./common-backend/
-
 
 # API app server
 FROM backend-base as api
-COPY --from=backend-builder /app/packages/api/dist ./api/dist
-COPY --from=backend-builder /app/packages/api/node_modules ./api/node_modules
+COPY --from=backend-builder /app/dist/backend/api-server.bundle.js* ./
 ARG port
 EXPOSE ${port}
-CMD ["node", "./api/dist/api/src/api-server.js"]
+CMD ["node", "./api-server.bundle.js"]
 
 # Decorator app server
 FROM backend-base as decorator
-COPY --from=backend-builder /app/packages/decorators/dist ./decorators/dist
-COPY --from=backend-builder /app/packages/decorators/node_modules ./decorators/node_modules
+COPY --from=backend-builder /app/dist/backend/decorator-server.bundle.js* ./
 ARG port
 EXPOSE ${port}
-CMD ["node", "./decorators/dist/decorators/src/decorator-server.js"]
+CMD ["node", "./decorator-server.bundle.js"]
 
 # Frontend build environment
 FROM builder as frontend-builder
