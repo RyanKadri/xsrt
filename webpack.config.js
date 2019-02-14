@@ -42,7 +42,7 @@ const common = (output, tsconfig) => ({
             "@xsrt/common": path.resolve(__dirname,  "packages/common/src"),
             "@xsrt/common-backend": path.resolve(__dirname, "packages/common-backend/src"),
             "@xsrt/common-frontend": path.resolve(__dirname, "packages/common-frontend/src"),
-            "@xsrt/recorder": path.resolve(__dirname, "packages/common-frontend/src")
+            "@xsrt/recorder": path.resolve(__dirname, "packages/recorder/src")
         }
     }
 });
