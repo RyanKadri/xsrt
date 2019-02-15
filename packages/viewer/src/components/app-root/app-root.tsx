@@ -7,7 +7,6 @@ import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-d
 import { TargetApiService } from "../../services/sites-api-service";
 import { OverallDashboardView } from "../dashboard/overall-dashboard";
 import { SiteDashboardView } from "../dashboard/site-dashboard";
-import { ManageSitesView } from "../manage-sites/manage-sites-view";
 import { RecordingView } from "../viewer/recording-view";
 import { Sidebar } from "./side-bar/side-bar";
 import { TopNav } from "./top-nav/top-nav";
@@ -48,13 +47,11 @@ class _AppRoot extends React.Component<AppProps, AppState> {
                             />
                         } />
                         <Route path="/dashboard" render={ () =>
-                            <OverallDashboardView  sites={ this.state.availableSites } />
-                        } />
-                        <Route path="/sites" render={ () =>
-                            <ManageSitesView sites={this.state.availableSites}
-                                             onDelete={ this.deleteSite }
-                                             onNewSite={ this.createNewSite }
-                            />
+                            <OverallDashboardView
+                                sites={ this.state.availableSites }
+                                onDeleteSite={this.deleteSite}
+                                onUpdateSite={this.updateSite}
+                                onCreateSite={this.createNewSite} />
                         } />
                         <Route path="/" exact render={() => <Redirect to="/dashboard" /> } />
                     </Switch>
@@ -76,16 +73,25 @@ class _AppRoot extends React.Component<AppProps, AppState> {
         });
     }
 
+    private updateSite = async (site: SiteTarget) => {
+        const updated = await this.props.targetApi.updateSite(site);
+        this.setState((old) => ({
+            availableSites: old.availableSites.map(
+                oldSite => oldSite._id === updated._id ? updated : oldSite
+            )
+        }));
+    }
+
     private createNewSite = async (site: NewSiteTarget) => {
         const newSite = await this.props.targetApi.createSite(site);
         this.setState((old) => ({ availableSites: (old.availableSites || []).concat(newSite) }));
     }
 
     private deleteSite = async (toDelete: SiteTarget) => {
-        const deleted = await this.props.targetApi.deleteSite(toDelete);
+        await this.props.targetApi.deleteSite(toDelete);
         this.setState((old) => ({
             availableSites: (old.availableSites || [])
-                .filter(site => site._id !== deleted._id )
+                .filter(site => site._id !== toDelete._id )
         }));
     }
 }

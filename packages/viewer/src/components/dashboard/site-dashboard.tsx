@@ -33,12 +33,15 @@ class _SiteDashboardView extends React.Component<DashboardViewProps, DashboardSt
             !this.props.site
                 ? <Typography variant="body1">This site no longer exists</Typography>
                 : <Fragment>
-                    <Typography variant="h4">{ this.props.site.name }
-                        <a  target="_blank" className={classes.externalLink}
-                            href={ `https://${this.props.site.url || this.props.site.identifier}` }>
+                    <Typography variant="h4">
+                    { this.props.site.name }
+                    { this.props.site.urls && this.props.site.urls.length === 1
+                        ? <a  target="_blank" className={classes.externalLink}
+                            href={ `${this.props.site.urls[0]}` }>
                             <ExternalLink />
                         </a>
-                    </Typography>
+                        : null
+                    }</Typography>
                     { this.props.recordings.length === 0
                       ? <Typography variant="body1">No recordings yet...</Typography>
                       : <RecordingTable

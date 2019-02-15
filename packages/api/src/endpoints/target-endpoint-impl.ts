@@ -1,4 +1,4 @@
-import { siteTargetEndpoint } from "@xsrt/common";
+import { SiteTarget, siteTargetEndpoint } from "@xsrt/common";
 import { errorNotFound, RouteImplementation, Target } from "@xsrt/common-backend";
 import { injectable } from "inversify";
 
@@ -36,21 +36,27 @@ export class TargetEndpoint implements TargetEndpointType {
             { $project: {
                 _id: 1,
                 name: 1,
-                identifiedBy: 1,
-                identifier: 1,
-                url: 1,
-                numRecordings: { $size: "$recordings" }
+                urls: 1,
+                wildcardUrl: 1,
+                numRecordings: { $size: { $ifNull: ["$recordings", []] } }
             } }
         ]);
         return res;
     }
 
     createSiteTarget: TargetEndpointType["createSiteTarget"] = async ({ target }) => {
-        if (target.identifiedBy === "host" && !target.url) {
-            target.url = target.identifier;
-        }
-        const recording = new Target(target);
-        const data = await recording.save();
-        return data.toObject();
+        const toCreate = new Target(target);
+        const created: SiteTarget = (await toCreate.save()).toObject();
+        return {
+            ...created,
+            numRecordings: 0
+        };
+    }
+
+    updateSiteTarget: TargetEndpointType["updateSiteTarget"] = async ({ target, targetId }) => {
+        const updated = await Target.findByIdAndUpdate(targetId, target);
+        return updated !== null
+            ? updated.toObject()
+            : errorNotFound(`Could not find site ${targetId}`);
     }
 }

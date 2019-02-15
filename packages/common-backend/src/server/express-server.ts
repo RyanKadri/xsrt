@@ -34,7 +34,7 @@ export class ExpressServer {
     ) { }
 
     async start(): Promise<void> {
-        this.logger.info("Test1");
+        this.logger.info("Test2");
         const app = express();
         await Promise.all(this.initializers.map(initializer => initializer.initialize(app)));
 

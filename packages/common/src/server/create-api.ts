@@ -37,10 +37,10 @@ export class ApiCreationService {
         };
         const url = this.replaceRouteParams(actionDef.url, routeParam);
         if (actionDef.method === "get" || actionDef.method === "delete") {
-            const httpMethod = this.Axios[actionDef.method] as AxiosStatic["get"];
+            const httpMethod = this.Axios[actionDef.method].bind(this.Axios) as AxiosStatic["get"];
             return httpMethod(url, { params: query, headers }).then(resp => resp.data);
         } else if (actionDef.method === "patch" || actionDef.method === "post" || actionDef.method === "put") {
-            const httpMethod = this.Axios[actionDef.method] as AxiosStatic["post"];
+            const httpMethod = this.Axios[actionDef.method].bind(this.Axios) as AxiosStatic["post"];
             return httpMethod(url, body, { headers }).then(resp => resp.data);
         } else {
             throw new Error("Something went wrong");

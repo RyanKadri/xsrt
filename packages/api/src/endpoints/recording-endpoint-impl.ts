@@ -1,4 +1,4 @@
-import { LoggingService, NewSiteTarget, Recording, recordingEndpoint, UADetails, Without } from "@xsrt/common";
+import { LoggingService, Recording, recordingEndpoint, UADetails, Without } from "@xsrt/common";
 import { errorInvalidCommand, errorNotFound, IServerConfig, RecordingSchema, RouteImplementation, Target } from "@xsrt/common-backend";
 import Axios from "axios";
 import { inject, injectable } from "inversify";
@@ -70,14 +70,11 @@ export class RecordingEndpoint implements RecordingEndpointType {
         return sites.map(site => site.toObject());
     }
     createRecording: RecordingEndpointType["createRecording"] = async ({ recording: bodyData, userAgent }) => {
-        const host = bodyData.url.hostname;
         const ua = new parser.UAParser(userAgent || "");
 
-        const existingSite = await Target.findOne({ identifiedBy: "host", identifier: host });
-        let site = existingSite;
+        const site = await Target.findById(bodyData.site);
         if (!site) {
-            const newTarget: NewSiteTarget = { name: host, identifiedBy: "host", identifier: host, url: host };
-            site = await new Target(newTarget).save();
+            return errorNotFound(`Site ${bodyData.site} does not exist`);
         }
         const uaDetails = extractUADetails(ua);
         const recordingData: Without<Recording, "_id"> = {

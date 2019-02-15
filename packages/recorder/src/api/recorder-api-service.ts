@@ -1,7 +1,6 @@
-import { chunkApiSymbol, chunkEndpointMetadata, DateManager, EndpointApi, Interface, LocationSymbol, recordingApiSymbol, RecordingChunk, recordingEndpoint, Without } from "@xsrt/common";
+import { chunkApiSymbol, chunkEndpointMetadata, DateManager, EndpointApi, Interface, recordingApiSymbol, RecordingChunk, recordingEndpoint, Without } from "@xsrt/common";
 import { inject, injectable } from "inversify";
 import { compress } from "../output/output-utils";
-import { extractUrlMetadata } from "../traverse/extract-metadata";
 import { toJson } from "../utils/dom-utils";
 import { RecordingInfo, RecordingStateService } from "./recording-state-service";
 
@@ -13,10 +12,9 @@ export class RecorderApiService {
         @inject(recordingApiSymbol) private recordingApi: EndpointApi<typeof recordingEndpoint>,
         @inject(chunkApiSymbol) private chunkApi: EndpointApi<typeof chunkEndpointMetadata>,
         private dateManager: DateManager,
-        @inject(LocationSymbol) private location: Interface<Location>
     ) {}
 
-    async startRecording(): Promise<RecordingInfo> {
+    async startRecording(site: string): Promise<RecordingInfo> {
         const currentRecording = this.recordingState.fetchRecordingId();
         let startTime = this.recordingState.fetchStartTime();
 
@@ -29,7 +27,7 @@ export class RecorderApiService {
             startTime = this.dateManager.now();
             this.recordingState.saveStartTime(startTime);
             const recording = await this.recordingApi.createRecording({
-                recording: { url: extractUrlMetadata(this.location), startTime },
+                recording: { site, startTime },
                 // TODO - Some headers are specifically set. Not user-agent. Figure out how to ignore this in sig
                 userAgent: "temp"
             });

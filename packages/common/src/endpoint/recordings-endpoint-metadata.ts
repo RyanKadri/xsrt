@@ -1,4 +1,4 @@
-import { LocationMetadata, Recording, RecordingOverview } from "../types/types";
+import { Recording, RecordingOverview } from "../types/types";
 import { DeepPartial } from "../utils/type-utils";
 import { defineEndpoint, RequestBodyUnwrap, RequestHeader, RequestParamUnwrap, RouteParamUnwrap, Type } from "./types";
 
@@ -58,7 +58,7 @@ export const recordingEndpoint = defineEndpoint({
 });
 
 export interface CreateRecordingRequest {
-    url: LocationMetadata;
+    site: string;
     startTime: number;
 }
 

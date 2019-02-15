@@ -1,5 +1,4 @@
-import { LoggingService, PendingDiffChunk, PendingSnapshotChunk, pluck, RecordingChunk, ScraperConfig, ScraperConfigToken, SnapshotChunk, sortAsc, Without } from "@xsrt/common";
-import { mergeMaps } from "@xsrt/common";
+import { LoggingService, mergeMaps, PendingDiffChunk, PendingSnapshotChunk, pluck, RecordingChunk, ScraperConfig, ScraperConfigToken, SnapshotChunk, sortAsc, Without } from "@xsrt/common";
 import { inject, injectable } from "inversify";
 import { RecorderApiService } from "./api/recorder-api-service";
 import { RecordingInfo, RecordingStateService } from "./api/recording-state-service";
@@ -29,9 +28,8 @@ export class RecorderOrchestrator {
     private sentInitChunk = false;
 
     initialize() {
-        this.logger.info("Something");
         this.recorder.record();
-        this.initInfoTask = this.recorderApi.startRecording()
+        this.initInfoTask = this.recorderApi.startRecording(this.config.site)
             .then(info => this.initInfo = info);
 
         // At the moment, this needs to run after the previous line so the event trackers can record unload events

@@ -233,9 +233,8 @@ export interface ViewportSize {
 export interface SiteTarget {
     _id: string;
     name: string;
-    identifiedBy: "host";
-    identifier: string;
-    url: string;
+    urls: string[];
+    wildcardUrl: boolean;
     numRecordings?: number;
 }
 

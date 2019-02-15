@@ -10,19 +10,17 @@ const siteSchema = new Schema({
         type: String,
         required: true
     },
-    identifiedBy: {
-        type: String,
-        required: true,
-        enum: ["host"]
+    urls: {
+        type: [String],
+        required: false,
+        default: []
     },
-    identifier: {
-        type: String,
-        required: true
-    },
-    url: {
-        type: String,
-        required: true
+    wildcardUrl: {
+        type: Boolean,
+        required: false,
+        default: false
     }
+
 }, { strict: true, collection: "targets" });
 
 export const Target = model("Target", siteSchema);

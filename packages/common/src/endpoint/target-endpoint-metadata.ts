@@ -35,5 +35,14 @@ export const siteTargetEndpoint = defineEndpoint({
             target: new RequestBodyUnwrap<Partial<SiteTarget>>()
         },
         response: Type<SiteTarget>()
+    },
+    updateSiteTarget: {
+        method: "patch",
+        url: singleTargetUrl,
+        request: {
+            targetId: new RouteParamUnwrap("targetId"),
+            target: new RequestBodyUnwrap<Partial<SiteTarget>>()
+        },
+        response: Type<SiteTarget>()
     }
 });
