@@ -8,7 +8,7 @@
   },
   "sideEffects": false,
   "scripts": {
-    "initialize": "npm install && lerna bootstrap --hoist",
+    "initialize": "npm install --no-optional && lerna bootstrap --hoist",
     "build:viewer": "webpack --config-name viewer-prod",
     "start:viewer": "webpack-dev-server --config-name viewer-dev",
     "build:backend": "webpack --config-name compile-backend",
@@ -32,6 +32,9 @@
   },
   "author": "Ryan Kadri",
   "license": "",
+  "optionalDependencies": {
+    "@xsrt/extension": "^0.9.0"
+  },
   "devDependencies": {
     "@types/chrome": "0.0.75",
     "@types/classnames": "^2.2.6",
@@ -43,7 +46,6 @@
     "@types/shortid": "0.0.29",
     "@types/ua-parser-js": "^0.7.32",
     "@types/webpack": "^4.4.17",
-    "@xsrt/extension": "^0.9.0",
     "clean-webpack-plugin": "^0.1.19",
     "concurrently": "^4.1.0",
     "copy-webpack-plugin": "^4.6.0",
