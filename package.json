@@ -43,7 +43,7 @@
     "@types/shortid": "0.0.29",
     "@types/ua-parser-js": "^0.7.32",
     "@types/webpack": "^4.4.17",
-    "@xsrt/extension": "^0.5.0",
+    "@xsrt/extension": "^0.7.0",
     "clean-webpack-plugin": "^0.1.19",
     "concurrently": "^4.1.0",
     "copy-webpack-plugin": "^4.6.0",
