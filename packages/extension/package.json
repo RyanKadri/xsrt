@@ -16,13 +16,13 @@
     "devDependencies": {
         "@types/react": "^16.4.18",
         "@types/react-dom": "^16.0.9",
-        "@types/react-router-dom": "^4.3.1",
-        "@xsrt/common-frontend": "^0.9.0"
+        "@types/react-router-dom": "^4.3.1"
     },
     "dependencies": {
         "@material-ui/core": "^3.6.0",
         "@material-ui/icons": "^3.0.1",
         "@xsrt/common": "^0.9.0",
+        "@xsrt/common-frontend": "^0.9.0",
         "@xsrt/recorder": "^0.9.0",
         "inversify": "^5.0.1",
         "react": "^16.6.0",
