@@ -2,10 +2,8 @@ import { createStyles, Dialog, Theme, Typography, withStyles, WithStyles } from 
 import ExternalLink from "@material-ui/icons/OpenInBrowserSharp";
 import { LoggingService, RecordingOverview, SiteTarget } from "@xsrt/common";
 import { withDependencies } from "@xsrt/common-frontend";
-import React, { Fragment } from "react";
-import { RecordingApiService, RecordingMetadataResolver } from "../../services/recording-service";
-import { RecordingState } from "../../services/state/recording-overview-state";
-import { withData } from "../../services/with-data";
+import React, { Fragment, useState, useEffect } from "react";
+import { RecordingApiService } from "../../services/recording-service";
 import { RecordingTable } from "./recording-table/recording-table";
 
 const styles = (theme: Theme) => createStyles({
@@ -17,100 +15,85 @@ const styles = (theme: Theme) => createStyles({
     }
 });
 
-class _SiteDashboardView extends React.Component<DashboardViewProps, DashboardState> {
+const _SiteDashboardView = ({ classes, recordingsApi, logger, site }: DashboardViewProps) => {
+    const [ preview, setPreview ] = useState<RecordingOverview | null>(null);
+    const [ selected, setSelected ] = useState<RecordingOverview[]>([]);
+    const [ recordings, setRecordings ] = useState<RecordingOverview[]>([]);
+    const [ loading, setLoading ] = useState(false);
 
-    constructor(props: DashboardViewProps) {
-        super(props);
-        this.state = {
-            preview: undefined,
-            selected: []
-        };
-    }
+    const onToggleSelect = (recording: RecordingOverview) => {
+        setSelected(old =>
+            old.includes(recording)
+                ? old.filter(rec => rec !== recording)
+                : old.concat(recording)
+        );
+    };
 
-    render() {
-        const { classes } = this.props;
-        return <div className={ classes.root }>{
-            !this.props.site
+    const onToggleSelectAll = (shouldSelect: boolean) => {
+        setSelected(shouldSelect ? recordings : []);
+    };
+
+    const onDeleteSelected = async () => {
+        try {
+            await recordingsApi.deleteRecordings(selected);
+            setSelected([]);
+        } catch (e) {
+            logger.error(e);
+        }
+    };
+
+    useEffect(() => {
+        if (site) {
+            setLoading(true);
+            recordingsApi.fetchAvailableRecordings(site._id)
+                .then(fetchedRecordings => {
+                    setRecordings(fetchedRecordings);
+                    setLoading(false);
+                });
+        }
+    }, [site]);
+
+    return (
+        <div className={ classes.root }>{
+            site === undefined
                 ? <Typography variant="body1">This site no longer exists</Typography>
                 : <Fragment>
                     <Typography variant="h4">
-                    { this.props.site.name }
-                    { this.props.site.urls && this.props.site.urls.length === 1
+                    { site.name }
+                    { site.urls && site.urls.length === 1
                         ? <a  target="_blank" className={classes.externalLink}
-                            href={ `${this.props.site.urls[0]}` }>
+                            href={ `${site.urls[0]}` }>
                             <ExternalLink />
                         </a>
                         : null
                     }</Typography>
-                    { this.props.recordings.length === 0
-                      ? <Typography variant="body1">No recordings yet...</Typography>
-                      : <RecordingTable
-                            recordings={ this.props.recordings }
-                            selected={ this.state.selected }
-                            onPreview={ this.onPreview }
-                            onToggleSelect={ this.onToggleSelect }
-                            onToggleSelectAll={ this.onToggleSelectAll }
-                            onDeleteSelected={ this.onDeleteSelected }
-                        />
+                    { loading
+                        ? <Typography variant="body1">Loading...</Typography>
+                        : recordings.length === 0
+                            ? <Typography variant="body1">No recordings yet...</Typography>
+                            : <RecordingTable
+                                recordings={ recordings }
+                                selected={ selected }
+                                onPreview={ setPreview }
+                                onToggleSelect={ onToggleSelect }
+                                onToggleSelectAll={ onToggleSelectAll }
+                                onDeleteSelected={ onDeleteSelected }
+                            />
                     }
                     <Dialog maxWidth="lg"
-                        open={ this.state.preview !== undefined }
-                        onClose={ this.onClose }>{
-                        this.state.preview && this.state.preview.thumbnail
-                            ? <img src={`/screenshots/${this.state.preview!.thumbnail}`}></img>
+                        open={ preview !== null }
+                        onClose={ () => setPreview(null) }>{
+                        preview && preview.thumbnail
+                            ? <img src={`/screenshots/${preview.thumbnail}`}></img>
                             : <p>No image</p>
                     }</Dialog>
                 </Fragment>
-        }</div>;
-    }
-
-    private onPreview = (preview: RecordingOverview) => {
-        this.setState({
-            preview
-        });
-    }
-
-    private onClose = () => {
-        this.setState({
-            preview: undefined
-        });
-    }
-
-    private onToggleSelect = (recording: RecordingOverview) => {
-        this.setState(({ selected }) => ({
-            selected: selected.includes(recording)
-                ? selected.filter(rec => rec !== recording)
-                : selected.concat(recording)
-        }));
-    }
-
-    private onToggleSelectAll = (shouldSelect: boolean) => {
-        this.setState(() => ({
-            selected: shouldSelect
-                ? this.props.recordings
-                : []
-        }));
-    }
-
-    private onDeleteSelected = async () => {
-        try {
-            await this.props.recordingsApi.deleteRecordings(this.state.selected);
-            this.setState(({ selected: [] }));
-        } catch (e) {
-            this.props.logger.error(e);
-        }
-    }
-
-}
+        }</div>
+    );
+};
 
 export const SiteDashboardView = withStyles(styles)(
-    withDependencies(
-        withData(_SiteDashboardView, { recordings: {
-            resolver: RecordingMetadataResolver,
-            state: RecordingState,
-            criteria: () => true,
-            unique: false
-        } }),
+    withDependencies(_SiteDashboardView,
         {
             recordingsApi: RecordingApiService,
             logger: LoggingService
@@ -119,13 +102,7 @@ export const SiteDashboardView = withStyles(styles)(
 );
 
 interface DashboardViewProps extends WithStyles<typeof styles> {
-    recordings: RecordingOverview[];
     site: SiteTarget;
     recordingsApi: RecordingApiService;
     logger: LoggingService;
-}
-
-interface DashboardState {
-    preview?: RecordingOverview;
-    selected: RecordingOverview[];
 }

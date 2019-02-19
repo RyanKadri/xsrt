@@ -1,15 +1,11 @@
 import { EndpointApi, Recording, recordingApiSymbol, recordingEndpoint, RecordingOverview } from "@xsrt/common";
 import { inject, injectable } from "inversify";
-import { RouteComponentProps } from "react-router";
-import { RecordingState } from "./state/recording-overview-state";
-import { Resolver } from "./with-data";
 
 @injectable()
 export class RecordingApiService {
 
     /* istanbul ignore next */
     constructor(
-        private overviewState: RecordingState,
         @inject(recordingApiSymbol) private recordingApi: EndpointApi<typeof recordingEndpoint>
     ) {}
 
@@ -31,31 +27,6 @@ export class RecordingApiService {
                 deleteRequest: { ids: selected.map(req => req._id) },
             });
         }
-        this.overviewState.delete(selected);
-    }
-}
-
-@injectable()
-export class RecordingMetadataResolver implements Resolver<RecordingOverview> {
-
-    constructor(
-        private recordingService: RecordingApiService
-    ) {}
-
-    resolve(routeParams: RouteComponentProps<{siteId: string}>) {
-        return this.recordingService.fetchAvailableRecordings(routeParams.match.params.siteId);
-    }
-}
-
-@injectable()
-export class RecordingResolver implements Resolver<Recording> {
-
-    constructor(
-        private recordingService: RecordingApiService
-    ) {}
-
-    resolve(routeParams: RouteComponentProps<{recordingId: string}>) {
-        return this.recordingService.fetchRecordingData(routeParams.match.params.recordingId);
     }
 }
 
