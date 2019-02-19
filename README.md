@@ -13,6 +13,8 @@ XSRT is a free and open source session recording tool for web applications. It c
 
 This project is still very much in early development. It is not yet intended for production use.
 
+See current and upcoming work here: https://trello.com/b/NAelvlwv/kanban
+
 ## Privacy Concerns
 
 Some would argue that this code makes it easier for companies to intrude on their customers' privacy. There is definitely some validity to that concern. I think the existence of this project is useful for the following reasons:

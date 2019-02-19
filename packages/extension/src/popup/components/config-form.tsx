@@ -51,7 +51,11 @@ class _ConfigForm extends React.Component<ConfigFormProps, ConfigFormState> {
                         label="Backend URL"
                         value={ config.backendUrl }
                         onChange={ this.updateField("backendUrl") } />
-
+                    <TextField
+                        className={ classes.formField }
+                        label="Site ID"
+                        value={ config.site }
+                        onChange={ this.updateField("site") } />
                     <Button className={ classes.submitButton } color="primary" type="submit">Submit</Button>
                 </form>
             </ExpansionPanelDetails>

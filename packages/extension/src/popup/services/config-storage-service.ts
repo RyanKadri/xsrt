@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { FetchStatusRequest, SaveStatusRequest } from "../../background/config";
+import { FetchStatusRequest, loadConfig, SaveStatusRequest } from "../../background/config";
 import { ExtensionConfig } from "../../config/extension-config";
 import { RecordingStatus } from "../popup-root";
 
@@ -8,13 +8,7 @@ export class ConfigStorageService {
 
     fetchConfig(): Promise<ExtensionConfig> {
         return new Promise<ExtensionConfig>((resolve) => {
-            const defaultConfig: ExtensionConfig = {
-                debugMode: true,
-                shouldInject: false,
-                backendUrl: "http://localhost:3001",
-                mutationsPerChunk: 1500,
-                inputsPerChunk: 1000
-            };
+            const defaultConfig: ExtensionConfig = loadConfig();
             chrome.storage.local.get({ config: defaultConfig }, (res) => {
                 resolve(res.config as ExtensionConfig);
             });

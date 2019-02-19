@@ -24,11 +24,18 @@ jobs:
             - attach_workspace:
                 at: ./
             - run:
+                name: Build
+                command: npm run build:publish
+            - run:
                 name: Unit Tests
                 command: npm run test:coverage
             - run:
                 name: Lint
                 command: npm run lint
+            - persist_to_workspace:
+                root: ./
+                paths:
+                    - packages
     publish:
         executor: node-executor
         steps:

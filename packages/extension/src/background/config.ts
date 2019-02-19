@@ -5,6 +5,7 @@ import { RecordingStatus } from "../popup/popup-root";
 export function loadConfig(): ExtensionConfig {
     return {
         shouldInject: true,
+        site: "",
         ...defaultConfig
     };
 }

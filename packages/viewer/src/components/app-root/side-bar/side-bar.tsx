@@ -30,8 +30,7 @@ const _SideBar = ({ expanded, sites, classes, onClose }: SidebarProps) => (
             anchor="left"
             open={expanded}
             classes={ { paper: classes.sideBar } }
-            onClose={ onClose }
-    >
+            onClose={ onClose }>
         <List color="inherit" component="nav">
             { sidebarLinks(sites).map(link => Link(link, classes.nested, onClose)) }
         </List>
@@ -41,7 +40,6 @@ const _SideBar = ({ expanded, sites, classes, onClose }: SidebarProps) => (
 const sidebarLinks = (sites: SiteTarget[]) => {
     return [
         { type: "link", to: "/dashboard", text: "Dashboard" },
-        { type: "link", to: "/sites", text: "Manage Sites" },
         { type: "group", heading: "Sites", children: (sites || []).map(site => (
             { type: "link" as "link", to: `/dashboard/${site._id}`, text: site.name }
         ))}
