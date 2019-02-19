@@ -48,8 +48,10 @@ services:
         environment:
             - MONGO_URL=mongodb://mongo/recordings
             - DECORATOR_PORT=${DECORATOR_PORT}
+            - API_SERVER=http://app:${API_PORT}
         volumes:
             - '.:/app/'
+            - stored-files:${STORAGE_LOCATION}
         build:
             context: .
             target: dev-decorator
@@ -57,6 +59,25 @@ services:
                 port: "${DECORATOR_PORT}"
             dockerfile: dev.Dockerfile
         command: npx nodemon --delay 1000ms --inspect=0.0.0.0:9230 -w ./dist/backend ./dist/backend/decorator-server.bundle.js
+    static:
+        ports:
+            - ${STATIC_PORT}:443
+        volumes:
+            - stored-files:${STORAGE_LOCATION}
+            - ./secret/certs:/etc/ssl/certs
+        links:
+            - decorator
+            - app
+        environment:
+            - FRONTEND_HOSTNAME=${FRONTEND_HOSTNAME}
+            - STORAGE_LOCATION=${STORAGE_LOCATION}
+            - API_SERVER=http://app:${API_PORT}
+            - APP_ROOT=/app
+        build:
+            context: .
+            target: dev-nginx
+            dockerfile: dev.Dockerfile
+        command: /bin/sh -c "envsubst '$${STORAGE_LOCATION},$${FRONTEND_HOSTNAME},$${API_SERVER},$${APP_ROOT}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && exec nginx -g 'daemon off;'"
     builder:
         volumes:
             - '.:/app'
@@ -66,7 +87,7 @@ services:
             - ${WEBPACK_PORT}:${WEBPACK_PORT}
         environment:
             - WEBPACK_PORT=${WEBPACK_PORT}
-            - STATIC_ASSET_SERVER=http://static:${STATIC_PORT}/
+            - STATIC_ASSET_SERVER=https://static/
             - API_SERVER=http://app:${API_PORT}/
         build:
             context: .

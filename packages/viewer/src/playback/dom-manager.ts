@@ -1,6 +1,6 @@
 // tslint:disable-next-line:no-implicit-dependencies
 import defaultStyles from "!raw-loader!./default-styles.css";
-import { LoggingService, OptimizedElement, OptimizedHtmlElementInfo, OptimizedStyleElement, OptimizedStyleRule, OptimizedTextElementInfo, ScrapedAttribute, SnapshotChunk } from "@xsrt/common";
+import { Interface, LoggingService, OptimizedElement, OptimizedHtmlElementInfo, OptimizedStyleElement, OptimizedStyleRule, OptimizedTextElementInfo, ScrapedAttribute, SnapshotChunk } from "@xsrt/common";
 import { toBlobUrl } from "@xsrt/common-frontend";
 
 // TODO - Maybe in the process of refactoring, this can track a virtual-dom type thing
@@ -9,7 +9,7 @@ export const IDomManager = Symbol("DomManager");
 export class DomManager {
 
     constructor(
-        private logger: LoggingService
+        private logger: Interface<LoggingService>
     ) {}
 
     private _document?: Document;

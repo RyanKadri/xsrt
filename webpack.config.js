@@ -13,7 +13,7 @@ const common = (output, tsconfig) => ({
     output: {
         filename: '[name].bundle.js',
         path: path.resolve(__dirname, output),
-        publicPath: "/",
+        //publicPath: "/",
     },
     plugins: [
         new CleanWebpackPlugin([output + "/*"], { beforeEmit: true } ),
@@ -72,6 +72,7 @@ const frontendCommon = merge(common('dist/web', "packages/viewer/tsconfig.json")
                 charset: "UTF-8",
                 viewport: "minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
             },
+
             hash: true
         })
     ]
@@ -92,7 +93,7 @@ const viewerDev = merge(frontendCommon, {
         disableHostCheck: true,
         proxy: {
             '/api': process.env.API_SERVER || `http://localhost:${process.env.API_PORT}`,
-            '/screenshots': process.env.STATIC_ASSET_SERVER,
+            '/screenshots': { target: process.env.STATIC_ASSET_SERVER, secure:false },
             '/assets': process.env.STATIC_ASSET_SERVER,
         },
     },
@@ -123,6 +124,19 @@ const bootstrapScripts = merge(common('dist/bootstrap', "packages/viewer/tsconfi
     entry: {
         ['screenshot-bootstrap']: './packages/viewer/src/bootstrap/bootstrap-screenshot.ts',
     },
+    resolve: {
+        extensions: ['.tsx'],
+    },
+    plugins: [
+        new HtmlWebpackPlugin({
+            meta: {
+                charset: "UTF-8",
+                viewport: "minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
+            },
+            hash: true
+        })
+    ],
+    mode: 'production'
 });
 
 const compileExtension = merge(common('packages/extension/dist', 'packages/extension/tsconfig.json'), {

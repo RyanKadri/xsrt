@@ -45,8 +45,8 @@ export class RecordingEndpoint implements RecordingEndpointType {
     }
     patchRecording: RecordingEndpointType["patchRecording"] = async ({ patchData, recordingId }) => {
         if (patchData.finalized && patchData.metadata) {
-            Axios.post(`${this.config.decorateUrl}/decorate/thumbnails`, { recordingId })
-                .catch(e => this.logger.error(e.message));
+            Axios.post(`${this.config.decorateUrl}/api/thumbnails/${recordingId}`, { })
+                .catch(e => this.logger.error(e));
 
             const recording = await RecordingSchema.findByIdAndUpdate(recordingId, { $set: {
                 finalized: true,

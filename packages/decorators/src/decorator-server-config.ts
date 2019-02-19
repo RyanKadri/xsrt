@@ -8,9 +8,8 @@ import { injectable } from "inversify";
 export class DecoratorConfig implements ServerConfig {
     readonly port = parseInt(process.env.DECORATOR_PORT!, 10);
     readonly mongoUrl = `${process.env.MONGO_URL}`;
-    // Note - This URL must contain the protocol or it will break headless chrome
-    readonly staticScreenshotUrl = `${process.env.FRONTEND_HOSTNAME}/screenshot.html`;
     readonly screenshotDir = `${process.env.STORAGE_LOCATION}/screenshots`;
+    readonly recordingHost = `${process.env.API_SERVER}`;
 }
 
 @injectable()

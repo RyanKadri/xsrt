@@ -30,11 +30,14 @@ services:
             - ${DECORATOR_PORT}
         links:
             - mongo
+        volumes:
+            - stored-files:${STORAGE_LOCATION}
         depends_on:
             - mongo
         environment:
             - MONGO_URL=mongodb://mongo/recordings
             - DECORATOR_PORT=${DECORATOR_PORT}
+            - API_SERVER=http://app:${API_PORT}
         build:
             context: .
             target: decorator

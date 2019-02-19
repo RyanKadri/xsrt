@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { startRecording, RecordingController } from '@xsrt/recorder';
+import { RecordingController, startRecording } from '@xsrt/recorder';
 
 @Component({
   selector: 'app-root',
@@ -19,7 +19,8 @@ export class AppComponent {
     if (this.controller === undefined) {
       this.controller = startRecording({
         backendUrl: 'http://localhost:3001',
-        debugMode: true
+        debugMode: true,
+        site: '1bnTt0Cs2'
       });
       this.recording = true;
     }

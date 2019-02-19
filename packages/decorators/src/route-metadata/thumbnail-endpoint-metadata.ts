@@ -1,6 +1,14 @@
-import { defineEndpoint, RouteParamUnwrap, Type } from "./types";
+import { defineEndpoint, RouteParamUnwrap, Type, SnapshotChunk } from "@xsrt/common";
 
 export const thumbnailEndpointMetadata = defineEndpoint({
+    getThumbnailData: {
+        method: "get",
+        url: "/thumbnails/:recordingId/data",
+        response: Type<SnapshotChunk>(),
+        request: {
+            recordingId: new RouteParamUnwrap("recordingId")
+        }
+    },
     compileThumbnail: {
         method: "post",
         url: "/thumbnails/:recordingId",
