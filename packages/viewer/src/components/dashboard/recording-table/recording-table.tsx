@@ -1,6 +1,5 @@
 import { createStyles, Paper, Table, TableBody, Theme, withStyles, WithStyles } from "@material-ui/core";
 import { RecordingOverview } from "@xsrt/common";
-import { withDependencies } from "@xsrt/common-frontend";
 import React from "react";
 import { UIConfigService } from "../../../services/ui-config-service";
 import { allowedRecordingTableColumns } from "./available-columns";
@@ -103,7 +102,4 @@ export interface RecordingTableState {
     settingsDialogAnchor: HTMLElement | null;
 }
 
-export const RecordingTable = withDependencies(
-    withStyles(styles)(_RecordingTable),
-    { uiConfigService: UIConfigService }
-);
+export const RecordingTable = withStyles(styles)(_RecordingTable);

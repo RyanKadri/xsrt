@@ -1,9 +1,10 @@
 import { createStyles, Dialog, Theme, Typography, withStyles, WithStyles } from "@material-ui/core";
 import ExternalLink from "@material-ui/icons/OpenInBrowserSharp";
 import { LoggingService, RecordingOverview, SiteTarget } from "@xsrt/common";
-import { withDependencies } from "@xsrt/common-frontend";
-import React, { Fragment, useState, useEffect } from "react";
+import { useComponent, withDependencies } from "@xsrt/common-frontend";
+import React, { Fragment, useEffect, useState } from "react";
 import { RecordingApiService } from "../../services/recording-service";
+import { UIConfigService } from "../../services/ui-config-service";
 import { RecordingTable } from "./recording-table/recording-table";
 
 const styles = (theme: Theme) => createStyles({
@@ -20,6 +21,7 @@ const _SiteDashboardView = ({ classes, recordingsApi, logger, site }: DashboardV
     const [ selected, setSelected ] = useState<RecordingOverview[]>([]);
     const [ recordings, setRecordings ] = useState<RecordingOverview[]>([]);
     const [ loading, setLoading ] = useState(false);
+    const DIRecordingTable = useComponent(RecordingTable, { uiConfigService: UIConfigService });
 
     const onToggleSelect = (recording: RecordingOverview) => {
         setSelected(old =>
@@ -71,7 +73,7 @@ const _SiteDashboardView = ({ classes, recordingsApi, logger, site }: DashboardV
                         ? <Typography variant="body1">Loading...</Typography>
                         : recordings.length === 0
                             ? <Typography variant="body1">No recordings yet...</Typography>
-                            : <RecordingTable
+                            : <DIRecordingTable
                                 recordings={ recordings }
                                 selected={ selected }
                                 onPreview={ setPreview }

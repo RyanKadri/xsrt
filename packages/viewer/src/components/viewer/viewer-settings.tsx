@@ -1,6 +1,6 @@
 import { Checkbox, List, ListItem, ListItemText, Popover, withStyles } from "@material-ui/core";
 import React from "react";
-import { ViewerSettings } from "./viewer";
+import { ViewerSettings } from "./recording-viewer";
 
 const configItems: AvailableSettings[] = [
     { display: "Block UI on Pause", key: "blockViewerOnPause" },

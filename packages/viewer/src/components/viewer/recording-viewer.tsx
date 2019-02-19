@@ -230,7 +230,7 @@ export const RecordingViewer = withStyles(styles)(
         uiTweaks: TweakableConfigs
     }));
 
-export interface ViewerProps extends WithStyles<typeof styles> {
+interface ViewerProps extends WithStyles<typeof styles> {
     uiConfig: UIConfigService;
     uiTweaks: TweakableConfigs;
 
@@ -247,7 +247,7 @@ export interface ViewerProps extends WithStyles<typeof styles> {
     onUpdateTime: (newTime: number) => void;
 }
 
-export interface ViewerState {
+interface ViewerState {
     hasError: boolean;
     playerTime: number;
     lastFrameTime?: number;

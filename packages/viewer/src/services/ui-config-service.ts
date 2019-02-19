@@ -2,7 +2,7 @@ import { LocalStorageService } from "@xsrt/common";
 import { injectable } from "inversify";
 import { allowedRecordingTableColumns } from "../components/dashboard/recording-table/available-columns";
 import { RecordingTableSettings } from "../components/dashboard/recording-table/recording-table-settings";
-import { ViewerSettings } from "../components/viewer/viewer";
+import { ViewerSettings } from "../components/viewer/recording-viewer";
 
 const localStorageTableSettings = "xsrt.recording-table.config";
 const localStorageViewerSettings = "xsrt.viewer.config";

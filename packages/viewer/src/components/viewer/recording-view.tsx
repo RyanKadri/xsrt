@@ -10,7 +10,7 @@ import { Region, RegionService } from "../../services/regions-service";
 import { TweakableConfigs } from "../../services/viewer-tweaks";
 import { topNavHeight } from "../app-root/top-nav/top-nav";
 import { eventsBetween } from "../utils/recording-data-utils";
-import { RecordingViewer } from "./viewer";
+import { RecordingViewer } from "./recording-viewer";
 
 const styles = (theme: Theme) => createStyles({
     root: {
@@ -43,26 +43,6 @@ const _RecordingView = ({
     const sortByTimestamp = sortAsc(pluck("timestamp"));
     const sortSnapshot = sortAsc<SnapshotChunk>(snap => snap.metadata.startTime);
 
-    const calcEnd = (recording: Recording) => {
-        return Math.max(
-            ...recording.chunks.map(chunk => chunk.metadata.stopTime)
-        );
-    };
-
-    const calcBuffer = (retrievedChunks: string[], recording: Recording) => {
-        const chunks = recording.chunks;
-        const minStopNotFetched = Math.min(...chunks
-            .filter(chunk => !retrievedChunks.includes(chunk._id))
-            .map(chunk => chunk.metadata.stopTime)
-        );
-        const maxReady = Math.max(...chunks
-            .filter(chunk => retrievedChunks.includes(chunk._id))
-            .map(chunk => chunk.metadata.stopTime)
-            .filter(start => start < minStopNotFetched)
-        );
-        return maxReady;
-    };
-
     const processChunk = (chunk: RecordingChunk, recording: Recording) => {
         setState(oldState => {
             const snapshots = oldState.snapshots.concat(chunk.type === "snapshot" ? chunk : [])
@@ -79,23 +59,22 @@ const _RecordingView = ({
                 changes,
                 snapshots
             });
-            const annotations = annotationService.annotate(allEvents);
-            const regions = regionService.splitRegions(allEvents, bufferPos);
+
             return {
                 ...oldState,
                 snapshots,
                 changes,
                 inputs,
-                annotations,
+                annotations: annotationService.annotate(allEvents),
                 retrievedChunks,
                 bufferPos,
-                regions
+                regions: regionService.splitRegions(allEvents, bufferPos)
             };
         });
     };
 
     const updateBuffer = async (time = 0) => {
-        if (state.recording) {
+        if (state.recording !== null) {
             const chunksToGrab = state.recording.chunks.filter(chunk =>
                 chunk.metadata.startTime - time < uiTweaks.idealBuffer
                     && !state.requestedChunks.includes(chunk._id)
@@ -142,6 +121,26 @@ const _RecordingView = ({
 
 };
 
+function calcBuffer(retrievedChunks: string[], recording: Recording) {
+    const chunks = recording.chunks;
+    const minStopNotFetched = Math.min(...chunks
+        .filter(chunk => !retrievedChunks.includes(chunk._id))
+        .map(chunk => chunk.metadata.stopTime)
+    );
+    const maxReady = Math.max(...chunks
+        .filter(chunk => retrievedChunks.includes(chunk._id))
+        .map(chunk => chunk.metadata.stopTime)
+        .filter(start => start < minStopNotFetched)
+    );
+    return maxReady;
+}
+
+function calcEnd(recording: Recording) {
+    return Math.max(
+        ...recording.chunks.map(chunk => chunk.metadata.stopTime)
+    );
+}
+
 export const RecordingView = withStyles(styles)(
     withDependencies(_RecordingView,
         {
@@ -155,7 +154,7 @@ export const RecordingView = withStyles(styles)(
     )
 );
 
-export interface RecordingViewProps extends WithStyles<typeof styles> {
+interface RecordingViewProps extends WithStyles<typeof styles> {
     recordingId: string;
     chunkService: ChunkApiService;
     annotationService: AnnotationService;
@@ -165,7 +164,7 @@ export interface RecordingViewProps extends WithStyles<typeof styles> {
     uiTweaks: TweakableConfigs;
 }
 
-export interface RecordingViewState {
+interface RecordingViewState {
     recording: Recording | null;
     snapshots: SnapshotChunk[];
     changes: RecordedMutationGroup[];
