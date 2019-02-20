@@ -24,7 +24,11 @@ export class TargetApiService {
         return this.siteApi.createSiteTarget({ target: newSite});
     }
 
-    updateSite(site: SiteTarget): Promise<SiteTarget> {
-        return this.siteApi.updateSiteTarget({ target: site, targetId: site._id });
+    async updateSite(site: SiteTarget): Promise<SiteTarget> {
+        const res = await this.siteApi.updateSiteTarget({ target: site, targetId: site._id });
+        return {
+            ...site,
+            ...res
+        };
     }
 }

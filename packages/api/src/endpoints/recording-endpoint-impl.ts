@@ -1,8 +1,9 @@
-import { LoggingService, Recording, recordingEndpoint, UADetails, Without } from "@xsrt/common";
+import { LoggingService, Recording, recordingEndpoint, SiteTarget, UADetails, Without } from "@xsrt/common";
 import { errorInvalidCommand, errorNotFound, IServerConfig, RecordingSchema, RouteImplementation, Target } from "@xsrt/common-backend";
 import Axios from "axios";
 import { inject, injectable } from "inversify";
 import * as parser from "ua-parser-js";
+import { errorNotAuthorized } from "../../../common-backend/src/server/request-handler";
 import { ApiServerConfig } from "../api-server-conf";
 
 const defaultNumRecordings = 15;
@@ -69,16 +70,24 @@ export class RecordingEndpoint implements RecordingEndpointType {
         .limit(defaultNumRecordings);
         return sites.map(site => site.toObject());
     }
-    createRecording: RecordingEndpointType["createRecording"] = async ({ recording: bodyData, userAgent }) => {
+    createRecording: RecordingEndpointType["createRecording"] = async ({ recording: bodyData, userAgent, host }) => {
         const ua = new parser.UAParser(userAgent || "");
 
-        const site = await Target.findById(bodyData.site);
-        if (!site) {
+        const siteDoc = await Target.findById(bodyData.site);
+        if (!siteDoc) {
             return errorNotFound(`Site ${bodyData.site} does not exist`);
+        } else {
+            const site: SiteTarget = siteDoc.toObject();
+            if (!site.wildcardUrl && !site.urls.some(url => url === host)) {
+                return errorNotAuthorized(
+                    "The origin of the recording you are trying to store is not in the list \
+                    of whitelisted hosts for this site"
+                );
+            }
         }
         const uaDetails = extractUADetails(ua);
         const recordingData: Without<Recording, "_id"> = {
-            metadata: { site: site._id, startTime: bodyData.startTime, duration: 0, uaDetails },
+            metadata: { site: siteDoc._id, startTime: bodyData.startTime, duration: 0, uaDetails },
             chunks: []
         };
         const recording = new RecordingSchema(recordingData);

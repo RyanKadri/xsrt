@@ -48,7 +48,7 @@ export class RequestHeader implements RequestUnwrapper<string | undefined> {
         private header: string
     ) {}
 
-    read(request: any) {
+    read(request: any): string | undefined {
         return request.header(this.header);
     }
 }

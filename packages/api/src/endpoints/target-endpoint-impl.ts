@@ -54,7 +54,7 @@ export class TargetEndpoint implements TargetEndpointType {
     }
 
     updateSiteTarget: TargetEndpointType["updateSiteTarget"] = async ({ target, targetId }) => {
-        const updated = await Target.findByIdAndUpdate(targetId, target);
+        const updated = await Target.findByIdAndUpdate(targetId, target, { new: true });
         return updated !== null
             ? updated.toObject()
             : errorNotFound(`Could not find site ${targetId}`);

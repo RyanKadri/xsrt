@@ -21,26 +21,24 @@ const styles = (theme: Theme) => createStyles({
     }
 });
 
-class _AnnotationSidebar extends React.Component<AnnotationOverlayProps> {
-
-    private readonly sidebarElevation = 6;
-    render() {
-        const { classes, expanded, annotations } = this.props;
-        return <Fade in={expanded}>
+const sidebarElevation = 6;
+function _AnnotationSidebar({ classes, expanded, annotations }: Props) {
+    return (
+        <Fade in={expanded}>
             <div className={ classes.root }>{
                 annotations.map((annotation, i) => (
-                    <Paper key={ i } elevation={ this.sidebarElevation } classes={{ root: classes.notification }}>
+                    <Paper key={ i } elevation={ sidebarElevation } classes={{ root: classes.notification }}>
                         <Typography variant="body1">{ annotation.description }</Typography>
                     </Paper>
                 ))
             }</div>
-        </Fade>;
-    }
+        </Fade>
+    );
 }
 
 export const AnnotationSidebar = withStyles(styles)(_AnnotationSidebar);
 
-export interface AnnotationOverlayProps extends WithStyles<typeof styles> {
+interface Props extends WithStyles<typeof styles> {
     expanded: boolean;
     annotations: RecordingAnnotation[];
 }

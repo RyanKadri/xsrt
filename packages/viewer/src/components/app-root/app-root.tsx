@@ -1,9 +1,10 @@
 import { createStyles, MuiThemeProvider, withStyles } from "@material-ui/core";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import { NewSiteTarget, SiteTarget } from "@xsrt/common";
-import { appTheme, withDependencies } from "@xsrt/common-frontend";
-import React, { Fragment } from "react";
+import { LoggingService, SiteTarget } from "@xsrt/common";
+import { appTheme, useComponent, withDependencies } from "@xsrt/common-frontend";
+import React, { Fragment, useEffect, useReducer } from "react";
 import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom";
+import { RecordingApiService } from "../../services/recording-service";
 import { TargetApiService } from "../../services/sites-api-service";
 import { OverallDashboardView } from "../dashboard/overall-dashboard";
 import { SiteDashboardView } from "../dashboard/site-dashboard";
@@ -16,84 +17,93 @@ const styles = createStyles({
     }
 });
 
-class _AppRoot extends React.Component<AppProps, AppState> {
+const initState: AppState = {
+    sidebarExpanded: false,
+    availableSites: []
+};
 
-    constructor(props: AppProps) {
-        super(props);
-        this.state = {
-            sidebarExpanded: false,
-            availableSites: []
-        };
+function reducer(state: AppState, action: Action) {
+    switch (action.type) {
+        case "create-site":
+            return {
+                ...state,
+                availableSites: (state.availableSites || []).concat(action.created)
+            };
+        case "delete-site":
+            return {
+                ...state,
+                availableSites: (state.availableSites || [])
+                    .filter(site => site._id !== action.toDelete._id )
+            };
+        case "set-sites":
+            return {
+                ...state,
+                availableSites: action.sites
+            };
+        case "update-site":
+            return {
+                ...state,
+                availableSites: state.availableSites.map(
+                    oldSite => oldSite._id === action.update._id ? action.update : oldSite
+                )
+            };
+        case "toggle-sidebar":
+            return {
+                ...state,
+                sidebarExpanded: action.expandState
+            };
+        default:
+            return state;
     }
+}
 
-    render() {
-        return <Router>
+const _AppRoot = ({ targetApi }: AppProps) => {
+    const [state, dispatch] = useReducer(reducer, initState);
+
+    useEffect(() => {
+        targetApi.fetchSites()
+            .then(sites => dispatch(new SetSitesAction(sites)));
+    }, []);
+
+    const DIOverallDashboard = useComponent(OverallDashboardView, { targetApi: TargetApiService });
+    const DISiteDashboard = useComponent(SiteDashboardView, {
+        recordingsApi: RecordingApiService,
+        logger: LoggingService
+    });
+
+    return (
+        <Router>
             <Fragment>
                 <CssBaseline />
                 <MuiThemeProvider theme={ appTheme }>
-                    <TopNav onExpand={ this.toggleSidebar(true) } />
+                    <TopNav onExpand={ () => dispatch(new ToggleSidebarAction(true)) } />
                     <Sidebar
-                        expanded={ this.state.sidebarExpanded }
-                        sites={ this.state.availableSites }
-                        onClose={ this.toggleSidebar(false) }/>
+                        expanded={ state.sidebarExpanded }
+                        sites={ state.availableSites }
+                        onClose={ () => dispatch(new ToggleSidebarAction(false)) }/>
                     <Switch>
                         <Route path="/recordings/:recordingId" render={ (match) =>
                             <RecordingView recordingId={match.match.params.recordingId } />
-                         } />
+                        } />
                         <Route path="/dashboard/:siteId" render={ (match) =>
-                            <SiteDashboardView
-                                site={ this.state.availableSites.find(site => site._id === match.match.params.siteId )!}
+                            <DISiteDashboard
+                                site={ state.availableSites.find(site => site._id === match.match.params.siteId )!}
                             />
                         } />
                         <Route path="/dashboard" render={ () =>
-                            <OverallDashboardView
-                                sites={ this.state.availableSites }
-                                onDeleteSite={this.deleteSite}
-                                onUpdateSite={this.updateSite}
-                                onCreateSite={this.createNewSite} />
+                            <DIOverallDashboard
+                                sites={ state.availableSites }
+                                onDeleteSite={ (site) => dispatch(new DeleteSiteAction(site)) }
+                                onUpdateSite={ (site) => dispatch(new UpdateSiteAction(site)) }
+                                onCreateSite={ (site) => dispatch(new CreateSiteAction(site)) } />
                         } />
                         <Route path="/" exact render={() => <Redirect to="/dashboard" /> } />
                     </Switch>
                 </MuiThemeProvider>
             </Fragment>
-        </Router>;
-    }
-
-    private toggleSidebar = (expandState: boolean) => () => {
-        this.setState({
-            sidebarExpanded: expandState
-        });
-    }
-
-    async componentDidMount() {
-        const sites = await this.props.targetApi.fetchSites();
-        this.setState({
-            availableSites: sites
-        });
-    }
-
-    private updateSite = async (site: SiteTarget) => {
-        const updated = await this.props.targetApi.updateSite(site);
-        this.setState((old) => ({
-            availableSites: old.availableSites.map(
-                oldSite => oldSite._id === updated._id ? updated : oldSite
-            )
-        }));
-    }
-
-    private createNewSite = async (site: NewSiteTarget) => {
-        const newSite = await this.props.targetApi.createSite(site);
-        this.setState((old) => ({ availableSites: (old.availableSites || []).concat(newSite) }));
-    }
-
-    private deleteSite = async (toDelete: SiteTarget) => {
-        await this.props.targetApi.deleteSite(toDelete);
-        this.setState((old) => ({
-            availableSites: (old.availableSites || [])
-                .filter(site => site._id !== toDelete._id )
-        }));
-    }
-}
+        </Router>
+    );
+};
 
 export const AppRoot = /* hot(module)( */
     withStyles(styles)(
@@ -101,11 +111,48 @@ export const AppRoot = /* hot(module)( */
     );
 // );
 
-export interface AppProps {
+interface AppProps {
     targetApi: TargetApiService;
 }
 
-export interface AppState {
+interface AppState {
     sidebarExpanded: boolean;
     availableSites: SiteTarget[];
+}
+
+type Action = UpdateSiteAction | CreateSiteAction | DeleteSiteAction | SetSitesAction | ToggleSidebarAction;
+
+class UpdateSiteAction {
+    readonly type = "update-site";
+    constructor(
+        public update: SiteTarget
+    ) { }
+}
+
+class CreateSiteAction {
+    readonly type = "create-site";
+    constructor(
+        public created: SiteTarget
+    ) { }
+}
+
+class DeleteSiteAction {
+    readonly type = "delete-site";
+    constructor(
+        public toDelete: SiteTarget
+    ) { }
+}
+
+class SetSitesAction {
+    readonly type = "set-sites";
+    constructor(
+        public sites: SiteTarget[]
+    ) { }
+}
+
+class ToggleSidebarAction {
+    readonly type = "toggle-sidebar";
+    constructor(
+        public expandState: boolean
+    ) { }
 }

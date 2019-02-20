@@ -19,11 +19,14 @@ const styles = createStyles({
     }
 });
 
-const _RecordingHeader = ({metadata, classes, startTime}: RecordingHeaderProps) =>
-    <header className={ classes.header }>
-        <a target="_blank" href={ fullUrl(metadata.url) } className={classes.url}>{ shortUrl(metadata.url) }</a>
-        <small className={ classes.date }>{ formatDate( startTime ) }</small>
-    </header>;
+function _RecordingHeader({metadata, classes, startTime}: RecordingHeaderProps) {
+    return (
+        <header className={ classes.header }>
+            <a target="_blank" href={ fullUrl(metadata.url) } className={classes.url}>{ shortUrl(metadata.url) }</a>
+            <small className={ classes.date }>{ formatDate( startTime ) }</small>
+        </header>
+    );
+}
 
 export const RecordingHeader = withStyles(styles)(_RecordingHeader);
 

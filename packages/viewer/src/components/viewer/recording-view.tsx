@@ -35,9 +35,9 @@ const initState: RecordingViewState = {
 };
 
 // TODO - This data-passing pattern may need to be rethought if/when there's a standalone viewer
-const _RecordingView = ({
+function _RecordingView({
     classes, uiTweaks, chunkService, previewService, annotationService, regionService, recordingService, recordingId
-}: RecordingViewProps) => {
+}: RecordingViewProps) {
 
     const [state, setState] = useState(initState);
     const sortByTimestamp = sortAsc(pluck("timestamp"));
@@ -119,7 +119,7 @@ const _RecordingView = ({
         }
     </div>;
 
-};
+}
 
 function calcBuffer(retrievedChunks: string[], recording: Recording) {
     const chunks = recording.chunks;

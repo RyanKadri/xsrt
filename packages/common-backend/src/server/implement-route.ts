@@ -24,7 +24,6 @@ export class RouteImplementer {
                 .forEach(([action, definition]) => {
                 const route = router[definition.method].bind(router);
                 const implementation = concreteImpl[action];
-
                 if (definition && implementation) {
                     route(definition.url, (req: Request, resp: Response) =>
                         this.requestHandler.handle(

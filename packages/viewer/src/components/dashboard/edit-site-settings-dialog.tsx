@@ -15,7 +15,7 @@ const _EditSiteSettingsDialog = ({ onClose, site, open, onSubmit, classes, onDel
     <Dialog open={ open } scroll="body"
             onClose={ onClose }>
         <DialogTitle>
-            { site !== null ? "Edit Site" : "Create Site" }
+            { site !== null ? `Edit Site: ${site.name}` : "Create Site" }
             { site && <Typography className={ classes.siteId }>Site ID: { site._id }</Typography>}
         </DialogTitle>
         <EditSiteForm onSubmit={ onSubmit } site={ site } onDeleteSite={ onDeleteSite } />

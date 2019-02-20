@@ -11,20 +11,19 @@ const styles = {
 
 };
 
-const _ViewerSettingsPopover = ({ open, onUpdate, anchor, onClose, settings }: ViewerSettingsDialogProps) => {
-    return <Popover open={open} onClose={onClose} anchorEl={anchor}>
-        <List dense={true}>{ configItems.map( config => (
-            <ListItem key={config.key}
-                onClick={ () => onUpdate({ ...settings, [config.key]: !settings[config.key] }) }
-            >
-                <Checkbox
-                    checked={settings[config.key]}
-                />
-                <ListItemText>{ config.display }</ListItemText>
-            </ListItem>
-        ))}</List>
-    </Popover>;
-};
+function _ViewerSettingsPopover({ open, onUpdate, anchor, onClose, settings }: ViewerSettingsDialogProps) {
+    return (
+        <Popover open={open} onClose={onClose} anchorEl={anchor}>
+            <List dense={true}>{ configItems.map( config => (
+                <ListItem key={config.key}
+                    onClick={ () => onUpdate({ ...settings, [config.key]: !settings[config.key] }) }>
+                    <Checkbox checked={settings[config.key]} />
+                    <ListItemText>{ config.display }</ListItemText>
+                </ListItem>
+            ))}</List>
+        </Popover>
+    );
+}
 
 export const ViewerSettingsPopover = withStyles(styles)(_ViewerSettingsPopover);
 

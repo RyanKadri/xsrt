@@ -62,6 +62,7 @@ export const errorResponse = (code: number, message: string, headers: ResponseHe
 
 export const errorNotFound = errorResponse.bind(undefined, HttpResponseCodes.CONTENT_NOT_FOUND);
 export const errorInvalidCommand = errorResponse.bind(undefined, HttpResponseCodes.INVALID_COMMAND);
+export const errorNotAuthorized = errorResponse.bind(undefined, HttpResponseCodes.NOT_AUTHORIZED);
 
 export const downloadResponse = (data: any, headers: ResponseHeader[]) => {
     return new ExplicitResponse<any>({ type: "download", data , headers });

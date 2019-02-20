@@ -1,7 +1,7 @@
 import { createStyles, Dialog, Theme, Typography, withStyles, WithStyles } from "@material-ui/core";
 import ExternalLink from "@material-ui/icons/OpenInBrowserSharp";
 import { LoggingService, RecordingOverview, SiteTarget } from "@xsrt/common";
-import { useComponent, withDependencies } from "@xsrt/common-frontend";
+import { useComponent } from "@xsrt/common-frontend";
 import React, { Fragment, useEffect, useState } from "react";
 import { RecordingApiService } from "../../services/recording-service";
 import { UIConfigService } from "../../services/ui-config-service";
@@ -16,7 +16,7 @@ const styles = (theme: Theme) => createStyles({
     }
 });
 
-const _SiteDashboardView = ({ classes, recordingsApi, logger, site }: DashboardViewProps) => {
+function _SiteDashboardView({ classes, recordingsApi, logger, site }: DashboardViewProps) {
     const [ preview, setPreview ] = useState<RecordingOverview | null>(null);
     const [ selected, setSelected ] = useState<RecordingOverview[]>([]);
     const [ recordings, setRecordings ] = useState<RecordingOverview[]>([]);
@@ -38,6 +38,7 @@ const _SiteDashboardView = ({ classes, recordingsApi, logger, site }: DashboardV
     const onDeleteSelected = async () => {
         try {
             await recordingsApi.deleteRecordings(selected);
+            setRecordings(old => old.filter(rec => selected.find(sel => sel._id === rec._id )));
             setSelected([]);
         } catch (e) {
             logger.error(e);
@@ -92,16 +93,9 @@ const _SiteDashboardView = ({ classes, recordingsApi, logger, site }: DashboardV
                 </Fragment>
         }</div>
     );
-};
+}
 
-export const SiteDashboardView = withStyles(styles)(
-    withDependencies(_SiteDashboardView,
-        {
-            recordingsApi: RecordingApiService,
-            logger: LoggingService
-        }
-    )
-);
+export const SiteDashboardView = withStyles(styles)(_SiteDashboardView);
 
 interface DashboardViewProps extends WithStyles<typeof styles> {
     site: SiteTarget;

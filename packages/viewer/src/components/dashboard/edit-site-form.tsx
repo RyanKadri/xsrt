@@ -61,19 +61,19 @@ const _EditSiteForm = ({ classes, site, onSubmit, onDeleteSite }: Props) => {
 
     return (
         <form className={classes.form}
-              onSubmit={ (e) => { onSubmit(siteState); e.preventDefault(); } }>
+              onSubmit={ (e) => { onSubmit({ ...(site || {}), ...siteState}); e.preventDefault(); } }>
             <TextField  label="Site Name"
                         value={ siteState.name }
                         onChange={ e => updateField("name", e.currentTarget.value) }
             />
             <FormControlLabel label="Allow any URL"
                 control={
-                    <Switch value={ siteState.wildcardUrl }
+                    <Switch checked={ siteState.wildcardUrl }
                             onChange={ e => updateField("wildcardUrl", e.currentTarget.checked) } />
                 }
             />
             { !siteState.wildcardUrl &&
-                <ExpansionPanel>
+                <ExpansionPanel defaultExpanded={siteState.urls.length === 0}>
                     <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} disabled={siteState.urls.length === 0}>
                         <Typography variant="body1">Whitelisted URLS ({ siteState.urls.length })</Typography>
                     </ExpansionPanelSummary>
