@@ -5,7 +5,7 @@ export function transformElement(el: ScrapedHtmlElement): ScrapedHtmlElement {
         ...el,
         attributes: el.attributes
             .filter(filterAttribute)
-            .map(transformAttribute)
+            .map(attr => transformAttribute(attr, el))
     };
 }
 
@@ -24,10 +24,10 @@ function filterAttribute(attr: ScrapedAttribute) {
     }
 }
 
-function transformAttribute(attr: ScrapedAttribute) {
-    let newVal;
-    if (attr.name === "href") {
-        newVal = "";
+function transformAttribute(attr: ScrapedAttribute, el: ScrapedHtmlElement): ScrapedAttribute {
+    let newVal = attr.value;
+    if (el.tag === "a" && attr.name === "href") {
+        newVal = "#";
     }
-    return { ...attr, newVal };
+    return { ...attr, value: newVal };
 }

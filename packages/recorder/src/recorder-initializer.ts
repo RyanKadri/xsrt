@@ -1,5 +1,4 @@
 import { constant, initializeApp, LocalStorageService, ScraperConfig, ScraperConfigToken as ConfigToken } from "@xsrt/common";
-import "reflect-metadata";
 import { RecorderApiService } from "./api/recorder-api-service";
 import { RecordingStateService } from "./api/recording-state-service";
 import { diConfig } from "./di.recorder";

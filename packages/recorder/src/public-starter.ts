@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { defaultConfig, ScraperConfig } from "@xsrt/common";
 import { RecorderInitializer } from "./recorder-initializer";
 

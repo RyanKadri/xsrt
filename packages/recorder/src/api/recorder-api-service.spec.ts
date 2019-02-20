@@ -10,8 +10,8 @@ describe(RecorderApiService.name, () => {
             fetchRecordingId: "abc",
             fetchStartTime: 5,
         });
-        const service = new RecorderApiService(recordingState, noopMock, noopMock, { now() { return 10 } }, noopMock);
-        const res = await service.startRecording();
+        const service = new RecorderApiService(recordingState, noopMock, noopMock, { now() { return 10 } });
+        const res = await service.startRecording("whatever");
         expect(res._id).toBe("abc");
         expect(res.startTime).toBe(5);
         done();
@@ -30,8 +30,8 @@ describe(RecorderApiService.name, () => {
         const location = jasmine.createSpyObj<Location>("Location", {
             pathname: ""
         })
-        const service = new RecorderApiService(recordingState, recordingApi, noopMock, { now() { return 10; } }, location);
-        const res = await service.startRecording();
+        const service = new RecorderApiService(recordingState, recordingApi, noopMock, { now() { return 10; } });
+        const res = await service.startRecording("whatever");
         expect(res._id).toBe("sdf");
         expect(recordingState.saveRecordingId).toHaveBeenCalledWith("sdf");
         done();
