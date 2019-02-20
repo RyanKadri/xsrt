@@ -18,7 +18,7 @@
     "start:decorator": "npm run build:backend && npm run run:decorator",
     "run:decorator": "node ./dist/backend/decorator-server.bundle.js",
     "build:docker": "concurrently \"npm:build:backend:watch\" \"npm:start:viewer\"",
-    "build:recorder": "tsc -b packages/recorder",
+    "build:recorder": "tsc -b packages/recorder/tsconfig.package.json",
     "build:publish": "npm run build:recorder && npm run build:extension",
     "publish:all": "lerna publish --skip-git --yes from-git",
     "build:tools": "webpack --mode development --config-name bootstrap-scripts",
