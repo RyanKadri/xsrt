@@ -10,6 +10,8 @@ export type RouteImplementation<T extends EndpointDefinition> = {
 export type MethodImplementation<Action extends (UrlVerbDefinition | PayloadVerbDefinition)> =
     (opts: {
         [param in keyof Action["request"]]: InjectedProp<Action["request"][param]>
+    } & {
+        [param in keyof Action["clientHeaders"]]: InjectedProp<Action["clientHeaders"][param]>
     }) => RouteResponse<Action["response"]["type"]> | Promise<RouteResponse<Action["response"]["type"]>>;
 
 export type RouteResponse<C> = ExplicitResponse<C> | C;

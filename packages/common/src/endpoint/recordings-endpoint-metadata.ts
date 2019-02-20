@@ -45,6 +45,8 @@ export const recordingEndpoint = defineEndpoint({
         url: multiRecordingUrl,
         request: {
             recording: new RequestBodyUnwrap<CreateRecordingRequest>(),
+        },
+        clientHeaders: {
             userAgent: new RequestHeader("user-agent"),
             host: new RequestHeader("Host")
         },

@@ -1,4 +1,4 @@
-import { InjectionParamMap, Interface, mapDictionary, RequestUnwrapper } from "@xsrt/common";
+import { InjectionParamMap, Interface, mapDictionary, RequestUnwrapper, UrlVerbDefinition, PayloadVerbDefinition } from "@xsrt/common";
 import { Request, Response } from "express";
 import { injectable } from "inversify";
 import { HttpResponseCodes } from "./http-codes";
@@ -7,13 +7,13 @@ import { ExplicitResponse, MethodImplementation, ResponseHeader } from "./route-
 @injectable()
 export class RequestHandler {
     async handle(
-        requestDef: InjectionParamMap,
+        def: UrlVerbDefinition<any> | PayloadVerbDefinition<any>,
         implementation: MethodImplementation<any>,
         req: Interface<Request>,
         resp: Interface<Response>
     ) {
         try {
-            await this.attemptHandle(requestDef, implementation, req, resp);
+            await this.attemptHandle({ ...def.clientHeaders, ...def.request }, implementation, req, resp);
         } catch (e) {
             resp.status(HttpResponseCodes.INTERNAL_SERVER_ERROR)
                 .json({ error: e.message });

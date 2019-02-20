@@ -71,6 +71,7 @@ export interface UrlVerbDefinition<T = any> {
     method: "get" | "delete";
     url: string;
     request: MapTo<GetDeleteInjectionParam>;
+    clientHeaders?: MapTo<RequestHeader>;
     response: TypePlaceholder<T>;
 }
 
@@ -78,6 +79,7 @@ export interface PayloadVerbDefinition<T = any> {
     method: "post" | "put" | "patch";
     url: string;
     request: MapTo<PostPutInjectionParam<any>>;
+    clientHeaders?: MapTo<RequestHeader>;
     response: TypePlaceholder<T>;
 }
 

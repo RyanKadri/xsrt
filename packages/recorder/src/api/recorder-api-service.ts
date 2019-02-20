@@ -27,9 +27,7 @@ export class RecorderApiService {
             startTime = this.dateManager.now();
             this.recordingState.saveStartTime(startTime);
             const recording = await this.recordingApi.createRecording({
-                recording: { site, startTime },
-                // TODO - Some headers are specifically set. Not user-agent. Figure out how to ignore this in sig
-                userAgent: "temp"
+                recording: { site, startTime }
             });
             this.recordingState.saveRecordingId(recording._id);
             return {

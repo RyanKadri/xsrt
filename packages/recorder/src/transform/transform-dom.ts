@@ -27,7 +27,7 @@ function filterAttribute(attr: ScrapedAttribute) {
 function transformAttribute(attr: ScrapedAttribute, el: ScrapedHtmlElement): ScrapedAttribute {
     let newVal = attr.value;
     if (el.tag === "a" && attr.name === "href") {
-        newVal = "#";
+        newVal = "javascript:;";
     }
     return { ...attr, value: newVal };
 }

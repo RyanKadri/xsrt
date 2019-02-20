@@ -27,7 +27,7 @@ export class RouteImplementer {
                 if (definition && implementation) {
                     route(definition.url, (req: Request, resp: Response) =>
                         this.requestHandler.handle(
-                            definition.request,
+                            definition,
                             implementation as MethodImplementation<any>,
                             req,
                             resp
