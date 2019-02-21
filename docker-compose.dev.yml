@@ -27,6 +27,7 @@ services:
             - STORAGE_LOCATION=${STORAGE_LOCATION}
         volumes:
             - '.:/app/'
+            - stored-files:${STORAGE_LOCATION}
         build:
             context: .
             target: dev-api

@@ -12,6 +12,8 @@ services:
         links:
             - mongo
             - decorator
+        volumes:
+            - stored-files:${STORAGE_LOCATION}
         depends_on:
             - mongo
             - decorator

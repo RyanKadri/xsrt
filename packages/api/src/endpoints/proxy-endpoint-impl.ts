@@ -1,15 +1,10 @@
-import { assetEndpoint } from "@xsrt/common";
+import { assetEndpoint, AxiosSymbol } from "@xsrt/common";
 import { Asset, downloadResponse, errorNotFound, IServerConfig, ProxiedAsset, RouteImplementation } from "@xsrt/common-backend";
-import axios from "axios";
-import { createHash } from "crypto";
-import { createWriteStream, mkdir, rename, WriteStream } from "fs";
 import { inject, injectable } from "inversify";
 import { join } from "path";
-import { promisify } from "util";
 import { ApiServerConfig } from "../api-server-conf";
-
-const mkdirFs = promisify(mkdir);
-const renameFs = promisify(rename);
+import { AssetStreamService } from "../services/asset-stream-service";
+import { AxiosStatic } from "axios";
 
 type AssetEndpointType = RouteImplementation<typeof assetEndpoint>;
 
@@ -17,7 +12,9 @@ type AssetEndpointType = RouteImplementation<typeof assetEndpoint>;
 export class AssetEndpoint implements AssetEndpointType {
 
     constructor(
-        @inject(IServerConfig) private config: ApiServerConfig
+        @inject(IServerConfig) private config: ApiServerConfig,
+        private streamService: AssetStreamService,
+        @inject(AxiosSymbol) private axios: AxiosStatic
     ) { }
 
     fetchAsset: AssetEndpointType["fetchAsset"] = async ({ assetId }) => {
@@ -31,51 +28,45 @@ export class AssetEndpoint implements AssetEndpointType {
     }
 
     createAsset: AssetEndpointType["createAsset"] = async ({ proxyReq, userAgent }) => {
-        const assets = await Promise.all(proxyReq.urls.map(url => this.proxySingleAsset(new URL(url), userAgent)));
-        return {assets: assets.map(asset => asset._id) };
+        const assets = await Promise.all(
+            proxyReq.urls.map(url =>
+                this.proxySingleAsset(new URL(url), userAgent)
+            )
+        );
+        return {
+            assets: assets.map(asset =>
+                "error" in asset
+                    ? null
+                    : asset._id
+            )
+        };
     }
 
     private proxySingleAsset = async (url: URL, userAgent = "") => {
-        const proxyRes = await axios.get(url.href, { responseType: "stream", headers: { ["User-Agent"]: userAgent } });
-        const dataStream: WriteStream = proxyRes.data;
-
-        // TODO - May need to watch for overwrite collisions here. Consider shortid?
-        const contentHash = "temp-";
-        const matches = url.pathname.match(/\/([^/]+)$/);
-        const baseName = matches ? matches[1] : "root";
-        const saveDir = join(this.config.assetDir, url.hostname);
-        const fileName = `${contentHash}-${baseName}`;
-        const savePath = join(saveDir, fileName);
-        const hashStream = createHash("sha1");
-        await mkdirFs(saveDir, { recursive: true });
-        dataStream
-            .pipe(createWriteStream(savePath));
-
-        const hash = await new Promise<string>((resolve, reject) => {
-            dataStream.on("end", () => {
-                resolve(hashStream.digest("base64") as string);
-            });
-            dataStream.on("data", (chunk) => {
-                hashStream.update(chunk);
+        try {
+            const proxyRes = await this.axios.get(url.href, {
+                responseType: "stream",
+                headers: { ["User-Agent"]: userAgent } // Retrieve asset as requester's user agent
             });
 
-            dataStream.on("error", () => {
-              reject();
+            const saveDir = join(this.config.assetDir, url.hostname);
+
+            const res = await this.streamService.saveStream(proxyRes.data, saveDir, url);
+
+            const headers = Object.entries(proxyRes.headers)
+                .map(([name, value]) => ({ name, value }));
+
+            const asset = new Asset({
+                url,
+                hash: res.hash,
+                headers,
+                content: res.path
             });
-          });
-
-        const safeHash = hash.replace(/[\/+=-]/g, "_");
-        const renamed = join(saveDir, `${safeHash}-${baseName}`);
-        await renameFs(savePath, renamed);
-
-        const headers = Object.entries(proxyRes.headers)
-            .map(([name, value]) => ({ name, value }));
-        const asset = new Asset({
-            url,
-            hash: contentHash,
-            headers,
-            content: renamed
-        });
-        return asset.save();
+            return asset.save();
+        } catch (e) {
+            return {
+                error: true,
+            };
+        }
     }
 }

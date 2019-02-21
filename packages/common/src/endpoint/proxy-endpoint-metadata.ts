@@ -15,8 +15,10 @@ export const assetEndpoint = defineEndpoint({
         method: "post",
         request: {
             proxyReq: new RequestBodyUnwrap<{urls: string[]}>(),
+        },
+        clientHeaders: {
             userAgent: new RequestHeader("user-agent")
         },
-        response: Type<{ assets: string[]}>()
+        response: Type<{ assets: (string | null)[] }>()
     }
 });

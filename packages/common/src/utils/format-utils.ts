@@ -34,6 +34,11 @@ export const fullUrl = (location: LocationMetadata) =>
 export const shortUrl = (location: LocationMetadata) =>
     `${ location.hostname }${ formatPort(location) }${ location.path }`;
 
+// This will be used to find and replace url references efficiently between the viewer and recorder
+export const formatAssetRef = (refId: number) => {
+    return `##${refId}##`;
+};
+
 const formatPort = (location: LocationMetadata) => !!location.port ? `:${location.port}` : "";
 
 const pad = (num: number) => {

@@ -1,7 +1,7 @@
 import { CSS_PSEUDO_CLASSES, ScrapedStyleRule } from "@xsrt/common";
 
 export function transformRule(rule: ScrapedStyleRule): ScrapedStyleRule {
-    return { ...rule, references: extractUrls(rule.text), text: transformContent(rule) };
+    return { ...rule, text: transformContent(rule) };
 }
 
 function transformContent(rule: ScrapedStyleRule) {

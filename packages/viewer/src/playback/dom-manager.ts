@@ -1,6 +1,6 @@
 // tslint:disable-next-line:no-implicit-dependencies
 import defaultStyles from "!raw-loader!./default-styles.css";
-import { Interface, LoggingService, OptimizedElement, OptimizedHtmlElementInfo, OptimizedStyleElement, OptimizedStyleRule, OptimizedTextElementInfo, ScrapedAttribute, SnapshotChunk } from "@xsrt/common";
+import { Interface, LoggingService, OptimizedElement, OptimizedHtmlElementInfo, OptimizedStyleElement, OptimizedStyleRule, OptimizedTextElementInfo, ScrapedAttribute, SnapshotChunk, formatAssetRef } from "@xsrt/common";
 import { toBlobUrl } from "@xsrt/common-frontend";
 
 // TODO - Maybe in the process of refactoring, this can track a virtual-dom type thing
@@ -195,7 +195,7 @@ export class DomManager {
 
     private replaceReferences(valWithRefs: string, references: number[]) {
         references.forEach(ref => {
-            valWithRefs = valWithRefs.replace(`##${ref}##`, this.assets[ref]);
+            valWithRefs = valWithRefs.replace(formatAssetRef(ref), this.assets[ref]);
         });
         return valWithRefs;
     }

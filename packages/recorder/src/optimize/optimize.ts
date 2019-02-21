@@ -2,6 +2,7 @@ import { OptimizedElement, OptimizedHtmlElementInfo, ScrapedElement, SnapshotChu
 import { injectable } from "inversify";
 import { AssetResolver } from "../assets/asset-resolver";
 import { optimizeNode } from "./optimize-dom";
+import { OptimizationContext } from "./optimization-context";
 
 @injectable()
 export class RecordingOptimizer {
@@ -12,8 +13,9 @@ export class RecordingOptimizer {
 
     async optimize(data: UnoptimizedSnapshotChunk): Promise<Without<SnapshotChunk, "_id">> {
         if (data.type === "snapshot") {
-            const { context, root } = this.optimizeSubtree(data.snapshot.root, { assets: [] });
-            const assets = await this.resolver.resolveAssets(context.assets);
+            const context = new OptimizationContext();
+            const root = this.optimizeSubtree(data.snapshot.root, context);
+            const assets = await this.resolver.resolveAssets(context.getAssets());
             return {
                 ...data,
                 snapshot: {
@@ -27,45 +29,27 @@ export class RecordingOptimizer {
         }
     }
 
-    private optimizeSubtree = (root: ScrapedElement, inContext: OptimizationContext): OptimizationResult => {
-        const optResult = optimizeNode(root, inContext);
-        let { context } = optResult;
-        const { nodeTask } = optResult;
+    // inContext holds multable state (assets URLs discovered over time);
+    private optimizeSubtree = (root: ScrapedElement, inContext: OptimizationContext): Promise<OptimizedElement> => {
+        const node = optimizeNode(root, inContext);
 
         if (root.type === "element") {
             const childTasks: (OptimizedElement | Promise<OptimizedElement>)[] = [];
             for (const child of root.children) {
-                const optimizationResult = this.optimizeSubtree(child, context);
-                context = optimizationResult.context;
-                childTasks.push(optimizationResult.root);
+                const optimizationResult = this.optimizeSubtree(child, inContext);
+                childTasks.push(optimizationResult);
             }
-            return {
-                root: Promise.all([nodeTask, ...childTasks])
-                    .then(([taskRoot, ...children]) => ({
-                        ...taskRoot,
-                        children
-                    })),
-                context
-            };
+            return Promise.all([node, ...childTasks])
+                .then(([taskRoot, ...children]) => ({
+                    ...taskRoot,
+                    children
+                }));
         } else {
-            return {
-                root: nodeTask,
-                context
-            } as OptimizationResult;
+            return Promise.resolve(node);
         }
     }
 }
 
-export interface OptimizationContext {
-    assets: string[];
-}
-
 export interface OptimizationResult {
     root: Promise<OptimizedElement>;
-    context: OptimizationContext;
-}
-
-export interface NodeOptimizationResult {
-    nodeTask: OptimizedElement | Promise<OptimizedElement>;
-    context: OptimizationContext;
 }

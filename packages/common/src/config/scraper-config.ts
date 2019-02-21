@@ -6,4 +6,5 @@ export interface ScraperConfig {
 
     mutationsPerChunk: number;
     inputsPerChunk: number;
+    clientFetchFallback: boolean;
 }

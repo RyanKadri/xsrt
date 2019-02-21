@@ -56,7 +56,6 @@ export interface KeyframesRule extends BaseScrapedRule {
 interface BaseScrapedRule {
     text: string;
     source?: string;
-    references?: string[];
 }
 
 export interface RecordingOverview {

@@ -25,7 +25,9 @@ function unpackImport(rule: CSSImportRule) {
 
 function extractRule(rule: CSSRule, sheet: CSSStyleSheet): ScrapedStyleRule | ScrapedStyleRule[] {
     if (rule instanceof CSSMediaRule || rule instanceof CSSSupportsRule) {
-        return Array.from(rule.cssRules).map(innerRule => extractRule(innerRule, sheet)).flat(1);
+        return Array.from(rule.cssRules)
+            .map(innerRule => extractRule(innerRule, sheet))
+            .flat(1);
     } else {
         return {
             text: rule.cssText,

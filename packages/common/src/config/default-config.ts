@@ -5,5 +5,6 @@ export const defaultConfig: Without<ScraperConfig, "site"> = {
     backendUrl: "http://localhost:3001",
     debugMode: true,
     mutationsPerChunk: 1500,
-    inputsPerChunk: 1000
+    inputsPerChunk: 1000,
+    clientFetchFallback: false
 };

@@ -1,34 +1,29 @@
 import { assetApiSymbol, assetEndpoint, EndpointApi } from "@xsrt/common";
 import { inject, injectable } from "inversify";
-import { toDataUrl } from "../utils/dom-utils";
+import { AssetFallbackService } from "./asset-fallback-service";
 
 @injectable()
 export class AssetResolver {
 
     constructor(
-        @inject(assetApiSymbol) private assetApi: EndpointApi<typeof assetEndpoint>
+        @inject(assetApiSymbol) private assetApi: EndpointApi<typeof assetEndpoint>,
+        private fallbackService: AssetFallbackService
     ) {}
 
     async resolveAssets(assets: string[]): Promise<string[]> {
-        try {
-            const res = await this.assetApi.createAsset({
-                proxyReq: {
-                    urls: assets.map(asset => this.resolveFullRequestUrl(asset))
-                },
-                userAgent: "temp",
-            });
-            return res.assets.map(asset => `/api/proxy/${asset}`);
-        } catch (e) {
-            // TODO - How do we want to handle the failing case? Falling back to old link is probably
-            // not the best approach
-            return Promise.all(
-                assets.map(asset => fetch(asset)
-                    .then(resp => resp.blob())
-                    .then(blob => toDataUrl(blob))
-                    .catch(() => asset)
-                )
-            );
-        }
+        const fullUrls = assets.map(asset => this.resolveFullRequestUrl(asset));
+        const res = await this.assetApi.createAsset({
+            proxyReq: {
+                urls: fullUrls
+            }
+        });
+        return Promise.all(
+            res.assets.map((asset, i) =>
+                asset !== null
+                ? `/api/proxy/${asset}`
+                : this.fallbackService.fallback(fullUrls[i], assets[i])
+            )
+        );
     }
 
     private resolveFullRequestUrl(forAsset: string) {

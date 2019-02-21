@@ -1,36 +1,46 @@
-import { OptimizedStyleElement, OptimizedStyleRule, ScrapedHtmlElement, ScrapedStyleRule, ScrapedTextElement } from "@xsrt/common";
+import { OptimizedStyleRule, ScrapedHtmlElement, ScrapedStyleRule, ScrapedTextElement, ScrapedAttribute, OptimizedHtmlElementInfo, OptimizedStyleElement, formatAssetRef } from "@xsrt/common";
 import { extractStyleInfo } from "../traverse/traverse-styles";
 import { matchesMedia } from "../utils/dom-utils";
-import { NodeOptimizationResult, OptimizationContext } from "./optimize";
+import { OptimizationContext } from "./optimization-context";
+import { extractUrls } from "../transform/transform-styles";
 
-export function optimizeStyle(styleEl: ScrapedHtmlElement, initContext: OptimizationContext): NodeOptimizationResult {
+export function optimizeStyle(styleEl: ScrapedHtmlElement, context: OptimizationContext): OptimizedHtmlElementInfo {
     if (isLinkStylesheet(styleEl) || !shouldIncludeSheet(styleEl)) {
-        return inertPlaceholder(styleEl, initContext);
+        return inertPlaceholder(styleEl, context);
     } else {
         const parsedRules = extractStyleInfo(extractSheet(styleEl));
-        const context = extractStyleUrls(parsedRules, initContext);
         return {
-            nodeTask: {
-                ...styleEl,
-                tag: "style",
-                children: stripChildText(styleEl.children as ScrapedTextElement[]),
-                rules: replaceUrlsInRules(parsedRules, context).map(trimRule),
-            } as OptimizedStyleElement,
-            context
-        };
+            ...styleEl,
+            tag: "style",
+            children: stripChildText(styleEl.children as ScrapedTextElement[]),
+            rules: replaceUrlsInRules(parsedRules, context).map(trimRule),
+        } as OptimizedStyleElement;
     }
 
 }
 
 function inertPlaceholder(styleEl: ScrapedHtmlElement, context: OptimizationContext) {
     return {
-        nodeTask: {
-            ...styleEl,
-            children: [],
-            rules: []
-        } as OptimizedStyleElement,
-        context
+        ...styleEl,
+        attributes: replaceSrc(styleEl, context),
+        children: [],
+        rules: []
     };
+}
+
+function replaceSrc(el: ScrapedHtmlElement, context: OptimizationContext): ScrapedAttribute[] {
+    if (el.tag === "link" && el.attributes.some(attr => attr.name === "rel" && attr.value === "stylesheet")) {
+        return el.attributes.map(attr => {
+            if (attr.name === "href") {
+                const id = context.registerAsset(attr.value); // This is not function. Feel free to rewrite.
+                return { name: attr.name, value: formatAssetRef(id), references: [id] };
+            } else {
+                return attr;
+            }
+        });
+    } else {
+        return el.attributes;
+    }
 }
 
 function stripChildText(children: ScrapedTextElement[]) {
@@ -40,48 +50,30 @@ function stripChildText(children: ScrapedTextElement[]) {
     return children;
 }
 
-function trimRule(rule: ScrapedStyleRule): OptimizedStyleRule {
+function trimRule(rule: OptimizedStyleRule): OptimizedStyleRule {
     return {
         text: rule.text,
         references: rule.references && rule.references.length > 0
-            ? rule.references.map(ref => parseInt(ref, 10))
+            ? rule.references
             : undefined
     };
 }
 
-function replaceUrlsInRules(rules: ScrapedStyleRule[], context: OptimizationContext): ScrapedStyleRule[] {
-    return rules.map(rule => ({
-        ...rule,
-        ...replaceUrls(rule, context)
-    })) as ScrapedStyleRule[];
+function replaceUrlsInRules(rules: ScrapedStyleRule[], context: OptimizationContext): OptimizedStyleRule[] {
+    return rules.map(rule => replaceUrls(rule, context));
 }
 
-function replaceUrls(rule: ScrapedStyleRule, context: OptimizationContext): Partial<ScrapedStyleRule> {
-    return (rule.references || [])
-        .reduce((curr, ref, i) => {
-            const refNum = context.assets.findIndex(asset => asset === toAbsoluteUrl(ref, rule.source));
-            curr.references[i] = "" + refNum;
-            return {
-                text: curr.text.replace(ref, `##${refNum}##`),
-                references: curr.references
-            };
-        }, { text: rule.text, references: rule.references! });
-}
-
-function extractStyleUrls(rules: ScrapedStyleRule[], context: OptimizationContext) {
-    const newContext = [...context.assets];
-    rules.forEach(rule => {
-        (rule.references || [])
-            .map(ref => toAbsoluteUrl(ref, rule.source))
-            .forEach(ref => {
-                if (!newContext.includes(ref)) {
-                    newContext.push(ref);
-                }
-            });
-    });
-    return {
-        assets: newContext
-    };
+function replaceUrls(rule: ScrapedStyleRule, context: OptimizationContext): OptimizedStyleRule {
+    const urls = extractUrls(rule.text);
+    let text = rule.text;
+    const references: number[] = [];
+    for (const url of urls) {
+        const absUrl = toAbsoluteUrl(url, rule.source);
+        const id = context.registerAsset(absUrl);
+        text = text.replace(url, formatAssetRef(id));
+        references.push(id);
+    }
+    return { text, references };
 }
 
 function extractSheet(styleEl: ScrapedHtmlElement) {
