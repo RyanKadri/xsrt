@@ -69,6 +69,7 @@ class _RecordingPlayer extends React.PureComponent<RecordingPlayerProps, PlayerS
                 <Typography variant="h2" color="inherit">{ this.props.error }</Typography>
             </div> : null}
             <iframe className={ c(classes.player, classes.horizExpand) }
+                    sandbox="allow-same-origin"
                     style={ this.iframeDimensions() }
                     ref={this.iframe} src="about:blank" ></iframe>
         </div>;

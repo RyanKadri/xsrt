@@ -1,7 +1,7 @@
 import { CSS_PSEUDO_CLASSES, ScrapedStyleRule } from "@xsrt/common";
 
 export function transformRule(rule: ScrapedStyleRule): ScrapedStyleRule {
-    return { ...rule, references: extractUrls(rule), text: transformContent(rule) };
+    return { ...rule, references: extractUrls(rule.text), text: transformContent(rule) };
 }
 
 function transformContent(rule: ScrapedStyleRule) {
@@ -20,8 +20,8 @@ function replacePseudoClasses(rule: ScrapedStyleRule) {
 
 const outerUrlRegex = /url\(['"].*?['"]\)/ig;
 const innerUrlRegex = /\(['"](.*?)['"]\)/;
-function extractUrls(rule: ScrapedStyleRule) {
-    return (rule.text.match(outerUrlRegex) || [])
+export function extractUrls(ruleBody: string) {
+    return (ruleBody.match(outerUrlRegex) || [])
             .map(extractInner)
             .filter(urlIsRemote);
 }

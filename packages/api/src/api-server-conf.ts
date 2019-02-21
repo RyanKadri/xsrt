@@ -19,6 +19,7 @@ export class ApiServerInitializer implements ServerInitializer {
         app.use(bodyParser.urlencoded({ extended: false }));
         app.use(bodyParser.json({ limit: "10mb", inflate: true })); // TODO - Let's think about security...
         app.use(bodyParser.text({ limit: "10mb" }));
+        // TODO - Limit this
         app.use(cors());
         app.options("*", cors());
     }

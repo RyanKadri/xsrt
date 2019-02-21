@@ -33,7 +33,9 @@ const initForm: NewSiteTarget = {
 };
 
 const _EditSiteForm = ({ classes, site, onSubmit, onDeleteSite }: Props) => {
-    const [ siteState, updateSite ] = useState<SiteTarget | NewSiteTarget>(site || initForm);
+    const [ siteState, updateSite ] = useState<SiteTarget | NewSiteTarget>(() => {
+        return site !== null ? {...site, urls: site.urls || []} : initForm;
+    });
 
     const updateField = (field: keyof NewSiteTarget, value: NewSiteTarget[typeof field]) => {
         updateSite(old => ({ ...old, [field]: value }));
@@ -73,7 +75,7 @@ const _EditSiteForm = ({ classes, site, onSubmit, onDeleteSite }: Props) => {
                 }
             />
             { !siteState.wildcardUrl &&
-                <ExpansionPanel defaultExpanded={siteState.urls.length === 0}>
+                <ExpansionPanel defaultExpanded={ siteState.urls.length === 0 }>
                     <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} disabled={siteState.urls.length === 0}>
                         <Typography variant="body1">Whitelisted URLS ({ siteState.urls.length })</Typography>
                     </ExpansionPanelSummary>

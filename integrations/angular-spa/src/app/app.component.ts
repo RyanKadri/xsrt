@@ -20,7 +20,7 @@ export class AppComponent {
       this.controller = startRecording({
         backendUrl: 'http://localhost:3001',
         debugMode: true,
-        site: '1bnTt0Cs2'
+        site: '-Ii56T2uN'
       });
       this.recording = true;
     }

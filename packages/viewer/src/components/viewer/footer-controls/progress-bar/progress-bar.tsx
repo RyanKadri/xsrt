@@ -3,7 +3,6 @@ import c from "classnames";
 import React from "react";
 import { RecordingAnnotation } from "../../../../services/annotation/annotation-service";
 import { Region } from "../../../../services/regions-service";
-import { footerRenderDebounce } from "../footer-controls";
 
 const mediumGreyInd = 500;
 const styles = (theme: Theme) => createStyles({
@@ -43,7 +42,6 @@ const styles = (theme: Theme) => createStyles({
         position: "absolute",
         width: "100%",
         top: 10,
-        transition: `transform ${footerRenderDebounce}ms linear`,
         transformOrigin: "left"
     },
     action: {

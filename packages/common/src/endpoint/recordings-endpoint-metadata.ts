@@ -48,7 +48,7 @@ export const recordingEndpoint = defineEndpoint({
         },
         clientHeaders: {
             userAgent: new RequestHeader("user-agent"),
-            host: new RequestHeader("Host")
+            referer: new RequestHeader("Referer")
         },
         response: Type<{ _id: string }>()
     },

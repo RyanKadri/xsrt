@@ -1,19 +1,21 @@
-import { ScrapedElement, ScrapedHtmlElement } from "@xsrt/common";
+import { ScrapedElement, ScrapedHtmlElement, ScrapedAttribute } from "@xsrt/common";
 import { NodeOptimizationResult, OptimizationContext } from "./optimize";
 import { optimizeStyle } from "./optimize-styles";
+import { extractUrls } from "../transform/transform-styles";
 
 export function optimizeNode(root: ScrapedElement, context: OptimizationContext): NodeOptimizationResult {
     if (root.type === "element") {
+        const withInlineStyles = extractInlineStyles(root, context);
         switch (root.tag) {
             case "img":
-                return optimizeImage(root, context);
+                return optimizeImage(withInlineStyles, context);
             case "style":
             case "link":
-                return optimizeStyle(root, context);
+                return optimizeStyle(withInlineStyles, context);
             default:
                 // TODO - How do we ensure domElement is removed from all optimized elements
                 // (even if they need to resolve a promise)?
-                const { domElement, ...base } = root;
+                const { domElement, ...base } = withInlineStyles;
                 return {
                     nodeTask: base,
                     context
@@ -30,15 +32,9 @@ export function optimizeNode(root: ScrapedElement, context: OptimizationContext)
 
 // Specifically for images (and maybe some other elements like canvas, video, etc), we can grab the data
 // without a fetch. Maybe assets supports some kind of generic resolver callback rather than just url;
-function optimizeImage(node: ScrapedHtmlElement, context: OptimizationContext): NodeOptimizationResult {
+function optimizeImage(node: ScrapedHtmlElement, { assets }: OptimizationContext): NodeOptimizationResult {
     const src = node.attributes.find(attr => attr.name === "src")!;
-    let assetInd = context.assets.findIndex(asset => asset === src.value);
-    let assets = context.assets;
-
-    if (assetInd === -1) {
-        assetInd = assets.length;
-        assets = assets.concat(src.value);
-    }
+    const assetInd = calcAssetInd(assets, src.value);
     return {
         nodeTask: {
             ...node,
@@ -53,27 +49,39 @@ function optimizeImage(node: ScrapedHtmlElement, context: OptimizationContext): 
         }
     };
 
-    // const image = node.domElement as HTMLImageElement;
-    // const canvas = document.createElement('canvas');
-    // const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
-    // canvas.height = image.naturalHeight;
-    // canvas.width = image.naturalWidth;
-    // ctx.drawImage(image, 0, 0);
-    // if(src) {
-    //     try {
-    //         const data = await new Promise<string>((resolve, reject) => {
-    //             canvas.toBlob((blob) => {
-    //                 if(!blob) throw new Error('Failed to create blob');
-    //                 toDataUrl(blob).then((dataUrl) => {
-    //                     resolve(dataUrl)
-    //                 });
-    //             })
-    //         });
-    //         src.value = data;
-    //     } catch(e) {
-    //         if(src.value.startsWith('//')) {
-    //             src.value = src.value.replace('//', location.protocol + '//');
-    //         }
-    //     }
-    // }
+}
+
+function calcAssetInd(assets: string[], src: string) {
+    let assetInd = assets.findIndex(asset => asset === src);
+
+    if (assetInd === -1) {
+        assetInd = assets.length;
+        assets.push(src);
+    }
+    return assetInd;
+}
+
+function extractInlineStyles(node: ScrapedHtmlElement, context: OptimizationContext): ScrapedHtmlElement {
+    return {
+        ...node,
+        attributes: node.attributes.map(
+            attr => attr.name === "style" ? extractInlineStyle(attr, context) : attr
+        )
+    };
+}
+
+function extractInlineStyle(attr: ScrapedAttribute, {assets}: OptimizationContext): ScrapedAttribute {
+    const urls = extractUrls(attr.value);
+    let rule = attr.value;
+    const references: number[] = [];
+    for (const url of urls) {
+        const ind = calcAssetInd(assets, url);
+        rule = rule.replace(url, `##${ind}##`);
+        references.push(ind);
+    }
+    return {
+        name: attr.name,
+        value: rule,
+        references
+    };
 }

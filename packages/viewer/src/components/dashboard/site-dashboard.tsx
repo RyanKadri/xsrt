@@ -1,5 +1,4 @@
 import { createStyles, Dialog, Theme, Typography, withStyles, WithStyles } from "@material-ui/core";
-import ExternalLink from "@material-ui/icons/OpenInBrowserSharp";
 import { LoggingService, RecordingOverview, SiteTarget } from "@xsrt/common";
 import { useComponent } from "@xsrt/common-frontend";
 import React, { Fragment, useEffect, useState } from "react";
@@ -11,8 +10,12 @@ const styles = (theme: Theme) => createStyles({
     root: {
         padding: theme.spacing.unit * 2
     },
-    externalLink: {
-        marginLeft: theme.spacing.unit
+    header: {
+        display: "flex",
+        alignItems: "flex-end"
+    },
+    siteLink: {
+        marginLeft: theme.spacing.unit * 2
     }
 });
 
@@ -61,15 +64,18 @@ function _SiteDashboardView({ classes, recordingsApi, logger, site }: DashboardV
             site === undefined
                 ? <Typography variant="body1">This site no longer exists</Typography>
                 : <Fragment>
-                    <Typography variant="h4">
-                    { site.name }
-                    { site.urls && site.urls.length === 1
-                        ? <a  target="_blank" className={classes.externalLink}
-                            href={ `${site.urls[0]}` }>
-                            <ExternalLink />
-                        </a>
-                        : null
-                    }</Typography>
+                    <header className={classes.header}>
+                        <Typography variant="h4">
+                            { site.name }
+                        </Typography>
+                        { site.urls && site.urls.length === 1
+                            ? <a  target="_blank" className={classes.siteLink}
+                                href={ `${site.urls[0]}` }>
+                                { site.urls[0] }
+                            </a>
+                            : null
+                        }
+                    </header>
                     { loading
                         ? <Typography variant="body1">Loading...</Typography>
                         : recordings.length === 0

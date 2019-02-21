@@ -169,7 +169,7 @@ export class DomManager {
             return nsAttr.value;
         } else {
             const impNamespace = this.fetchImplicitNamespace(node);
-            return impNamespace !== undefined ? impNamespace : parentNamespace;
+            return impNamespace !== "" ? impNamespace : parentNamespace;
         }
     }
 

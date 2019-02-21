@@ -70,7 +70,7 @@ export class RecordingEndpoint implements RecordingEndpointType {
         .limit(defaultNumRecordings);
         return sites.map(site => site.toObject());
     }
-    createRecording: RecordingEndpointType["createRecording"] = async ({ recording: bodyData, userAgent, host }) => {
+    createRecording: RecordingEndpointType["createRecording"] = async ({ recording: bodyData, userAgent, referer }) => {
         const ua = new parser.UAParser(userAgent || "");
 
         const siteDoc = await Target.findById(bodyData.site);
@@ -78,10 +78,11 @@ export class RecordingEndpoint implements RecordingEndpointType {
             return errorNotFound(`Site ${bodyData.site} does not exist`);
         } else {
             const site: SiteTarget = siteDoc.toObject();
-            if (!site.wildcardUrl && !site.urls.some(url => url === host)) {
+            // TODO - Make this more secure.
+            if (!site.wildcardUrl && (!referer || !site.urls.some(url => referer.includes(url)))) {
                 return errorNotAuthorized(
-                    "The origin of the recording you are trying to store is not in the list \
-                    of whitelisted hosts for this site"
+                    "The origin of the recording you are trying to store is not in the list " +
+                    "of whitelisted hosts for this site"
                 );
             }
         }
