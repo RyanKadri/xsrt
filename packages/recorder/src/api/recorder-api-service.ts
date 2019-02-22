@@ -1,4 +1,4 @@
-import { chunkApiSymbol, chunkEndpointMetadata, DateManager, EndpointApi, Interface, recordingApiSymbol, RecordingChunk, recordingEndpoint, Without } from "@xsrt/common";
+import { chunkApiSymbol, chunkEndpointMetadata, DateManager, EndpointApi, Interface, PendingChunk, recordingApiSymbol, recordingEndpoint } from "@xsrt/common";
 import { inject, injectable } from "inversify";
 import { compress } from "../output/output-utils";
 import { toJson } from "../utils/dom-utils";
@@ -37,7 +37,7 @@ export class RecorderApiService {
         }
     }
 
-    async postToBackend(data: Without<RecordingChunk, "_id">, toRecording: string, debugMode: boolean) {
+    async postToBackend(data: PendingChunk, toRecording: string, debugMode: boolean) {
         const serialized = debugMode ? toJson(data) : compress(toJson(data));
         const res = await this.chunkApi.createChunk({ chunk: serialized as any, recordingId: toRecording },
             { clientHeaders: Object.assign({},

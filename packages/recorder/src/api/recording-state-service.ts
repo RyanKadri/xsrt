@@ -1,4 +1,4 @@
-import { LocalStorageService, RecordingChunk, ScraperConfig, Without } from "@xsrt/common";
+import { LocalStorageService, RecordingChunk, ScraperConfig, PendingChunk } from "@xsrt/common";
 import { injectable } from "inversify";
 
 const localStorageRecordingId = "xsrt.recording.id";
@@ -26,7 +26,7 @@ export class RecordingStateService {
         this.storageService.saveItem(localStorageRecordingStart, startTime);
     }
 
-    savePendingChunk(chunk: Without<RecordingChunk, "_id">) {
+    savePendingChunk(chunk: PendingChunk) {
         this.storageService.saveItem(localStoragePendingChunk, chunk);
     }
 

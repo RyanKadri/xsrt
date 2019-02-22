@@ -6,11 +6,11 @@ export class MutationOptimizer {
 
     optimizeMutationGroup(mutationGroup: RecordedMutation[]): OptimizedMutation[] {
         const { children, attributes, text } = this.groupChanges(mutationGroup);
-        const { children: optChildren, removed } = this.optimizeChildMutations(children);
+        const { children: optChildren, removed: netRemoved } = this.optimizeChildMutations(children);
         return [
             ...optChildren,
-            ...this.optimizeAttributeMutations(attributes, removed),
-            ...this.optimizeTextMutations(text, removed)
+            ...this.optimizeAttributeMutations(attributes, netRemoved),
+            ...this.optimizeTextMutations(text, netRemoved)
         ].map(this.trimMutation);
     }
 
@@ -47,7 +47,7 @@ export class MutationOptimizer {
     }
 
     private hashAttribute(attributeMutation: AttributeMutation) {
-        return `${attributeMutation.target}:${attributeMutation.name}`;
+        return `${attributeMutation.target}:${attributeMutation.attribute.name}`;
     }
 
     optimizeTextMutations(textMutations: ChangeTextMutation[], removed: Set<number>): ChangeTextMutation[] {

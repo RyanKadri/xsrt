@@ -101,13 +101,15 @@ export interface UADetails {
 
 export type RecordingChunk = SnapshotChunk | DiffChunk;
 
+export type PendingChunk = PendingSnapshotChunk | PendingDiffChunk;
+
+export type PendingSnapshotChunk = Without<UnoptimizedSnapshotChunk, "_id">;
+export type PendingDiffChunk = Without<DiffChunk, "_id">;
+
 export interface UnoptimizedSnapshotChunk extends BaseSnapshot {
     type: "snapshot";
     snapshot: UnoptimizedRootSnapshot;
 }
-
-export type PendingSnapshotChunk = Without<SnapshotChunk, "_id">;
-export type PendingDiffChunk = Without<DiffChunk, "_id">;
 
 export interface SnapshotChunk extends BaseSnapshotWithAssets {
     type: "snapshot";
@@ -129,14 +131,14 @@ export interface BaseSnapshot {
     inputs: RecordedInputChannels;
 }
 
-export interface RootSnapshot {
-    documentMetadata: DocumentMetadata;
-    root: OptimizedHtmlElementInfo;
-}
-
 export interface UnoptimizedRootSnapshot {
     documentMetadata: DocumentMetadata;
     root: ScrapedHtmlElement;
+}
+
+export interface RootSnapshot {
+    documentMetadata: DocumentMetadata;
+    root: OptimizedHtmlElementInfo;
 }
 
 export interface DocumentMetadata {
@@ -198,8 +200,7 @@ export interface BaseMutation {
 
 export interface AttributeMutation extends BaseMutation {
     type: "attribute";
-    name: string;
-    val: string;
+    attribute: ScrapedAttribute;
 }
 
 export interface OptimizedChildrenMutation extends BaseMutation {

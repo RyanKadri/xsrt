@@ -1,4 +1,4 @@
-import { PendingDiffChunk, SnapshotChunk, UnoptimizedSnapshotChunk, Without } from "@xsrt/common";
+import { PendingDiffChunk, PendingSnapshotChunk, UnoptimizedSnapshotChunk, Without } from "@xsrt/common";
 import { injectable } from "inversify";
 import { RecordingOptimizer } from "./optimize/optimize";
 import { MutationRecorder } from "./record/dom-changes/mutation-recorder";
@@ -8,7 +8,7 @@ import { RecordingDomManager } from "./traverse/traverse-dom";
 import { TimeManager } from "./utils/time-manager";
 
 @injectable()
-export class Recorder implements IScraper {
+export class Recorder {
     constructor(
         private domWalker: RecordingDomManager,
         private timeManager: TimeManager,
@@ -19,12 +19,12 @@ export class Recorder implements IScraper {
 
     private lastChunk?: number;
 
-    createSnapshotChunk(): Promise<Without<SnapshotChunk, "_id">> {
+    createSnapshotChunk(): Promise<PendingSnapshotChunk> {
         return this.optimizer.optimize(this.syncSnapshot())
             .then(snapshot => {
                 const stopTime = this.lastChunk = this.timeManager.currentTime();
                 const startTime = this.timeManager.fetchSessionStart();
-                const chunk = {
+                return {
                     ...snapshot,
                     changes: this.mutationRecorder.dump(),
                     inputs: this.inputRecorder.dump(),
@@ -34,7 +34,6 @@ export class Recorder implements IScraper {
                         stopTime
                     },
                 };
-                return chunk;
             });
     }
 
@@ -59,12 +58,12 @@ export class Recorder implements IScraper {
             .forEach(manager => manager.start());
     }
 
-    dumpDiff(finalize: boolean): PendingDiffChunk {
+    dumpDiff(finalize: boolean): Promise<PendingDiffChunk> {
         const startTime = this.lastChunk!;
         const stopTime = this.lastChunk = this.timeManager.currentTime();
 
         const type = "diff";
-        return {
+        return this.optimizer.optimize({
             assets: [],
             type,
             changes: finalize ? this.mutationRecorder.stop() : this.mutationRecorder.dump(),
@@ -73,12 +72,7 @@ export class Recorder implements IScraper {
                 startTime,
                 stopTime
             }
-        };
+        });
     }
 
-}
-
-export interface IScraper {
-    record(): void;
-    createSnapshotChunk(): Promise<Without<SnapshotChunk, "_id">>;
 }

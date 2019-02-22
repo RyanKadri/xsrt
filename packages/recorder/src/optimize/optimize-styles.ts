@@ -22,17 +22,18 @@ export function optimizeStyle(styleEl: ScrapedHtmlElement, context: Optimization
 function inertPlaceholder(styleEl: ScrapedHtmlElement, context: OptimizationContext) {
     return {
         ...styleEl,
-        attributes: replaceSrc(styleEl, context),
+        attributes: replaceHref(styleEl, context),
         children: [],
         rules: []
     };
 }
 
-function replaceSrc(el: ScrapedHtmlElement, context: OptimizationContext): ScrapedAttribute[] {
+function replaceHref(el: ScrapedHtmlElement, context: OptimizationContext): ScrapedAttribute[] {
     if (el.tag === "link" && el.attributes.some(attr => attr.name === "rel" && attr.value === "stylesheet")) {
         return el.attributes.map(attr => {
             if (attr.name === "href") {
-                const id = context.registerAsset(attr.value); // This is not function. Feel free to rewrite.
+                // Side effects in map are not the best. Feel free to rewrite.
+                const id = context.registerAsset(attr.value);
                 return { name: attr.name, value: formatAssetRef(id), references: [id] };
             } else {
                 return attr;

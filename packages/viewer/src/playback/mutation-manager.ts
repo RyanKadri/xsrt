@@ -37,10 +37,10 @@ export class MutationManager {
     }
 
     private attributeChange(mutation: AttributeMutation, target: number) {
-        if (mutation.val !== null) {
-            this.domManager.setAttribute(target, mutation.name, mutation.val);
+        if (mutation.attribute.value !== null) {
+            this.domManager.setAttribute(target, mutation.attribute);
         } else {
-            this.domManager.removeAttribute(target, mutation.name);
+            this.domManager.removeAttribute(target, mutation.attribute.name);
         }
     }
 

@@ -1,6 +1,6 @@
 // tslint:disable-next-line:no-implicit-dependencies
 import defaultStyles from "!raw-loader!./default-styles.css";
-import { Interface, LoggingService, OptimizedElement, OptimizedHtmlElementInfo, OptimizedStyleElement, OptimizedStyleRule, OptimizedTextElementInfo, ScrapedAttribute, SnapshotChunk, formatAssetRef } from "@xsrt/common";
+import { formatAssetRef, Interface, LoggingService, OptimizedElement, OptimizedHtmlElementInfo, OptimizedStyleElement, OptimizedStyleRule, OptimizedTextElementInfo, ScrapedAttribute, SnapshotChunk } from "@xsrt/common";
 import { toBlobUrl } from "@xsrt/common-frontend";
 
 // TODO - Maybe in the process of refactoring, this can track a virtual-dom type thing
@@ -19,6 +19,7 @@ export class DomManager {
 
     initialize(document: Document) {
         this._document = document;
+        this.assets = []; // Each snapshot has a different set of assets. This should be reset on each nav.
     }
 
     private get document() {
@@ -66,8 +67,9 @@ export class DomManager {
         }
     }
 
-    setAttribute(target: number, attr: string, val: string) {
-        (this.fetchNode(target) as Element).setAttribute(attr, val);
+    setAttribute(target: number, attribute: ScrapedAttribute) {
+        const el = this.fetchNode(target) as Element;
+        this._setAttribute(el, attribute);
     }
 
     removeAttribute(target: number, attr: string) {

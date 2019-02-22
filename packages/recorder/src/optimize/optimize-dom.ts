@@ -1,7 +1,7 @@
-import { ScrapedElement, ScrapedHtmlElement, ScrapedAttribute, OptimizedElement, OptimizedHtmlElementInfo, formatAssetRef } from "@xsrt/common";
-import { optimizeStyle } from "./optimize-styles";
+import { formatAssetRef, OptimizedElement, OptimizedHtmlElementInfo, ScrapedAttribute, ScrapedElement, ScrapedHtmlElement } from "@xsrt/common";
 import { extractUrls } from "../transform/transform-styles";
 import { OptimizationContext } from "./optimization-context";
+import { optimizeStyle } from "./optimize-styles";
 
 export function optimizeNode(root: ScrapedElement, context: OptimizationContext): OptimizedElement {
     if (root.type === "element") {
@@ -44,12 +44,14 @@ function extractInlineStyles(node: ScrapedHtmlElement, context: OptimizationCont
     return {
         ...node,
         attributes: node.attributes.map(
-            attr => attr.name === "style" ? extractInlineStyle(attr, context) : attr
+            attr => attr.name === "style"
+                ? extractInlineStyle(attr, context)
+                : attr
         )
     };
 }
 
-function extractInlineStyle(attr: ScrapedAttribute, context: OptimizationContext): ScrapedAttribute {
+export function extractInlineStyle(attr: ScrapedAttribute, context: OptimizationContext): ScrapedAttribute {
     const urls = extractUrls(attr.value);
     let rule = attr.value;
     const references: number[] = [];

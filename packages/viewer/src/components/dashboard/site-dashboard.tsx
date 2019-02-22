@@ -41,7 +41,7 @@ function _SiteDashboardView({ classes, recordingsApi, logger, site }: DashboardV
     const onDeleteSelected = async () => {
         try {
             await recordingsApi.deleteRecordings(selected);
-            setRecordings(old => old.filter(rec => selected.find(sel => sel._id === rec._id )));
+            setRecordings(old => old.filter(rec => !selected.some(sel => sel._id === rec._id )));
             setSelected([]);
         } catch (e) {
             logger.error(e);

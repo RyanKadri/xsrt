@@ -36,7 +36,7 @@ export class DomPreviewService {
     private updatePreview(mutation: OptimizedMutation, preview: DomNodePreview, target: number) {
         if (mutation.type === "attribute" && mutation.target === target) {
             const htmlPreview = (preview as HtmlNodePreview);
-            htmlPreview.attributes[mutation.name] = mutation.val;
+            htmlPreview.attributes[mutation.attribute.name] = mutation.attribute.value;
         } else if (mutation.type === "change-text" && mutation.target === target) {
             const textPreview = (preview as TextNodePreview);
             textPreview.content = mutation.update;

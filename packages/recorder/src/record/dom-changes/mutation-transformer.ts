@@ -42,8 +42,10 @@ export class MutationTransformer {
         return {
             type: "attribute",
             target,
-            name,
-            val: (mutation.target as HTMLElement).getAttribute(name)!
+            attribute: {
+                name,
+                value: (mutation.target as HTMLElement).getAttribute(name)!
+            }
         };
     }
 

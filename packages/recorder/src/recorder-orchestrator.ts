@@ -1,4 +1,4 @@
-import { LoggingService, mergeMaps, PendingDiffChunk, PendingSnapshotChunk, pluck, RecordingChunk, ScraperConfig, ScraperConfigToken, SnapshotChunk, sortAsc, Without } from "@xsrt/common";
+import { LoggingService, mergeMaps, PendingChunk, PendingDiffChunk, PendingSnapshotChunk, pluck, ScraperConfig, ScraperConfigToken, sortAsc } from "@xsrt/common";
 import { inject, injectable } from "inversify";
 import { RecorderApiService } from "./api/recorder-api-service";
 import { RecordingInfo, RecordingStateService } from "./api/recording-state-service";
@@ -22,7 +22,7 @@ export class RecorderOrchestrator {
 
     private initInfoTask?: Promise<RecordingInfo>;
     private initInfo?: RecordingInfo;
-    private initSnapshotTask?: Promise<Without<SnapshotChunk, "_id">>;
+    private initSnapshotTask?: Promise<PendingSnapshotChunk>;
     private latestEnd = 0;
 
     private sentInitChunk = false;
@@ -58,7 +58,7 @@ export class RecorderOrchestrator {
             // Need to think about data constraints and access to underlying dom elements (for call reduction)
             this.reportErr(new Error(`Requested data was not ready by the time the page was closed`));
         }
-        const leftovers = this.recorder.dumpDiff(isUnloading);
+        const leftovers = await this.recorder.dumpDiff(isUnloading);
 
         if (!isUnloading) {
             const snapshot = await this.initSnapshotTask!;
@@ -74,8 +74,10 @@ export class RecorderOrchestrator {
 
     private startCollectingDiffs() {
         // TODO - requestIdleCallback maybe?
-        this.eventService.addEventListener(chunkMutationLimit, () => {
-            const diff = this.recorder.dumpDiff(false);
+        this.eventService.addEventListener(chunkMutationLimit, async () => {
+            // TODO - This async bit is for testing. This leaves room for a race condition if the user closes
+            // the browser before the async operation resolves.
+            const diff = await this.recorder.dumpDiff(false);
             this.reportChunk(diff, false);
         });
     }
@@ -88,7 +90,7 @@ export class RecorderOrchestrator {
         };
     }
 
-    private reportChunk(chunk: Without<RecordingChunk, "_id">, unloading: boolean) {
+    private reportChunk(chunk: PendingChunk, unloading: boolean) {
         if (!this.initInfo) { throw new Error("Tried to report chunk but did not have required reporting metadata"); }
 
         if (!unloading) {
