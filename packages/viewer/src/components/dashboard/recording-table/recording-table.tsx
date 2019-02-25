@@ -16,8 +16,8 @@ const styles = (theme: Theme) => createStyles({
 
 const _RecordingTable = (props: RecordingTableProps) => {
 
-    const { classes, onPreview, onToggleSelectAll, onToggleSelect, uiConfigService,
-            selected, onDeleteSelected } = props;
+    const { classes, selected, onPreview, onToggleSelectAll, onToggleSelect, onRefresh,
+            onDeleteSelected, uiConfigService } = props;
 
     const [state, setState] = useState<RecordingTableState>({
         settings: uiConfigService.loadRecordingsTableConfig(),
@@ -49,7 +49,8 @@ const _RecordingTable = (props: RecordingTableProps) => {
         <RecordingTableToolbar
             numSelected={ selected.length }
             onDeleteSelected={ onDeleteSelected }
-            onFilterSelected={ onSettingsToggle } />
+            onSettingsToggle={ onSettingsToggle }
+            onRefresh={ onRefresh } />
         <Table>
             <RecordingTableHeader
                 displayColumns={ state.settings.columns }
@@ -86,10 +87,11 @@ export interface RecordingTableProps extends WithStyles<typeof styles> {
     recordings: RecordingOverview[];
     selected: RecordingOverview[];
 
-    onPreview: (thumbnail: RecordingOverview) => void;
-    onToggleSelect: (recording: RecordingOverview) => void;
-    onToggleSelectAll: (select: boolean) => void;
-    onDeleteSelected: () => void;
+    onPreview(thumbnail: RecordingOverview): void;
+    onToggleSelect(recording: RecordingOverview): void;
+    onToggleSelectAll(select: boolean): void;
+    onDeleteSelected(): void;
+    onRefresh(): void;
 }
 
 export interface RecordingTableState {

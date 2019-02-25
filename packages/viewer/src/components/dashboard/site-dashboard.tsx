@@ -24,6 +24,7 @@ function _SiteDashboardView({ classes, recordingsApi, logger, site }: DashboardV
     const [ selected, setSelected ] = useState<RecordingOverview[]>([]);
     const [ recordings, setRecordings ] = useState<RecordingOverview[]>([]);
     const [ loading, setLoading ] = useState(false);
+    const [ isStale, setStale ] = useState(true);
     const DIRecordingTable = useComponent(RecordingTable, { uiConfigService: UIConfigService });
 
     const onToggleSelect = (recording: RecordingOverview) => {
@@ -48,16 +49,21 @@ function _SiteDashboardView({ classes, recordingsApi, logger, site }: DashboardV
         }
     };
 
+    const onRefresh = () => {
+        setStale(true);
+    };
+
     useEffect(() => {
-        if (site) {
+        if (site && isStale && !loading) {
             setLoading(true);
             recordingsApi.fetchAvailableRecordings(site._id)
                 .then(fetchedRecordings => {
                     setRecordings(fetchedRecordings);
                     setLoading(false);
+                    setStale(false);
                 });
         }
-    }, [site]);
+    }, [site, isStale]);
 
     return (
         <div className={ classes.root }>{
@@ -87,6 +93,7 @@ function _SiteDashboardView({ classes, recordingsApi, logger, site }: DashboardV
                                 onToggleSelect={ onToggleSelect }
                                 onToggleSelectAll={ onToggleSelectAll }
                                 onDeleteSelected={ onDeleteSelected }
+                                onRefresh={ onRefresh }
                             />
                     }
                     <Dialog maxWidth="lg"
