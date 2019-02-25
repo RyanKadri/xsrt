@@ -1,11 +1,14 @@
 import { RecordedKeyEvent } from "@xsrt/common";
 import { injectable } from "inversify";
-import { UserInputRecorder } from "./input-recorder";
+import { EventSource, UserInputRecorder } from "./input-recorder";
 
 @injectable()
 export class KeystrokeRecorder implements UserInputRecorder<KeyboardEvent, RecordedKeyEvent> {
-    readonly channels = ["keyup", "keydown"];
-    readonly listen = "document";
+    readonly sources: EventSource[] = [
+        { type: "keyup", originator: "document" },
+        { type: "keydown", originator: "document" }
+    ];
+
     activeKeys = new Map<string, number>();
 
     handle(evt: KeyboardEvent) {

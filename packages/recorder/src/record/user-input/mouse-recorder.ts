@@ -6,8 +6,10 @@ import { RecordedEventContext, UserInputRecorder } from "./input-recorder";
 @injectable()
 export class MouseRecorder implements UserInputRecorder<MouseEvent, RecordedMouseEvent> {
 
-    readonly channels = ["mouseup", "mousedown", "mousemove"];
-    readonly listen = "document";
+    readonly sources = ["mouseup", "mousedown", "mousemove"].map(type => ({
+        type,
+        originator: "document" as "document"
+    }));
 
     private lastTime = -Infinity;
     private lastHovered?: ScrapedElement;

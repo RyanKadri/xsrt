@@ -8,6 +8,7 @@ import { KeystrokeRecorder } from "./record/user-input/key-recorder";
 import { MouseRecorder } from "./record/user-input/mouse-recorder";
 import { ResizeRecorder } from "./record/user-input/resize-recorder";
 import { ScrollRecorder } from "./record/user-input/scroll-recorder";
+import { PopStateRecorder } from "./record/user-input/soft-navigate-recorder";
 import { UnloadRecorder } from "./record/user-input/unload-recorder";
 
 export const diConfig: DIInitializer[] = [
@@ -19,7 +20,7 @@ export const diConfig: DIInitializer[] = [
     dependencyGroup(IUserInputRecorder, [
         MouseRecorder, ScrollRecorder, HtmlInputRecorder,
         FocusRecorder, ResizeRecorder, KeystrokeRecorder,
-        UnloadRecorder
+        UnloadRecorder, PopStateRecorder
     ]),
     apiDef(recordingApiSymbol, recordingEndpoint),
     apiDef(assetApiSymbol, assetEndpoint),

@@ -1,11 +1,12 @@
 import { RecordedUnloadEvent } from "@xsrt/common";
 import { injectable } from "inversify";
-import { UserInputRecorder } from "./input-recorder";
+import { EventSource, UserInputRecorder } from "./input-recorder";
 
 @injectable()
 export class UnloadRecorder implements UserInputRecorder<Event, RecordedUnloadEvent> {
-    readonly channels = ["unload"];
-    readonly listen = "window";
+    readonly sources: EventSource[] = [
+        { type: "unload", originator: "window" }
+    ];
 
     handle(): Partial<RecordedUnloadEvent> {
         return {

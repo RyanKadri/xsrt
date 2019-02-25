@@ -72,3 +72,9 @@ export interface RecordedFocusEvent extends BaseUserInput {
 export interface RecordedUnloadEvent extends BaseUserInput {
     type: "unload";
 }
+
+export interface RecordedNavigationEvent extends BaseUserInput {
+    type: "soft-navigate";
+    url: string;
+    action: "popstate" | "replacestate" | "pushstate" | "hashchange";
+}

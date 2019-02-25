@@ -1,11 +1,12 @@
 import { RecordedScrollEvent } from "@xsrt/common";
 import { injectable } from "inversify";
-import { RecordedEventContext, UserInputRecorder } from "./input-recorder";
+import { EventSource, RecordedEventContext, UserInputRecorder } from "./input-recorder";
 
 @injectable()
 export class ScrollRecorder implements UserInputRecorder<UIEvent, RecordedScrollEvent> {
-    readonly channels = ["scroll"];
-    readonly listen = "document";
+    readonly sources: EventSource[] = [
+        { type: "scroll", originator: "document" }
+    ];
 
     handle(_: UIEvent, { target }: RecordedEventContext): Partial<RecordedScrollEvent> {
         const domElement = target ? target.domElement : undefined;

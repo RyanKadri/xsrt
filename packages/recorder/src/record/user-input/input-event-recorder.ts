@@ -1,11 +1,14 @@
 import { RecordedInputChangeEvent } from "@xsrt/common";
 import { injectable } from "inversify";
-import { RecordedEventContext, UserInputRecorder } from "./input-recorder";
+import { EventSource, RecordedEventContext, UserInputRecorder } from "./input-recorder";
 
 @injectable()
 export class HtmlInputRecorder implements UserInputRecorder<Event, RecordedInputChangeEvent> {
-    readonly channels = ["input", "change"];
-    readonly listen = "document";
+
+    readonly sources: EventSource[] = [
+        { type: "input", originator: "document" },
+        { type: "change", originator: "document" }
+    ];
 
     handle(evt: Event, { target }: RecordedEventContext) {
         if (!target) { throw new Error("Could not replay input to undefined target"); }

@@ -1,4 +1,4 @@
-import { group, Interface, MapTo, pluck, RecordedInputChannels, RecordedUserInput, ScrapedElement } from "@xsrt/common";
+import { group, Interface, MapTo, RecordedInputChannels, RecordedUserInput, ScrapedElement } from "@xsrt/common";
 import { inject, injectable, multiInject } from "inversify";
 import { RecordingDomManager } from "../../traverse/traverse-dom";
 import { TimeManager } from "../../utils/time-manager";
@@ -56,7 +56,7 @@ export class CompleteInputRecorder {
         @inject(GlobalEventService) private globalEventService: Interface<GlobalEventService>,
         @inject(EventCallbackCreator) private eventCallbackCreator: Interface<EventCallbackCreator>
     ) {
-        this.handlers = group(recorders, pluck("channels"))
+        this.handlers = group(recorders, recorder => recorder.sources.map(source => source.type))
             .reduce((acc, el) => {
                 acc[el.group] = el.items[0];
                 return acc;
@@ -69,7 +69,7 @@ export class CompleteInputRecorder {
             if (recorder.start) {
                 recorder.start();
             }
-            this.createEventHandler(groupKey);
+            this.createEventHandler(groupKey, recorder.sources.find(source => source.type === groupKey)!);
             this.handlers[groupKey] = recorder;
         });
     }
@@ -96,16 +96,21 @@ export class CompleteInputRecorder {
         return this.dump();
     }
 
-    private createEventHandler = (groupName: string) => {
+    private createEventHandler = (groupName: string, source: EventSource) => {
         const recorder = this.handlers[groupName];
         const eventCb = this.eventCallbackCreator.createEventCb(recorder);
         const wrappedCb = (evt: Event) => {
             const res = eventCb(evt);
             if (res) {
-                this.events[res.type || groupName].push(res);
+                const channel = this.events[res.type || groupName] || [];
+                channel.push(res);
+                this.events[res.type || groupName] = channel;
             }
         };
-        const id = this.globalEventService.addEventListener(groupName, wrappedCb, { capture: true });
+        const id = this.globalEventService.addEventListener(groupName, wrappedCb, {
+            capture: true,
+            target: source.originator as any
+        });
         this.listenerIds.push(id);
     }
 
@@ -113,9 +118,8 @@ export class CompleteInputRecorder {
 
 export interface UserInputRecorder<EventType = Event, RecordedType = RecordedUserInput> {
     // A recorder can listen to multiple channels but two recorders cannot currently listen to the same channel
-    channels: string[];
+    sources: EventSource[];
     handle(event: EventType, context: RecordedEventContext): Partial<RecordedType> | null;
-    listen: "document" | "window";
     start?(): void;
     stop?(): void;
 }
@@ -123,4 +127,9 @@ export interface UserInputRecorder<EventType = Event, RecordedType = RecordedUse
 export interface RecordedEventContext {
     time: number;
     target?: ScrapedElement;
+}
+
+export interface EventSource {
+    type: string;
+    originator: "document" | "window" | "synthetic";
 }

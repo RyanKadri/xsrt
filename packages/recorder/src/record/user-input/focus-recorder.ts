@@ -1,11 +1,14 @@
 import { RecordedFocusEvent } from "@xsrt/common";
 import { injectable } from "inversify";
-import { RecordedEventContext, UserInputRecorder } from "./input-recorder";
+import { EventSource, RecordedEventContext, UserInputRecorder } from "./input-recorder";
 
 @injectable()
 export class FocusRecorder implements UserInputRecorder<FocusEvent, RecordedFocusEvent> {
-    readonly channels = ["focus", "blur"];
-    readonly listen = "document";
+
+    readonly sources: EventSource[] = [
+        { type: "focus", originator: "document" },
+        { type: "blur", originator: "document" }
+    ];
 
     handle(_: FocusEvent, { target }: RecordedEventContext ) {
         return {

@@ -1,7 +1,8 @@
+import { flatten, RecordedMutation, RecordedMutationGroup } from "@xsrt/common";
 import { injectable } from "inversify";
+import { shouldTraverseNode } from "../../filter/filter-dom";
 import { MutationTracker } from "./mutation-tracker";
 import { MutationTransformer } from "./mutation-transformer";
-import { flatten, RecordedMutationGroup, RecordedMutation } from "@xsrt/common";
 
 @injectable()
 export class MutationRecorder {
@@ -43,7 +44,10 @@ export class MutationRecorder {
 
     private recordMutation = (mutations: MutationRecord[]) => {
         this.mutationTracker.record(
-            flatten<RecordedMutation>(mutations.map(mutation => this.transformer.transformMutation(mutation)))
+            flatten<RecordedMutation>(
+                mutations
+                    .filter(mutation => shouldTraverseNode(mutation.target))
+                    .map(mutation => this.transformer.transformMutation(mutation)))
         );
     }
 
