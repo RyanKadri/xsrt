@@ -1,7 +1,7 @@
 import { createStyles, Dialog, Theme, Typography, withStyles, WithStyles } from "@material-ui/core";
 import { LoggingService, RecordingOverview, SiteTarget } from "@xsrt/common";
 import { useComponent } from "@xsrt/common-frontend";
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useReducer, useState } from "react";
 import { RecordingApiService } from "../../services/recording-service";
 import { UIConfigService } from "../../services/ui-config-service";
 import { RecordingTable } from "./recording-table/recording-table";
@@ -19,51 +19,56 @@ const styles = (theme: Theme) => createStyles({
     }
 });
 
-function _SiteDashboardView({ classes, recordingsApi, logger, site }: DashboardViewProps) {
+function reducer(state: State, action: Action): State {
+    switch (action.type) {
+        case "deleteRecordings":
+            return {
+                ...state,
+                recordings: state.recordings
+                    .filter(rec => !action.recordings.some(sel => sel._id === rec._id ))
+            };
+        case "updateRecordings":
+            return {
+                ...state,
+                recordings: action.recordings,
+                loading: false,
+                stale: false,
+            };
+        case "refresh":
+            return { ...state, stale: true };
+        case "loading":
+            return { ...state, loading: true };
+    }
+}
+
+function _SiteDashboardView({ classes, recordingsApi, logger, site }: Props) {
+    const [ state, dispatch ] = useReducer(reducer, {
+        recordings: [],
+        loading: false,
+        stale: true
+    });
+
     const [ preview, setPreview ] = useState<RecordingOverview | null>(null);
-    const [ selected, setSelected ] = useState<RecordingOverview[]>([]);
-    const [ recordings, setRecordings ] = useState<RecordingOverview[]>([]);
-    const [ loading, setLoading ] = useState(false);
-    const [ isStale, setStale ] = useState(true);
     const DIRecordingTable = useComponent(RecordingTable, { uiConfigService: UIConfigService });
 
-    const onToggleSelect = (recording: RecordingOverview) => {
-        setSelected(old =>
-            old.includes(recording)
-                ? old.filter(rec => rec !== recording)
-                : old.concat(recording)
-        );
-    };
-
-    const onToggleSelectAll = (shouldSelect: boolean) => {
-        setSelected(shouldSelect ? recordings : []);
-    };
-
-    const onDeleteSelected = async () => {
+    const onDeleteSelected = async (selected: RecordingOverview[]) => {
         try {
             await recordingsApi.deleteRecordings(selected);
-            setRecordings(old => old.filter(rec => !selected.some(sel => sel._id === rec._id )));
-            setSelected([]);
+            dispatch({ type: "deleteRecordings", recordings: selected });
         } catch (e) {
             logger.error(e);
         }
     };
 
-    const onRefresh = () => {
-        setStale(true);
-    };
-
     useEffect(() => {
-        if (site && isStale && !loading) {
-            setLoading(true);
+        if (site && state.stale && !state.loading) {
+            dispatch({ type: "loading"});
             recordingsApi.fetchAvailableRecordings(site._id)
                 .then(fetchedRecordings => {
-                    setRecordings(fetchedRecordings);
-                    setLoading(false);
-                    setStale(false);
+                    dispatch({ type: "updateRecordings", recordings: fetchedRecordings });
                 });
         }
-    }, [site, isStale]);
+    }, [site, state.stale]);
 
     return (
         <div className={ classes.root }>{
@@ -82,18 +87,15 @@ function _SiteDashboardView({ classes, recordingsApi, logger, site }: DashboardV
                             : null
                         }
                     </header>
-                    { loading
+                    { state.loading
                         ? <Typography variant="body1">Loading...</Typography>
-                        : recordings.length === 0
+                        : state.recordings.length === 0
                             ? <Typography variant="body1">No recordings yet...</Typography>
                             : <DIRecordingTable
-                                recordings={ recordings }
-                                selected={ selected }
+                                recordings={ state.recordings }
                                 onPreview={ setPreview }
-                                onToggleSelect={ onToggleSelect }
-                                onToggleSelectAll={ onToggleSelectAll }
                                 onDeleteSelected={ onDeleteSelected }
-                                onRefresh={ onRefresh }
+                                onRefresh={ () => dispatch({ type: "refresh" }) }
                             />
                     }
                     <Dialog maxWidth="lg"
@@ -110,8 +112,19 @@ function _SiteDashboardView({ classes, recordingsApi, logger, site }: DashboardV
 
 export const SiteDashboardView = withStyles(styles)(_SiteDashboardView);
 
-interface DashboardViewProps extends WithStyles<typeof styles> {
+type Action = { type: "loading" } |
+    { type: "refresh" } |
+    { type: "deleteRecordings", recordings: RecordingOverview[] } |
+    { type: "updateRecordings", recordings: RecordingOverview[] };
+
+interface Props extends WithStyles<typeof styles> {
     site: SiteTarget;
     recordingsApi: RecordingApiService;
     logger: LoggingService;
+}
+
+interface State {
+    loading: boolean;
+    stale: boolean;
+    recordings: RecordingOverview[];
 }

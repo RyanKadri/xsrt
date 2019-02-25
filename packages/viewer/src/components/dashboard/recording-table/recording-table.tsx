@@ -1,7 +1,8 @@
 import { createStyles, Paper, Table, TableBody, Theme, withStyles, WithStyles } from "@material-ui/core";
 import { RecordingOverview } from "@xsrt/common";
-import React, { useState } from "react";
+import React, { useReducer, useState } from "react";
 import { UIConfigService } from "../../../services/ui-config-service";
+import { useDialog } from "../../utils/useDialog";
 import { allowedRecordingTableColumns } from "./available-columns";
 import { RecordingTableHeader } from "./recording-table-header";
 import { RecordingRow } from "./recording-table-row";
@@ -14,48 +15,44 @@ const styles = (theme: Theme) => createStyles({
     }
 });
 
+function reducer(selected: RecordingOverview[], action: Action) {
+    switch (action.type) {
+        case "toggle":
+            return selected.includes(action.recording)
+                ? selected.filter(rec => rec !== action.recording)
+                : selected.concat(action.recording);
+        case "selectAll":
+            return selected.length < action.recordings.length ? action.recordings : [];
+    }
+}
+
 const _RecordingTable = (props: RecordingTableProps) => {
 
-    const { classes, selected, onPreview, onToggleSelectAll, onToggleSelect, onRefresh,
-            onDeleteSelected, uiConfigService } = props;
+    const { classes, onRefresh, onDeleteSelected, onPreview, uiConfigService } = props;
 
-    const [state, setState] = useState<RecordingTableState>({
-        settings: uiConfigService.loadRecordingsTableConfig(),
-        settingsDialogOpen: false,
-        settingsDialogAnchor: null
-    });
+    const { open, anchorEl, closeDialog, openDialog } = useDialog(false);
+    const [ settings, updateSettings ] = useState(uiConfigService.loadRecordingsTableConfig());
+
+    const [selected, dispatch] = useReducer(reducer, []);
 
     const recordings = props.recordings.concat().sort((a, b) => b.metadata.startTime - a.metadata.startTime );
 
-    const onSettingsToggle = (e: React.MouseEvent) => {
-        const target = e.currentTarget as HTMLElement;
-        setState((old) => ({
-            ...old,
-            settingsDialogOpen: !old.settingsDialogOpen,
-            settingsDialogAnchor: target
-        }));
-    };
-
-    const onSettingsClose = () => {
-        setState(old => ({ ...old, settingsDialogOpen: false }));
-    };
-
     const onSettingsChange = (settings: RecordingTableSettings) => {
-        setState(old => ({ ...old, settings }));
+        updateSettings(settings);
         uiConfigService.saveRecordingsTableConfig(settings);
     };
 
     return <Paper className={ classes.tableContainer }>
         <RecordingTableToolbar
             numSelected={ selected.length }
-            onDeleteSelected={ onDeleteSelected }
-            onSettingsToggle={ onSettingsToggle }
+            onDeleteSelected={ () => onDeleteSelected(selected) }
+            onSettingsToggle={ e => openDialog(e.currentTarget as HTMLElement) }
             onRefresh={ onRefresh } />
         <Table>
             <RecordingTableHeader
-                displayColumns={ state.settings.columns }
+                displayColumns={ settings.columns }
                 allSelected={ recordings.length === selected.length }
-                onToggleAll={ onToggleSelectAll }
+                onToggleAll={ () => dispatch({ type: "selectAll", recordings }) }
             />
             <TableBody>{
                 recordings.map(recording =>
@@ -63,41 +60,35 @@ const _RecordingTable = (props: RecordingTableProps) => {
                         recording={ recording }
                         selected={ selected.includes(recording) }
                         onPreview={ onPreview }
-                        onToggle={ onToggleSelect }
+                        onToggle={ () => dispatch({ type: "toggle", recording }) }
                         key={ recording._id }
-                        displayColumns={ state.settings.columns }
+                        displayColumns={ settings.columns }
                     />
                 )
             }</TableBody>
         </Table>
         <RecordingTableSettings
-            open={ state.settingsDialogOpen }
+            open={ open }
             availableColumns={ allowedRecordingTableColumns }
             onChangeSettings= { onSettingsChange }
-            settings={ state.settings }
-            onClose={ onSettingsClose }
-            anchor={ state.settingsDialogAnchor }
+            settings={ settings }
+            onClose={ closeDialog }
+            anchor={ anchorEl }
         />
     </Paper>;
 };
 
-export interface RecordingTableProps extends WithStyles<typeof styles> {
+interface RecordingTableProps extends WithStyles<typeof styles> {
     uiConfigService: UIConfigService;
 
     recordings: RecordingOverview[];
-    selected: RecordingOverview[];
 
-    onPreview(thumbnail: RecordingOverview): void;
-    onToggleSelect(recording: RecordingOverview): void;
-    onToggleSelectAll(select: boolean): void;
-    onDeleteSelected(): void;
+    onPreview(recording: RecordingOverview): void;
+    onDeleteSelected(selected: RecordingOverview[]): Promise<void>;
     onRefresh(): void;
 }
 
-export interface RecordingTableState {
-    settings: RecordingTableSettings;
-    settingsDialogOpen: boolean;
-    settingsDialogAnchor: HTMLElement | null;
-}
+type Action = { type: "toggle", recording: RecordingOverview } |
+    { type: "selectAll", recordings: RecordingOverview[] };
 
 export const RecordingTable = withStyles(styles)(_RecordingTable);
