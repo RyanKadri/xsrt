@@ -37,9 +37,9 @@ const _RecordingTable = (props: RecordingTableProps) => {
 
     const recordings = props.recordings.concat().sort((a, b) => b.metadata.startTime - a.metadata.startTime );
 
-    const onSettingsChange = (settings: RecordingTableSettings) => {
-        updateSettings(settings);
-        uiConfigService.saveRecordingsTableConfig(settings);
+    const onSettingsChange = (newSettings: RecordingTableSettings) => {
+        updateSettings(newSettings);
+        uiConfigService.saveRecordingsTableConfig(newSettings);
     };
 
     return <Paper className={ classes.tableContainer }>

@@ -8,7 +8,7 @@
         "composite": true
     },
     "references": [
-        { "path": "../common" }
+        { "path": "../common/tsconfig.package.json" }
     ],
     "include": [
         "src"

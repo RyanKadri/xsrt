@@ -3,6 +3,7 @@ import { between, formatPlayerTime, RecordedMutationGroup, RecordingMetadata, Sn
 import { withDependencies } from "@xsrt/common-frontend";
 import * as React from "react";
 import { Fragment } from "react";
+import { PlaybackManager } from "../../playback/playback-manager";
 import { RecordingAnnotation } from "../../services/annotation/annotation-service";
 import { Region } from "../../services/regions-service";
 import { UIConfigService } from "../../services/ui-config-service";
@@ -30,6 +31,8 @@ const styles = (theme: Theme) => createStyles({
         height: 80
     }
 });
+
+const DIRecordingPlayer = withDependencies(RecordingPlayer, { playbackManager: PlaybackManager });
 
 class _RecordingViewer extends React.PureComponent<ViewerProps, ViewerState> {
 
@@ -61,7 +64,7 @@ class _RecordingViewer extends React.PureComponent<ViewerProps, ViewerState> {
                         this.props.snapshots.length === 0
                             ? <CircularProgress color="secondary" className={ classes.progressSpinner } />
                             : <Fragment>
-                                <RecordingPlayer
+                                <DIRecordingPlayer
                                     snapshots={ this.props.snapshots }
                                     inputs={ this.props.inputs }
                                     changes={ this.props.changes }

@@ -1,7 +1,7 @@
 import { createStyles, Theme, Typography, withStyles, WithStyles } from "@material-ui/core";
-import { convertMapToGroups, Group, mergeGroups, pluck, RecordedMutationGroup, RecordedUserInput, Recording, RecordingChunk, SnapshotChunk, sortAsc } from "@xsrt/common";
+import { Group, RecordedMutationGroup, RecordedUserInput, Recording, RecordingChunk, SnapshotChunk } from "@xsrt/common";
 import { withDependencies } from "@xsrt/common-frontend";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useReducer } from "react";
 import { DomPreviewService } from "../../playback/dom-preview-service";
 import { AnnotationService, RecordingAnnotation } from "../../services/annotation/annotation-service";
 import { ChunkApiService } from "../../services/chunk-api-service";
@@ -10,6 +10,7 @@ import { Region, RegionService } from "../../services/regions-service";
 import { TweakableConfigs } from "../../services/viewer-tweaks";
 import { topNavHeight } from "../app-root/top-nav/top-nav";
 import { eventsBetween } from "../utils/recording-data-utils";
+import { recordingViewReducer } from "./recording-view-reducer";
 import { RecordingViewer } from "./recording-viewer";
 
 const styles = (theme: Theme) => createStyles({
@@ -37,41 +38,9 @@ const initState: RecordingViewState = {
 // TODO - This data-passing pattern may need to be rethought if/when there's a standalone viewer
 function _RecordingView({
     classes, uiTweaks, chunkService, previewService, annotationService, regionService, recordingService, recordingId
-}: RecordingViewProps) {
+}: Props) {
 
-    const [state, setState] = useState(initState);
-    const sortByTimestamp = sortAsc(pluck("timestamp"));
-    const sortSnapshot = sortAsc<SnapshotChunk>(snap => snap.metadata.startTime);
-
-    const processChunk = (chunk: RecordingChunk, recording: Recording) => {
-        setState(oldState => {
-            const snapshots = oldState.snapshots.concat(chunk.type === "snapshot" ? chunk : [])
-                .sort(sortSnapshot);
-            const changes = oldState.changes.concat(chunk.changes)
-                .sort(sortByTimestamp);
-            const inputs = mergeGroups(oldState.inputs, convertMapToGroups(chunk.inputs), sortByTimestamp);
-
-            const retrievedChunks = oldState.retrievedChunks.concat(chunk._id);
-            const bufferPos = calcBuffer(retrievedChunks, recording);
-
-            const allEvents = eventsBetween(changes, inputs, 0, bufferPos);
-            previewService.registerUpdate({
-                changes,
-                snapshots
-            });
-
-            return {
-                ...oldState,
-                snapshots,
-                changes,
-                inputs,
-                annotations: annotationService.annotate(allEvents),
-                retrievedChunks,
-                bufferPos,
-                regions: regionService.splitRegions(allEvents, bufferPos)
-            };
-        });
-    };
+    const [state, dispatch] = useReducer(recordingViewReducer, initState);
 
     const updateBuffer = async (time = 0) => {
         if (state.recording !== null) {
@@ -80,26 +49,37 @@ function _RecordingView({
                     && !state.requestedChunks.includes(chunk._id)
             );
 
-            setState(old => ({
-                ...old,
-                requestedChunks: old.requestedChunks.concat(chunksToGrab.map(chunk => chunk._id))
-            }));
+            dispatch({ type: "fetchChunks", chunks: chunksToGrab });
 
             chunksToGrab.forEach(async chunkShell => {
                 const chunk = await chunkService.fetchChunk(chunkShell._id);
-                processChunk(chunk, state.recording!);
+                dispatch({ type: "receiveChunk", chunk });
             });
         }
     };
 
     useEffect(() => {
         updateBuffer();
-    });
+    }, [ state.recording ]);
 
     useEffect(() => {
         recordingService.fetchRecordingData(recordingId)
-            .then(recording => setState(old => ({ ...old, recording })));
+            .then(recording => dispatch({ type: "receiveRecording", recording }));
     }, [recordingId]);
+
+    useEffect(() => {
+        previewService.registerUpdate({
+            changes: state.changes,
+            snapshots: state.snapshots
+        });
+    }, [ state.changes, state.snapshots ]);
+
+    useEffect(() => {
+        const allEvents = eventsBetween(state.changes, state.inputs, 0, state.bufferPos);
+        const annotations = annotationService.annotate(allEvents);
+        const regions = regionService.splitRegions(allEvents, state.bufferPos);
+        dispatch({ type: "annotateRecording", annotations, regions });
+    }, [ state.bufferPos ]);
 
     return <div className={ classes.root }>
         { state.recording === null
@@ -121,20 +101,6 @@ function _RecordingView({
 
 }
 
-function calcBuffer(retrievedChunks: string[], recording: Recording) {
-    const chunks = recording.chunks;
-    const minStopNotFetched = Math.min(...chunks
-        .filter(chunk => !retrievedChunks.includes(chunk._id))
-        .map(chunk => chunk.metadata.stopTime)
-    );
-    const maxReady = Math.max(...chunks
-        .filter(chunk => retrievedChunks.includes(chunk._id))
-        .map(chunk => chunk.metadata.stopTime)
-        .filter(start => start < minStopNotFetched)
-    );
-    return maxReady;
-}
-
 function calcEnd(recording: Recording) {
     return Math.max(
         ...recording.chunks.map(chunk => chunk.metadata.stopTime)
@@ -154,7 +120,7 @@ export const RecordingView = withStyles(styles)(
     )
 );
 
-interface RecordingViewProps extends WithStyles<typeof styles> {
+interface Props extends WithStyles<typeof styles> {
     recordingId: string;
     chunkService: ChunkApiService;
     annotationService: AnnotationService;
@@ -164,7 +130,7 @@ interface RecordingViewProps extends WithStyles<typeof styles> {
     uiTweaks: TweakableConfigs;
 }
 
-interface RecordingViewState {
+export interface RecordingViewState {
     recording: Recording | null;
     snapshots: SnapshotChunk[];
     changes: RecordedMutationGroup[];
@@ -176,3 +142,8 @@ interface RecordingViewState {
     requestedChunks: string[];
     retrievedChunks: string[];
 }
+
+export type RecordingViewAction = { type: "receiveChunk", chunk: RecordingChunk } |
+    { type: "receiveRecording", recording: Recording } |
+    { type: "fetchChunks", chunks: RecordingChunk[] } |
+    { type: "annotateRecording", annotations: RecordingAnnotation[], regions: Region[] };

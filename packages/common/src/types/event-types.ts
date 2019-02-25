@@ -3,7 +3,8 @@ import { MapTo } from "../utils/type-utils";
 export type RecordedKeyEvent = RecordedKeyUp | RecordedKeyDown;
 
 export type RecordedUserInput = RecordedMouseEvent | RecordedScrollEvent | RecordedInputChangeEvent
-                                 | RecordedFocusEvent | RecordedResize | RecordedKeyEvent | RecordedUnloadEvent;
+                                 | RecordedFocusEvent | RecordedResize | RecordedKeyEvent | RecordedUnloadEvent
+                                 | RecordedNavigationEvent;
 
 export interface BaseUserInput {
     timestamp: number;

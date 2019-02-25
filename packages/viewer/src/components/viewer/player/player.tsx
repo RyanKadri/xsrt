@@ -1,176 +1,54 @@
-import { createStyles, Theme, Typography, withStyles, WithStyles } from "@material-ui/core";
-import { between, RecordedMutationGroup, RecordedResize, RecordingMetadata, SnapshotChunk } from "@xsrt/common";
-import { withDependencies } from "@xsrt/common-frontend";
-import c from "classnames";
-import React from "react";
+import { RecordedMutationGroup, RecordingMetadata, SnapshotChunk } from "@xsrt/common";
+import React, { useEffect, useRef } from "react";
 import { PlaybackManager } from "../../../playback/playback-manager";
-import { eventsBetween, UserInputGroup } from "../../utils/recording-data-utils";
+import { UserInputGroup } from "../../utils/recording-data-utils";
+import { FrameViewport } from "./resizeable-frame";
 
-const styles = (_: Theme) => createStyles({
-    horizExpand: {
-        width: "100%",
-        height: "100%",
-        flexGrow: 1,
-        border: "none"
-    },
+export function RecordingPlayer(props: Props) {
 
-    playerContainer: {
-        display: "flex",
-        position: "absolute",
-        overflow: "hidden",
-    },
+    const iframe = useRef<HTMLIFrameElement>(null);
 
-    inputGuard: {
-        width: "100%",
-        height: "100%",
-        position: "absolute",
-        zIndex: 10
-    },
+    const lastFrameInfo = useRef<LastFrameInfo>({ wasPlaying: false, time: 0 });
+    const { isPlaying, lockUI, error, snapshots, changes, inputs, currentTime } = props;
 
-    errorOverlay: {
-        width: "100%",
-        height: "100%",
-        position: "absolute",
-        backgroundColor: "rgba(0,0,0,0.5)",
-        color: "white",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: 99,
-    },
+    useEffect(() => {
+        if (!iframe.current || !iframe.current.contentDocument) {
+            return;
+        }
 
-    player: {
-        transformOrigin: "center",
-        top: "50%",
-        left: "50%",
-        position: "absolute",
-        backgroundColor: "white"
-    }
-});
+        const lastFrame = lastFrameInfo.current;
 
-class _RecordingPlayer extends React.PureComponent<RecordingPlayerProps, PlayerState> {
-
-    private iframe: React.RefObject<HTMLIFrameElement>;
-    private viewPort: React.RefObject<HTMLDivElement>;
-
-    constructor(props: RecordingPlayerProps) {
-        super(props);
-        const { viewportHeight, viewportWidth } = props.snapshots[0].snapshot.documentMetadata;
-        this.state = { scale: 0, height: viewportHeight, width: viewportWidth };
-        this.iframe = React.createRef();
-        this.viewPort = React.createRef();
-    }
-
-    render() {
-        const { classes } = this.props;
-        return <div className={ c(classes.horizExpand, classes.playerContainer) } ref={this.viewPort}>
-            { (this.props.isPlaying || this.props.lockUI) ? <div className={ classes.inputGuard } /> : null }
-            { this.props.error ? <div className={ classes.errorOverlay } >
-                <Typography variant="h2" color="inherit">{ this.props.error }</Typography>
-            </div> : null}
-            <iframe className={ c(classes.player, classes.horizExpand) }
-                    sandbox="allow-same-origin"
-                    style={ this.iframeDimensions() }
-                    ref={this.iframe} src="about:blank" ></iframe>
-        </div>;
-    }
-
-    async componentDidMount() {
-        this.initializeViewer();
-    }
-
-    componentDidUpdate(prevProps: RecordingPlayerProps) {
-        const prevTime = prevProps.currentTime <= this.props.currentTime
-            ? prevProps.currentTime
-            : 0;
-
-        const snapshots = this.props.snapshots
-            .filter(snapshot =>
-                between(snapshot.metadata.startTime, prevTime, this.props.currentTime)
-            );
-
-        const lastSnapshot = snapshots[snapshots.length - 1];
-
-        const adjustedPrevTime = lastSnapshot
-            ? lastSnapshot.metadata.startTime
-            : prevTime;
-
-        const { inputs, changes } = eventsBetween(
-            this.props.changes, this.props.inputs, adjustedPrevTime, this.props.currentTime
+        props.playbackManager.playUpdates(
+            snapshots, changes, inputs, lastFrame.time, currentTime, iframe.current.contentDocument
         );
 
-        if (this.props.currentTime < prevProps.currentTime ||
-            (lastSnapshot !== undefined && lastSnapshot !== this.state.currentSnapshot)
-        ) {
-            this.setState({ currentSnapshot: lastSnapshot });
-            this.initializeIframe(lastSnapshot);
+        if (lastFrame.wasPlaying && !props.isPlaying) {
+            props.playbackManager.togglePause(true);
+        } else if (!lastFrame.wasPlaying && props.isPlaying) {
+            props.playbackManager.togglePause(false);
         }
 
-        this.props.playbackManager.play(changes, inputs);
+        lastFrameInfo.current = { time: props.currentTime, wasPlaying: props.isPlaying };
+    }, [ props.currentTime ]);
 
-        this.checkPlayerResize(inputs);
-        this.checkPauseAnimations(prevProps.isPlaying);
-    }
-
-    private checkPlayerResize(inputGroups: UserInputGroup[]) {
-        const resizeGroup = inputGroups.find(group => group.name === "resize");
-        if (resizeGroup && resizeGroup.elements.length > 0) {
-            const lastResize = resizeGroup.elements[resizeGroup.elements.length - 1] as RecordedResize;
-            this.setState({
-                height: lastResize.height,
-                width: lastResize.width
-            }, this.calcSize);
-        }
-    }
-
-    private checkPauseAnimations(wasPlaying: boolean) {
-        if (wasPlaying && !this.props.isPlaying) {
-            this.props.playbackManager.togglePause(true);
-        } else if (!wasPlaying && this.props.isPlaying) {
-            this.props.playbackManager.togglePause(false);
-        }
-    }
-
-    private initializeIframe(snapshot: SnapshotChunk) {
-        const currDocument = this.iframe.current && this.iframe.current.contentDocument;
-        if (currDocument) {
-            this.props.playbackManager.initialize(currDocument, snapshot);
-        } else {
-            throw new Error("Could not initialize player");
-        }
-    }
-
-    private initializeViewer() {
-        window.addEventListener("resize", this.calcSize);
-        this.calcSize();
-    }
-
-    private calcSize = () => {
-        if (this.viewPort.current) {
-            const bb = this.viewPort.current.getBoundingClientRect();
-            const horizScale = bb.width / this.state.width;
-            const vertScale = bb.height / this.state.height;
-            this.setState({
-                scale: Math.min(horizScale, vertScale)
-            });
-        }
-    }
-
-    private iframeDimensions(): React.CSSProperties {
-        return {
-            height: this.state.height,
-            width: this.state.width,
-            transform: `translate(-50%, -50%) scale(${ this.state.scale })`
-        };
-    }
+    return (
+        <FrameViewport
+            blockInputs={(isPlaying || lockUI)}
+            error={error}
+            frameRef={iframe}
+            inputs={props.inputs}
+            snapshots={props.snapshots}
+            time={props.currentTime} />
+    );
 
 }
 
-export const RecordingPlayer = withStyles(styles)(
-    withDependencies(_RecordingPlayer, { playbackManager: PlaybackManager })
-);
+interface LastFrameInfo {
+    time: number;
+    wasPlaying: boolean;
+}
 
-export interface RecordingPlayerProps extends WithStyles<typeof styles> {
+interface Props {
     recordingMetadata: RecordingMetadata;
     snapshots: SnapshotChunk[];
     changes: RecordedMutationGroup[];
@@ -180,11 +58,4 @@ export interface RecordingPlayerProps extends WithStyles<typeof styles> {
     error?: string;
     playbackManager: PlaybackManager;
     lockUI: boolean;
-}
-
-export interface PlayerState {
-    currentSnapshot?: SnapshotChunk;
-    height: number;
-    width: number;
-    scale: number;
 }
