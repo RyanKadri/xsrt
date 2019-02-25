@@ -1,7 +1,8 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "./",
+    "baseUrl": ".",
+    "rootDir": "../../",
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": true,
@@ -11,13 +12,18 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "skipLibCheck": true,
-    "target": "es5",
+    "target": "es2018",
+    "paths": {
+      "@xsrt/common": ["../../packages/common/src"],
+      "@xsrt/recorder": ["../../packages/recorder/src"]
+    },
     "typeRoots": [
       "node_modules/@types"
     ],
     "lib": [
       "es2018",
-      "dom"
+      "dom",
+      "esnext.array"
     ]
   }
 }
