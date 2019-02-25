@@ -2,6 +2,7 @@ import { constant, initializeApp, LocalStorageService, ScraperConfig, ScraperCon
 import { RecorderApiService } from "./api/recorder-api-service";
 import { RecordingStateService } from "./api/recording-state-service";
 import { diConfig } from "./di.recorder";
+import { PatchService } from "./record/patch/patch-service";
 import { RecorderOrchestrator } from "./recorder-orchestrator";
 
 export class RecorderInitializer {
@@ -9,6 +10,8 @@ export class RecorderInitializer {
     private recordingState = new RecordingStateService(new LocalStorageService(localStorage));
     private apiService?: RecorderApiService;
     private orchestrator?: RecorderOrchestrator;
+    private patchService?: PatchService;
+    private _isRecording: boolean = false;
 
     checkAutoStart(): boolean {
         const activeConfig = this.recordingState.fetchActiveConfig();
@@ -32,6 +35,7 @@ export class RecorderInitializer {
         this.orchestrator = injector.inject(RecorderOrchestrator);
         this.recordingState = injector.inject(RecordingStateService);
         this.apiService = injector.inject(RecorderApiService);
+        this.patchService = injector.inject(PatchService);
 
         const pendingRecordChunk = this.recordingState.fetchPendingChunk();
         if (pendingRecordChunk) {
@@ -42,11 +46,25 @@ export class RecorderInitializer {
         }
 
         this.recordingState.storeConfig(config);
-        this.orchestrator.initialize();
+        this.patchService.patchGlobals();
+    }
+
+    isRecording() {
+        return this._isRecording;
+    }
+
+    start() {
+        if (!this.orchestrator) {
+            throw new Error("You must initialize the recorder before trying to start recording");
+        } else {
+            this._isRecording = true;
+            this.orchestrator.initialize();
+        }
     }
 
     stop = async () => {
         if (this.orchestrator) {
+            this._isRecording = false;
             await this.orchestrator.onStop(false);
             this.recordingState.closeRecording();
         } else {

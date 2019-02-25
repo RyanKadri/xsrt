@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import { RecordingController, startRecording } from '@xsrt/recorder';
+import { Component, Inject } from '@angular/core';
+import { RecordingController } from '@xsrt/recorder';
+import { XSRTToken } from '../xsrt';
 
 @Component({
   selector: 'app-root',
@@ -8,28 +9,24 @@ import { RecordingController, startRecording } from '@xsrt/recorder';
 })
 export class AppComponent {
 
-  private controller: RecordingController;
-  private recording = false;
+  constructor(
+    @Inject(XSRTToken) private recordingController: RecordingController
+  ) { }
+
+  get recording() {
+    return this.recordingController.isRecording();
+  }
+
   navItems = [
     { display: 'TODOs', link: ['/todos'] },
     { display: 'Home', link: ['/home'] }
   ];
 
   startRecording() {
-    if (this.controller === undefined) {
-      this.controller = startRecording({
-        backendUrl: 'http://localhost:3001',
-        debugMode: true,
-        site: '-Ii56T2uN'
-      });
-      this.recording = true;
-    }
+    this.recordingController.start();
   }
 
   stopRecording() {
-    if (this.controller !== undefined) {
-      this.controller.stop();
-      this.recording = false;
-    }
+    this.recordingController.stop();
   }
 }

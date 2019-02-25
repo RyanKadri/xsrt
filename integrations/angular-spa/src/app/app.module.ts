@@ -1,15 +1,14 @@
-import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
+import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { TopNavComponent } from './top-nav/top-nav.component';
-import { MaterialModule } from './material.module';
-import { TodoModule } from './todo/todo.module';
 import { HomeModule } from './home/home.module';
-import { ReactiveFormsModule } from '@angular/forms';
-import { MessagesModule } from "./messages/messages.module";
+import { MaterialModule } from './material.module';
+import { MessagesModule } from './messages/messages.module';
+import { TodoModule } from './todo/todo.module';
+import { TopNavComponent } from './top-nav/top-nav.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +25,8 @@ import { MessagesModule } from "./messages/messages.module";
     MessagesModule,
     ReactiveFormsModule
   ],
-  providers: [],
+  providers: [
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
