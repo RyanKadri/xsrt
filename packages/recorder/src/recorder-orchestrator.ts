@@ -58,7 +58,7 @@ export class RecorderOrchestrator {
             // Need to think about data constraints and access to underlying dom elements (for call reduction)
             this.reportErr(new Error(`Requested data was not ready by the time the page was closed`));
         }
-        const leftovers = await this.recorder.dumpDiff(isUnloading);
+        const leftovers = await this.recorder.dumpDiff(true);
 
         if (!isUnloading) {
             const snapshot = await this.initSnapshotTask!;

@@ -6,6 +6,7 @@
     "license": "ISC",
     "private": true,
     "devDependencies": {
+        "@types/amqplib": "^0.5.10",
         "@types/puppeteer": "^1.11.3"
     },
     "dependencies": {
@@ -16,7 +17,8 @@
         "cors": "^2.8.5",
         "express": "^4.16.4",
         "inversify": "^5.0.1",
-        "puppeteer": "^1.12.0"
+        "puppeteer": "^1.12.0",
+        "amqplib": "^0.5.3"
     },
     "gitHead": "179c318fa443265abd6af14cb92955b78681ab9c"
 }

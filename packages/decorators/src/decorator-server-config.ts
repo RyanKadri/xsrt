@@ -1,4 +1,4 @@
-import { ServerConfig, ServerInitializer } from "@xsrt/common-backend";
+import { NeedsInitialization, ServerConfig } from "@xsrt/common-backend";
 import bodyParser from "body-parser";
 import cors from "cors";
 import { Express } from "express";
@@ -10,10 +10,11 @@ export class DecoratorConfig implements ServerConfig {
     readonly mongoUrl = `${process.env.MONGO_URL}`;
     readonly screenshotDir = `${process.env.STORAGE_LOCATION}/screenshots`;
     readonly recordingHost = `${process.env.API_SERVER}`;
+    readonly rabbitHost = process.env.RABBIT_HOST || "localhost";
 }
 
 @injectable()
-export class ExpressInitializer implements ServerInitializer {
+export class DecoratorExpressInitializer implements NeedsInitialization {
 
     async initialize(app: Express) {
         app.use(bodyParser.urlencoded({ extended: false }));

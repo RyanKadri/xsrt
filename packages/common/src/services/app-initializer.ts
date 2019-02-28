@@ -1,5 +1,5 @@
-import "reflect-metadata";
 import { Container, interfaces } from "inversify";
+import "reflect-metadata";
 import { EndpointDefinition } from "../endpoint/types";
 import { ApiCreationService } from "../server/create-api";
 import { Interface } from "../utils/type-utils";
@@ -31,7 +31,18 @@ function bindInitializer(initializer: DIInitializer, container: Interface<Contai
             const item = initializer.creator(...dependencies);
             return container.bind(initializer.token).toConstantValue(item);
         case "group":
-            return initializer.members.forEach(member => container.bind(initializer.token).to(member));
+            initializer.members.forEach(member => {
+                container.bind(initializer.token)
+                         .to(member)
+                         .inSingletonScope();
+            });
+            // TODO - This is a gross workaround because inversify is re-creating these singletons
+            container.getAll(initializer.token).forEach((res, i) => {
+                    container
+                        .bind(initializer.members[i])
+                        .toConstantValue(res);
+            });
+            return;
         case "implementation":
             return container.bind(initializer.token).to(initializer.implementation);
     }

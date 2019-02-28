@@ -1,4 +1,4 @@
-import { ServerConfig, ServerInitializer } from "@xsrt/common-backend";
+import { NeedsInitialization, ServerConfig } from "@xsrt/common-backend";
 import bodyParser from "body-parser";
 import cors from "cors";
 import { Express } from "express";
@@ -10,11 +10,12 @@ export class ApiServerConfig implements ServerConfig {
     readonly mongoUrl = `${process.env.MONGO_URL}`;
     readonly decorateUrl = `${process.env.DECORATOR_URL}`;
     readonly assetDir = `${process.env.STORAGE_LOCATION}/assets`;
+    readonly rabbitHost = process.env.RABBIT_HOST || "localhost";
 }
 
 // TODO - Refactoring this out to a common module will simplify dependencies and reduce duplication
 @injectable()
-export class ApiServerInitializer implements ServerInitializer {
+export class ApiServerInitializer implements NeedsInitialization {
     async initialize(app: Express) {
         app.use(bodyParser.urlencoded({ extended: false }));
         app.use(bodyParser.json({ limit: "10mb", inflate: true })); // TODO - Let's think about security...

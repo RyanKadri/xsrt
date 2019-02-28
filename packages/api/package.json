@@ -13,10 +13,14 @@
         "cors": "^2.8.5",
         "express": "^4.16.4",
         "inversify": "^5.0.1",
-        "ua-parser-js": "^0.7.19"
+        "ua-parser-js": "^0.7.19",
+        "amqplib": "^0.5.3"
     },
     "files": [
         "lib"
     ],
-    "gitHead": "179c318fa443265abd6af14cb92955b78681ab9c"
+    "gitHead": "179c318fa443265abd6af14cb92955b78681ab9c",
+    "devDependencies": {
+        "@types/amqplib": "^0.5.10"
+    }
 }

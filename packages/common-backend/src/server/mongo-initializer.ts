@@ -1,13 +1,13 @@
 import { LoggingService } from "@xsrt/common";
 import { inject, injectable } from "inversify";
 import { connect } from "mongoose";
-import { IServerConfig, ServerConfig, ServerInitializer } from "./express-server";
+import { IServerConfig, NeedsInitialization, ServerConfig } from "./express-server";
 
 const retryDelay = 5000;
 const maxRetries = 3;
 
 @injectable()
-export class MongoInitializer implements ServerInitializer {
+export class MongoInitializer implements NeedsInitialization {
 
     private numRetries = 0;
     constructor(
@@ -19,7 +19,7 @@ export class MongoInitializer implements ServerInitializer {
         await this.connectWithRetry();
     }
 
-    connectWithRetry(): Promise<void> {
+    private connectWithRetry(): Promise<void> {
         this.logger.info(`Mongo URL: "${this.config.mongoUrl}"`);
         return connect(this.config.mongoUrl, { useNewUrlParser: true,  })
             .then(() => {

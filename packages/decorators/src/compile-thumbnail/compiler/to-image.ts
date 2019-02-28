@@ -1,9 +1,9 @@
+import { ViewportSize } from "@xsrt/common";
 import { mkdir as mkdirFS } from "fs";
 import { injectable } from "inversify";
 import { Browser, launch, LaunchOptions } from "puppeteer";
 import { promisify } from "util";
 import { DecoratorConfig } from "../../decorator-server-config";
-import { ViewportSize } from "@xsrt/common";
 
 const mkdir = promisify(mkdirFS);
 
@@ -50,7 +50,6 @@ export class ThumbnailCompiler {
 
             const targetViewport = await page.evaluate(`window['targetViewport']`) as ViewportSize;
             await page.setViewport({ height: targetViewport.height, width: targetViewport.width });
-
             try {
                 await mkdir(this.decoratorConfig.screenshotDir);
             } catch (e) {

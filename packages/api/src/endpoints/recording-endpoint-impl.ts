@@ -1,10 +1,9 @@
 import { LoggingService, Recording, recordingEndpoint, SiteTarget, UADetails, Without } from "@xsrt/common";
-import { errorInvalidCommand, errorNotFound, IServerConfig, RecordingSchema, RouteImplementation, Target } from "@xsrt/common-backend";
-import Axios from "axios";
-import { inject, injectable } from "inversify";
+import { errorInvalidCommand, errorNotFound, RecordingSchema, RouteImplementation, Target } from "@xsrt/common-backend";
+import { injectable } from "inversify";
 import * as parser from "ua-parser-js";
 import { errorNotAuthorized } from "../../../common-backend/src/server/request-handler";
-import { ApiServerConfig } from "../api-server-conf";
+import { DecoratorQueueService } from "../services/decorator-queue-service";
 
 const defaultNumRecordings = 15;
 type RecordingEndpointType = RouteImplementation<typeof recordingEndpoint>;
@@ -14,7 +13,7 @@ export class RecordingEndpoint implements RecordingEndpointType {
 
     constructor(
         private logger: LoggingService,
-        @inject(IServerConfig) private config: ApiServerConfig
+        private queueService: DecoratorQueueService
     ) {}
 
     fetchRecording: RecordingEndpointType["fetchRecording"] = async ({ recordingId }) => {
@@ -46,8 +45,8 @@ export class RecordingEndpoint implements RecordingEndpointType {
     }
     patchRecording: RecordingEndpointType["patchRecording"] = async ({ patchData, recordingId }) => {
         if (patchData.finalized && patchData.metadata) {
-            Axios.post(`${this.config.decorateUrl}/api/thumbnails/${recordingId}`, { })
-                .catch(e => this.logger.error(e));
+            this.queueService.postRecording(recordingId)
+                .catch((err: any) => this.logger.error(err));
 
             const recording = await RecordingSchema.findByIdAndUpdate(recordingId, { $set: {
                 finalized: true,
