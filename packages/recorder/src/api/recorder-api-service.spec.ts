@@ -1,5 +1,4 @@
-import { recordingEndpoint } from "@xsrt/common";
-import { EndpointApi } from "@xsrt/common";
+import { EndpointApi, recordingEndpoint } from "@xsrt/common";
 import { RecorderApiService } from './recorder-api-service';
 import { RecordingStateService } from "./recording-state-service";
 
@@ -27,9 +26,6 @@ describe(RecorderApiService.name, () => {
         const recordingApi = jasmine.createSpyObj<EndpointApi<typeof recordingEndpoint>>("RecordingApi", {
             createRecording: Promise.resolve({_id: "sdf" })
         });
-        const location = jasmine.createSpyObj<Location>("Location", {
-            pathname: ""
-        })
         const service = new RecorderApiService(recordingState, recordingApi, noopMock, { now() { return 10; } });
         const res = await service.startRecording("whatever");
         expect(res._id).toBe("sdf");

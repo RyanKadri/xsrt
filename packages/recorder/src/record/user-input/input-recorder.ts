@@ -52,7 +52,7 @@ export class CompleteInputRecorder {
     private listenerIds: number[] = [];
 
     constructor(
-        @multiInject(IUserInputRecorder) recorders: UserInputRecorder<Event, RecordedUserInput>[],
+        @multiInject(IUserInputRecorder) private recorders: UserInputRecorder<Event, RecordedUserInput>[],
         @inject(GlobalEventService) private globalEventService: Interface<GlobalEventService>,
         @inject(EventCallbackCreator) private eventCallbackCreator: Interface<EventCallbackCreator>
     ) {
@@ -64,11 +64,13 @@ export class CompleteInputRecorder {
     }
 
     start() {
-        Object.entries(this.handlers).forEach(([groupKey, recorder]) => {
-            this.events[groupKey] = [];
+        this.recorders.forEach(recorder => {
             if (recorder.start) {
                 recorder.start();
             }
+        });
+        Object.entries(this.handlers).forEach(([groupKey, recorder]) => {
+            this.events[groupKey] = [];
             this.createEventHandler(groupKey, recorder.sources.find(source => source.type === groupKey)!);
             this.handlers[groupKey] = recorder;
         });

@@ -1,5 +1,5 @@
-import { RecordingDomManager } from "../../traverse/traverse-dom";
 import { ScrapedHtmlElement } from "@xsrt/common";
+import { RecordingDomManager } from "../../traverse/traverse-dom";
 import { TimeManager } from "../../utils/time-manager";
 import { GlobalEventService } from "./global-event-service";
 import { CompleteInputRecorder, EventCallbackCreator, UserInputRecorder } from "./input-recorder";
@@ -7,8 +7,8 @@ import { CompleteInputRecorder, EventCallbackCreator, UserInputRecorder } from "
 describe(CompleteInputRecorder.name, () => {
     it('Calls the provided start method for each listener if it exists', () => {
         const listeners: UserInputRecorder[] = [
-            jasmine.createSpyObj<UserInputRecorder>("withStart", { start: undefined }),
-            jasmine.createSpyObj<UserInputRecorder>("withoutStart", { handle: undefined })
+            { sources: [], ...jasmine.createSpyObj<UserInputRecorder>("withStart", { start: undefined }) },
+            { sources: [], ...jasmine.createSpyObj<UserInputRecorder>("withoutStart", { handle: undefined }) }
         ];
         const eventService = jasmine.createSpyObj<GlobalEventService>("EventService", { addEventListener: undefined });
         const callbackCreator = jasmine.createSpyObj<EventCallbackCreator>("CallbackCreator", { createEventCb: undefined });

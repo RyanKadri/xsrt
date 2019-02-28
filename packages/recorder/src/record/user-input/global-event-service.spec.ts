@@ -20,7 +20,7 @@ describe(GlobalEventService.name, () => {
 
     it('Adds event listeners to the appropriate event source', () => {
         const cb = noop;
-        service.addEventListener("change", cb, { capture: true });
+        service.addEventListener("change", cb, { target: "document", capture: true });
         expect(docSpy.addEventListener).toHaveBeenCalledWith("change", cb, { capture:  true });
 
         service.addEventListener("input", cb, { capture: false, target: 'window' });
@@ -29,8 +29,8 @@ describe(GlobalEventService.name, () => {
 
     it('Can remove attached event listeners based on an id returned by addEventListener', () => {
         const cb = noop;
-        service.addEventListener("whatever", cb, { capture: true });
-        const id = service.addEventListener("totes", cb, { capture: true });
+        service.addEventListener("whatever", cb, { target: "document", capture: true });
+        const id = service.addEventListener("totes", cb, { target: "document", capture: true });
         service.removeEventListener(id);
         expect(docSpy.removeEventListener).toHaveBeenCalledWith("totes", cb, { capture: true })
     })

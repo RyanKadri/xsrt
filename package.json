@@ -23,9 +23,9 @@
     "publish:all": "lerna publish --skip-git --yes from-git",
     "build:tools": "webpack --mode development --config-name bootstrap-scripts",
     "build:extension": "webpack --config-name compile-extension",
-    "test": "node --require ./spec/support/init.js ./node_modules/.bin/jasmine --config=jasmine.json",
+    "test": "node ./spec/support/launch.js",
     "test:coverage": "nyc ./node_modules/.bin/jasmine --config=jasmine.json",
-    "test:watch": "nodemon -w packages --ignore '*/node_modules/**/*' -e ts,tsx --exec \"node --require ./spec/support/init.js ./node_modules/.bin/jasmine --config=jasmine.json\"",
+    "test:watch": "nodemon -w packages --ignore '*/node_modules/**/*' -e ts,tsx --exec \"node ./spec/support/launch.js\"",
     "lint": "tslint --project tsconfig.spec.json",
     "docker:dev": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml up",
     "docker": "docker-compose up"

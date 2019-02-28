@@ -26,26 +26,21 @@
             "type": "node",
             "request": "launch",
             "name": "Test All",
-            "program": "${workspaceFolder}/node_modules/.bin/jasmine",
+            "program": "${workspaceFolder}/spec/support/launch.js",
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen",
-            "args": ["--config=jasmine.json"],
-            "runtimeArgs": ["--require", "./spec/support/init.js"],
-            "sourceMaps": true
+            "sourceMaps": true,
         },
         {
             "type": "node",
             "request": "launch",
             "name": "Test Current File",
-            "program": "${workspaceFolder}/node_modules/.bin/jasmine",
+            "program": "${workspaceFolder}/spec/support/launch.js",
             "args": [
                 "${relativeFile}",
-                "--config=jasmine.json"
             ],
-            "runtimeArgs": ["--require", "./spec/support/init.js"],
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen",
-            "preLaunchTask": "tsc: watch - tsconfig.spec.json",
             "sourceMaps": true
         },
         {

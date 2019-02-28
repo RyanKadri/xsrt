@@ -4,24 +4,25 @@ import { MutationOptimizer } from "./mutation-optimizer";
 describe('MutationOptimzer', () => {
 
     const optimizer = new MutationOptimizer();
+    const attrType: "attribute" = "attribute";
 
     describe('optimizeAttributeMutations', () => {
         it('Consolidates changes to the same attribute on the target', () => {
             const mutations = optimizer.optimizeAttributeMutations([
-                { type: 'attribute', target: 1, name: 'thing', val: 'abc'}, //This should get removed
-                { type: 'attribute', target: 1, name: 'thing', val: 'def'},
-                { type: 'attribute', target: 1, name: 'thing2', val: '123'},
-                { type: 'attribute', target: 2, name: 'thing', val: 'xyz'}
+                { type: attrType, target: 1, attribute: { name: 'thing', value: 'abc' } }, //This should get removed
+                { type: attrType, target: 1, attribute: { name: 'thing', value: 'def'} },
+                { type: attrType, target: 1, attribute: { name: 'thing2', value: '123'} },
+                { type: attrType, target: 2, attribute: { name: 'thing', value: 'xyz'} }
             ], new Set())
             expect(mutations.length).toEqual(3);
-            expect((mutations[0] as AttributeMutation).val === 'def');
+            expect((mutations[0] as AttributeMutation).attribute.value === 'def');
         });
 
         it('Excludes attribute changes that will have been synchronously removed in this frame', () => {
             const mutations = optimizer.optimizeAttributeMutations([
-                { type: 'attribute', target: 1, name: 'thing', val: 'abc'},
-                { type: 'attribute', target: 2, name: 'thing', val: 'abc'},
-                { type: 'attribute', target: 3, name: 'thing', val: 'abc'},
+                { type: attrType, target: 1, attribute: { name: 'thing', value: 'abc'} },
+                { type: attrType, target: 2, attribute: { name: 'thing', value: 'abc'} },
+                { type: attrType, target: 3, attribute: { name: 'thing', value: 'abc'} },
             ], new Set([2,3]));
             expect(mutations.length).toEqual(1);
             expect(mutations[0].target).toEqual(1);

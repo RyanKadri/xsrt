@@ -5,7 +5,7 @@ describe(RequestHandler.name, () => {
     it('Returns a 500 error if the underlying implementation throws', async (done) => {
         const service = new RequestHandler();
         const response = mockResponse();
-        await service.handle({ }, () => { throw new Error("Bad!")}, mockRequest(), response);
+        await service.handle({ } as any, () => { throw new Error("Bad!")}, mockRequest(), response);
         expect(response.status).toHaveBeenCalledWith(500);
         done();
     });

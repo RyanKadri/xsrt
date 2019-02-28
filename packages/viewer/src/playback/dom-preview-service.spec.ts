@@ -4,15 +4,16 @@ import { DomPreviewService, HtmlNodePreview } from './dom-preview-service';
 describe(DomPreviewService.name, () => {
 
     let previewService: DomPreviewService;
-
+    const attrType: "attribute" = "attribute";
     beforeEach(() => {
         previewService = new DomPreviewService();
-    })
+    });
+
     it("Applies attribute changes to the starting state of an element to calculate a future state", () => {
         previewService.registerUpdate({ snapshots: [baseSnapshot() as any], changes: [
             { timestamp: 15, mutations: [
-                { type: "attribute", target: 2, name: "bar", val: "bcd" },
-                { type: "attribute", target: 1, name: "baz", val: "cde" },
+                { type: attrType, target: 2, attribute: { name: "bar", value: "bcd" } },
+                { type: attrType, target: 1, attribute: { name: "baz", value: "cde" } },
             ]}
         ]});
         const preview = previewService.previewNode(2, 16) as HtmlNodePreview;
@@ -38,7 +39,7 @@ describe(DomPreviewService.name, () => {
                 { type: "children" as 'children', target: 1, additions: [{
                     before: null, data: { type: 'element', id: 4, tag: 'added', attributes: [], children: [] }
                 }] },
-                { type: "attribute", target: 4, name: 'new', val: "attr" }
+                { type: attrType, target: 4, attribute: { name: 'new', value: "attr" } }
             ]}
         ]});
         const preview = previewService.previewNode(4, 16);

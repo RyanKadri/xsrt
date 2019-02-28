@@ -1,6 +1,5 @@
-import { LoggingService } from "@xsrt/common";
+import { LoggingService, ScrapedHtmlElement } from "@xsrt/common";
 import { RecordingDomManager } from "../../traverse/traverse-dom";
-import { ScrapedHtmlElement } from "@xsrt/common";
 import { MutationTransformer } from './mutation-transformer';
 
 describe(MutationTransformer.name, () => {
@@ -30,8 +29,10 @@ describe(MutationTransformer.name, () => {
         expect(domEl.getAttribute).toHaveBeenCalledWith("attr-name");
         expect(transformed).toEqual([{
             type: "attribute",
-            name: "attr-name",
-            val: "attr-val",
+            attribute: {
+                name: "attr-name",
+                value: "attr-val",
+            },
             target: 321
         }])
 
