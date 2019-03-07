@@ -1,6 +1,6 @@
 export const allowedRecordingTableColumns: RecordingColumn[] = [
     { key: "date", header: "Date" },
-    { key: "duration", header: "Date" },
+    { key: "duration", header: "Duration" },
     { key: "ua", header: "User Agent" },
     { key: "preview", header: "Preview" }
 ];

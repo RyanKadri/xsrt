@@ -13,8 +13,7 @@
         "cors": "^2.8.5",
         "express": "^4.16.4",
         "inversify": "^5.0.1",
-        "ua-parser-js": "^0.7.19",
-        "amqplib": "^0.5.3"
+        "ua-parser-js": "^0.7.19"
     },
     "files": [
         "lib"
