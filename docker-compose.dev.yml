@@ -65,7 +65,7 @@ services:
             dockerfile: dev.Dockerfile
         command: npx nodemon --delay 1000ms --inspect=0.0.0.0:9230 -w ./dist/backend ./dist/backend/decorator-server.bundle.js
     rabbit:
-        image: rabbitmq:3.7.12
+        image: rabbitmq:3.7.12-management
         hostname: rabbit
         expose:
             - 5672
