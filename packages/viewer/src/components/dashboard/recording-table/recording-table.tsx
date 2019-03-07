@@ -23,6 +23,8 @@ function reducer(selected: RecordingOverview[], action: Action) {
                 : selected.concat(action.recording);
         case "selectAll":
             return selected.length < action.recordings.length ? action.recordings : [];
+        case "deselectAll":
+            return [];
     }
 }
 
@@ -42,10 +44,15 @@ const _RecordingTable = (props: RecordingTableProps) => {
         uiConfigService.saveRecordingsTableConfig(newSettings);
     };
 
+    const onDelete = async () => {
+        await onDeleteSelected(selected);
+        dispatch({ type: "deselectAll" });
+    };
+
     return <Paper className={ classes.tableContainer }>
         <RecordingTableToolbar
             numSelected={ selected.length }
-            onDeleteSelected={ () => onDeleteSelected(selected) }
+            onDeleteSelected={ onDelete }
             onSettingsToggle={ e => openDialog(e.currentTarget as HTMLElement) }
             onRefresh={ onRefresh } />
         <Table>
@@ -89,6 +96,7 @@ interface RecordingTableProps extends WithStyles<typeof styles> {
 }
 
 type Action = { type: "toggle", recording: RecordingOverview } |
-    { type: "selectAll", recordings: RecordingOverview[] };
+    { type: "selectAll", recordings: RecordingOverview[] } |
+    { type: "deselectAll" };
 
 export const RecordingTable = withStyles(styles)(_RecordingTable);

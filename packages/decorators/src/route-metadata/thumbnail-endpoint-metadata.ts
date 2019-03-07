@@ -3,15 +3,15 @@ import { defineEndpoint, RouteParamUnwrap, SnapshotChunk, Type } from "@xsrt/com
 export const thumbnailEndpointMetadata = defineEndpoint({
     getThumbnailData: {
         method: "get",
-        url: "/thumbnails/:recordingId/data",
+        url: "/thumbnails/:chunkId/data",
         response: Type<SnapshotChunk>(),
         request: {
-            recordingId: new RouteParamUnwrap("recordingId")
+            chunkId: new RouteParamUnwrap("chunkId")
         }
     },
     deleteThumbnail: {
         method: "delete",
-        url: "/thumbnails/:recording",
+        url: "/thumbnails/:recordingId",
         response: Type<{success: boolean}>(),
         request: {
             recordingId: new RouteParamUnwrap("recordingId")

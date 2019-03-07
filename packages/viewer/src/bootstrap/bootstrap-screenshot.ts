@@ -6,7 +6,7 @@ import { DomManager } from "../playback/dom-manager";
  * "production-ready"
  */
 (async () => {
-    const urlMatch = location.search.match(/recording=([a-zA-Z0-9_\-]+)/);
+    const urlMatch = location.search.match(/chunk=([a-zA-Z0-9_\-]+)/);
     if (urlMatch) {
         const domManager = new DomManager(createLogger());
         domManager.initialize(document);

@@ -25,7 +25,7 @@ function reducer(state: State, action: Action): State {
             return {
                 ...state,
                 recordings: state.recordings
-                    .filter(rec => !action.recordings.some(sel => sel._id === rec._id ))
+                    .filter(rec => !action.recordings.some(sel => sel._id === rec._id )),
             };
         case "updateRecordings":
             return {

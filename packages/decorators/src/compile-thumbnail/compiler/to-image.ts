@@ -37,15 +37,16 @@ export class ThumbnailCompiler {
         return await this.browser.newPage();
     }
 
-    async createThumbnail(forRecording: string) {
+    async createThumbnail(forChunk: string) {
         const page = await this.newPage();
         try {
             await page.setUserAgent(defaultUA);
 
-            // Note - This URL must contain the protocol or it will break headless chrome
+            // Note - This URL must contain the protocol or it will break headless chrome. Also keep this as
+            // localhost because this currently assumes the decorator service will serve the screenshot static page
             const hostPart = `http://decorator:${this.decoratorConfig.port}`;
             const screenshotPage = `static/screenshot/index.html`;
-            await page.goto(`${hostPart}/${screenshotPage}?recording=${forRecording}`);
+            await page.goto(`${hostPart}/${screenshotPage}?chunk=${forChunk}`);
             await page.waitForFunction(`window['targetViewport']`, { polling: 100 });
 
             const targetViewport = await page.evaluate(`window['targetViewport']`) as ViewportSize;
@@ -57,7 +58,7 @@ export class ThumbnailCompiler {
                     throw e;
                 }
             }
-            const fileName = `${forRecording}.png`;
+            const fileName = `${forChunk}.png`;
             const path = `${this.decoratorConfig.screenshotDir}/${fileName}`;
             await page.screenshot({ path });
             return fileName;
