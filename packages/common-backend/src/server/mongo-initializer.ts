@@ -1,7 +1,7 @@
-import { LoggingService } from "@xsrt/common";
+import { LoggingService, NeedsInitialization } from "@xsrt/common";
 import { inject, injectable } from "inversify";
 import { connect } from "mongoose";
-import { IServerConfig, NeedsInitialization, ServerConfig } from "./express-server";
+import { IServerConfig, ServerConfig } from "./express-server";
 
 const retryDelay = 5000;
 const maxRetries = 3;

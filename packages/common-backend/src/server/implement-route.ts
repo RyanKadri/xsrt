@@ -23,7 +23,7 @@ export class RouteImplementer {
             Object.entries(endpointDef)
                 .forEach(([action, definition]) => {
                 const route = router[definition.method].bind(router);
-                const implementation = concreteImpl[action];
+                const implementation = concreteImpl[action].bind(concreteImpl);
                 if (definition && implementation) {
                     route(definition.url, (req: Request, resp: Response) =>
                         this.requestHandler.handle(

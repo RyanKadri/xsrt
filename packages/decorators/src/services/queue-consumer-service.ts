@@ -1,25 +1,21 @@
-import { NeedsInitialization } from "@xsrt/common-backend";
+import { DecoratorQueueService } from "@xsrt/common-backend";
 import { Channel, connect } from "amqplib";
-import { inject, injectable } from "inversify";
+import { inject, injectable, multiInject } from "inversify";
 import { DecoratorConfig } from "../decorator-server-config";
-import { RawChunkProcessor } from "../consumer/raw-chunk-processor";
-import { ScreenshotConsumer } from "../consumer/screenshot-consumer";
+import { IDecoratorConsumer } from "../di.decorators";
+import { NeedsInitialization } from "@xsrt/common";
 
 @injectable()
 export class QueueConsumerService implements NeedsInitialization {
 
     private handlers = new Map<string, QueueMessageCallback<any>[]>();
     private chann: Channel | undefined;
-    private listeners: DecoratorConsumer<any>[];
 
     constructor(
         @inject(DecoratorConfig) private config: Pick<DecoratorConfig, "rabbitHost">,
-        // TODO - I would like to multiinject here but there seems to be an inversify bug here.
-        chunkProcessor: RawChunkProcessor,
-        screenshotConsumer: ScreenshotConsumer
-    ) {
-        this.listeners = [chunkProcessor, screenshotConsumer];
-    }
+        private queueService: DecoratorQueueService,
+        @multiInject(IDecoratorConsumer) private listeners: DecoratorConsumer<any>[]
+    ) { }
 
     async initialize() {
         const conn = await connect({ hostname: this.config.rabbitHost, username: "guest", password: "guest" });
@@ -42,11 +38,19 @@ export class QueueConsumerService implements NeedsInitialization {
             if (msg === null) { return; }
             const callbacks = this.handlers.get(topic) || [];
             const value = msg.content.toString();
-            await Promise.all(
+            const responses = await Promise.all(
                 callbacks.map(cb => cb(JSON.parse(value)))
             );
+            responses.forEach(resp => {
+                if (resp) { this.forwardResponse(resp); }
+            });
             this.chann!.ack(msg);
         });
+    }
+
+    // TODO - Handle failures here
+    private async forwardResponse(resp: QueueForwardRequest) {
+        this.queueService.postMessage(resp.queue, resp.payload);
     }
 }
 

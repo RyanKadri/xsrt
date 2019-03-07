@@ -9,15 +9,15 @@ export const XSRT = (() => {
         start,
     };
 
-    function start(config: XSRTConfig) {
-        const controller = initialize(config);
+    async function start(config: XSRTConfig) {
+        const controller = await initialize(config);
         controller.start();
         return controller;
     }
 
-    function initialize(config: XSRTConfig): RecordingController {
+    async function initialize(config: XSRTConfig): Promise<RecordingController> {
         const initializer = new RecorderInitializer();
-        initializer.initialize({ ...defaultConfig, ...config });
+        await initializer.initialize({ ...defaultConfig, ...config });
         return {
             start() {
                 initializer.start();

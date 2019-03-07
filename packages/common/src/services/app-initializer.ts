@@ -5,20 +5,27 @@ import { ApiCreationService } from "../server/create-api";
 import { Interface } from "../utils/type-utils";
 import { DependencyInjector } from "./dependency-injector";
 
-export function initializeApp(
-    initializers: DIInitializer[],
+export async function initializeApp(
+    definitions: DIDefinition[],
+    needsInitialization: interfaces.Newable<NeedsInitialization>[] = [],
     container: Interface<Container> = new Container({ autoBindInjectable: true, defaultScope: "Singleton" })
-): DependencyInjector {
+): Promise<DependencyInjector> {
     const injector = new DependencyInjector(container);
     container.bind(DependencyInjector).toConstantValue(injector);
 
-    for (const initializer of initializers) {
+    for (const initializer of definitions) {
         bindInitializer(initializer, container);
     }
+
+    await Promise.all(
+        needsInitialization.map(toInit =>
+            container.get<NeedsInitialization>(toInit).initialize()
+        )
+    );
     return injector;
 }
 
-function bindInitializer(initializer: DIInitializer, container: Interface<Container>) {
+function bindInitializer(initializer: DIDefinition, container: Interface<Container>) {
     switch (initializer.type) {
         case "api":
             const apiCreator = container.get(ApiCreationService);
@@ -31,18 +38,11 @@ function bindInitializer(initializer: DIInitializer, container: Interface<Contai
             const item = initializer.creator(...dependencies);
             return container.bind(initializer.token).toConstantValue(item);
         case "group":
-            initializer.members.forEach(member => {
+            return initializer.members.forEach(member => {
                 container.bind(initializer.token)
                          .to(member)
                          .inSingletonScope();
             });
-            // TODO - This is a gross workaround because inversify is re-creating these singletons
-            container.getAll(initializer.token).forEach((res, i) => {
-                    container
-                        .bind(initializer.members[i])
-                        .toConstantValue(res);
-            });
-            return;
         case "implementation":
             return container.bind(initializer.token).to(initializer.implementation);
     }
@@ -88,7 +88,11 @@ export function implementationChoice<T>(
     };
 }
 
-export type DIInitializer = ConstantDef<any> | ContainerDependentConstant<any> | ApiDefinition
+export interface NeedsInitialization {
+    initialize(): Promise<void>;
+}
+
+export type DIDefinition = ConstantDef<any> | ContainerDependentConstant<any> | ApiDefinition
                                 | DependencyGroup | ImplementationChoice;
 
 export type DIToken<T> = string | symbol | interfaces.Newable<T> | interfaces.Abstract<T>;

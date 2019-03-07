@@ -5,11 +5,13 @@ import * as ReactDOM from "react-dom";
 import { AppRoot } from "./components/app-root/app-root";
 import { diConfig } from "./di.player";
 
-const injector = initializeApp(diConfig);
+(async () => {
+    const injector = await initializeApp(diConfig);
 
-ReactDOM.render(
-    <DependencyContext.Provider value={injector}>
-        <AppRoot />
-    </DependencyContext.Provider>,
-    document.getElementById("app-root")
-);
+    ReactDOM.render(
+        <DependencyContext.Provider value={injector}>
+            <AppRoot />
+        </DependencyContext.Provider>,
+        document.getElementById("app-root")
+    );
+})();

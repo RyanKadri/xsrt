@@ -1,11 +1,11 @@
 import { LoggingService } from "@xsrt/common";
-import express, { Express, Router } from "express";
+import express, { Router, Express } from "express";
 import { inject, injectable, multiInject, optional } from "inversify";
 import { RouterSetupFn } from "./route-types";
 
-export const IInitOnStartup = Symbol("ServerInitializer");
-export interface NeedsInitialization {
-    initialize(app: Express): Promise<void>;
+export const IExpressConfigurator = Symbol("ServerInitializer");
+export interface ExpressConfigurator {
+    initialize(express: Express): Promise<void>;
 }
 
 export const IRouteHandler = Symbol("RouteHandler");
@@ -27,7 +27,7 @@ export const IRouteImplementation = Symbol("RouteImplementation");
 export class ExpressServer {
 
     constructor(
-        @multiInject(IInitOnStartup) private initializers: NeedsInitialization[],
+        @optional() @multiInject(IExpressConfigurator) private configurators: ExpressConfigurator[],
         @optional() @multiInject(IRouteHandler) private routeHandlers: RouteHandler[],
         @optional() @multiInject(IRouteImplementation) private routeImplementations: RouterSetupFn[],
         @inject(IServerConfig) private config: ServerConfig,
@@ -36,8 +36,8 @@ export class ExpressServer {
 
     async start(): Promise<void> {
         const app = express();
-        await Promise.all(this.initializers.map(initializer => initializer.initialize(app)));
 
+        await Promise.all(this.configurators.map(configurator => configurator.initialize(app)));
         this.routeHandlers.forEach(handler => {
             const router = Router();
             handler.decorateRouter(router);

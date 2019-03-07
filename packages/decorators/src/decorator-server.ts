@@ -1,7 +1,11 @@
-import { ExpressServer, initializeApi } from "@xsrt/common-backend";
+import { initializeExpressApp, MongoInitializer, DecoratorQueueService } from "@xsrt/common-backend";
 import { decoratorDiConfig } from "./di.decorators";
+import { QueueConsumerService } from "./services/queue-consumer-service";
 
 (async () => {
-    const injector = initializeApi(decoratorDiConfig);
-    await injector.inject(ExpressServer).start();
+    await initializeExpressApp(decoratorDiConfig, [
+        MongoInitializer,
+        DecoratorQueueService,
+        QueueConsumerService,
+    ]);
 })();

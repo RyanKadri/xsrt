@@ -1,4 +1,4 @@
-import { NeedsInitialization, ServerConfig } from "@xsrt/common-backend";
+import { ServerConfig, ExpressConfigurator } from "@xsrt/common-backend";
 import bodyParser from "body-parser";
 import cors from "cors";
 import { Express } from "express";
@@ -14,7 +14,7 @@ export class DecoratorConfig implements ServerConfig {
 }
 
 @injectable()
-export class DecoratorExpressInitializer implements NeedsInitialization {
+export class DecoratorExpressConfigurator implements ExpressConfigurator {
 
     async initialize(app: Express) {
         app.use(bodyParser.urlencoded({ extended: false }));

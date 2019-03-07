@@ -1,8 +1,9 @@
-import { NeedsInitialization, ServerConfig } from "@xsrt/common-backend";
+import { ServerConfig, ExpressConfigurator } from "@xsrt/common-backend";
 import bodyParser from "body-parser";
 import cors from "cors";
 import { Express } from "express";
 import { injectable } from "inversify";
+import {  } from "../../common-backend/src/server/express-server";
 
 @injectable()
 export class ApiServerConfig implements ServerConfig {
@@ -15,7 +16,7 @@ export class ApiServerConfig implements ServerConfig {
 
 // TODO - Refactoring this out to a common module will simplify dependencies and reduce duplication
 @injectable()
-export class ApiServerInitializer implements NeedsInitialization {
+export class ApiServerInitializer implements ExpressConfigurator {
     async initialize(app: Express) {
         app.use(bodyParser.urlencoded({ extended: false }));
         app.use(bodyParser.json({ limit: "10mb", inflate: true })); // TODO - Let's think about security...

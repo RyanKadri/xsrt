@@ -1,14 +1,17 @@
-import { constantWithDeps, DIInitializer, EndpointDefinition, initializeApp } from "@xsrt/common";
+import { constantWithDeps, DIDefinition, EndpointDefinition, initializeApp, NeedsInitialization } from "@xsrt/common";
 import dotenv from "dotenv";
 import { interfaces } from "inversify";
-import { IRouteImplementation } from "./express-server";
+import { IRouteImplementation, ExpressServer } from "./express-server";
 import { RouteImplementer } from "./implement-route";
 import { RouteImplementation } from "./route-types";
 
 dotenv.load();
 
-export function initializeApi(initializers: ApiInitializer[]) {
-    return initializeApp(initializers.map(init => (
+/* A convenience method for starting a project that exposes express endpoints */
+export async function initializeExpressApp(
+    definitions: ApiDefinition[], initializers: interfaces.Newable<NeedsInitialization>[] = []
+) {
+    const transformedDefs = definitions.map(init => (
         init.type !== "endpoint"
             ? init
             : constantWithDeps(
@@ -16,7 +19,9 @@ export function initializeApi(initializers: ApiInitializer[]) {
                 [RouteImplementer],
                 (implementor: RouteImplementer) => implementor.implement(init.endpointDef, init.implementation)
             )
-    )));
+    ));
+    const injector = await initializeApp(transformedDefs, initializers);
+    await injector.inject(ExpressServer).start();
 }
 
 export function endpointDef(
@@ -28,7 +33,7 @@ export function endpointDef(
     };
 }
 
-export type ApiInitializer = DIInitializer | EndpointInitializer;
+export type ApiDefinition = DIDefinition | EndpointInitializer;
 
 interface EndpointInitializer {
     type: "endpoint";

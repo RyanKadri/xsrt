@@ -28,8 +28,9 @@ export class RecorderInitializer {
         }
     }
 
-    initialize(config: ScraperConfig) {
-        const injector = initializeApp([
+    // TODO - I made this async in refactor but didnt look at consequences yet
+    async initialize(config: ScraperConfig) {
+        const injector = await initializeApp([
             constant(ConfigToken, config),
             ...diConfig
         ]);
