@@ -58,6 +58,12 @@ function _RecordingView({
         }
     };
 
+    const calcEnd = (recording: Recording) => {
+        return Math.max(
+            ...recording.chunks.map(chunk => chunk.metadata.stopTime)
+        );
+    };
+
     useEffect(() => {
         updateBuffer();
     }, [ state.recording ]);
@@ -98,13 +104,6 @@ function _RecordingView({
                 duration={ calcEnd(state.recording) } />
         }
     </div>;
-
-}
-
-function calcEnd(recording: Recording) {
-    return Math.max(
-        ...recording.chunks.map(chunk => chunk.metadata.stopTime)
-    );
 }
 
 export const RecordingView = withStyles(styles)(

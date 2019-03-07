@@ -12,12 +12,17 @@ export class TimeManager {
 
     private recordingStart?: number;
     private _sessionStart?: number;
+    private initSession = false;
 
     fetchSessionStart() {
         if (!this._sessionStart || !this.recordingStart) {
             throw new Error("TimeManager not yet started");
         }
-        return this._sessionStart - this.recordingStart;
+        if (this.initSession) {
+            return this._sessionStart - this.recordingStart;
+        } else {
+            return 0;
+        }
     }
 
     start() {
@@ -28,6 +33,7 @@ export class TimeManager {
             this._sessionStart = this.dateManager.now();
         } else {
             this.recordingStart = this._sessionStart = this.dateManager.now();
+            this.initSession = true;
         }
     }
 

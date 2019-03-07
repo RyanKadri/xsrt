@@ -23,6 +23,14 @@ const chunkSchema = new Schema({
         required: true,
         enum: ["diff", "snapshot"]
     },
+    recording: {
+        type: String,
+        required: true
+    },
+    initChunk: {
+        type: Boolean,
+        required: false
+    },
     snapshot: {
         type: SchemaTypes.Mixed,
         required: false

@@ -1,8 +1,9 @@
 import { NeedsInitialization } from "@xsrt/common-backend";
 import { Channel, connect } from "amqplib";
 import { inject, injectable } from "inversify";
-import { ScreenshotConsumer } from "../consumer/screenshot-consumer";
 import { DecoratorConfig } from "../decorator-server-config";
+import { RawChunkProcessor } from "../consumer/raw-chunk-processor";
+import { ScreenshotConsumer } from "../consumer/screenshot-consumer";
 
 @injectable()
 export class QueueConsumerService implements NeedsInitialization {
@@ -13,15 +14,19 @@ export class QueueConsumerService implements NeedsInitialization {
 
     constructor(
         @inject(DecoratorConfig) private config: Pick<DecoratorConfig, "rabbitHost">,
-        screenshotListener: ScreenshotConsumer
+        // TODO - I would like to multiinject here but there seems to be an inversify bug here.
+        chunkProcessor: RawChunkProcessor,
+        screenshotConsumer: ScreenshotConsumer
     ) {
-        this.listeners = [ screenshotListener ];
+        this.listeners = [chunkProcessor, screenshotConsumer];
     }
 
     async initialize() {
         const conn = await connect({ hostname: this.config.rabbitHost, username: "guest", password: "guest" });
         this.chann = await conn.createChannel();
-        await this.chann.assertQueue("FinalizedRecordings", { durable: true });
+        await Promise.all(
+            this.listeners.map(listener => this.chann!.assertQueue(listener.topic, { durable: true }))
+        );
         await Promise.all(
             this.listeners.map(listener =>
                 this.registerListener(listener.topic, listener.handle)
@@ -45,9 +50,14 @@ export class QueueConsumerService implements NeedsInitialization {
     }
 }
 
-export type QueueMessageCallback<T> = (msg: T) => Promise<void>;
+export type QueueMessageCallback<T> = (msg: T) => Promise<QueueForwardRequest | void>;
 
 export interface DecoratorConsumer<T> {
     topic: string;
     handle: QueueMessageCallback<T>;
+}
+
+export interface QueueForwardRequest {
+    queue: string;
+    payload: any;
 }

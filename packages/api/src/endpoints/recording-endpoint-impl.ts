@@ -1,20 +1,14 @@
-import { LoggingService, Recording, recordingEndpoint, SiteTarget, UADetails, Without } from "@xsrt/common";
+import { Recording, recordingEndpoint, SiteTarget, UADetails, Without } from "@xsrt/common";
 import { errorInvalidCommand, errorNotFound, RecordingSchema, RouteImplementation, Target } from "@xsrt/common-backend";
 import { injectable } from "inversify";
 import * as parser from "ua-parser-js";
 import { errorNotAuthorized } from "../../../common-backend/src/server/request-handler";
-import { DecoratorQueueService } from "../services/decorator-queue-service";
 
 const defaultNumRecordings = 15;
 type RecordingEndpointType = RouteImplementation<typeof recordingEndpoint>;
 
 @injectable()
 export class RecordingEndpoint implements RecordingEndpointType {
-
-    constructor(
-        private logger: LoggingService,
-        private queueService: DecoratorQueueService
-    ) {}
 
     fetchRecording: RecordingEndpointType["fetchRecording"] = async ({ recordingId }) => {
         const recordings: Recording[] = await RecordingSchema.aggregate([
@@ -45,9 +39,6 @@ export class RecordingEndpoint implements RecordingEndpointType {
     }
     patchRecording: RecordingEndpointType["patchRecording"] = async ({ patchData, recordingId }) => {
         if (patchData.finalized && patchData.metadata) {
-            this.queueService.postRecording(recordingId)
-                .catch((err: any) => this.logger.error(err));
-
             const recording = await RecordingSchema.findByIdAndUpdate(recordingId, { $set: {
                 finalized: true,
                 "metadata.duration": patchData.metadata.duration
@@ -63,7 +54,7 @@ export class RecordingEndpoint implements RecordingEndpointType {
     }
     filterRecordings: RecordingEndpointType["filterRecordings"] = async ({ site: siteId }) => {
         const sites = await RecordingSchema.find(
-            { "metadata.site": siteId, finalized: true },
+            { "metadata.site": siteId, "chunks.0": { $exists: true } },
             { metadata: 1, thumbnail: 1 })
         .sort({ "metadata.startTime": -1 })
         .limit(defaultNumRecordings);

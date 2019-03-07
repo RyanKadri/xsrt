@@ -1,7 +1,6 @@
 // tslint:disable-next-line:no-implicit-dependencies
 import defaultStyles from "!raw-loader!./default-styles.css";
 import { formatAssetRef, Interface, LoggingService, OptimizedElement, OptimizedHtmlElementInfo, OptimizedStyleElement, OptimizedStyleRule, OptimizedTextElementInfo, ScrapedAttribute, SnapshotChunk } from "@xsrt/common";
-import { toBlobUrl } from "@xsrt/common-frontend";
 
 // TODO - Maybe in the process of refactoring, this can track a virtual-dom type thing
 // (for testability and separation of concerns)
@@ -30,9 +29,9 @@ export class DomManager {
         }
     }
 
-    async createInitialDocument(data: SnapshotChunk): Promise<void> {
+    createInitialDocument(data: SnapshotChunk) {
         this.logger.debug("Initialized playback iframe");
-        this.assets = await this.adjustReferences(data.assets);
+        this.assets = data.assets;
 
         const docType = `<!DOCTYPE ${ data.snapshot.documentMetadata.docType }>`;
         this.document.write(docType + "\n<html></html>");
@@ -200,16 +199,6 @@ export class DomManager {
             valWithRefs = valWithRefs.replace(formatAssetRef(ref), this.assets[ref]);
         });
         return valWithRefs;
-    }
-
-    private adjustReferences(refs: string[]) {
-        return Promise.all(
-            refs.map(ref => {
-                return ref.startsWith("data:")
-                    ? toBlobUrl(ref)
-                    : ref;
-            })
-        );
     }
 
     private fetchImplicitNamespace(el: OptimizedHtmlElementInfo) {

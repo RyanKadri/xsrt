@@ -1,7 +1,7 @@
 import { AddDescriptor, RecordedMutation, RecordedMutationGroup, ScraperConfig, ScraperConfigToken, treeReduce } from "@xsrt/common";
 import { inject, injectable } from "inversify";
-import { EventService } from "../../utils/event-service";
 import { TimeManager } from "../../utils/time-manager";
+import { GlobalEventService } from "../user-input/global-event-service";
 import { MutationOptimizer } from "./mutation-optimizer";
 
 export const chunkMutationLimit = "chunkMutationLimit";
@@ -16,7 +16,7 @@ export class MutationTracker {
         private timeManager: TimeManager,
         private optimizer: MutationOptimizer,
         @inject(ScraperConfigToken) private config: ScraperConfig,
-        private eventService: EventService
+        private eventService: GlobalEventService
     ) { }
 
     record(mutations: RecordedMutation[]) {
@@ -28,7 +28,7 @@ export class MutationTracker {
         this.numMutations += this.calcNumMutations(mutations);
 
         if (this.numMutations >= this.config.mutationsPerChunk) {
-            this.eventService.dispatch({ type: chunkMutationLimit, payload: this.numMutations });
+            this.eventService.fireSyntheticEvent({ type: chunkMutationLimit, payload: this.numMutations });
         }
     }
 

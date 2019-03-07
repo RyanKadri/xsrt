@@ -1,6 +1,6 @@
 import { constant, initializeApp, LocalStorageService, ScraperConfig, ScraperConfigToken as ConfigToken } from "@xsrt/common";
 import { RecorderApiService } from "./api/recorder-api-service";
-import { RecordingStateService } from "./api/recording-state-service";
+import { RecordingInfo, RecordingStateService } from "./api/recording-state-service";
 import { diConfig } from "./di.recorder";
 import { PatchService } from "./record/patch/patch-service";
 import { RecorderOrchestrator } from "./recorder-orchestrator";
@@ -12,14 +12,16 @@ export class RecorderInitializer {
     private orchestrator?: RecorderOrchestrator;
     private patchService?: PatchService;
     private _isRecording: boolean = false;
+    private continued = false;
+    private recordingInfo?: RecordingInfo;
 
     checkAutoStart(): boolean {
         const activeConfig = this.recordingState.fetchActiveConfig();
         const activeRecordingId = this.recordingState.fetchRecordingId();
 
         if (activeConfig && activeRecordingId) {
+            this.continued = true;
             this.initialize(activeConfig);
-
             return true;
         } else {
             return false;
@@ -53,19 +55,19 @@ export class RecorderInitializer {
         return this._isRecording;
     }
 
-    start() {
+    async start() {
         if (!this.orchestrator) {
             throw new Error("You must initialize the recorder before trying to start recording");
         } else {
+            this.recordingInfo = await this.orchestrator.initialize(this.continued);
             this._isRecording = true;
-            this.orchestrator.initialize();
         }
     }
 
     stop = async () => {
-        if (this.orchestrator) {
+        if (this.orchestrator && this.isRecording) {
             this._isRecording = false;
-            await this.orchestrator.onStop(false);
+            await this.orchestrator.onStop(this.recordingInfo!, false);
             this.recordingState.closeRecording();
         } else {
             throw new Error("Trying to stop recorder before starting");

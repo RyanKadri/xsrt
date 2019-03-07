@@ -1,11 +1,11 @@
-import { RecordingSchema } from "@xsrt/common-backend";
+import { initSnapshotQueue, RecordingSchema } from "@xsrt/common-backend";
 import { injectable } from "inversify";
 import { ThumbnailCompiler } from "../compile-thumbnail/compiler/to-image";
 import { DecoratorConsumer } from "../services/queue-consumer-service";
 
 @injectable()
 export class ScreenshotConsumer implements DecoratorConsumer<{ id: string}> {
-    readonly topic = "FinalizedRecordings";
+    readonly topic = initSnapshotQueue.name;
 
     constructor(
         private thumbnailCompiler: ThumbnailCompiler

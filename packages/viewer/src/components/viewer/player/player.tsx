@@ -9,10 +9,20 @@ export function RecordingPlayer(props: Props) {
     const iframe = useRef<HTMLIFrameElement>(null);
 
     const lastFrameInfo = useRef<LastFrameInfo>({ wasPlaying: false, time: 0 });
-    const { isPlaying, lockUI, error, snapshots, changes, inputs, currentTime } = props;
+    const { isPlaying, lockUI, error, snapshots, changes, inputs, currentTime, playbackManager } = props;
 
     useEffect(() => {
-        if (!iframe.current || !iframe.current.contentDocument) {
+        if (iframe.current && iframe.current.contentDocument && snapshots.length > 0) {
+            playbackManager.reset(iframe.current!.contentDocument, snapshots[0]);
+        }
+    }, []);
+
+    useEffect(() => {
+        playbackManager.togglePause(!isPlaying);
+    }, [isPlaying]);
+
+    useEffect(() => {
+        if (!iframe.current || !iframe.current.contentDocument || props.error) {
             return;
         }
 
@@ -56,6 +66,7 @@ interface Props {
     currentTime: number;
     isPlaying: boolean;
     error?: string;
+    onError: (err: any) => void;
     playbackManager: PlaybackManager;
     lockUI: boolean;
 }

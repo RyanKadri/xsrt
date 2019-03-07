@@ -1,5 +1,6 @@
-import { PendingDiffChunk, PendingSnapshotChunk, UnoptimizedSnapshotChunk, Without } from "@xsrt/common";
+import { PendingDiffChunk, PendingSnapshotChunk } from "@xsrt/common";
 import { injectable } from "inversify";
+import { RecordingInfo } from "./api/recording-state-service";
 import { RecordingOptimizer } from "./optimize/optimize";
 import { MutationRecorder } from "./record/dom-changes/mutation-recorder";
 import { CompleteInputRecorder } from "./record/user-input/input-recorder";
@@ -14,43 +15,28 @@ export class Recorder {
         private timeManager: TimeManager,
         private mutationRecorder: MutationRecorder,
         private inputRecorder: CompleteInputRecorder,
-        private optimizer: RecordingOptimizer,
+        private optimizer: RecordingOptimizer
     ) {}
 
     private lastChunk?: number;
 
-    createSnapshotChunk(): Promise<PendingSnapshotChunk> {
-        return this.optimizer.optimize(this.syncSnapshot())
-            .then(snapshot => {
-                const stopTime = this.lastChunk = this.timeManager.currentTime();
-                const startTime = this.timeManager.fetchSessionStart();
-                return {
-                    ...snapshot,
-                    changes: this.mutationRecorder.dump(),
-                    inputs: this.inputRecorder.dump(),
-                    metadata: {
-                        ...snapshot.metadata,
-                        startTime,
-                        stopTime
-                    },
-                };
-            });
-    }
-
-    private syncSnapshot(): Without<UnoptimizedSnapshotChunk, "_id"> {
-        return {
+    createSnapshotChunk(recordingInfo: RecordingInfo, initChunk: boolean): PendingSnapshotChunk {
+        this.lastChunk = this.timeManager.currentTime();
+        return this.optimizer.optimize({
             type: "snapshot",
+            recording: recordingInfo._id,
             snapshot: {
                 root: this.domWalker.traverseNode(document.documentElement!),
                 documentMetadata: extractMetadata(document, location)
             },
             metadata: {
-                startTime: this.timeManager.currentTime(),
-                stopTime: this.timeManager.currentTime()
+                startTime: this.timeManager.fetchSessionStart(),
+                stopTime: this.lastChunk
             },
             changes: [],
             inputs: {},
-        };
+            initChunk
+        });
     }
 
     async record() {
@@ -58,14 +44,14 @@ export class Recorder {
             .forEach(manager => manager.start());
     }
 
-    dumpDiff(finalize: boolean): Promise<PendingDiffChunk> {
+    dumpDiff(recordingInfo: RecordingInfo, finalize: boolean): PendingDiffChunk {
         const startTime = this.lastChunk!;
         const stopTime = this.lastChunk = this.timeManager.currentTime();
 
-        const type = "diff";
         return this.optimizer.optimize({
+            type: "diff" as "diff",
             assets: [],
-            type,
+            recording: recordingInfo._id,
             changes: finalize ? this.mutationRecorder.stop() : this.mutationRecorder.dump(),
             inputs: finalize ? this.inputRecorder.stop() : this.inputRecorder.dump(),
             metadata: {

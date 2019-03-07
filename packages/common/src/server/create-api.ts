@@ -1,5 +1,5 @@
 import { AxiosStatic } from "axios";
-import { inject, injectable } from "inversify";
+import { inject, injectable, optional } from "inversify";
 import { ScraperConfig, ScraperConfigToken } from "../config/scraper-config";
 import { AxiosSymbol } from "../di/di.tokens";
 import { ApiMethodClientOptions, EndpointDefinition, PayloadVerbDefinition, RequestParams, UrlVerbDefinition } from "../endpoint/types";
@@ -7,13 +7,15 @@ import { mapDictionary } from "../utils/functional-utils";
 import { Interface } from "../utils/type-utils";
 import { ApiRequestPartExtractor } from "./api-request-extractor";
 
+declare const process: any;
+
 @injectable()
 export class ApiCreationService {
 
     constructor(
         @inject(AxiosSymbol) private Axios: Interface<AxiosStatic>,
         @inject(ApiRequestPartExtractor) private extractor: Interface<ApiRequestPartExtractor>,
-        @inject(ScraperConfigToken) private config: Pick<ScraperConfig, "backendUrl">
+        @optional() @inject(ScraperConfigToken) private config: Pick<ScraperConfig, "backendUrl">
     ) {}
 
     createApi = <T extends EndpointDefinition>(endpointDef: T) => {
@@ -47,10 +49,17 @@ export class ApiCreationService {
         }
     }
 
-    private replaceRouteParams = (url: string, replacements: RequestParams<any>) => {
+    private replaceRouteParams = (path: string, replacements: RequestParams<any>) => {
+        const baseUrl = typeof process !== "undefined" && !process.browser
+            ? process.env.API_SERVER
+            : (this.config && this.config.backendUrl)
+                ? this.config.backendUrl
+                : "";
+
+        const initUrl = `${baseUrl}/api${path}`;
         return Object.entries(replacements)
             .reduce((acc, [key, val]) => {
                 return acc.replace(new RegExp(`:${key}`, "g"), val);
-            }, `${this.config.backendUrl || ""}/api${url}`);
+            }, initUrl);
     }
 }

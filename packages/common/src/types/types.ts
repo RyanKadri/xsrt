@@ -103,17 +103,19 @@ export type RecordingChunk = SnapshotChunk | DiffChunk;
 
 export type PendingChunk = PendingSnapshotChunk | PendingDiffChunk;
 
-export type PendingSnapshotChunk = Without<UnoptimizedSnapshotChunk, "_id">;
+export type PendingSnapshotChunk = Without<SnapshotChunk, "_id">;
 export type PendingDiffChunk = Without<DiffChunk, "_id">;
 
 export interface UnoptimizedSnapshotChunk extends BaseSnapshot {
     type: "snapshot";
     snapshot: UnoptimizedRootSnapshot;
+    initChunk: boolean;
 }
 
 export interface SnapshotChunk extends BaseSnapshotWithAssets {
     type: "snapshot";
     snapshot: RootSnapshot;
+    initChunk: boolean;
 }
 
 export interface DiffChunk extends BaseSnapshotWithAssets {
@@ -129,6 +131,7 @@ export interface BaseSnapshot {
     metadata: ChunkMetadata;
     changes: RecordedMutationGroup[];
     inputs: RecordedInputChannels;
+    recording: string;
 }
 
 export interface UnoptimizedRootSnapshot {

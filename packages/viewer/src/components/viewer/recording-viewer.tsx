@@ -72,6 +72,7 @@ class _RecordingViewer extends React.PureComponent<ViewerProps, ViewerState> {
                                     isPlaying={ this.state.isPlaying }
                                     recordingMetadata={ this.props.recordingMetadata }
                                     error={ this.state.hasError ? "Something went wrong" : undefined }
+                                    onError={ this.handleDownstreamError }
                                     lockUI={ this.state.settings.blockViewerOnPause }
                                 />
                                 { actionPrompt
@@ -106,6 +107,10 @@ class _RecordingViewer extends React.PureComponent<ViewerProps, ViewerState> {
                     anchor={this.state.settingsAnchor}
                 />
             </Fragment>;
+    }
+
+    handleDownstreamError = () => {
+        this.setState({ hasError: true, isPlaying: false });
     }
 
     play = () => {

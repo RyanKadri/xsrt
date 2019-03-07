@@ -1,10 +1,10 @@
-import { LoggingService, mergeMaps, PendingChunk, PendingDiffChunk, PendingSnapshotChunk, pluck, ScraperConfig, ScraperConfigToken, sortAsc } from "@xsrt/common";
+import { LoggingService, PendingChunk, ScraperConfig, ScraperConfigToken } from "@xsrt/common";
 import { inject, injectable } from "inversify";
 import { RecorderApiService } from "./api/recorder-api-service";
 import { RecordingInfo, RecordingStateService } from "./api/recording-state-service";
 import { chunkMutationLimit } from "./record/dom-changes/mutation-tracker";
+import { GlobalEventService } from "./record/user-input/global-event-service";
 import { Recorder } from "./recorder";
-import { EventService } from "./utils/event-service";
 
 const unloadEvent = "unload";
 
@@ -16,92 +16,59 @@ export class RecorderOrchestrator {
         private recorderState: RecordingStateService,
         private recorder: Recorder,
         @inject(ScraperConfigToken) private config: ScraperConfig,
-        private eventService: EventService,
+        private eventService: GlobalEventService,
         private logger: LoggingService
     ) { }
 
-    private initInfoTask?: Promise<RecordingInfo>;
-    private initInfo?: RecordingInfo;
-    private initSnapshotTask?: Promise<PendingSnapshotChunk>;
+    private unloadHandler?: number;
     private latestEnd = 0;
 
-    private sentInitChunk = false;
-
-    initialize() {
+    async initialize(continued: boolean) {
+        const initInfo = await this.recorderApi.startRecording(this.config.site);
         this.recorder.record();
-        this.initInfoTask = this.recorderApi.startRecording(this.config.site)
-            .then(info => this.initInfo = info);
 
-        // At the moment, this needs to run after the previous line so the event trackers can record unload events
-        // It feels fragile though. Maybe there's a better (but not annoying way)
-        window.addEventListener(unloadEvent, this.onUnload);
-        this.initSnapshotTask = this.recorder.createSnapshotChunk();
+        this.unloadHandler = this.eventService.addEventListener(unloadEvent,
+            () => this.onUnload(initInfo),
+            { target: "window" }
+        );
+        const initSnapshot = this.recorder.createSnapshotChunk(initInfo, !continued);
 
-        Promise.all([this.initSnapshotTask, this.initInfoTask])
-            .then(([ optimized ]) => {
-                    this.sentInitChunk = true;
-                    this.reportChunk(optimized, false);
-            }).then(() => {
-                this.startCollectingDiffs();
-            });
-
+        this.reportChunk(initSnapshot, initInfo, false);
+        this.startCollectingDiffs(initInfo);
+        return initInfo;
     }
 
-    onUnload = () => {
-        this.onStop(true);
+    onUnload = (recordingInfo: RecordingInfo) => {
+        this.onStop(recordingInfo, true);
     }
 
-    onStop = async (isUnloading: boolean) => {
-
-        if (isUnloading && !this.sentInitChunk) {
-            // TODO - Potentially handle this by sending an unoptimized snapshot to the server and optimizing there.
-            // Need to think about data constraints and access to underlying dom elements (for call reduction)
-            this.reportErr(new Error(`Requested data was not ready by the time the page was closed`));
+    onStop = async (recordingInfo: RecordingInfo, isUnloading: boolean) => {
+        if (!recordingInfo) {
+            this.logger.warn("Recording stopped before initialization. Not saving");
+            return;
         }
-        const leftovers = await this.recorder.dumpDiff(true);
-
-        if (!isUnloading) {
-            const snapshot = await this.initSnapshotTask!;
-            const initInfo = await this.initInfoTask;
-            const chunk = this.sentInitChunk ? leftovers : this.mergeLeftovers(snapshot, leftovers);
-            window.removeEventListener(unloadEvent, this.onUnload);
-            await this.reportChunk(chunk, isUnloading);
-            this.recorderApi.finalizeRecording(initInfo!._id, this.latestEnd);
-        } else {
-            this.reportChunk(leftovers, isUnloading);
+        const chunk = this.recorder.dumpDiff(recordingInfo, true);
+        if (!isUnloading && this.unloadHandler) {
+            this.eventService.removeEventListener(this.unloadHandler);
         }
+        this.reportChunk(chunk, recordingInfo, isUnloading);
     }
 
-    private startCollectingDiffs() {
+    private startCollectingDiffs(initInfo: RecordingInfo) {
         // TODO - requestIdleCallback maybe?
         this.eventService.addEventListener(chunkMutationLimit, async () => {
-            // TODO - This async bit is for testing. This leaves room for a race condition if the user closes
-            // the browser before the async operation resolves.
-            const diff = await this.recorder.dumpDiff(false);
-            this.reportChunk(diff, false);
-        });
+            const diff = this.recorder.dumpDiff(initInfo, false);
+            this.reportChunk(diff, initInfo, false);
+        }, { target: "synthetic" });
     }
 
-    private mergeLeftovers(snapshot: PendingSnapshotChunk, diff: PendingDiffChunk): PendingSnapshotChunk {
-        return {
-            ...snapshot,
-            changes: snapshot.changes.concat(diff.changes),
-            inputs: mergeMaps(snapshot.inputs, diff.inputs, sortAsc(pluck("timestamp")))
-        };
-    }
-
-    private reportChunk(chunk: PendingChunk, unloading: boolean) {
-        if (!this.initInfo) { throw new Error("Tried to report chunk but did not have required reporting metadata"); }
-
+    private reportChunk(chunk: PendingChunk, initInfo: RecordingInfo, unloading: boolean) {
         if (!unloading) {
             this.latestEnd = Math.max(chunk.metadata.stopTime, this.latestEnd),
-            this.recorderApi.postToBackend(chunk, this.initInfo._id, this.config.debugMode);
+            this.recorderApi.postToBackend(chunk, initInfo._id, this.config.debugMode);
         } else {
             this.recorderState.savePendingChunk(chunk);
         }
     }
 
-    private reportErr(err: Error) {
-        this.logger.error(err);
-    }
 }

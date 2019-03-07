@@ -1,21 +1,21 @@
 import { chunkEndpointMetadata, RecordingChunk } from "@xsrt/common";
-import { Chunk, errorNotFound, RecordingSchema, RouteImplementation } from "@xsrt/common-backend";
+import { Chunk, errorNotFound, RouteImplementation } from "@xsrt/common-backend";
 import { injectable } from "inversify";
+import { DecoratorQueueService } from "../../../common-backend/src/queues/decorator-queue-service";
 
 type ChunkEndpointType = RouteImplementation<typeof chunkEndpointMetadata>;
 
 @injectable()
 export class ChunkEndpoint implements ChunkEndpointType {
-    createChunk: ChunkEndpointType["createChunk"] = (async ({ chunk, recordingId }) => {
+
+    constructor(
+        private queueService: DecoratorQueueService
+    ) { }
+
+    createChunk: ChunkEndpointType["createChunk"] = (async ({ chunk }) => {
         const savedChunk = await new Chunk(chunk).save();
-        const doc = await RecordingSchema.findByIdAndUpdate(recordingId, {
-            $push: { chunks: savedChunk._id }
-        });
-        if (!doc) {
-            return errorNotFound(`Could not find recording ${recordingId}`);
-        } else {
-            return { _id: savedChunk!._id };
-        }
+        this.queueService.postChunk(savedChunk.toObject());
+        return { _id: savedChunk!._id };
     });
 
     fetchChunk: ChunkEndpointType["fetchChunk"] = (async ({ chunkId }) => {

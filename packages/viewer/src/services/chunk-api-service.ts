@@ -1,5 +1,6 @@
 import { chunkApiSymbol, chunkEndpointMetadata, EndpointApi } from "@xsrt/common";
 import { inject, injectable } from "inversify";
+import { dataUrlToBlob } from "@xsrt/common-frontend";
 
 @injectable()
 export class ChunkApiService {
@@ -10,7 +11,8 @@ export class ChunkApiService {
     ) { }
 
     /* istanbul ignore next */
-    fetchChunk(chunkId: string) {
-        return this.chunkApi.fetchChunk({ chunkId });
+    async fetchChunk(chunkId: string) {
+        const chunk = await this.chunkApi.fetchChunk({ chunkId });
+        return { ...chunk, assets: await Promise.all(chunk.assets.map(dataUrlToBlob)) };
     }
 }
