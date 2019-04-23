@@ -7,8 +7,6 @@ import { mapDictionary } from "../utils/functional-utils";
 import { Interface } from "../utils/type-utils";
 import { ApiRequestPartExtractor } from "./api-request-extractor";
 
-declare const process: any;
-
 @injectable()
 export class ApiCreationService {
 
@@ -50,11 +48,9 @@ export class ApiCreationService {
     }
 
     private replaceRouteParams = (path: string, replacements: RequestParams<any>) => {
-        const baseUrl = typeof process !== "undefined" && !process.browser
-            ? process.env.API_SERVER
-            : (this.config && this.config.backendUrl)
-                ? this.config.backendUrl
-                : "";
+        const baseUrl = this.config && this.config.backendUrl
+            ? this.config.backendUrl
+            : "";
 
         const initUrl = `${baseUrl}/api${path}`;
         return Object.entries(replacements)

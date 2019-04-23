@@ -48,12 +48,4 @@ export class RecorderApiService {
         return res._id;
     }
 
-    async finalizeRecording(recordingId: string, stopTime: number) {
-        await this.recordingApi.patchRecording({ recordingId, patchData: {
-            finalized: true,
-            metadata: {
-                duration: stopTime
-            }
-        }});
-    }
 }

@@ -1,10 +1,10 @@
-import { initializeExpressApp, MongoInitializer, DecoratorQueueService } from "@xsrt/common-backend";
+import { initializeExpressApp, MongoInitializer, DecoratorQueueService, QueueConsumerService, ElasticService } from "@xsrt/common-backend";
 import { decoratorDiConfig } from "./di.decorators";
-import { QueueConsumerService } from "./services/queue-consumer-service";
 
 (async () => {
     await initializeExpressApp(decoratorDiConfig, [
         MongoInitializer,
+        ElasticService,
         DecoratorQueueService,
         QueueConsumerService,
     ]);

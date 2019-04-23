@@ -54,6 +54,7 @@ services:
             - DECORATOR_PORT=${DECORATOR_PORT}
             - API_SERVER=http://app:${API_PORT}
             - RABBIT_HOST=rabbit
+            - ELASTIC_HOST=elastic:9200
         volumes:
             - '.:/app/'
             - stored-files:${STORAGE_LOCATION}
@@ -71,6 +72,13 @@ services:
             - 5672
         volumes:
             - rabbit-data:/var/lib/rabbitmq
+    elastic:
+        image: elasticsearch:6.6.1
+        ports:
+            - "9200:9200"
+            - "9300:9300"
+        volumes:
+            - elastic-data:/usr/share/elasticsearch/data
     static:
         ports:
             - ${STATIC_PORT}:443
@@ -109,3 +117,4 @@ volumes:
     mongo-data:
     stored-files:
     rabbit-data:
+    elastic-data:

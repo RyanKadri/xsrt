@@ -1,8 +1,7 @@
 import { LoggingService, RecordingChunk } from "@xsrt/common";
-import { Chunk, rawChunkQueue, RecordingSchema, initSnapshotQueue } from "@xsrt/common-backend";
+import { Chunk, rawChunkQueue, RecordingSchema, DecoratorConsumer, ChunkId, elasticQueue } from "@xsrt/common-backend";
 import { injectable } from "inversify";
 import { AssetResolver } from "../assets/asset-resolver";
-import { DecoratorConsumer } from "../services/queue-consumer-service";
 
 @injectable()
 export class RawChunkProcessor implements DecoratorConsumer<ChunkId> {
@@ -35,17 +34,9 @@ export class RawChunkProcessor implements DecoratorConsumer<ChunkId> {
         if (!doc) {
             this.logger.error(`Tried to add chunk to recording ${chunk.recording} but it did not exist`);
         }
-        if (chunk.type === "snapshot" && chunk.initChunk) {
-            return {
-                queue: initSnapshotQueue.name,
-                payload: chunk
-            };
-        } else {
-            return;
-        }
+        return {
+            queue: elasticQueue.name,
+            payload: { _id: chunk }
+        };
     }
-}
-
-interface ChunkId {
-    _id: string;
 }

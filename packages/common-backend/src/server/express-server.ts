@@ -19,6 +19,7 @@ export interface ServerConfig {
     port: number;
     mongoUrl: string; // Should this be in the service-specific configs?
     rabbitHost: string;
+    elasticUrl: string;
 }
 
 export const IRouteImplementation = Symbol("RouteImplementation");

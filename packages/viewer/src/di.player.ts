@@ -15,7 +15,7 @@ import { ResizeAnnotator } from "./services/annotation/resize-annotator";
 import { UnloadAnnotator } from "./services/annotation/unload-annotator";
 
 export const diConfig: DIDefinition[] = [
-    constant(ScraperConfigToken, { debugMode: false }),
+    constant(ScraperConfigToken, { debugMode: false, backendUrl: process.env.API_SERVER }),
     constantWithDeps(DomManager, [LoggingService], (logger: LoggingService) => new DomManager(logger)),
     constant(AxiosSymbol, Axios),
     constant(LocalStorageSymbol, localStorage),

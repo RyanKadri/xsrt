@@ -1,68 +1,45 @@
 import { Recording, recordingEndpoint, SiteTarget, UADetails, Without } from "@xsrt/common";
-import { errorInvalidCommand, errorNotFound, RecordingSchema, RouteImplementation, Target } from "@xsrt/common-backend";
+import { errorInvalidCommand, errorNotFound, RouteImplementation, Target } from "@xsrt/common-backend";
 import { injectable } from "inversify";
 import * as parser from "ua-parser-js";
 import { errorNotAuthorized } from "../../../common-backend/src/server/request-handler";
+import { RecordingService } from "../services/recording-service";
 
-const defaultNumRecordings = 15;
 type RecordingEndpointType = RouteImplementation<typeof recordingEndpoint>;
 
 @injectable()
 export class RecordingEndpoint implements RecordingEndpointType {
 
+    constructor(
+        private recordingService: RecordingService
+    ) { }
+
     fetchRecording: RecordingEndpointType["fetchRecording"] = async ({ recordingId }) => {
-        const recordings: Recording[] = await RecordingSchema.aggregate([
-            { $match: { _id: recordingId }},
-            // { $unwind: "$chunks" },
-            { $lookup: {
-                from: "recordingChunks",
-                localField: "chunks",
-                foreignField: "_id",
-                as: "chunks",
-            }},
-            { $project: {  // TODO - Is there some way I can do a positive projection (type and metadata) in the lookup?
-                "chunks.changes": 0,
-                "chunks.inputs": 0,
-                "chunks.snapshot": 0,
-                "chunks.assets": 0
-            }}
-        ]).exec();
-        return recordings[0];
+        const recording = this.recordingService.fetchRecording(recordingId);
+        if (!recording) {
+            return errorNotFound(`Could not find recording with ID ${recordingId}`);
+        } else {
+            return recording;
+        }
     }
+
     deleteRecording: RecordingEndpointType["deleteRecording"] = async ({ recordingId }) => {
-        const data = await RecordingSchema.findByIdAndDelete(recordingId);
+        const data = await this.recordingService.deleteRecording(recordingId);
         if (data) {
-            return data.toObject();
+            return data;
         } else {
             return errorNotFound(`Recording ${recordingId} does not exist`);
         }
     }
-    patchRecording: RecordingEndpointType["patchRecording"] = async ({ patchData, recordingId }) => {
-        if (patchData.finalized && patchData.metadata) {
-            const recording = await RecordingSchema.findByIdAndUpdate(recordingId, { $set: {
-                finalized: true,
-                "metadata.duration": patchData.metadata.duration
-            }});
-            if (recording) {
-                return { success: true };
-            } else {
-                return errorNotFound(`Recording ${recordingId} does not exist`);
-            }
-        } else {
-            return errorInvalidCommand("Unknown command" );
-        }
-    }
-    filterRecordings: RecordingEndpointType["filterRecordings"] = async ({ site: siteId }) => {
-        const sites = await RecordingSchema.find(
-            { "metadata.site": siteId, "chunks.0": { $exists: true } },
-            { metadata: 1, thumbnail: 1 })
-        .sort({ "metadata.startTime": -1 })
-        .limit(defaultNumRecordings);
-        return sites.map(site => site.toObject());
-    }
-    createRecording: RecordingEndpointType["createRecording"] = async ({ recording: bodyData, userAgent, referer }) => {
-        const ua = new parser.UAParser(userAgent || "");
 
+    filterRecordings: RecordingEndpointType["filterRecordings"] = async ({ site }) => {
+        if (!site) {
+            return errorInvalidCommand("You must provide a site when filtering");
+        }
+        return this.recordingService.filterRecordings({ site });
+    }
+
+    createRecording: RecordingEndpointType["createRecording"] = async ({ recording: bodyData, userAgent, referer }) => {
         const siteDoc = await Target.findById(bodyData.site);
         if (!siteDoc) {
             return errorNotFound(`Site ${bodyData.site} does not exist`);
@@ -76,18 +53,19 @@ export class RecordingEndpoint implements RecordingEndpointType {
                 );
             }
         }
+        const ua = new parser.UAParser(userAgent || "");
         const uaDetails = extractUADetails(ua);
         const recordingData: Without<Recording, "_id"> = {
             metadata: { site: siteDoc._id, startTime: bodyData.startTime, duration: 0, uaDetails },
             chunks: []
         };
-        const recording = new RecordingSchema(recordingData);
-        const res = await recording.save();
+        const res = await this.recordingService.createRecording(recordingData);
         return { _id: res._id };
     }
+
     deleteMany: RecordingEndpointType["deleteMany"] = async ({ deleteRequest }) => {
-        if (deleteRequest.ids) {
-            await RecordingSchema.deleteMany({ _id: { $in: deleteRequest.ids } }).exec();
+        if (deleteRequest.ids && deleteRequest.ids.length > 0) {
+            await this.recordingService.deleteRecordings(deleteRequest.ids);
             return { success: true };
         } else {
             return errorInvalidCommand(`Unsure how to process this deletion request`);
@@ -102,3 +80,7 @@ const extractUADetails = (ua: any): UADetails => {
         device: ua.getDevice(),
     };
 };
+
+export interface RecordingFilterParams {
+    site: string;
+}

@@ -1,9 +1,9 @@
-import { DecoratorQueueService } from "@xsrt/common-backend";
+import { DecoratorQueueService } from "./decorator-queue-service";
 import { Channel, connect } from "amqplib";
 import { inject, injectable, multiInject } from "inversify";
-import { DecoratorConfig } from "../decorator-server-config";
-import { IDecoratorConsumer } from "../di.decorators";
-import { NeedsInitialization } from "@xsrt/common";
+import { DecoratorConfig } from "../../../decorators/src/decorator-server-config";
+import { IDecoratorConsumer } from "../../../decorators/src/di.decorators";
+import { NeedsInitialization, RecordingChunk } from "@xsrt/common";
 
 @injectable()
 export class QueueConsumerService implements NeedsInitialization {
@@ -25,7 +25,7 @@ export class QueueConsumerService implements NeedsInitialization {
         );
         await Promise.all(
             this.listeners.map(listener =>
-                this.registerListener(listener.topic, listener.handle)
+                this.registerListener(listener.topic, listener.handle.bind(listener))
             )
         );
     }
@@ -65,3 +65,5 @@ export interface QueueForwardRequest {
     queue: string;
     payload: any;
 }
+
+export type ChunkId = Pick<RecordingChunk, "_id">;

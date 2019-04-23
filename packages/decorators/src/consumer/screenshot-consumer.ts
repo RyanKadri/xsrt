@@ -1,11 +1,10 @@
-import { initSnapshotQueue, RecordingSchema, Chunk } from "@xsrt/common-backend";
+import { initSnapshotQueue, RecordingSchema, Chunk, DecoratorConsumer, ChunkId } from "@xsrt/common-backend";
 import { injectable } from "inversify";
 import { ThumbnailCompiler } from "../compile-thumbnail/compiler/to-image";
-import { DecoratorConsumer } from "../services/queue-consumer-service";
-import { LoggingService, RecordingChunk } from "../../../common/src";
+import { LoggingService, RecordingChunk } from "@xsrt/common";
 
 @injectable()
-export class ScreenshotConsumer implements DecoratorConsumer<{ _id: string}> {
+export class ScreenshotConsumer implements DecoratorConsumer<ChunkId> {
     readonly topic = initSnapshotQueue.name;
 
     constructor(

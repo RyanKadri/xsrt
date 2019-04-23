@@ -1,5 +1,6 @@
 import { EndpointApi, Recording, recordingApiSymbol, recordingEndpoint, RecordingOverview } from "@xsrt/common";
 import { inject, injectable } from "inversify";
+import { RecordingTableFilter } from "../components/dashboard/recording-table/recording-table-filter";
 
 @injectable()
 export class RecordingApiService {
@@ -15,8 +16,11 @@ export class RecordingApiService {
     }
 
     /* istanbul ignore next */
-    async fetchAvailableRecordings(siteId: string): Promise<RecordingOverview[]> {
-        return this.recordingApi.filterRecordings({ site: siteId });
+    async fetchAvailableRecordings(siteId: string, filter?: RecordingTableFilter): Promise<RecordingOverview[]> {
+        const filtersWithDefaults: Partial<RecordingTableFilter> = {
+            ...(filter || {})
+        };
+        return this.recordingApi.filterRecordings({ site: siteId, ...filtersWithDefaults } as any);
     }
 
     async deleteRecordings(selected: RecordingOverview[]): Promise<void> {

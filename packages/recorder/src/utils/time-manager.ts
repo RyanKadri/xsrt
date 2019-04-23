@@ -18,7 +18,7 @@ export class TimeManager {
         if (!this._sessionStart || !this.recordingStart) {
             throw new Error("TimeManager not yet started");
         }
-        if (this.initSession) {
+        if (!this.initSession) {
             return this._sessionStart - this.recordingStart;
         } else {
             return 0;

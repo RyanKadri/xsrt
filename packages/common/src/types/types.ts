@@ -242,3 +242,11 @@ export interface SiteTarget {
 }
 
 export type NewSiteTarget = Without<SiteTarget, "_id">;
+
+export interface RecordingElasticRep {
+    recording: string;
+    urls: string[];
+    userAgent: string;
+    start: number;
+    site: string;
+}

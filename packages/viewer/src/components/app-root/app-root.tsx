@@ -1,7 +1,9 @@
+import DayjsUtils from "@date-io/dayjs";
 import { createStyles, MuiThemeProvider, withStyles } from "@material-ui/core";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { LoggingService, SiteTarget } from "@xsrt/common";
 import { appTheme, useComponent, withDependencies } from "@xsrt/common-frontend";
+import { MuiPickersUtilsProvider } from "material-ui-pickers";
 import React, { Fragment, useEffect, useReducer } from "react";
 import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom";
 import { RecordingApiService } from "../../services/recording-service";
@@ -76,29 +78,31 @@ const _AppRoot = ({ targetApi }: AppProps) => {
             <Fragment>
                 <CssBaseline />
                 <MuiThemeProvider theme={ appTheme }>
-                    <TopNav onExpand={ () => dispatch(new ToggleSidebarAction(true)) } />
-                    <Sidebar
-                        expanded={ state.sidebarExpanded }
-                        sites={ state.availableSites }
-                        onClose={ () => dispatch(new ToggleSidebarAction(false)) }/>
-                    <Switch>
-                        <Route path="/recordings/:recordingId" render={ (match) =>
-                            <RecordingView recordingId={match.match.params.recordingId } />
-                        } />
-                        <Route path="/dashboard/:siteId" render={ (match) =>
-                            <DISiteDashboard
-                                site={ state.availableSites.find(site => site._id === match.match.params.siteId )!}
-                            />
-                        } />
-                        <Route path="/dashboard" render={ () =>
-                            <DIOverallDashboard
-                                sites={ state.availableSites }
-                                onDeleteSite={ (site) => dispatch(new DeleteSiteAction(site)) }
-                                onUpdateSite={ (site) => dispatch(new UpdateSiteAction(site)) }
-                                onCreateSite={ (site) => dispatch(new CreateSiteAction(site)) } />
-                        } />
-                        <Route path="/" exact render={() => <Redirect to="/dashboard" /> } />
-                    </Switch>
+                    <MuiPickersUtilsProvider utils={ DayjsUtils }>
+                        <TopNav onExpand={ () => dispatch(new ToggleSidebarAction(true)) } />
+                        <Sidebar
+                            expanded={ state.sidebarExpanded }
+                            sites={ state.availableSites }
+                            onClose={ () => dispatch(new ToggleSidebarAction(false)) }/>
+                        <Switch>
+                            <Route path="/recordings/:recordingId" render={ (match) =>
+                                <RecordingView recordingId={match.match.params.recordingId } />
+                            } />
+                            <Route path="/dashboard/:siteId" render={ (match) =>
+                                <DISiteDashboard
+                                    site={ state.availableSites.find(site => site._id === match.match.params.siteId )!}
+                                />
+                            } />
+                            <Route path="/dashboard" render={ () =>
+                                <DIOverallDashboard
+                                    sites={ state.availableSites }
+                                    onDeleteSite={ (site) => dispatch(new DeleteSiteAction(site)) }
+                                    onUpdateSite={ (site) => dispatch(new UpdateSiteAction(site)) }
+                                    onCreateSite={ (site) => dispatch(new CreateSiteAction(site)) } />
+                            } />
+                            <Route path="/" exact render={() => <Redirect to="/dashboard" /> } />
+                        </Switch>
+                    </MuiPickersUtilsProvider>
                 </MuiThemeProvider>
             </Fragment>
         </Router>

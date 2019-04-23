@@ -7,7 +7,8 @@
     "private": true,
     "devDependencies": {
         "@types/amqplib": "^0.5.10",
-        "@types/puppeteer": "^1.11.3"
+        "@types/puppeteer": "^1.11.3",
+        "@types/elasticsearch": "^5.0.31"
     },
     "dependencies": {
         "@xsrt/common": "^0.9.0",
@@ -18,7 +19,8 @@
         "express": "^4.16.4",
         "inversify": "^5.0.1",
         "puppeteer": "^1.12.0",
-        "amqplib": "^0.5.3"
+        "amqplib": "^0.5.3",
+        "elasticsearch": "^15.4.1"
     },
     "gitHead": "179c318fa443265abd6af14cb92955b78681ab9c"
 }

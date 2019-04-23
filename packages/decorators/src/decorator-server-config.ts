@@ -11,6 +11,7 @@ export class DecoratorConfig implements ServerConfig {
     readonly screenshotDir = `${process.env.STORAGE_LOCATION}/screenshots`;
     readonly recordingHost = `${process.env.API_SERVER}`;
     readonly rabbitHost = process.env.RABBIT_HOST || "localhost";
+    readonly elasticUrl = process.env.ELASTIC_HOST || "localhost:9200";
 }
 
 @injectable()

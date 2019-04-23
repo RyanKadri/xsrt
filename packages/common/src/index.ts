@@ -1,3 +1,4 @@
+import "./aa_index";
 export * from "./config/default-config";
 export * from "./config/scraper-config";
 export * from "./di/di.tokens";
@@ -6,8 +7,8 @@ export * from "./endpoint/proxy-endpoint-metadata";
 export * from "./endpoint/recordings-endpoint-metadata";
 export * from "./endpoint/target-endpoint-metadata";
 export * from "./endpoint/types";
-export * from "./services/app-initializer";
 export * from "./server/api-request-extractor";
+export * from "./services/app-initializer";
 export * from "./services/date-manager";
 export * from "./services/dependency-injector";
 export * from "./translation/pseudo-classes";

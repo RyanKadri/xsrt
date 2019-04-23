@@ -4,6 +4,7 @@ import React, { useReducer, useState } from "react";
 import { UIConfigService } from "../../../services/ui-config-service";
 import { useDialog } from "../../utils/useDialog";
 import { allowedRecordingTableColumns } from "./available-columns";
+import { RecordingTableFilter } from "./recording-table-filter";
 import { RecordingTableHeader } from "./recording-table-header";
 import { RecordingRow } from "./recording-table-row";
 import { RecordingTableSettings } from "./recording-table-settings";
@@ -28,20 +29,34 @@ function reducer(selected: RecordingOverview[], action: Action) {
     }
 }
 
+const initFilter: RecordingTableFilter = {
+    start: null,
+    end: null,
+    url: ""
+};
+
 const _RecordingTable = (props: RecordingTableProps) => {
 
     const { classes, onRefresh, onDeleteSelected, onPreview, uiConfigService } = props;
 
-    const { open, anchorEl, closeDialog, openDialog } = useDialog(false);
-    const [ settings, updateSettings ] = useState(uiConfigService.loadRecordingsTableConfig());
+    const settingsDialog = useDialog(false);
+    const filterDialog = useDialog(false);
 
-    const [selected, dispatch] = useReducer(reducer, []);
+    const [ settings, updateSettings ] = useState(uiConfigService.loadRecordingsTableConfig());
+    const [ filter, updateFilter ] = useState(initFilter);
+
+    const [ selected, dispatch ] = useReducer(reducer, []);
 
     const recordings = props.recordings.concat().sort((a, b) => b.metadata.startTime - a.metadata.startTime );
 
     const onSettingsChange = (newSettings: RecordingTableSettings) => {
         updateSettings(newSettings);
         uiConfigService.saveRecordingsTableConfig(newSettings);
+    };
+
+    const onFilterChange = (newFilter: RecordingTableFilter) => {
+        updateFilter(newFilter);
+        onRefresh(newFilter);
     };
 
     const onDelete = async () => {
@@ -53,8 +68,9 @@ const _RecordingTable = (props: RecordingTableProps) => {
         <RecordingTableToolbar
             numSelected={ selected.length }
             onDeleteSelected={ onDelete }
-            onSettingsToggle={ e => openDialog(e.currentTarget as HTMLElement) }
-            onRefresh={ onRefresh } />
+            onSettingsToggle={ e => settingsDialog.openDialog(e.currentTarget as HTMLElement) }
+            onFilterToggle={ e => filterDialog.openDialog(e.currentTarget as HTMLElement)}
+            onRefresh={ () => onRefresh(filter) } />
         <Table>
             <RecordingTableHeader
                 displayColumns={ settings.columns }
@@ -75,12 +91,19 @@ const _RecordingTable = (props: RecordingTableProps) => {
             }</TableBody>
         </Table>
         <RecordingTableSettings
-            open={ open }
+            open={ settingsDialog.open }
             availableColumns={ allowedRecordingTableColumns }
             onChangeSettings= { onSettingsChange }
             settings={ settings }
-            onClose={ closeDialog }
-            anchor={ anchorEl }
+            onClose={ settingsDialog.closeDialog }
+            anchor={ settingsDialog.anchorEl }
+        />
+        <RecordingTableFilter
+            open={ filterDialog.open }
+            anchor={ filterDialog.anchorEl }
+            onClose={ filterDialog.closeDialog }
+            filter={ filter }
+            onUpdateFilter={ onFilterChange }
         />
     </Paper>;
 };
@@ -92,7 +115,7 @@ interface RecordingTableProps extends WithStyles<typeof styles> {
 
     onPreview(recording: RecordingOverview): void;
     onDeleteSelected(selected: RecordingOverview[]): Promise<void>;
-    onRefresh(): void;
+    onRefresh(filter: RecordingTableFilter): void;
 }
 
 type Action = { type: "toggle", recording: RecordingOverview } |

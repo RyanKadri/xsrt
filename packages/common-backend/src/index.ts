@@ -10,3 +10,6 @@ export { ExpressServer, IExpressConfigurator, IRouteHandler, IRouteImplementatio
 export { MongoInitializer } from "./server/mongo-initializer";
 export { downloadResponse, errorInvalidCommand, errorNotFound } from "./server/request-handler";
 export * from "./server/route-types";
+export { ChunkId, DecoratorConsumer, QueueConsumerService } from "./queues/queue-consumer-service";
+export * from "./services/elastic-service";
+export * from "./services/elastic-repos";

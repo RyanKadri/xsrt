@@ -1,5 +1,4 @@
 import { Container, interfaces } from "inversify";
-import "reflect-metadata";
 import { EndpointDefinition } from "../endpoint/types";
 import { ApiCreationService } from "../server/create-api";
 import { Interface } from "../utils/type-utils";

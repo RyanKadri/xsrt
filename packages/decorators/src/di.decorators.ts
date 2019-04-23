@@ -10,6 +10,7 @@ import { thumbnailEndpointMetadata } from "./route-metadata/thumbnail-endpoint-m
 import Axios from "axios";
 import { RawChunkProcessor } from "./consumer/raw-chunk-processor";
 import { ScreenshotConsumer } from "./consumer/screenshot-consumer";
+import { ElasticConsumer } from "./consumer/elastic-consumer";
 
 export const IDecoratorConsumer = Symbol("IKafkaListeners");
 
@@ -21,7 +22,7 @@ export const decoratorDiConfig: ApiDefinition[] = [
         DecoratorExpressConfigurator
     ]),
     dependencyGroup(IDecoratorConsumer, [
-        RawChunkProcessor, ScreenshotConsumer
+        RawChunkProcessor, ScreenshotConsumer, ElasticConsumer
     ]),
     endpointDef(thumbnailEndpointMetadata, ThumbnailEndpoint),
     endpointDef(configEndpointMetadata, ConfigEndpoint),

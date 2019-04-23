@@ -11,6 +11,7 @@ export class ApiServerConfig implements ServerConfig {
     readonly decorateUrl = `${process.env.DECORATOR_URL}`;
     readonly assetDir = `${process.env.STORAGE_LOCATION}/assets`;
     readonly rabbitHost = process.env.RABBIT_HOST || "localhost";
+    readonly elasticUrl = process.env.ELASTIC_HOST || "localhost:9200";
 }
 
 // TODO - Refactoring this out to a common module will simplify dependencies and reduce duplication

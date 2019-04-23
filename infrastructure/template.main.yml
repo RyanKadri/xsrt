@@ -1,0 +1,8 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >
+    This stack creates the frontend and backend portion of XSRT on AWS. It also creates a pipeline for CI / CD
+Resources:
+    App:
+        Type: AWS::CloudFormation::Stack
+        Properties:
+            TemplateURL: "./app/main.yml"

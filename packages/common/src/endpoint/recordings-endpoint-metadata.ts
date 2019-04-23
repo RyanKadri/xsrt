@@ -1,5 +1,4 @@
 import { Recording, RecordingOverview } from "../types/types";
-import { DeepPartial } from "../utils/type-utils";
 import { defineEndpoint, RequestBodyUnwrap, RequestHeader, RequestParamUnwrap, RouteParamUnwrap, Type } from "./types";
 
 const recordingIdParam = "recordingId";
@@ -25,19 +24,15 @@ export const recordingEndpoint = defineEndpoint({
         },
         response: Type<Recording>()
     },
-    patchRecording: {
-        method: "patch",
-        url: singleRecordingUrl,
-        request: {
-            recordingId,
-            patchData: new RequestBodyUnwrap<DeepPartial<Recording>>()
-        },
-        response: Type<{success: boolean}>()
-    },
     filterRecordings: {
         url: multiRecordingUrl,
         method: "get",
-        request: { site: new RequestParamUnwrap("site") },
+        request: {
+            site: new RequestParamUnwrap("site"),
+            before: new RequestParamUnwrap("before"),
+            after: new RequestParamUnwrap("after"),
+            url: new RequestParamUnwrap("url")
+        },
         response: Type<RecordingOverview[]>()
     },
     createRecording: {

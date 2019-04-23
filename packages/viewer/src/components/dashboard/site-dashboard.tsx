@@ -5,6 +5,7 @@ import React, { Fragment, useEffect, useReducer, useState } from "react";
 import { RecordingApiService } from "../../services/recording-service";
 import { UIConfigService } from "../../services/ui-config-service";
 import { RecordingTable } from "./recording-table/recording-table";
+import { RecordingTableFilter } from "./recording-table/recording-table-filter";
 
 const styles = (theme: Theme) => createStyles({
     root: {
@@ -35,7 +36,7 @@ function reducer(state: State, action: Action): State {
                 stale: false,
             };
         case "refresh":
-            return { ...state, stale: true };
+            return { ...state, stale: true, loadingFilter: action.filter };
         case "loading":
             return { ...state, loading: true };
     }
@@ -45,7 +46,7 @@ function _SiteDashboardView({ classes, recordingsApi, logger, site }: Props) {
     const [ state, dispatch ] = useReducer(reducer, {
         recordings: [],
         loading: false,
-        stale: true
+        stale: true,
     });
 
     const [ preview, setPreview ] = useState<RecordingOverview | null>(null);
@@ -63,7 +64,7 @@ function _SiteDashboardView({ classes, recordingsApi, logger, site }: Props) {
     useEffect(() => {
         if (site && state.stale && !state.loading) {
             dispatch({ type: "loading"});
-            recordingsApi.fetchAvailableRecordings(site._id)
+            recordingsApi.fetchAvailableRecordings(site._id, state.loadingFilter)
                 .then(fetchedRecordings => {
                     dispatch({ type: "updateRecordings", recordings: fetchedRecordings });
                 });
@@ -95,7 +96,7 @@ function _SiteDashboardView({ classes, recordingsApi, logger, site }: Props) {
                                 recordings={ state.recordings }
                                 onPreview={ setPreview }
                                 onDeleteSelected={ onDeleteSelected }
-                                onRefresh={ () => dispatch({ type: "refresh" }) }
+                                onRefresh={ (filter) => dispatch({ type: "refresh", filter }) }
                             />
                     }
                     <Dialog maxWidth="lg"
@@ -113,7 +114,7 @@ function _SiteDashboardView({ classes, recordingsApi, logger, site }: Props) {
 export const SiteDashboardView = withStyles(styles)(_SiteDashboardView);
 
 type Action = { type: "loading" } |
-    { type: "refresh" } |
+    { type: "refresh", filter: RecordingTableFilter } |
     { type: "deleteRecordings", recordings: RecordingOverview[] } |
     { type: "updateRecordings", recordings: RecordingOverview[] };
 
@@ -126,5 +127,6 @@ interface Props extends WithStyles<typeof styles> {
 interface State {
     loading: boolean;
     stale: boolean;
+    loadingFilter?: RecordingTableFilter;
     recordings: RecordingOverview[];
 }
