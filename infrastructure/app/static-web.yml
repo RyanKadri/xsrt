@@ -1,0 +1,90 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >
+  Creates an S3 Bucket and Cloudfront Distribution to serve the static assets
+Parameters:
+  EnvironmentName:
+    Type: String
+  Certificate:
+    Type: String
+  Url:
+    Type: String
+Resources:
+  RecordingViewerDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Aliases:
+          - !Ref Url
+        Enabled: true
+        DefaultRootObject: "index.html"
+        IPV6Enabled: true
+        PriceClass: PriceClass_100
+        ViewerCertificate:
+          AcmCertificateArn: !Ref Certificate
+          SslSupportMethod: "sni-only"
+        CacheBehaviors:
+          - AllowedMethods: ["GET", "HEAD"]
+            ForwardedValues:
+              QueryString: false
+            ViewerProtocolPolicy: "redirect-to-https"
+            PathPattern: index.html
+            TargetOriginId: "S3-Static"
+            MinTTL: 60
+            MaxTTL: 60
+            DefaultTTL: 60
+        DefaultCacheBehavior:
+          AllowedMethods: ["GET", "HEAD"]
+          TargetOriginId: "S3-Static"
+          ViewerProtocolPolicy: "redirect-to-https"
+          ForwardedValues:
+            QueryString: false
+          Compress: true
+        Origins:
+          - DomainName: !GetAtt "RecordingViewerBucket.DomainName"
+            Id: "S3-Static"
+            S3OriginConfig:
+              OriginAccessIdentity: !Join ["", ["origin-access-identity/cloudfront/", !Ref "SiteDistributionAccessId"]]
+        CustomErrorResponses:
+          - ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: "/index.html"
+          - ErrorCode: 403
+            ResponseCode: 200
+            ResponsePagePath: "/index.html"
+  SiteDistributionAccessId:
+    Type: "AWS::CloudFront::CloudFrontOriginAccessIdentity"
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: ""
+  RecordingViewerBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      AccessControl: Private
+      BucketName: !Join ["-", ["xsrt", !Ref "EnvironmentName", "static-asset-bucket"] ]
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      WebsiteConfiguration:
+        ErrorDocument: "index.html"
+        IndexDocument: "index.html"
+  SiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref RecordingViewerBucket
+      PolicyDocument:
+        Statement:
+          - Action:
+              - "s3:GetObject"
+            Effect: "Allow"
+            Resource:
+              !Join ["", ["arn:aws:s3:::", !Ref RecordingViewerBucket, "/*"]]
+            Principal:
+              AWS: !Join ["", ["arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ", !Ref "SiteDistributionAccessId"]]
+Outputs:
+  CloudFrontDomain:
+    Description: "The URL of the Cloudfront Distribution"
+    Value: !GetAtt RecordingViewerDistribution.DomainName
+  FrontendBucket:
+    Value: !Ref RecordingViewerBucket

@@ -26,7 +26,7 @@
     "dependencies": {
         "@material-ui/core": "^3.6.0",
         "@xsrt/common": "^0.9.0",
-        "axios": "^0.18.0",
+        "axios": "^0.19.0",
         "inversify": "^5.0.1",
         "react": "^16.6.0",
         "react-dom": "^16.6.0",

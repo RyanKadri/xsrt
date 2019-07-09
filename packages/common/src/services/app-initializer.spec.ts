@@ -13,4 +13,4 @@ describe(initializeApp.name, () => {
         expect(container.bind).toHaveBeenCalledWith(DependencyInjector);
         expect(bind.toConstantValue).toHaveBeenCalledWith(injector);
     })
-})
+});
