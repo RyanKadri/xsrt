@@ -1,29 +1,29 @@
 {
-    "name": "@xsrt/common-backend",
-    "version": "0.9.0",
-    "description": "Shared code and types for backend XSRT services",
-    "author": "Ryan Kadri <ryankadri1@gmail.com>",
-    "license": "ISC",
-    "typings": "lib-cjs/index.d.ts",
-    "main": "lib-cjs/index.js",
-    "module": "lib/index.js",
-    "sideEffects": false,
-    "private": true,
-    "devDependencies": {
-        "@types/express": "^4.16.0",
-        "@types/mongoose": "^5.3.1",
-        "@types/elasticsearch": "^5.0.31"
-    },
-    "dependencies": {
-        "@xsrt/common": "^0.9.0",
-        "axios": "^0.19.0",
-        "dotenv": "^6.1.0",
-        "express": "^4.16.4",
-        "inversify": "^5.0.1",
-        "mongoose": "^5.3.1",
-        "shortid": "^2.2.14",
-        "amqplib": "^0.5.3",
-        "elasticsearch": "^15.4.1"
-    },
-    "gitHead": "179c318fa443265abd6af14cb92955b78681ab9c"
+  "name": "@xsrt/common-backend",
+  "version": "0.9.0",
+  "description": "Shared code and types for backend XSRT services",
+  "author": "Ryan Kadri <ryankadri1@gmail.com>",
+  "license": "ISC",
+  "typings": "lib-cjs/index.d.ts",
+  "main": "lib-cjs/index.js",
+  "module": "lib/index.js",
+  "sideEffects": false,
+  "private": true,
+  "devDependencies": {
+    "@types/express": "^4.16.0",
+    "@types/mongoose": "^5.3.1",
+    "@types/shortid": "0.0.29",
+    "@types/amqplib": "^0.5.10"
+  },
+  "dependencies": {
+    "axios": "^0.19.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.16.4",
+    "inversify": "^5.0.1",
+    "mongoose": "^5.3.1",
+    "shortid": "^2.2.14",
+    "amqplib": "^0.5.3",
+    "@elastic/elasticsearch": "^6.0"
+  },
+  "gitHead": "179c318fa443265abd6af14cb92955b78681ab9c"
 }

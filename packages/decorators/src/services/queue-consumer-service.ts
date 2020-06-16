@@ -1,9 +1,9 @@
-import { DecoratorQueueService } from "./decorator-queue-service";
+import { NeedsInitialization, RecordingChunk } from "@xsrt/common";
+import { DecoratorQueueService } from "@xsrt/common-backend";
 import { Channel, connect } from "amqplib";
 import { inject, injectable, multiInject } from "inversify";
-import { DecoratorConfig } from "../../../decorators/src/decorator-server-config";
-import { IDecoratorConsumer } from "../../../decorators/src/di.decorators";
-import { NeedsInitialization, RecordingChunk } from "@xsrt/common";
+import { DecoratorConfig } from "../decorator-server-config";
+import { IDecoratorConsumer } from "../di.decorators";
 
 @injectable()
 export class QueueConsumerService implements NeedsInitialization {

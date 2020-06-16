@@ -16,7 +16,7 @@
 
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "sourceMap": true,
+    "inlineSourceMap": true,
     "importHelpers": true,
 
     "esModuleInterop": true,

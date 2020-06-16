@@ -1,7 +1,8 @@
 import { LoggingService, RecordingChunk } from "@xsrt/common";
-import { Chunk, rawChunkQueue, RecordingSchema, DecoratorConsumer, ChunkId, elasticQueue } from "@xsrt/common-backend";
+import { Chunk, elasticQueue, rawChunkQueue, RecordingSchema } from "@xsrt/common-backend";
 import { injectable } from "inversify";
 import { AssetResolver } from "../assets/asset-resolver";
+import { ChunkId, DecoratorConsumer } from "../services/queue-consumer-service";
 
 @injectable()
 export class RawChunkProcessor implements DecoratorConsumer<ChunkId> {

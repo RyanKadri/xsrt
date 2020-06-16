@@ -10,6 +10,6 @@
         }
     },
     "include": [
-        "src"
+        "src", "../decorators/src/services/queue-consumer-service.ts"
     ],
 }

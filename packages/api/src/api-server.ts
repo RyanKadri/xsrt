@@ -1,10 +1,12 @@
-import { initializeExpressApp, MongoInitializer, DecoratorQueueService, ElasticService } from "@xsrt/common-backend";
+import { DecoratorQueueService, ElasticService, initializeExpressApp, MongoInitializer } from "@xsrt/common-backend";
+import dotenv from "dotenv";
 import { apiDiConfig } from "./di.api";
 
 (async () => {
-    await initializeExpressApp(apiDiConfig, [
-        MongoInitializer,
-        ElasticService,
-        DecoratorQueueService,
-    ]);
+  dotenv.config({ path: "../../.env" });
+  await initializeExpressApp(apiDiConfig, [
+      MongoInitializer,
+      ElasticService,
+      DecoratorQueueService,
+  ]);
 })();

@@ -16,7 +16,9 @@ const common = (output, tsconfig) => ({
         //publicPath: "/",
     },
     plugins: [
-        new CleanWebpackPlugin([output + "/*"], { beforeEmit: true } ),
+        new CleanWebpackPlugin({
+          cleanAfterEveryBuildPatterns: ["**/*"]
+        }),
     ],
     module: {
         rules: [

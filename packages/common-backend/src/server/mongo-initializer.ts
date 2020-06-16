@@ -25,7 +25,7 @@ export class MongoInitializer implements NeedsInitialization {
             .then(() => {
                 this.logger.info(`Successfully connected to Mongo`);
             }).catch(err => {
-                this.logger.error(`Error connecting to Mongo123: ${err}`);
+                this.logger.error(`Error connecting to Mongo: ${err}`);
                 if (this.numRetries ++ < maxRetries) {
                     return new Promise(res => setTimeout(() => this.connectWithRetry().then(res), retryDelay));
                 } else {

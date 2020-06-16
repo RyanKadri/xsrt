@@ -1,75 +1,76 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "type": "node",
-            "request": "attach",
-            "name": "Attach to API Server",
-            "address": "127.0.0.1",
-            "port": 9229,
-            "sourceMaps": true,
-            "restart": true
-        },
-        {
-            "type": "node",
-            "request": "attach",
-            "name": "Attach to Decorator Server",
-            "address": "127.0.0.1",
-            "port": 9230,
-            "sourceMaps": true,
-            "restart": true
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Test All",
-            "program": "${workspaceFolder}/spec/support/launch.js",
-            "console": "integratedTerminal",
-            "internalConsoleOptions": "neverOpen",
-            "sourceMaps": true,
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Test Current File",
-            "program": "${workspaceFolder}/spec/support/launch.js",
-            "args": [
-                "${relativeFile}",
-            ],
-            "console": "integratedTerminal",
-            "internalConsoleOptions": "neverOpen",
-            "sourceMaps": true
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Start API",
-            "program": "${workspaceFolder}/packages/api/src/api-server.ts",
-            "preLaunchTask": "tsc: build - packages/api/tsconfig.json",
-            "outFiles": [
-                "${workspaceFolder}/packages/api/dist/api-server.js"
-            ],
-            "sourceMaps": true,
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Start Decorators",
-            "program": "${workspaceFolder}/packages/decorators/src/decorator-server.ts",
-            "preLaunchTask": "tsc: build - packages/decorators/tsconfig.json",
-            "outFiles": [
-                "${workspaceFolder}/packages/decorators/dist/decorator-server.js"
-            ],
-            "sourceMaps": true,
-        }
-    ],
-    "compounds": [
-        {
-            "name": "Start Backend",
-            "configurations": ["Start API", "Start Decorators"],
-        }
-    ]
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch API",
+      "cwd": "${workspaceFolder}/packages/api",
+      "args": [
+        "${workspaceFolder}/packages/api/src/api-server.ts"
+      ],
+      "runtimeArgs": [
+        "-r",
+        "ts-node/register",
+        "-r",
+        "tsconfig-paths/register"
+      ],
+      "env": {
+        "TS_NODE_PROJECT": "${workspaceFolder}/packages/api/tsconfig.json",
+        "TS_NODE_TRANSPILE_ONLY": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Decorators",
+      "cwd": "${workspaceFolder}/packages/decorator",
+      "args": [
+        "${workspaceFolder}/packages/decorators/src/decorator-server.ts"
+      ],
+      "runtimeArgs": [
+        "-r",
+        "ts-node/register",
+        "-r",
+        "tsconfig-paths/register"
+      ],
+      "env": {
+        "TS_NODE_PROJECT": "${workspaceFolder}/packages/api/tsconfig.json",
+        "TS_NODE_TRANSPILE_ONLY": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Test All",
+      "program": "${workspaceFolder}/spec/support/launch.js",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "sourceMaps": true,
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Test Current File",
+      "program": "${workspaceFolder}/spec/support/launch.js",
+      "args": [
+        "${relativeFile}",
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "sourceMaps": true
+    },
+  ],
+  "compounds": [
+    {
+      "name": "Start Backend",
+      "configurations": [
+        "Launch API",
+        "Launch Decorators"
+      ],
+    }
+  ]
 }

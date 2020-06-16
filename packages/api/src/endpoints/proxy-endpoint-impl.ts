@@ -1,10 +1,10 @@
 import { assetEndpoint, AxiosSymbol } from "@xsrt/common";
 import { Asset, downloadResponse, errorNotFound, IServerConfig, ProxiedAsset, RouteImplementation } from "@xsrt/common-backend";
+import { AxiosStatic } from "axios";
 import { inject, injectable } from "inversify";
 import { join } from "path";
 import { ApiServerConfig } from "../api-server-conf";
 import { AssetStreamService } from "../services/asset-stream-service";
-import { AxiosStatic } from "axios";
 
 type AssetEndpointType = RouteImplementation<typeof assetEndpoint>;
 

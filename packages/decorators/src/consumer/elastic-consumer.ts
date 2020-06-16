@@ -1,6 +1,7 @@
-import { injectable, inject, LazyServiceIdentifer } from "inversify";
-import { elasticQueue, DecoratorConsumer, ChunkId, Chunk, RecordingSchema, initSnapshotQueue, ElasticService, recordingRepo } from "@xsrt/common-backend";
-import { RecordingElasticRep, RecordingChunk, LoggingService, RecordedNavigationEvent, Recording } from "@xsrt/common";
+import { LoggingService, RecordedNavigationEvent, Recording, RecordingChunk, RecordingElasticRep } from "@xsrt/common";
+import { Chunk, elasticQueue, ElasticService, initSnapshotQueue, recordingRepo, RecordingSchema } from "@xsrt/common-backend";
+import { inject, injectable, LazyServiceIdentifer } from "inversify";
+import { ChunkId, DecoratorConsumer } from "../services/queue-consumer-service";
 
 @injectable()
 export class ElasticConsumer implements DecoratorConsumer<ChunkId> {
@@ -21,7 +22,7 @@ export class ElasticConsumer implements DecoratorConsumer<ChunkId> {
         }
 
         const chunk: RecordingChunk = chunkDoc.toObject();
-        const oldDocs = (await client.search<RecordingElasticRep>({
+        const oldDocs = (await client.search({
             index: recordingRepo.index,
             type: recordingRepo.type,
             body: {
@@ -31,7 +32,7 @@ export class ElasticConsumer implements DecoratorConsumer<ChunkId> {
                     }
                 }
             }
-        })).hits.hits;
+        })).body.hits;
 
         if (oldDocs.length > 1) {
             throw new Error(`Expected at most 1 Elastic document for chunk ${ _id } but got ${oldDocs.length}`);

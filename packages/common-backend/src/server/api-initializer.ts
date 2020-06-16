@@ -1,11 +1,8 @@
 import { constantWithDeps, DIDefinition, EndpointDefinition, initializeApp, NeedsInitialization } from "@xsrt/common";
-import dotenv from "dotenv";
 import { interfaces } from "inversify";
-import { IRouteImplementation, ExpressServer } from "./express-server";
+import { ExpressServer, IRouteImplementation } from "./express-server";
 import { RouteImplementer } from "./implement-route";
 import { RouteImplementation } from "./route-types";
-
-dotenv.load();
 
 /* A convenience method for starting a project that exposes express endpoints */
 export async function initializeExpressApp(

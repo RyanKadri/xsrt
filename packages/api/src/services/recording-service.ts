@@ -1,6 +1,6 @@
-import { injectable } from "inversify";
 import { Recording, Without } from "@xsrt/common";
-import { RecordingSchema, ElasticService, recordingRepo } from "@xsrt/common-backend";
+import { ElasticService, recordingRepo, RecordingSchema } from "@xsrt/common-backend";
+import { injectable } from "inversify";
 import { RecordingFilterParams } from "../endpoints/recording-endpoint-impl";
 
 const defaultNumRecordings = 15;
@@ -53,7 +53,7 @@ export class RecordingService {
         });
 
         const recordings = await RecordingSchema.find(
-            { _id: { $in: elasticRecordings.hits.hits.map(hit => hit._id) } },
+            { _id: { $in: elasticRecordings.body.hits.hits.map((hit: any) => hit._id) } },
             { metadata: 1, thumbnail: 1 }
         ).sort({ "metadata.startTime": -1 })
          .limit(defaultNumRecordings);

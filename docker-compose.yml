@@ -1,68 +1,88 @@
-version: '3.7'
+version: "3.7"
 services:
-    mongo:
+  mongo:
         image: mongo:4.0
         volumes:
             - mongo-data:/data/db
         expose:
             - 27017
-    app:
-        expose:
-            - ${API_PORT}
-        links:
-            - mongo
-            - decorator
-        volumes:
-            - stored-files:${STORAGE_LOCATION}
-        depends_on:
-            - mongo
-            - decorator
-        environment:
-            - MONGO_URL=mongodb://mongo/recordings
-            - DECORATOR_URL=http://decorator:${DECORATOR_PORT}
-            - API_PORT=${API_PORT}
-            - STORAGE_LOCATION=${STORAGE_LOCATION}
-        build:
-            context: .
-            target: api
-            args:
-                port: "${API_PORT}"
-    decorator:
-        expose:
-            - ${DECORATOR_PORT}
-        links:
-            - mongo
-        volumes:
-            - stored-files:${STORAGE_LOCATION}
-        depends_on:
-            - mongo
-        environment:
-            - MONGO_URL=mongodb://mongo/recordings
-            - DECORATOR_PORT=${DECORATOR_PORT}
-            - API_SERVER=http://app:${API_PORT}
-        build:
-            context: .
-            target: decorator
-            args:
-                port: "${DECORATOR_PORT}"
-    static:
         ports:
-            - ${STATIC_PORT}:443
-        volumes:
-            - stored-files:${STORAGE_LOCATION}
-            - ./secret/certs:/etc/ssl/certs
-        links:
-            - decorator
-            - app
-        environment:
-            - FRONTEND_HOSTNAME=${FRONTEND_HOSTNAME}
-            - STORAGE_LOCATION=${STORAGE_LOCATION}
-            - API_SERVER=http://app:${API_PORT}
-            - APP_ROOT=/app
-        build:
-            context: .
-            target: static-frontend
-        command: /bin/sh -c "envsubst '$${STORAGE_LOCATION},$${FRONTEND_HOSTNAME},$${API_SERVER},$${APP_ROOT}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && exec nginx -g 'daemon off;'"
+            - 27017:27017
+  app:
+    expose:
+      - ${API_PORT}
+    links:
+      - mongo
+      - decorator
+    volumes:
+      - stored-files:${STORAGE_LOCATION}
+    depends_on:
+      - mongo
+      - decorator
+    environment:
+      - MONGO_URL=mongodb://mongo/recordings
+      - DECORATOR_URL=http://decorator:${DECORATOR_PORT}
+      - API_PORT=${API_PORT}
+      - STORAGE_LOCATION=${STORAGE_LOCATION}
+    build:
+      context: .
+      target: api
+      args:
+        port: "${API_PORT}"
+  decorator:
+    expose:
+      - ${DECORATOR_PORT}
+    links:
+      - mongo
+    volumes:
+      - stored-files:${STORAGE_LOCATION}
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URL=mongodb://mongo/recordings
+      - DECORATOR_PORT=${DECORATOR_PORT}
+      - API_SERVER=http://app:${API_PORT}
+    build:
+      context: .
+      target: decorator
+      args:
+        port: "${DECORATOR_PORT}"
+  static:
+    ports:
+      - ${STATIC_PORT}:443
+    volumes:
+      - stored-files:${STORAGE_LOCATION}
+      - ./secret/certs:/etc/ssl/certs
+    links:
+      - decorator
+      - app
+    environment:
+      - FRONTEND_HOSTNAME=${FRONTEND_HOSTNAME}
+      - STORAGE_LOCATION=${STORAGE_LOCATION}
+      - API_SERVER=http://app:${API_PORT}
+      - APP_ROOT=/app
+    build:
+      context: .
+      target: static-frontend
+    command: /bin/sh -c "envsubst '$${STORAGE_LOCATION},$${FRONTEND_HOSTNAME},$${API_SERVER},$${APP_ROOT}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && exec nginx -g 'daemon off;'"
+  rabbit:
+    image: rabbitmq:3.7.12-management
+    hostname: rabbit
+    expose:
+      - 5672
+    ports:
+      - 5672:5672
+    volumes:
+      - rabbit-data:/var/lib/rabbitmq
+  elastic:
+      image: elasticsearch:6.6.1
+      ports:
+        - "9200:9200"
+        - "9300:9300"
+      volumes:
+        - elastic-data:/usr/share/elasticsearch/data
 volumes:
-    mongo-data:
-    stored-files:
+  mongo-data:
+  stored-files:
+  rabbit-data:
+  elastic-data:

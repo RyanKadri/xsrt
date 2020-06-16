@@ -1,4 +1,4 @@
-import { ServerConfig, ExpressConfigurator } from "@xsrt/common-backend";
+import { ExpressConfigurator, ServerConfig } from "@xsrt/common-backend";
 import bodyParser from "body-parser";
 import cors from "cors";
 import { Express } from "express";
@@ -11,7 +11,7 @@ export class ApiServerConfig implements ServerConfig {
     readonly decorateUrl = `${process.env.DECORATOR_URL}`;
     readonly assetDir = `${process.env.STORAGE_LOCATION}/assets`;
     readonly rabbitHost = process.env.RABBIT_HOST || "localhost";
-    readonly elasticUrl = process.env.ELASTIC_HOST || "localhost:9200";
+    readonly elasticUrl = process.env.ELASTIC_HOST || "http://localhost:9200";
 }
 
 // TODO - Refactoring this out to a common module will simplify dependencies and reduce duplication
