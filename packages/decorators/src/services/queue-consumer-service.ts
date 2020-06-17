@@ -1,5 +1,5 @@
 import { NeedsInitialization, RecordingChunk } from "@xsrt/common";
-import { DecoratorQueueService } from "@xsrt/common-backend";
+import { DecoratorQueueService, IServerConfig } from "@xsrt/common-backend";
 import { Channel, connect } from "amqplib";
 import { inject, injectable, multiInject } from "inversify";
 import { DecoratorConfig } from "../decorator-server-config";
@@ -12,7 +12,7 @@ export class QueueConsumerService implements NeedsInitialization {
     private chann: Channel | undefined;
 
     constructor(
-        @inject(DecoratorConfig) private config: Pick<DecoratorConfig, "rabbitHost">,
+        @inject(IServerConfig) private config: Pick<DecoratorConfig, "rabbitHost">,
         private queueService: DecoratorQueueService,
         @multiInject(IDecoratorConsumer) private listeners: DecoratorConsumer<any>[]
     ) { }

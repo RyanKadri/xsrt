@@ -1,7 +1,7 @@
-require('dotenv').load();
+require('dotenv').config();
 const path = require('path');
 const webpack = require('webpack');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const merge = require('webpack-merge');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -112,11 +112,17 @@ const viewerProd = merge(frontendCommon, {
 
 const recordingClient = merge(common('dist/recorder', "packages/recorder/tsconfig.json"), {
     name: 'recording-client',
+    output: {
+      library: 'recorder',
+      libraryTarget: 'umd',
+      filename: 'index.js',
+      auxiliaryComment: 'Test Comment'
+    },
     plugins: [
         new BundleAnalyzerPlugin({ analyzerMode: 'static' }),
     ],
     entry: {
-        ['recorder']: './packages/recorder/src/public_api.ts'
+        ['recorder']: './packages/recorder/src/index.ts'
     },
     mode: 'production'
 })
@@ -153,7 +159,9 @@ const compileExtension = merge(common('packages/extension/dist', 'packages/exten
         ['popup']: './packages/extension/src/popup/index.tsx'
     },
     plugins: [
-        new CopyWebpackPlugin([{ from: "./packages/extension/src/**/*.{json,png,html,svg}", to: './', flatten: true } ]),
+        new CopyWebpackPlugin({ patterns: [
+          { from: "./packages/extension/src/**/*.{json,png,html,svg}", to: './', flatten: true }
+        ]}),
         new BundleAnalyzerPlugin({ analyzerMode: 'static' }),
     ],
     mode: "production"

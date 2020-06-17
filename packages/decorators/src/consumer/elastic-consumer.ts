@@ -1,6 +1,6 @@
 import { LoggingService, RecordedNavigationEvent, Recording, RecordingChunk, RecordingElasticRep } from "@xsrt/common";
 import { Chunk, elasticQueue, ElasticService, initSnapshotQueue, recordingRepo, RecordingSchema } from "@xsrt/common-backend";
-import { inject, injectable, LazyServiceIdentifer } from "inversify";
+import { injectable } from "inversify";
 import { ChunkId, DecoratorConsumer } from "../services/queue-consumer-service";
 
 @injectable()
@@ -9,7 +9,7 @@ export class ElasticConsumer implements DecoratorConsumer<ChunkId> {
     readonly topic = elasticQueue.name;
 
     constructor(
-        @inject(new LazyServiceIdentifer(() => ElasticService)) private elasticService: ElasticService,
+        private elasticService: ElasticService,
         private logger: LoggingService
     ) { }
 

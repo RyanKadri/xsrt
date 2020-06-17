@@ -27,7 +27,7 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Decorators",
-      "cwd": "${workspaceFolder}/packages/decorator",
+      "cwd": "${workspaceFolder}/packages/decorators",
       "args": [
         "${workspaceFolder}/packages/decorators/src/decorator-server.ts"
       ],

@@ -1,7 +1,8 @@
 import { matchesMedia, recoverGlobals } from "../utils/dom-utils";
 
 export function shouldIncludeRule(rule: CSSRule): boolean {
-    const globals = recoverGlobals() as Window & { CSS: CSS };
+  CSS
+    const globals = recoverGlobals() as Window & { CSS: typeof CSS };
     if (rule instanceof CSSMediaRule) {
         return matchesMedia(rule.media);
     } else if (rule instanceof CSSSupportsRule) {

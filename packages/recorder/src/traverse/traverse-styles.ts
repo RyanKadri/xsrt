@@ -8,9 +8,9 @@ export function extractStyleInfo(styleSheet: CSSStyleSheet): ScrapedStyleRule[] 
                 .map(transformRule);
 }
 
-function extractRules(styleSheet: CSSStyleSheet): ScrapedStyleRule[] {
+function extractRules(styleSheet: CSSStyleSheet) {
     return rulesPerSheet(styleSheet)
-        .flat(Infinity);
+        .flat(Infinity) as ScrapedStyleRule[];
 }
 
 function rulesPerSheet(sheet: CSSStyleSheet) {
