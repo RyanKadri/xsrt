@@ -9,7 +9,7 @@ export function withDependencies<P, K extends keyof P>(
     return (props: Omit<P, K>) => <DependencyContext.Consumer children={
         dependencyContainer => {
             const newProps = {...props as any};
-            Object.entries(dependencies).forEach(([key, val]) => newProps[key] = dependencyContainer!.inject(val));
+            Object.entries(dependencies).forEach(([key, val]) => newProps[key] = dependencyContainer!.inject(val as any));
             return <DIComponent {...newProps}/>;
         }
     } />;

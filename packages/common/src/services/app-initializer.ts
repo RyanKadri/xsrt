@@ -1,5 +1,5 @@
 import { Container, interfaces } from "inversify";
-import { EndpointDefinition } from "../endpoint/types";
+import { ApiConfig, EndpointDefinition } from "../endpoint/types";
 import { ApiCreationService } from "../server/create-api";
 import { Interface } from "../utils/type-utils";
 import { DependencyInjector } from "./dependency-injector";
@@ -26,7 +26,7 @@ function bindInitializer(initializer: DIDefinition, container: Interface<Contain
   switch (initializer.type) {
     case "api":
       const apiCreator = container.get(ApiCreationService);
-      const api = apiCreator.createApi(initializer.def);
+      const api = apiCreator.createApi(initializer.def, initializer.config);
       return container.bind(initializer.token).toConstantValue(api);
     case "constant":
       return container.bind(initializer.token).toConstantValue(initializer.value);
@@ -63,9 +63,9 @@ export function constantWithDeps<T>(
 }
 
 /* istanbul ignore next */
-export function apiDef(token: symbol, def: EndpointDefinition): ApiDefinition {
+export function apiDef(token: symbol, def: EndpointDefinition, config: ApiConfig = { baseUrl: "" }): ApiDefinition {
   return {
-    type: "api", token, def
+    type: "api", token, def, config
   };
 }
 
@@ -111,6 +111,7 @@ interface ApiDefinition {
   type: "api";
   token: symbol;
   def: EndpointDefinition;
+  config: ApiConfig;
 }
 
 interface DependencyGroup {

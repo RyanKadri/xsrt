@@ -4,7 +4,9 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 export const LinkListItem = (props: LinkListItemProps) =>
-    <ListItem component={Link as any} {...props}></ListItem>;
+    <ListItem>
+      <Link to={ props.to }></Link>
+    </ListItem>;
 
 export interface LinkListItemProps extends ListItemProps {
     to: string;

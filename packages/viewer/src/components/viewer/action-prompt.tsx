@@ -7,7 +7,7 @@ const styles = (theme: Theme) => createStyles({
         bottom: 0,
         width: "100%",
         backgroundColor: `rgba(0,0,0,0.45)`,
-        padding: theme.spacing.unit,
+        padding: theme.spacing(1),
         zIndex: 11
     },
 });

@@ -12,7 +12,7 @@ import { RecordingTableToolbar } from "./recording-table-toolbar";
 
 const styles = (theme: Theme) => createStyles({
     tableContainer: {
-        marginTop: theme.spacing.unit * 2
+        marginTop: theme.spacing(2)
     }
 });
 

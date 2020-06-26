@@ -1,4 +1,4 @@
-import { AxiosResponse, AxiosStatic } from "axios";
+import { AxiosResponse, AxiosStatic } from "got";
 import { RequestParamUnwrap, RouteParamUnwrap, Type } from "../endpoint/types";
 import { ApiRequestPartExtractor } from "./api-request-extractor";
 import { ApiCreationService } from './create-api';

@@ -1,17 +1,28 @@
+import { assertExists } from "@xsrt/common";
 import { ExpressConfigurator, ServerConfig } from "@xsrt/common-backend";
 import bodyParser from "body-parser";
 import cors from "cors";
 import { Express } from "express";
 import { injectable } from "inversify";
 
-@injectable()
-export class DecoratorConfig implements ServerConfig {
-    readonly port = parseInt(process.env.DECORATOR_PORT!, 10);
-    readonly mongoUrl = `${process.env.MONGO_URL}`;
-    readonly screenshotDir = `${process.env.STORAGE_LOCATION}/screenshots`;
-    readonly recordingHost = `${process.env.API_SERVER}`;
-    readonly rabbitHost = process.env.RABBIT_HOST || "localhost";
-    readonly elasticUrl = process.env.ELASTIC_HOST || "http://localhost:9200";
+export const decoratorConfig: DecoratorConfig = {
+    port: parseInt(process.env.DECORATOR_PORT!, 10),
+    mongoUrl: `${process.env.MONGO_URL}`,
+    screenshotDir: `${process.env.STORAGE_LOCATION}/screenshots`,
+    recordingHost: assertExists(process.env.API_HOST),
+    rabbitHost: process.env.RABBIT_HOST || "localhost",
+    elasticUrl: process.env.ELASTIC_HOST || "http://localhost:9200",
+    proxyHost: assertExists(process.env.API_HOST)
+}
+
+export interface DecoratorConfig extends ServerConfig {
+  port: number
+  mongoUrl: string;
+  screenshotDir: string;
+  recordingHost: string;
+  rabbitHost: string;
+  elasticUrl: string;
+  proxyHost: string;
 }
 
 @injectable()

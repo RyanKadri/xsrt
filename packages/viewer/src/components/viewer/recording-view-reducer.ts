@@ -25,7 +25,7 @@ export function recordingViewReducer(state: RecordingViewState, action: Recordin
                               .sort(sortByTimestamp),
                 inputs: mergeGroups(
                         state.inputs,
-                        convertMapToGroups(action.chunk.inputs),
+                        convertMapToGroups(action.chunk.inputs || {}),
                         sortByTimestamp
                 ),
                 retrievedChunks,

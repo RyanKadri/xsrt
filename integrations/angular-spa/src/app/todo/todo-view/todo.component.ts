@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
-import { MatSelectionListChange } from '@angular/material';
+import { MatSelectionListChange } from '@angular/material/list';
 
 const activeTodosStorageKey = 'todos.active';
 const finishedTodosStorageKey = 'todos.finished';

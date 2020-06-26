@@ -7,7 +7,7 @@ const styles = (theme: Theme) => createStyles({
         position: "absolute",
         right: 0,
         height: "100%",
-        padding: theme.spacing.unit,
+        padding: theme.spacing(1),
         display: "flex",
         flexDirection: "column",
         justifyContent: "flex-end",
@@ -16,8 +16,8 @@ const styles = (theme: Theme) => createStyles({
         overflowY: "auto"
     },
     notification: {
-        padding: theme.spacing.unit,
-        marginTop: theme.spacing.unit
+        padding: theme.spacing(1),
+        marginTop: theme.spacing(1)
     }
 });
 

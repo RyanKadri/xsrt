@@ -1,6 +1,6 @@
-import { assetEndpoint, AxiosSymbol } from "@xsrt/common";
+import { assetEndpoint, GotSymbol } from "@xsrt/common";
 import { Asset, downloadResponse, errorNotFound, IServerConfig, ProxiedAsset, RouteImplementation } from "@xsrt/common-backend";
-import { AxiosStatic } from "axios";
+import { Got } from "got";
 import { inject, injectable } from "inversify";
 import { join } from "path";
 import { ApiServerConfig } from "../api-server-conf";
@@ -14,7 +14,7 @@ export class AssetEndpoint implements AssetEndpointType {
     constructor(
         @inject(IServerConfig) private config: ApiServerConfig,
         private streamService: AssetStreamService,
-        @inject(AxiosSymbol) private axios: AxiosStatic
+        @inject(GotSymbol) private got: Got
     ) { }
 
     fetchAsset: AssetEndpointType["fetchAsset"] = async ({ assetId }) => {
@@ -44,16 +44,16 @@ export class AssetEndpoint implements AssetEndpointType {
 
     private proxySingleAsset = async (url: URL, userAgent = "") => {
         try {
-            const proxyRes = await this.axios.get(url.href, {
-                responseType: "stream",
-                headers: { ["User-Agent"]: userAgent } // Retrieve asset as requester's user agent
+            const resp = await this.got.get(url.href, {
+                headers: { ["User-Agent"]: userAgent }, // Retrieve asset as requester's user agent
+                responseType: "buffer"
             });
 
             const saveDir = join(this.config.assetDir, url.hostname);
 
-            const res = await this.streamService.saveStream(proxyRes.data, saveDir, url);
+            const res = await this.streamService.saveStream(resp.rawBody, saveDir, url);
 
-            const headers = Object.entries(proxyRes.headers)
+            const headers = Object.entries(resp.headers as any)
                 .map(([name, value]) => ({ name, value }));
 
             const asset = new Asset({

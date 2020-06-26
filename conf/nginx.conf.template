@@ -52,10 +52,6 @@ http {
             root ${STORAGE_LOCATION};
         }
 
-        location /api/ {
-            proxy_pass ${API_SERVER}/api/;
-        }
-
     }
 
     map $http_upgrade $connection_upgrade {

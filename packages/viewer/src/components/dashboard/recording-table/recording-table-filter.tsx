@@ -5,14 +5,14 @@ import React from "react";
 
 const styles = (theme: Theme) => createStyles({
     root: {
-        padding: theme.spacing.unit * 2,
+        padding: theme.spacing(2),
         display: "flex",
         flexWrap: "wrap",
         maxWidth: 300
     },
     control: {
         width: "100%",
-        marginBottom: theme.spacing.unit
+        marginBottom: theme.spacing(2)
     }
 });
 

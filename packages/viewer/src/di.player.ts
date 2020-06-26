@@ -1,6 +1,6 @@
 /* istanbul ignore file */
-import { apiDef, AxiosSymbol, chunkApiSymbol, chunkEndpointMetadata, constant, constantWithDeps, dependencyGroup, DIDefinition, LocalStorageSymbol, LoggingService, recordingApiSymbol, recordingEndpoint, ScraperConfigToken, siteTargetApiSymbol, siteTargetEndpoint } from "@xsrt/common";
-import Axios from "axios";
+import { apiDef, chunkApiSymbol, chunkEndpointMetadata, constant, constantWithDeps, dependencyGroup, DIDefinition, GotSymbol, LocalStorageSymbol, LoggingService, recordingApiSymbol, recordingEndpoint, ScraperConfigToken, siteTargetApiSymbol, siteTargetEndpoint } from "@xsrt/common";
+import got from "got";
 import { DomManager } from "./playback/dom-manager";
 import { FocusPlayer } from "./playback/user-input/focus-player";
 import { InputChangePlayer } from "./playback/user-input/input-change-player";
@@ -17,7 +17,7 @@ import { UnloadAnnotator } from "./services/annotation/unload-annotator";
 export const diConfig: DIDefinition[] = [
     constant(ScraperConfigToken, { debugMode: false, backendUrl: process.env.API_SERVER }),
     constantWithDeps(DomManager, [LoggingService], (logger: LoggingService) => new DomManager(logger)),
-    constant(AxiosSymbol, Axios),
+    constant(GotSymbol, got),
     constant(LocalStorageSymbol, localStorage),
     dependencyGroup(IInterpolationHelper, [ MouseInterpolationHelper ]),
     dependencyGroup(IPlaybackHandler, [

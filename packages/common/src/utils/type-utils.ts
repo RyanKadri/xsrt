@@ -25,3 +25,11 @@ export interface Group<T> {
 export type Interface<T> = {
     [prop in keyof T]: T[prop];
 };
+
+export function assertExists<T>(ent: T | undefined | null, name = "entity"): T {
+  if(ent === undefined || ent === null) {
+    throw new Error(`Expected ${ name } to be defined but got ${ent}`)
+  } else {
+    return ent;
+  }
+}

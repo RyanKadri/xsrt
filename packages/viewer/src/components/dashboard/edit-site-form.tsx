@@ -12,7 +12,7 @@ const styles = (theme: Theme) => createStyles({
         width: "100%",
         display: "flex",
         flexDirection: "column",
-        padding: theme.spacing.unit * 2
+        padding: theme.spacing(2)
     },
     addUrlSpacer: {
         flexBasis: "100%"

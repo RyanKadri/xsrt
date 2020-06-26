@@ -1,33 +1,34 @@
 {
-    "name": "@xsrt/recorder",
-    "version": "0.9.0",
-    "description": "The client-side recorder for XSRT",
-    "author": "Ryan Kadri <ryankadri1@gmail.com>",
-    "license": "ISC",
-    "module": "lib/index.js",
-    "typings": "lib/index.d.ts",
-    "directories": {
-        "lib": "lib"
-    },
-    "files": [
-        "lib"
-    ],
-    "publishConfig": {
-        "access": "public"
-    },
-    "devDependencies": {
-        "@types/pako": "^1.0.0"
-    },
-    "dependencies": {
-        "@xsrt/common": "file:../common",
-        "axios": "^0.19.0",
-        "inversify": "^5.0.1",
-        "pako": "^1.0.6",
-        "reflect-metadata": "^0.1.12"
-    },
-    "scripts": {
-        "build": "tsc --build",
-        "build:babel": "babel src --out-dir lib"
-    },
-    "gitHead": "179c318fa443265abd6af14cb92955b78681ab9c"
+  "name": "@xsrt/recorder",
+  "version": "0.9.0",
+  "description": "The client-side recorder for XSRT",
+  "author": "Ryan Kadri <ryankadri1@gmail.com>",
+  "license": "ISC",
+  "typings": "lib/index.d.ts",
+  "directories": {
+    "lib": "lib"
+  },
+  "files": [
+    "lib"
+  ],
+  "main": "lib/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@types/pako": "^1.0.0",
+    "declaration-bundler-webpack-plugin": "1.0.3"
+  },
+  "dependencies": {
+    "@xsrt/common": "file:../common",
+    "inversify": "^5.0.1",
+    "pako": "^1.0.6",
+    "reflect-metadata": "^0.1.12"
+  },
+  "scripts": {
+    "build": "webpack --config-name recording-client",
+    "build:ts": "tsc --build",
+    "build:babel": "babel src --out-dir lib"
+  },
+  "gitHead": "179c318fa443265abd6af14cb92955b78681ab9c"
 }

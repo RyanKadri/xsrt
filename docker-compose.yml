@@ -53,9 +53,6 @@ services:
     volumes:
       - stored-files:${STORAGE_LOCATION}
       - ./secret/certs:/etc/ssl/certs
-    links:
-      - decorator
-      - app
     environment:
       - FRONTEND_HOSTNAME=${FRONTEND_HOSTNAME}
       - STORAGE_LOCATION=${STORAGE_LOCATION}
@@ -63,6 +60,7 @@ services:
       - APP_ROOT=/app
     build:
       context: .
+      dockerfile: ./conf/docker/nginx.Dockerfile
       target: static-frontend
     command: /bin/sh -c "envsubst '$${STORAGE_LOCATION},$${FRONTEND_HOSTNAME},$${API_SERVER},$${APP_ROOT}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && exec nginx -g 'daemon off;'"
   rabbit:

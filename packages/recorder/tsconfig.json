@@ -2,10 +2,11 @@
   "extends": "../tsconfig.settings.json",
   "compilerOptions": {
     "outDir": "lib",
-    "rootDir": "./src",
+    "rootDir": "..",
     "baseUrl": "./src",
     "module": "es2015",
     "composite": true,
+    "declaration": true,
     "paths": {
       "@xsrt/common": [
         "../../common/src"

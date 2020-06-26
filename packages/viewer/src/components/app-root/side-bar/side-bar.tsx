@@ -5,7 +5,7 @@ import { LinkListItem } from "../../common/link-list-item";
 
 const styles = (theme: Theme) => createStyles({
     nested: {
-        paddingLeft: theme.spacing.unit * 2
+        paddingLeft: theme.spacing(2)
     },
     sideBar: {
         color: theme.palette.text.primary,

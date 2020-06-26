@@ -1,9 +1,10 @@
 import { ViewportSize } from "@xsrt/common";
 import { mkdir as mkdirFS } from "fs";
-import { injectable } from "inversify";
+import { injectable, inject } from "inversify";
 import { Browser, launch, LaunchOptions } from "puppeteer";
 import { promisify } from "util";
 import { DecoratorConfig } from "../../decorator-server-config";
+import { IServerConfig } from "@xsrt/common-backend";
 
 const mkdir = promisify(mkdirFS);
 
@@ -14,7 +15,7 @@ const defaultUA = "Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWe
 export class ThumbnailCompiler {
 
     constructor(
-        private decoratorConfig: DecoratorConfig
+        @inject(IServerConfig) private decoratorConfig: DecoratorConfig
     ) {}
 
     private browser?: Browser;

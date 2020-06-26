@@ -12,7 +12,7 @@ export function useComponent<P, K extends keyof P>(
     const [component] = useState(() => {
         return (props: Omit<P, K>) => {
             const newProps = {...props as any};
-            Object.entries(dependencies).forEach(([key, val]) => newProps[key] = context.inject(val));
+            Object.entries(dependencies).forEach(([key, val]) => newProps[key] = context.inject(val as any));
             return <DIComponent {...newProps}/>;
         };
     });

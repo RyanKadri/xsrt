@@ -71,8 +71,3 @@ RUN npm run build:viewer
 FROM nginx:1.15.8 as dev-nginx
 COPY conf/nginx.conf.template /etc/nginx
 EXPOSE 443
-
-FROM nginx:1.15.8 as static-frontend
-COPY conf/nginx.conf.template /etc/nginx
-EXPOSE 443
-COPY --from=frontend-builder /app/dist/web /app

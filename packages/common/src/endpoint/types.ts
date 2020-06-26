@@ -67,6 +67,10 @@ export interface EndpointDefinition {
     [ action: string ]: UrlVerbDefinition | PayloadVerbDefinition;
 }
 
+export interface ApiConfig {
+  baseUrl: string;
+}
+
 export interface UrlVerbDefinition<T = any> {
     method: "get" | "delete";
     url: string;

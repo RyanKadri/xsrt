@@ -4,7 +4,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import { LoggingService, SiteTarget } from "@xsrt/common";
 import { appTheme, useComponent, withDependencies } from "@xsrt/common-frontend";
 import { MuiPickersUtilsProvider } from "material-ui-pickers";
-import React, { Fragment, useEffect, useReducer } from "react";
+import React, { useEffect, useReducer } from "react";
 import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom";
 import { RecordingApiService } from "../../services/recording-service";
 import { TargetApiService } from "../../services/sites-api-service";
@@ -75,7 +75,7 @@ const _AppRoot = ({ targetApi }: AppProps) => {
 
     return (
         <Router>
-            <Fragment>
+            <>
                 <CssBaseline />
                 <MuiThemeProvider theme={ appTheme }>
                     <MuiPickersUtilsProvider utils={ DayjsUtils }>
@@ -104,7 +104,7 @@ const _AppRoot = ({ targetApi }: AppProps) => {
                         </Switch>
                     </MuiPickersUtilsProvider>
                 </MuiThemeProvider>
-            </Fragment>
+            </>
         </Router>
     );
 };

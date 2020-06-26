@@ -7,6 +7,5 @@ export const appTheme = createMuiTheme({
       secondary: red,
     },
     typography: {
-        useNextVariants: true
     }
 });

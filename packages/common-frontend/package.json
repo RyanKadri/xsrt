@@ -1,37 +1,40 @@
 {
-    "name": "@xsrt/common-frontend",
-    "version": "0.9.0",
-    "description": "Shared XSRT frontend components",
-    "author": "Ryan Kadri <ryankadri1@gmail.com>",
-    "license": "ISC",
-    "typings": "lib/index.d.ts",
-    "module": "lib/index.js",
-    "sideEffects": false,
-    "directories": {
-        "lib": "lib"
-    },
-    "files": [
-        "lib"
-    ],
-    "private": true,
-    "publishConfig": {
-        "access": "public"
-    },
-    "devDependencies": {
-        "@types/react": "^16.4.18",
-        "@types/react-dom": "^16.0.9",
-        "@types/react-router-dom": "^4.3.1",
-        "@types/react-test-renderer": "^16.0.3"
-    },
-    "dependencies": {
-        "@material-ui/core": "^3.6.0",
-        "@xsrt/common": "^0.9.0",
-        "axios": "^0.19.0",
-        "inversify": "^5.0.1",
-        "react": "^16.6.0",
-        "react-dom": "^16.6.0",
-        "react-router": "^4.3.1",
-        "react-router-dom": "^4.3.1"
-    },
-    "gitHead": "179c318fa443265abd6af14cb92955b78681ab9c"
+  "name": "@xsrt/common-frontend",
+  "version": "0.9.0",
+  "description": "Shared XSRT frontend components",
+  "author": "Ryan Kadri <ryankadri1@gmail.com>",
+  "license": "ISC",
+  "typings": "lib/index.d.ts",
+  "module": "lib/index.js",
+  "sideEffects": false,
+  "directories": {
+    "lib": "lib"
+  },
+  "files": [
+    "lib"
+  ],
+  "private": true,
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "@material-ui/core": "^4.10.0",
+    "@material-ui/icons": "^4.9.1",
+    "react": "16.13.1",
+    "react-dom": "16.13.1",
+    "react-router": "5.2.0",
+    "react-router-dom": "5.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "16.8.24",
+    "@types/react-dom": "16.0.5",
+    "@types/react-router-dom": "^5.1.5",
+    "@types/react-test-renderer": "^16.0.3"
+  },
+  "dependencies": {
+    "@xsrt/common": "^0.9.0",
+    "got": "11.3.0",
+    "inversify": "^5.0.1"
+  },
+  "gitHead": "179c318fa443265abd6af14cb92955b78681ab9c"
 }

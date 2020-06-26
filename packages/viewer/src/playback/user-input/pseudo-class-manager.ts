@@ -50,8 +50,8 @@ export class PseudoClassManager {
     // seems to hurt performance
     private applyPseudoClass(pseudoClass: PseudoClassReplacer, target: number, propogateUp = false, skipBase = false) {
         const clss = pseudoClass.replacementClass;
-        const toRemove = new Set(this.classTracker.get(clss) || []);
-        const applied = new Set();
+        const toRemove = new Set<HTMLElement>(this.classTracker.get(clss) || []);
+        const applied = new Set<HTMLElement>();
 
         this.domManager.mutateElement(target, (node) => {
             let curr: HTMLElement = node;

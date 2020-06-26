@@ -18,7 +18,7 @@ const styles = (theme: Theme) => createStyles({
         display: "flex",
         flexDirection: "column",
         minHeight: 480,
-        height: `calc(100vh - ${theme.spacing.unit * topNavHeight}px)`
+        height: `calc(100vh - ${theme.spacing(1) * topNavHeight}px)`
     }
 });
 

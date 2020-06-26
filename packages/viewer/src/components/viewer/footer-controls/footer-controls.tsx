@@ -85,7 +85,7 @@ interface Props extends WithStyles<typeof styles> {
     onPlay: () => void;
     onPause: () => void;
     onToggleAnnotations: () => void;
-    onToggleSettings: (evt: React.MouseEvent) => void;
+    onToggleSettings: (evt: React.MouseEvent<HTMLButtonElement>) => void;
     onSeek: (pos: number) => void;
     isPlaying: boolean;
     duration: number;

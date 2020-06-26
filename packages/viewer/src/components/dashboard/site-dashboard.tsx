@@ -9,14 +9,14 @@ import { RecordingTableFilter } from "./recording-table/recording-table-filter";
 
 const styles = (theme: Theme) => createStyles({
     root: {
-        padding: theme.spacing.unit * 2
+        padding: theme.spacing(2)
     },
     header: {
         display: "flex",
         alignItems: "flex-end"
     },
     siteLink: {
-        marginLeft: theme.spacing.unit * 2
+        marginLeft: theme.spacing(2)
     }
 });
 
