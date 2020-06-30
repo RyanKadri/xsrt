@@ -1,4 +1,4 @@
-import { RecordedFocusEvent } from "@xsrt/common";
+import { RecordedFocusEvent } from "../../../../common/src";
 import { injectable } from "inversify";
 import { EventSource, RecordedEventContext, UserInputRecorder } from "./input-recorder";
 

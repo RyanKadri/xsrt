@@ -1,4 +1,4 @@
-import { DateManager } from "@xsrt/common";
+import { DateManager } from "../../../common/src";
 import { inject, injectable } from "inversify";
 import { RecordingStateService } from "../api/recording-state-service";
 

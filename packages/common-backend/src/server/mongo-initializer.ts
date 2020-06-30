@@ -1,6 +1,6 @@
 import { LoggingService, NeedsInitialization } from "@xsrt/common";
 import { inject, injectable } from "inversify";
-import { connect } from "mongoose";
+import mongoose from "mongoose";
 import { IServerConfig, ServerConfig } from "./express-server";
 
 const retryDelay = 5000;
@@ -21,7 +21,9 @@ export class MongoInitializer implements NeedsInitialization {
 
     private connectWithRetry(): Promise<void> {
         this.logger.info(`Mongo URL: "${this.config.mongoUrl}"`);
-        return connect(this.config.mongoUrl, { useNewUrlParser: true,  })
+        mongoose.set("useUnifiedTopology", true);
+
+        return mongoose.connect(this.config.mongoUrl, { useNewUrlParser: true,  })
             .then(() => {
                 this.logger.info(`Successfully connected to Mongo`);
             }).catch(err => {

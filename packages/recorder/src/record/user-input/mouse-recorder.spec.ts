@@ -1,4 +1,4 @@
-import { ScrapedTextElement } from "@xsrt/common";
+import { ScrapedTextElement } from "../../../../common/src";
 import { MouseRecorder } from './mouse-recorder';
 
 describe(MouseRecorder.name, () => {

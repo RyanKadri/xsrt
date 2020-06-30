@@ -1,4 +1,4 @@
-import { AttributeMutation, OptimizedChildrenMutation, OptimizedElement, OptimizedHtmlElementInfo, PendingDiffChunk, PendingSnapshotChunk, RecordingChunk, RootSnapshot, ScrapedElement, ScrapedHtmlElement, UnoptimizedSnapshotChunk } from "@xsrt/common";
+import { AttributeMutation, OptimizedChildrenMutation, OptimizedElement, OptimizedHtmlElementInfo, PendingDiffChunk, PendingSnapshotChunk, RecordingChunk, RootSnapshot, ScrapedElement, ScrapedHtmlElement, UnoptimizedSnapshotChunk } from "../../../common/src";
 import { injectable } from "inversify";
 import { OptimizationContext } from "./optimization-context";
 import { extractInlineStyle, optimizeNode } from "./optimize-dom";

@@ -1,4 +1,4 @@
-import { RecordedMouseEvent, ScrapedElement } from "@xsrt/common";
+import { RecordedMouseEvent, ScrapedElement } from "../../../../common/src";
 import { inject, injectable } from "inversify";
 import { RecorderTweaks } from "../../config/recorder-tweaks";
 import { RecordedEventContext, UserInputRecorder } from "./input-recorder";

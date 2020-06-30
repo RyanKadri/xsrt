@@ -1,7 +1,7 @@
 import { RecordedMouseEvent, reverseFind } from "@xsrt/common";
 import { injectable } from "inversify";
 import { DomManager } from "../dom-manager";
-import mouseFragment from "./mouse-fragment.html";
+import mouseFragment from "raw-loader!./mouse-fragment.html";
 import { PseudoClassManager } from "./pseudo-class-manager";
 import { UserInputPlaybackHelper } from "./user-input-manager";
 

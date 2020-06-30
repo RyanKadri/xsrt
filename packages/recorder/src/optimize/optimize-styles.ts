@@ -1,4 +1,4 @@
-import { OptimizedStyleRule, ScrapedHtmlElement, ScrapedStyleRule, ScrapedTextElement, ScrapedAttribute, OptimizedHtmlElementInfo, OptimizedStyleElement, formatAssetRef } from "@xsrt/common";
+import { OptimizedStyleRule, ScrapedHtmlElement, ScrapedStyleRule, ScrapedTextElement, ScrapedAttribute, OptimizedHtmlElementInfo, OptimizedStyleElement, formatAssetRef } from "../../../common/src";
 import { extractStyleInfo } from "../traverse/traverse-styles";
 import { matchesMedia } from "../utils/dom-utils";
 import { OptimizationContext } from "./optimization-context";

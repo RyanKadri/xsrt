@@ -109,11 +109,10 @@ const _AppRoot = ({ targetApi }: AppProps) => {
     );
 };
 
-export const AppRoot = /* hot(module)( */
+export const AppRoot =
     withStyles(styles)(
         withDependencies(_AppRoot, { targetApi: TargetApiService })
     );
-// );
 
 interface AppProps {
     targetApi: TargetApiService;

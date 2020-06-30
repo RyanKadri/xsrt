@@ -1,4 +1,4 @@
-import { LocalStorageService, RecordingChunk, ScraperConfig, PendingChunk } from "@xsrt/common";
+import { LocalStorageService, RecordingChunk, ScraperConfig, PendingChunk } from "../../../common/src";
 import { injectable } from "inversify";
 
 const localStorageRecordingId = "xsrt.recording.id";

@@ -1,4 +1,4 @@
-import { PendingDiffChunk, PendingSnapshotChunk } from "@xsrt/common";
+import { PendingDiffChunk, PendingSnapshotChunk } from "../../common/src";
 import { injectable } from "inversify";
 import { RecordingInfo } from "./api/recording-state-service";
 import { RecordingOptimizer } from "./optimize/optimize";

@@ -1,4 +1,4 @@
-import { CSS_PSEUDO_CLASSES, ScrapedStyleRule } from "@xsrt/common";
+import { CSS_PSEUDO_CLASSES, ScrapedStyleRule } from "../../../common/src";
 
 export function transformRule(rule: ScrapedStyleRule): ScrapedStyleRule {
     return { ...rule, text: transformContent(rule) };

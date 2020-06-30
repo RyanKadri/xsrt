@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { apiDef, assetApiSymbol, assetEndpoint, chunkApiSymbol, chunkEndpointMetadata, constant, dependencyGroup, DIDefinition, DocumentSymbol, LocalStorageSymbol, LocationSymbol, recordingApiSymbol, recordingEndpoint, WindowSymbol, FetchSymbol, assertExists } from "@xsrt/common";
+import { apiDef, assetApiSymbol, assetEndpoint, chunkApiSymbol, chunkEndpointMetadata, constant, dependencyGroup, DIDefinition, DocumentSymbol, LocalStorageSymbol, LocationSymbol, recordingApiSymbol, recordingEndpoint, WindowSymbol, FetchSymbol, assertExists } from "../../common/src";
 import { FocusRecorder } from "./record/user-input/focus-recorder";
 import { HtmlInputRecorder } from "./record/user-input/input-event-recorder";
 import { IUserInputRecorder } from "./record/user-input/input-recorder";

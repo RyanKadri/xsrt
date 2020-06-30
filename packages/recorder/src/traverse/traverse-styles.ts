@@ -1,4 +1,4 @@
-import { ScrapedStyleRule } from "@xsrt/common";
+import { ScrapedStyleRule } from "../../../common/src";
 import { shouldIncludeRule } from "../filter/filter-styles";
 import { transformRule } from "../transform/transform-styles";
 import { matchesMedia } from "../utils/dom-utils";

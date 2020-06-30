@@ -1,4 +1,4 @@
-import { EndpointApi, recordingEndpoint } from "@xsrt/common";
+import { EndpointApi, recordingEndpoint } from "../../../common/src";
 import { RecorderApiService } from './recorder-api-service';
 import { RecordingStateService } from "./recording-state-service";
 

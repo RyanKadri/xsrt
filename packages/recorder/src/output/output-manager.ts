@@ -1,4 +1,4 @@
-import { ScraperConfig, SnapshotChunk, Without } from "@xsrt/common";
+import { ScraperConfig, SnapshotChunk, Without } from "../../../common/src";
 import { toJson } from "../utils/dom-utils";
 import { triggerDownload } from "./output-utils";
 

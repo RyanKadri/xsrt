@@ -1,4 +1,4 @@
-import { AttributeMutation, ChangeChildrenMutation, ScrapedElement, ScrapedHtmlElement, ScrapedTextElement } from "@xsrt/common";
+import { AttributeMutation, ChangeChildrenMutation, ScrapedElement, ScrapedHtmlElement, ScrapedTextElement } from "../../../../common/src";
 import { MutationOptimizer } from "./mutation-optimizer";
 
 describe('MutationOptimzer', () => {

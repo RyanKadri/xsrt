@@ -1,4 +1,4 @@
-import { group, Interface, MapTo, RecordedInputChannels, RecordedUserInput, ScrapedElement } from "@xsrt/common";
+import { group, Interface, MapTo, RecordedInputChannels, RecordedUserInput, ScrapedElement } from "../../../../common/src";
 import { inject, injectable, multiInject } from "inversify";
 import { RecordingDomManager } from "../../traverse/traverse-dom";
 import { TimeManager } from "../../utils/time-manager";

@@ -103,7 +103,7 @@ function _SiteDashboardView({ classes, recordingsApi, logger, site }: Props) {
                         open={ preview !== null }
                         onClose={ () => setPreview(null) }>{
                         preview && preview.thumbnail
-                            ? <img src={`/screenshots/${preview.thumbnail}`}></img>
+                            ? <img src={`${process.env.STATIC_HOST}/screenshots/${preview.thumbnail}`}></img>
                             : <p>No image</p>
                     }</Dialog>
                 </Fragment>

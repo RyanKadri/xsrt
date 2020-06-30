@@ -1,4 +1,4 @@
-import { LoggingService, ScrapedHtmlElement } from "@xsrt/common";
+import { LoggingService, ScrapedHtmlElement } from "../../../../common/src";
 import { RecordingDomManager } from "../../traverse/traverse-dom";
 import { MutationTransformer } from './mutation-transformer';
 

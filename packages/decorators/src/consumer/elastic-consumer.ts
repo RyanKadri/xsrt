@@ -14,7 +14,7 @@ export class ElasticConsumer implements DecoratorConsumer<ChunkId> {
     ) { }
 
     async handle({ _id }: ChunkId) {
-        const client = await this.elasticService.client;
+        const client = this.elasticService.client;
 
         const chunkDoc = await Chunk.findById(_id);
         if (!chunkDoc) {
@@ -32,7 +32,7 @@ export class ElasticConsumer implements DecoratorConsumer<ChunkId> {
                     }
                 }
             }
-        })).body.hits;
+        })).body.hits.hits;
 
         if (oldDocs.length > 1) {
             throw new Error(`Expected at most 1 Elastic document for chunk ${ _id } but got ${oldDocs.length}`);

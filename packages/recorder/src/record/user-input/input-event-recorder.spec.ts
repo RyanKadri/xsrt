@@ -1,4 +1,4 @@
-import { ScrapedHtmlElement } from "@xsrt/common";
+import { ScrapedHtmlElement } from "../../../../common/src";
 import { HtmlInputRecorder } from './input-event-recorder';
 
 describe(HtmlInputRecorder.name, () => {

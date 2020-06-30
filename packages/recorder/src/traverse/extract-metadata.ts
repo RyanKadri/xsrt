@@ -1,4 +1,4 @@
-import { DocumentMetadata } from "@xsrt/common";
+import { DocumentMetadata } from "../../../common/src";
 
 export function extractMetadata(document: Document, location: Location): DocumentMetadata {
     return {

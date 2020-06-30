@@ -1,4 +1,4 @@
-import { AddDescriptor, AttributeMutation, ChangeChildrenMutation, ChangeTextMutation, noop, OptimizedMutation, RecordedMutation, ScrapedElement } from "@xsrt/common";
+import { AddDescriptor, AttributeMutation, ChangeChildrenMutation, ChangeTextMutation, noop, OptimizedMutation, RecordedMutation, ScrapedElement } from "../../../../common/src";
 import { injectable } from "inversify";
 
 @injectable()

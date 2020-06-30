@@ -1,4 +1,4 @@
-import { ScrapedHtmlElement } from "@xsrt/common";
+import { ScrapedHtmlElement } from "../../../../common/src";
 import { RecordingDomManager } from "../../traverse/traverse-dom";
 import { TimeManager } from "../../utils/time-manager";
 import { GlobalEventService } from "./global-event-service";

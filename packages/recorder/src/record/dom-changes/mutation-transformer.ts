@@ -1,4 +1,4 @@
-import { AttributeMutation, ChangeChildrenMutation, ChangeTextMutation, Interface, LoggingService, RecordedMutation } from "@xsrt/common";
+import { AttributeMutation, ChangeChildrenMutation, ChangeTextMutation, Interface, LoggingService, RecordedMutation } from "../../../../common/src";
 import { inject, injectable } from "inversify";
 import { shouldTraverseNode } from "../../filter/filter-dom";
 import { RecordingDomManager } from "../../traverse/traverse-dom";

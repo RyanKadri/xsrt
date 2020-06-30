@@ -1,4 +1,4 @@
-import { AddDescriptor, RecordedMutation, RecordedMutationGroup, ScraperConfig, ScraperConfigToken, treeReduce } from "@xsrt/common";
+import { AddDescriptor, RecordedMutation, RecordedMutationGroup, ScraperConfig, ScraperConfigToken, treeReduce } from "../../../../common/src";
 import { inject, injectable } from "inversify";
 import { TimeManager } from "../../utils/time-manager";
 import { GlobalEventService } from "../user-input/global-event-service";

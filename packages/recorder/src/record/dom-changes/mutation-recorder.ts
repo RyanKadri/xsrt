@@ -1,4 +1,4 @@
-import { flatten, RecordedMutation, RecordedMutationGroup } from "@xsrt/common";
+import { flatten, RecordedMutation, RecordedMutationGroup } from "../../../../common/src";
 import { injectable } from "inversify";
 import { shouldTraverseNode } from "../../filter/filter-dom";
 import { MutationTracker } from "./mutation-tracker";

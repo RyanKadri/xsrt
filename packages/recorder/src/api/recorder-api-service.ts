@@ -1,4 +1,4 @@
-import { chunkApiSymbol, chunkEndpointMetadata, DateManager, EndpointApi, Interface, PendingChunk, recordingApiSymbol, recordingEndpoint } from "@xsrt/common";
+import { chunkApiSymbol, chunkEndpointMetadata, DateManager, EndpointApi, Interface, PendingChunk, recordingApiSymbol, recordingEndpoint } from "../../../common/src";
 import { inject, injectable } from "inversify";
 import { compress } from "../output/output-utils";
 import { toJson } from "../utils/dom-utils";

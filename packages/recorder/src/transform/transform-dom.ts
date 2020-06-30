@@ -1,4 +1,4 @@
-import { ScrapedAttribute, ScrapedHtmlElement, ScrapedTextElement } from "@xsrt/common";
+import { ScrapedAttribute, ScrapedHtmlElement, ScrapedTextElement } from "../../../common/src";
 
 export function transformElement(el: ScrapedHtmlElement): ScrapedHtmlElement {
     return {

@@ -1,4 +1,4 @@
-import { noop } from "@xsrt/common";
+import { noop } from "../../../common/src";
 import { chunkMutationLimit } from "../record/dom-changes/mutation-tracker";
 import { EventService, ScrapeEvent } from "./event-service";
 

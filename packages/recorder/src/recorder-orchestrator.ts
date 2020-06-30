@@ -1,4 +1,4 @@
-import { LoggingService, PendingChunk, ScraperConfig, ScraperConfigToken } from "@xsrt/common";
+import { LoggingService, PendingChunk, ScraperConfig, ScraperConfigToken } from "../../common/src";
 import { inject, injectable } from "inversify";
 import { RecorderApiService } from "./api/recorder-api-service";
 import { RecordingInfo, RecordingStateService } from "./api/recording-state-service";

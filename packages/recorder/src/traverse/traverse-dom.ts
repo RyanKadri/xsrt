@@ -1,4 +1,4 @@
-import { ScrapedElement, ScrapedHtmlElement, ScrapedTextElement, ScraperConfig, ScraperConfigToken, transformTree } from "@xsrt/common";
+import { ScrapedElement, ScrapedHtmlElement, ScrapedTextElement, ScraperConfig, ScraperConfigToken, transformTree } from "../../../common/src";
 import { inject, injectable } from "inversify";
 import { shouldTraverseNode } from "../filter/filter-dom";
 import { transformElement, transformText } from "../transform/transform-dom";

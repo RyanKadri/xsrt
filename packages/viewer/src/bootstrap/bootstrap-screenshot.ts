@@ -15,7 +15,7 @@ import { DomManager } from "../playback/dom-manager";
             .then(resp => resp.json());
         await domManager.createInitialDocument(initChunk);
         const { viewportHeight, viewportWidth } = initChunk.snapshot.documentMetadata;
-        (window as WindowWithViewport).targetViewport = {
+        (window as unknown as WindowWithViewport).targetViewport = {
             height: viewportHeight,
             width: viewportWidth
         };

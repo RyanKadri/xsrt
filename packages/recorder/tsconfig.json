@@ -6,17 +6,10 @@
     "baseUrl": "./src",
     "module": "es2015",
     "composite": true,
-    "declaration": true,
-    "paths": {
-      "@xsrt/common": [
-        "../../common/src"
-      ]
-    },
+    "declaration": true
   },
-  "references": [
-    { "path": "../common/tsconfig.package.json" }
-  ],
   "include": [
-    "src"
-  ],
+    "src",
+    "../common/src"
+  ]
 }

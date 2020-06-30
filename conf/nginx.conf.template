@@ -29,27 +29,17 @@ http {
 
     server {
 
-        listen 443 default_server ssl http2;
-        listen [::]:443 ssl;
+        listen 80 default_server;
+        listen [::]:80;
 
         root ${APP_ROOT};
 
-        ssl_certificate /etc/ssl/certs/cert.crt;
-        ssl_certificate_key /etc/ssl/certs/cert.key;
         index index.html index.htm index.nginx-debian.html;
 
         server_name ${FRONTEND_HOSTNAME};
 
         location / {
             try_files $uri $uri/ /index.html;
-        }
-
-        location /screenshots/ {
-            root ${STORAGE_LOCATION};
-        }
-
-        location /assets/ {
-            root ${STORAGE_LOCATION};
         }
 
     }

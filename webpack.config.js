@@ -30,14 +30,14 @@ const common = (output, tsconfig) => ({
         }],
         exclude: /node_modules/,
       },
-      {
-        test: /\.html$/,
-        use: 'raw-loader'
-      }
+      // {
+      //   test: /\.html$/,
+      //   use: 'raw-loader'
+      // }
     ]
   },
   resolve: {
-    extensions: ['.ts', '.js'],
+    extensions: [".wasm", ".ts", ".tsx", ".mjs", ".cjs", ".js", ".json"],
     alias: {
       "@xsrt/common": path.resolve(__dirname, "packages/common/src"),
       "@xsrt/common-backend": path.resolve(__dirname, "packages/common-backend/src"),
@@ -51,19 +51,8 @@ const frontendCommon = merge(common('dist/web', "packages/viewer/tsconfig.json")
   entry: {
     viewer: './packages/viewer/src/index.tsx',
   },
-  optimization: {
-    splitChunks: {
-      cacheGroups: {
-        commons: {
-          test: /\/node_modules\//,
-          name: "vendor",
-          chunks: "initial",
-        },
-      },
-    },
-  },
   resolve: {
-    extensions: ['.tsx', '.html'],
+    extensions: [".wasm", ".ts", ".tsx", ".mjs", ".cjs", ".js", ".json"],
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -81,18 +70,14 @@ const frontendCommon = merge(common('dist/web', "packages/viewer/tsconfig.json")
 const viewerDev = merge(frontendCommon, {
   name: 'viewer-dev',
   plugins: [
+    new DotEnv()
   ],
   devServer: {
-    contentBase: path.join(__dirname, 'packages/viewer/lib'),
-    port: process.env.WEBPACK_PORT,
-    publicPath: `http://localhost:${process.env.WEBPACK_PORT}/`,
     historyApiFallback: true,
     hot: false,
-    host: '0.0.0.0',
-    disableHostCheck: true,
+    inline: false,
     proxy: {
       '/api': process.env.API_SERVER || `http://localhost:${process.env.API_PORT}`,
-      '/screenshots': { target: process.env.STATIC_ASSET_SERVER, secure: false },
       '/assets': process.env.STATIC_ASSET_SERVER,
     },
   },
@@ -103,6 +88,7 @@ const viewerProd = merge(frontendCommon, {
   name: 'viewer-prod',
   plugins: [
     new BundleAnalyzerPlugin({ analyzerMode: 'static' }),
+    new DotEnv()
   ],
   mode: 'production'
 });

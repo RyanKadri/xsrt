@@ -1,4 +1,4 @@
-import { DocumentSymbol, RecordedNavigationEvent } from "@xsrt/common";
+import { DocumentSymbol, RecordedNavigationEvent } from "../../../../common/src";
 import { inject, injectable } from "inversify";
 import { PatchedEvent } from "./global-event-service";
 import { EventSource, UserInputRecorder } from "./input-recorder";

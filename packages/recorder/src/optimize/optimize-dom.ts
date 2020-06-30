@@ -1,4 +1,4 @@
-import { formatAssetRef, OptimizedElement, OptimizedHtmlElementInfo, ScrapedAttribute, ScrapedElement, ScrapedHtmlElement } from "@xsrt/common";
+import { formatAssetRef, OptimizedElement, OptimizedHtmlElementInfo, ScrapedAttribute, ScrapedElement, ScrapedHtmlElement } from "../../../common/src";
 import { extractUrls } from "../transform/transform-styles";
 import { OptimizationContext } from "./optimization-context";
 import { optimizeStyle } from "./optimize-styles";

@@ -1,4 +1,4 @@
-import { RecordedUnloadEvent } from "@xsrt/common";
+import { RecordedUnloadEvent } from "../../../../common/src";
 import { injectable } from "inversify";
 import { EventSource, UserInputRecorder } from "./input-recorder";
 

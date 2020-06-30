@@ -1,4 +1,4 @@
-import { RecordedInputChangeEvent } from "@xsrt/common";
+import { RecordedInputChangeEvent } from "../../../../common/src";
 import { injectable } from "inversify";
 import { EventSource, RecordedEventContext, UserInputRecorder } from "./input-recorder";
 

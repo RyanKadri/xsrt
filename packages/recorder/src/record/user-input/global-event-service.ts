@@ -1,4 +1,4 @@
-import { DocumentSymbol, Interface, WindowSymbol } from "@xsrt/common";
+import { DocumentSymbol, Interface, WindowSymbol } from "../../../../common/src";
 import { inject, injectable } from "inversify";
 
 @injectable()

@@ -32,7 +32,7 @@ const columnDefs: {
             recording.thumbnail
                 ? <img
                     className={ props.classes.preview }
-                    src={ `/screenshots/${recording.thumbnail}` }
+                    src={ `${process.env.STATIC_HOST}/screenshots/${recording.thumbnail}` }
                     onClick={ () => props.onPreview(recording) } />
                 : null
 };
