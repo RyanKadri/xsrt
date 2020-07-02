@@ -1,4 +1,4 @@
-import { Interface, LoggingService, ViewportSize } from "@xsrt/common";
+import { Interface, LoggingService, ViewportSize } from "../../../common/src";
 import { DomManager } from "../playback/dom-manager";
 
 /* TODO - Data moves around pretty inefficiently in here. I think this would be more push-based and server-side rendered

@@ -1,13 +1,13 @@
 version: "3.7"
 services:
   mongo:
-        image: mongo:4.0
-        volumes:
-            - mongo-data:/data/db
-        expose:
-            - 27017
-        ports:
-            - 27017:27017
+    image: mongo:4.0
+    volumes:
+      - mongo-data:/data/db
+    expose:
+      - 27017
+    ports:
+      - 27017:27017
   app:
     expose:
       - ${API_PORT}
@@ -67,15 +67,24 @@ services:
       - 5672
     ports:
       - 5672:5672
+      - 15672:15672
     volumes:
       - rabbit-data:/var/lib/rabbitmq
   elastic:
-      image: elasticsearch:6.6.1
-      ports:
-        - "9200:9200"
-        - "9300:9300"
-      volumes:
-        - elastic-data:/usr/share/elasticsearch/data
+    image: elasticsearch:7.8.0
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - elastic-data:/usr/share/elasticsearch/data
+    environment:
+      - discovery.type=single-node
+  kibana:
+    image: kibana:7.8.0
+    ports:
+      - 5601:5601
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elastic:9200
 volumes:
   mongo-data:
   stored-files:

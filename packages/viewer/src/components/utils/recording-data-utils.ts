@@ -1,4 +1,4 @@
-import { between, Group, pipe, pluck, RecordedMutationGroup, RecordedUserInput } from "@xsrt/common";
+import { between, Group, pipe, pluck, RecordedMutationGroup, RecordedUserInput } from "../../../../common/src";
 
 export function eventsBetween(
     changes: RecordedMutationGroup[], inputGroups: UserInputGroup[],

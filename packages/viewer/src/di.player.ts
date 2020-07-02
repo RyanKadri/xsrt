@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { apiDef, chunkApiSymbol, chunkEndpointMetadata, constant, constantWithDeps, dependencyGroup, DIDefinition, LocalStorageSymbol, LoggingService, recordingApiSymbol, recordingEndpoint, ScraperConfigToken, siteTargetApiSymbol, siteTargetEndpoint, FetchSymbol } from "@xsrt/common";
+import { apiDef, chunkApiSymbol, chunkEndpointMetadata, constant, constantWithDeps, dependencyGroup, DIDefinition, LocalStorageSymbol, LoggingService, recordingApiSymbol, recordingEndpoint, ScraperConfigToken, siteTargetApiSymbol, siteTargetEndpoint, FetchSymbol } from "../../common/src";
 import { DomManager } from "./playback/dom-manager";
 import { FocusPlayer } from "./playback/user-input/focus-player";
 import { InputChangePlayer } from "./playback/user-input/input-change-player";

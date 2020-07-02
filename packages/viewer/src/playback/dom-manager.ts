@@ -1,6 +1,6 @@
 // tslint:disable-next-line:no-implicit-dependencies
 import defaultStyles from "!raw-loader!./default-styles.css";
-import { formatAssetRef, Interface, LoggingService, OptimizedElement, OptimizedHtmlElementInfo, OptimizedStyleElement, OptimizedStyleRule, OptimizedTextElementInfo, ScrapedAttribute, SnapshotChunk } from "@xsrt/common";
+import { formatAssetRef, Interface, LoggingService, OptimizedElement, OptimizedHtmlElementInfo, OptimizedStyleElement, OptimizedStyleRule, OptimizedTextElementInfo, ScrapedAttribute, SnapshotChunk } from "../../../common/src";
 
 // TODO - Maybe in the process of refactoring, this can track a virtual-dom type thing
 // (for testability and separation of concerns)

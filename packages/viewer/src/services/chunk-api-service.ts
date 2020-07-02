@@ -1,6 +1,6 @@
-import { chunkApiSymbol, chunkEndpointMetadata, EndpointApi } from "@xsrt/common";
+import { chunkApiSymbol, chunkEndpointMetadata, EndpointApi } from "../../../common/src";
 import { inject, injectable } from "inversify";
-import { dataUrlToBlob } from "@xsrt/common-frontend";
+import { dataUrlToBlob } from "../../../common-frontend/src";
 
 @injectable()
 export class ChunkApiService {

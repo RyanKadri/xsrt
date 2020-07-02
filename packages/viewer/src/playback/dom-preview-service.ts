@@ -1,4 +1,4 @@
-import { between, findInTree, OptimizedElement, OptimizedMutation, pipe, pluck, RecordedMutationGroup, reverseFind, ScrapedElement, SnapshotChunk, toKeyValMap } from "@xsrt/common";
+import { between, findInTree, OptimizedElement, OptimizedMutation, pipe, pluck, RecordedMutationGroup, reverseFind, ScrapedElement, SnapshotChunk, toKeyValMap } from "../../../common/src";
 import { injectable } from "inversify";
 
 @injectable()

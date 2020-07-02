@@ -1,4 +1,4 @@
-import { Group, groupToMap, pluck, RecordedUserInput } from "@xsrt/common";
+import { Group, groupToMap, pluck, RecordedUserInput } from "../../../../common/src";
 import { injectable, multiInject } from "inversify";
 import { UserInputInterpolator } from "./interpolation/user-input-interpolator";
 

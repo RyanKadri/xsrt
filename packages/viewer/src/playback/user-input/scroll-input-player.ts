@@ -1,4 +1,4 @@
-import { RecordedScrollEvent } from "@xsrt/common";
+import { RecordedScrollEvent } from "../../../../common/src";
 import { injectable } from "inversify";
 import { DomManager } from "../dom-manager";
 import { UserInputPlaybackHelper } from "./user-input-manager";

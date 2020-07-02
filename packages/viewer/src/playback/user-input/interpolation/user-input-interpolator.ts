@@ -1,4 +1,4 @@
-import { RecordedUserInput } from "@xsrt/common";
+import { RecordedUserInput } from "../../../../../common/src";
 import { injectable, multiInject } from "inversify";
 
 export const IInterpolationHelper = Symbol("InterpolationHelper");

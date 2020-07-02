@@ -1,4 +1,4 @@
-import { EndpointApi, SiteTarget, siteTargetApiSymbol, siteTargetEndpoint, Without } from "@xsrt/common";
+import { EndpointApi, SiteTarget, siteTargetApiSymbol, siteTargetEndpoint, Without } from "../../../common/src";
 import { inject, injectable } from "inversify";
 
 @injectable()

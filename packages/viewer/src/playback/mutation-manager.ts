@@ -1,4 +1,4 @@
-import { AttributeMutation, ChangeTextMutation, OptimizedChildrenMutation, OptimizedMutation, RecordedMutationGroup } from "@xsrt/common";
+import { AttributeMutation, ChangeTextMutation, OptimizedChildrenMutation, OptimizedMutation, RecordedMutationGroup } from "../../../common/src";
 import { injectable } from "inversify";
 import { DomManager } from "./dom-manager";
 

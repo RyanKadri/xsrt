@@ -1,4 +1,4 @@
-import { RecordedResize } from '@xsrt/common';
+import { RecordedResize } from "../../../../common/src";
 import { AnnotationService } from "./annotation-service";
 
 describe(AnnotationService.name, () => {

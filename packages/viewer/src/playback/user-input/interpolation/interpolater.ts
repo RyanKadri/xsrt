@@ -1,4 +1,4 @@
-import { MapTo, nCopies } from "@xsrt/common";
+import { MapTo, nCopies } from "../../../../../common/src";
 
 export function interpolator<T>(nIntermediate: number, interpolators: InterpolationTypes<T>) {
     const interpolated = Object.entries(interpolators as MapTo<InterpolationFunction<any>>)

@@ -1,4 +1,4 @@
-import { DeepPartial, SnapshotChunk } from "@xsrt/common";
+import { DeepPartial, SnapshotChunk } from "../../../common/src";
 import { DomPreviewService, HtmlNodePreview } from './dom-preview-service';
 
 describe(DomPreviewService.name, () => {

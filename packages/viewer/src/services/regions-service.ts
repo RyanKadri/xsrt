@@ -1,4 +1,4 @@
-import { RecordedMutationGroup, RecordedUserInput } from "@xsrt/common";
+import { RecordedMutationGroup, RecordedUserInput } from "../../../common/src";
 import { inject, injectable } from "inversify";
 import { RecordingEvents } from "../components/utils/recording-data-utils";
 import { TweakableConfigs } from "./viewer-tweaks";

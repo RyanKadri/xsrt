@@ -1,4 +1,4 @@
-import { EndpointApi, Recording, recordingApiSymbol, recordingEndpoint, RecordingOverview } from "@xsrt/common";
+import { EndpointApi, Recording, recordingApiSymbol, recordingEndpoint, RecordingOverview } from "../../../common/src";
 import { inject, injectable } from "inversify";
 import { RecordingTableFilter } from "../components/dashboard/recording-table/recording-table-filter";
 

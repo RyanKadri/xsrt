@@ -38,12 +38,6 @@ const common = (output, tsconfig) => ({
   },
   resolve: {
     extensions: [".wasm", ".ts", ".tsx", ".mjs", ".cjs", ".js", ".json"],
-    alias: {
-      "@xsrt/common": path.resolve(__dirname, "packages/common/src"),
-      "@xsrt/common-backend": path.resolve(__dirname, "packages/common-backend/src"),
-      "@xsrt/common-frontend": path.resolve(__dirname, "packages/common-frontend/src"),
-      "@xsrt/recorder": path.resolve(__dirname, "packages/recorder/src")
-    }
   }
 });
 

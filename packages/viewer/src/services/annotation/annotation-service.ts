@@ -1,4 +1,4 @@
-import { debounce, RecordedUserInput } from "@xsrt/common";
+import { debounce, RecordedUserInput } from "../../../../common/src";
 import { inject, injectable, multiInject } from "inversify";
 import { RecordingEvents } from "../../components/utils/recording-data-utils";
 import { TweakableConfigs } from "../viewer-tweaks";

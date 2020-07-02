@@ -1,4 +1,4 @@
-import { RecordedMouseEvent, reverseFind } from "@xsrt/common";
+import { RecordedMouseEvent, reverseFind } from "../../../../common/src";
 import { injectable } from "inversify";
 import { DomManager } from "../dom-manager";
 import mouseFragment from "raw-loader!./mouse-fragment.html";

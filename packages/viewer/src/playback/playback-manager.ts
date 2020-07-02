@@ -1,4 +1,4 @@
-import { between, RecordedMutationGroup, SnapshotChunk } from "@xsrt/common";
+import { between, RecordedMutationGroup, SnapshotChunk } from "../../../common/src";
 import { injectable } from "inversify";
 import { eventsBetween, UserInputGroup } from "../components/utils/recording-data-utils";
 import { DomManager } from "./dom-manager";

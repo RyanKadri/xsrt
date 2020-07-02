@@ -1,4 +1,4 @@
-import { RecordedInputChangeEvent } from "@xsrt/common";
+import { RecordedInputChangeEvent } from "../../../../common/src";
 import { injectable } from "inversify";
 import { DomPreviewService } from "../../playback/dom-preview-service";
 import { InputAnnotator } from "./annotation-service";

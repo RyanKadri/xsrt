@@ -1,4 +1,4 @@
-import { RecordedResize } from "@xsrt/common";
+import { RecordedResize } from "../../../../common/src";
 import { injectable } from "inversify";
 import { InputAnnotator } from "./annotation-service";
 

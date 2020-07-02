@@ -1,4 +1,4 @@
-import { RecordedMouseMove } from "@xsrt/common";
+import { RecordedMouseMove } from "../../../../../common/src";
 import { injectable } from "inversify";
 import { flipHalfway, interpolator, linear } from "./interpolater";
 import { InterpolationHelper } from "./user-input-interpolator";

@@ -1,4 +1,4 @@
-import { convertMapToGroups, mergeGroups, pluck, Recording, SnapshotChunk, sortAsc } from "@xsrt/common";
+import { convertMapToGroups, mergeGroups, pluck, Recording, SnapshotChunk, sortAsc } from "../../../../common/src";
 import { RecordingViewAction, RecordingViewState } from "./recording-view";
 
 const sortByTimestamp = sortAsc(pluck("timestamp"));

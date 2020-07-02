@@ -1,4 +1,4 @@
-import { LocalStorageService } from "@xsrt/common";
+import { LocalStorageService } from "../../../common/src";
 import { injectable } from "inversify";
 import { allowedRecordingTableColumns } from "../components/dashboard/recording-table/available-columns";
 import { RecordingTableSettings } from "../components/dashboard/recording-table/recording-table-settings";

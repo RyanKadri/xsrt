@@ -1,4 +1,4 @@
-import { CSS_PSEUDO_CLASSES, PseudoClassReplacer } from "@xsrt/common";
+import { CSS_PSEUDO_CLASSES, PseudoClassReplacer } from "../../../../common/src";
 import { injectable } from "inversify";
 import { DomManager } from "../dom-manager";
 
