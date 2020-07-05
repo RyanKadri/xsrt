@@ -1,26 +1,26 @@
 version: "3.7"
 services:
-  mongo:
-    image: mongo:4.0
+  postgres:
     volumes:
-      - mongo-data:/data/db
-    expose:
-      - 27017
+      - postgres-data:/var/lib/postgresql/data
     ports:
-      - 27017:27017
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=guest
+      - POSTGRES_USER=guest
+      - POSTGRES_DB=xsrt
+    build:
+      context: .
+      dockerfile: ./conf/postgres/postgres.Dockerfile
   app:
     expose:
       - ${API_PORT}
-    links:
-      - mongo
-      - decorator
     volumes:
       - stored-files:${STORAGE_LOCATION}
     depends_on:
-      - mongo
       - decorator
     environment:
-      - MONGO_URL=mongodb://mongo/recordings
+      - POSTGRES_URL=postgres://postgres/recordings
       - DECORATOR_URL=http://decorator:${DECORATOR_PORT}
       - API_PORT=${API_PORT}
       - STORAGE_LOCATION=${STORAGE_LOCATION}
@@ -32,14 +32,10 @@ services:
   decorator:
     expose:
       - ${DECORATOR_PORT}
-    links:
-      - mongo
     volumes:
       - stored-files:${STORAGE_LOCATION}
-    depends_on:
-      - mongo
     environment:
-      - MONGO_URL=mongodb://mongo/recordings
+      - POSTGRES_URL=postgres://postgres/recordings
       - DECORATOR_PORT=${DECORATOR_PORT}
       - API_SERVER=http://app:${API_PORT}
     build:
@@ -57,8 +53,7 @@ services:
       - APP_ROOT=/app
     build:
       context: .
-      dockerfile: ./conf/docker/nginx.Dockerfile
-      target: static-frontend
+      dockerfile: ./conf/nginx/nginx.Dockerfile
     command: /bin/sh -c "envsubst '$${STORAGE_LOCATION},$${FRONTEND_HOSTNAME},$${API_SERVER},$${APP_ROOT}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && exec nginx -g 'daemon off;'"
   rabbit:
     image: rabbitmq:3.7.12-management
@@ -86,7 +81,7 @@ services:
     environment:
       - ELASTICSEARCH_HOSTS=http://elastic:9200
 volumes:
-  mongo-data:
+  postgres-data:
   stored-files:
   rabbit-data:
   elastic-data:

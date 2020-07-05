@@ -17,7 +17,8 @@
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "inversify": "^5.0.1",
-    "ua-parser-js": "^0.7.19"
+    "ua-parser-js": "^0.7.19",
+    "typeorm": "0.2.25"
   },
   "files": [
     "lib"

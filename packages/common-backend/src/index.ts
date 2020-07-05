@@ -1,8 +1,4 @@
 // tslint:disable:max-line-length
-export { Asset, ProxiedAsset } from "./db/asset";
-export { Chunk } from "./db/chunk";
-export { Recording as RecordingSchema } from "./db/recording";
-export { Target } from "./db/targets";
 export { DecoratorQueueService } from "./queues/decorator-queue-service";
 export * from "./queues/queue-metadata";
 export { ApiDefinition, endpointDef, initializeExpressApp } from "./server/api-initializer";

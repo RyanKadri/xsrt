@@ -5,3 +5,4 @@ export const LocalStorageSymbol = Symbol("LocalStorage");
 export const GotSymbol = Symbol("Got");
 export const FetchSymbol = Symbol("Fetch")
 export const ContainerSymbol = Symbol("Container");
+export const DBConnectionSymbol = Symbol("Connection")

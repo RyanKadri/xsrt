@@ -17,7 +17,11 @@ export async function initializeApp(
   }
 
   for (const toInit of needsInitialization) {
-    await container.get<NeedsInitialization>(toInit).initialize()
+    const res = await container.get<NeedsInitialization>(toInit).initialize();
+    if(res) {
+      const [symbol, initialized] = res;
+      container.bind(symbol).toConstantValue(initialized);
+    }
   }
   return injector;
 }
@@ -86,7 +90,7 @@ export function implementationChoice<T>(
 }
 
 export interface NeedsInitialization {
-  initialize(): Promise<void>;
+  initialize(): Promise<[symbol, any] | void>;
 }
 
 export type DIDefinition = ConstantDef<any> | ContainerDependentConstant<any> | ApiDefinition

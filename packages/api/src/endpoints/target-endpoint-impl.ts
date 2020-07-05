@@ -1,62 +1,49 @@
-import { SiteTarget, siteTargetEndpoint } from "@xsrt/common";
-import { errorNotFound, RouteImplementation, Target } from "@xsrt/common-backend";
-import { injectable } from "inversify";
+import { DBConnectionSymbol, siteTargetEndpoint } from "@xsrt/common";
+import { errorNotFound, RouteImplementation, TargetEntity } from "@xsrt/common-backend";
+import { inject, injectable } from "inversify";
+import { Connection, Repository } from "typeorm";
 
 type TargetEndpointType = RouteImplementation<typeof siteTargetEndpoint>;
 
 @injectable()
 export class TargetEndpoint implements TargetEndpointType {
 
-    fetchSiteTarget: TargetEndpointType["fetchSiteTarget"] = async ({ targetId }) => {
-        const target = await Target.findById(targetId);
-        if (target) {
-            return target.toObject();
-        } else {
-            return errorNotFound(`Target ${targetId} not found`);
-        }
-    }
+  private targetRepo: Repository<TargetEntity>;
 
-    deleteSiteTarget: TargetEndpointType["deleteSiteTarget"] = async ({ targetId }) => {
-        const res = await Target.findByIdAndDelete(targetId);
-        if (res) {
-            return res.toObject();
-        } else {
-            return errorNotFound(`Target ${targetId} not found`);
-        }
-    }
+  constructor(
+    @inject(DBConnectionSymbol) connection: Connection
+  ) {
+    this.targetRepo = connection.getRepository(TargetEntity);
+  }
 
-    filterTargets = async () => {
-        const res = await Target.aggregate([
-            { $lookup: {
-                from: "recordings",
-                localField: "_id",
-                foreignField: "metadata.site",
-                as: "recordings"
-            } },
-            { $project: {
-                _id: 1,
-                name: 1,
-                urls: 1,
-                wildcardUrl: 1,
-                numRecordings: { $size: { $ifNull: ["$recordings", []] } }
-            } }
-        ]);
-        return res;
+  fetchSiteTarget: TargetEndpointType["fetchSiteTarget"] = async ({ targetId }) => {
+    const target = await this.targetRepo.findOne({ where: { customerId: targetId }});
+    if (target) {
+      return target;
+    } else {
+      return errorNotFound(`Target ${targetId} not found`);
     }
+  }
 
-    createSiteTarget: TargetEndpointType["createSiteTarget"] = async ({ target }) => {
-        const toCreate = new Target(target);
-        const created: SiteTarget = (await toCreate.save()).toObject();
-        return {
-            ...created,
-            numRecordings: 0
-        };
+  deleteSiteTarget: TargetEndpointType["deleteSiteTarget"] = async ({ targetId }) => {
+    const target = await this.targetRepo.delete({ customerId: targetId });
+    if (target) {
+      return target;
+    } else {
+      return errorNotFound(`Target ${targetId} not found`);
     }
+  }
 
-    updateSiteTarget: TargetEndpointType["updateSiteTarget"] = async ({ target, targetId }) => {
-        const updated = await Target.findByIdAndUpdate(targetId, target, { new: true });
-        return updated !== null
-            ? updated.toObject()
-            : errorNotFound(`Could not find site ${targetId}`);
-    }
+  filterTargets = async () => {
+    // TODO - Add count in here
+    return this.targetRepo.find({ relations: ["recordings"] });
+  }
+
+  createSiteTarget: TargetEndpointType["createSiteTarget"] = async ({ target }) => {
+    return this.targetRepo.save(target);
+  }
+
+  updateSiteTarget: TargetEndpointType["updateSiteTarget"] = async ({ target, targetId }) => {
+    return this.targetRepo.update({ customerId: targetId }, target);
+  }
 }

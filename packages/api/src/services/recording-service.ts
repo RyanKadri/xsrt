@@ -1,72 +1,54 @@
-import { Recording, Without } from "@xsrt/common";
-import { ElasticService, recordingRepo, RecordingSchema } from "@xsrt/common-backend";
-import { injectable } from "inversify";
+import { Recording, Without, DBConnectionSymbol } from "@xsrt/common";
+import { ElasticService, recordingRepo, RecordingEntity } from "@xsrt/common-backend";
+import { injectable, inject } from "inversify";
 import { RecordingFilterParams } from "../endpoints/recording-endpoint-impl";
+import { Connection, Repository, In } from "typeorm";
 
 const defaultNumRecordings = 15;
 
 @injectable()
 export class RecordingService {
 
-    constructor(private elasticService: ElasticService) { }
+  private recordingRepo: Repository<RecordingEntity>;
 
-    async fetchRecording(recordingId: string) {
-        const recordings: Recording[] = await RecordingSchema.aggregate([
-            { $match: { _id: recordingId }},
-            // { $unwind: "$chunks" },
-            { $lookup: {
-                from: "recordingChunks",
-                localField: "chunks",
-                foreignField: "_id",
-                as: "chunks",
-            }},
-            { $project: {  // TODO - Is there some way I can do a positive projection (type and metadata) in the lookup?
-                "chunks.changes": 0,
-                "chunks.inputs": 0,
-                "chunks.snapshot": 0,
-                "chunks.assets": 0
-            }}
-        ]).exec();
-        return recordings[0];
-    }
+  constructor(
+    private elasticService: ElasticService,
+    @inject(DBConnectionSymbol) connection: Connection
+  ) {
+    this.recordingRepo = connection.getRepository(RecordingEntity);
+  }
 
-    async deleteRecording(recordingId: string): Promise<Recording | undefined> {
-        const recording = await RecordingSchema.findByIdAndDelete(recordingId);
-        if (recording) {
-            return recording.toObject();
-        } else {
-            return undefined;
+  async fetchRecording(recordingId: string) {
+    // TODO - Don't send back all chunk data
+    return this.recordingRepo.findOne(recordingId, { relations: ["chunks"] })
+  }
+
+  async deleteRecording(recordingId: string): Promise<void> {
+    await this.recordingRepo.delete(recordingId);
+  }
+
+  async filterRecordings({ site }: RecordingFilterParams) {
+    const client = this.elasticService.client;
+    const elasticRecordings = await client.search({
+      ...recordingRepo,
+      body: {
+        query: {
+          match: {
+            site
+          }
         }
-    }
+      }
+    });
 
-    async filterRecordings({ site }: RecordingFilterParams) {
-        const client = this.elasticService.client;
-        const elasticRecordings = await client.search({
-            ...recordingRepo,
-            body: {
-                query: {
-                    match: {
-                        site
-                    }
-                }
-            }
-        });
+    const ids = elasticRecordings.body.hits.hits.map((hit: any) => hit._id);
+    return this.recordingRepo.findByIds(ids, { take: defaultNumRecordings });
+  }
 
-        const recordings = await RecordingSchema.find(
-            { _id: { $in: elasticRecordings.body.hits.hits.map((hit: any) => hit._id) } },
-            { metadata: 1, thumbnail: 1 }
-        ).sort({ "metadata.startTime": -1 })
-         .limit(defaultNumRecordings);
+  async deleteRecordings(ids: string[]) {
+    return await this.recordingRepo.delete({ id: In(ids) });
+  }
 
-        return recordings.map(rec => rec.toObject());
-    }
-
-    async deleteRecordings(ids: string[]) {
-        return await RecordingSchema.deleteMany({ _id: { $in: ids } }).exec();
-    }
-
-    async createRecording(recordingData: Without<Recording, "_id">) {
-        const recording = new RecordingSchema(recordingData);
-        return await recording.save();
-    }
+  async createRecording(recordingData: Without<Recording, "_id">) {
+    return this.recordingRepo.save(recordingData);
+  }
 }

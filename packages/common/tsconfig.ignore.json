@@ -1,6 +1,7 @@
 {
     "extends": "../tsconfig.settings.json",
     "compilerOptions": {
+      "strictNullChecks": false
     },
     "include": [
         "./src"

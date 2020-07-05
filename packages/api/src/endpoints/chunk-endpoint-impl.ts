@@ -1,29 +1,34 @@
-import { chunkEndpointMetadata, RecordingChunk } from "@xsrt/common";
-import { Chunk, DecoratorQueueService, errorNotFound, RouteImplementation } from "@xsrt/common-backend";
-import { injectable } from "inversify";
+import { chunkEndpointMetadata, DBConnectionSymbol, DiffChunk, SnapshotChunk, RecordingChunk, ChunkEntity } from "../../../common/src";
+import { DecoratorQueueService, errorNotFound, RouteImplementation } from "../../../common-backend/src";
+import { inject, injectable } from "inversify";
+import { Connection, Repository } from "typeorm";
 
 type ChunkEndpointType = RouteImplementation<typeof chunkEndpointMetadata>;
 
 @injectable()
 export class ChunkEndpoint implements ChunkEndpointType {
 
-    constructor(
-        private queueService: DecoratorQueueService
-    ) { }
+  private chunkRepo: Repository<ChunkEntity>;
 
-    createChunk: ChunkEndpointType["createChunk"] = (async ({ chunk }) => {
-        const savedChunk = await new Chunk(chunk).save();
-        this.queueService.postChunk(savedChunk.toObject());
-        return { _id: savedChunk!._id };
-    });
+  constructor(
+    private queueService: DecoratorQueueService,
+    @inject(DBConnectionSymbol) connection: Connection
+  ) {
+    this.chunkRepo = connection.getRepository(ChunkEntity)
+  }
 
-    fetchChunk: ChunkEndpointType["fetchChunk"] = (async ({ chunkId }) => {
-        const res = await Chunk.findById(chunkId);
-        if (res) {
-            const test = { ...(res.toObject() as RecordingChunk) };
-            return test;
-        } else {
-            return errorNotFound(`Could not find chunk ${chunkId }`);
-        }
-    });
+  createChunk: ChunkEndpointType["createChunk"] = (async ({ chunk }) => {
+    const savedChunk = await this.chunkRepo.save(chunk as ChunkEntity);
+    this.queueService.postChunk(savedChunk as RecordingChunk);
+    return { id: savedChunk.id };
+  });
+
+  fetchChunk: ChunkEndpointType["fetchChunk"] = (async ({ chunkId }) => {
+    const res = await this.chunkRepo.findOne(chunkId);
+    if (res) {
+      return res as SnapshotChunk | DiffChunk;
+    } else {
+      return errorNotFound(`Could not find chunk ${chunkId}`);
+    }
+  });
 }

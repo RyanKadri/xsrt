@@ -7,9 +7,8 @@
         "module": "commonjs",
         "paths": {
             "@xsrt/common": ["../common/src"]
-        }
+        },
+        "strictNullChecks": false
     },
-    "include": [
-        "src", "../decorators/src/services/queue-consumer-service.ts"
-    ],
+    "include": ["src"]
 }

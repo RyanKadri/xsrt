@@ -22,7 +22,7 @@ export const recordingEndpoint = defineEndpoint({
         request: {
             recordingId
         },
-        response: Type<Recording>()
+        response: Type<void>()
     },
     filterRecordings: {
         url: multiRecordingUrl,

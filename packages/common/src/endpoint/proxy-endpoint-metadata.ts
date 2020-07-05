@@ -19,6 +19,6 @@ export const assetEndpoint = defineEndpoint({
     clientHeaders: {
       userAgent: new RequestHeader("user-agent")
     },
-    response: Type<{ assets: (string | null)[] }>()
+    response: Type<{ assets: (number | null)[] }>()
   }
 });

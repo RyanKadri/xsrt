@@ -4,6 +4,8 @@
     "module": "es2015",
     "lib": ["dom", "es2018", "esnext.array"],
     "declaration": true,
+    "rootDir": "./packages",
+    "baseUrl": ".",
 
     "skipLibCheck": true,
     "strict": true,
@@ -23,11 +25,13 @@
     "jsx": "react",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "downlevelIteration": true
+    "downlevelIteration": true,
   },
+  "include": [
+    "packages/**/*.ts",
+    "packages/**/*.tsx"
+  ],
   "exclude": [
-      "../node_modules",
-      "**/*.spec.ts",
-      "**/*.exp.ts"
+    "node_modules",
   ]
 }

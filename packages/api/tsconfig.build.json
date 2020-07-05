@@ -1,10 +1,14 @@
 {
-    "extends": "../../tsconfig.json",
+    "extends": "../tsconfig.settings.json",
     "compilerOptions": {
         "outDir": "dist",
         "rootDir": "../",
         "baseUrl": "./",
         "module": "commonjs",
+        "paths": {
+            "@xsrt/common": ["../common/src"],
+            "@xsrt/common-backend": ["../common-backend/src"]
+        },
         "importHelpers": false
     },
     "include": [
