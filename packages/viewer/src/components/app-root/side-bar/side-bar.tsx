@@ -1,5 +1,5 @@
 import { createStyles, Drawer, List, ListSubheader, Theme, Typography, withStyles, WithStyles } from "@material-ui/core";
-import { SiteTarget } from "@xsrt/common";
+import { SiteTarget } from "../../../../../common/src";
 import React from "react";
 import { LinkListItem } from "../../common/link-list-item";
 
@@ -44,7 +44,7 @@ const sidebarLinks = (sites: SiteTarget[]) => {
     { type: "link", to: "/dashboard", text: "Dashboard" },
     {
       type: "group", heading: "Sites", children: (sites || []).map(site => (
-        { type: "link" as "link", to: `/dashboard/${site._id}`, text: site.name }
+        { type: "link" as "link", to: `/dashboard/${site.customerId}`, text: site.name }
       ))
     }
   ] as SidebarEntry[];

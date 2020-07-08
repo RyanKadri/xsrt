@@ -1,11 +1,11 @@
 import { Button, createStyles, Theme, Typography, withStyles, WithStyles } from "@material-ui/core";
-import { formatPlayerTime } from "@xsrt/common";
+import { formatPlayerTime } from "../../../../common/src";
 import React from "react";
 import { RecordingStatus } from "../popup-root";
 
 const styles = (theme: Theme) => createStyles({
     root: {
-        padding: 2 * theme.spacing.unit
+        padding: theme.spacing(2)
     }
 });
 const _RunSection = (props: RunSectionProps) => {

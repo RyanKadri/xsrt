@@ -20,7 +20,7 @@ export class ChunkEndpoint implements ChunkEndpointType {
   createChunk: ChunkEndpointType["createChunk"] = (async ({ chunk }) => {
     const savedChunk = await this.chunkRepo.save(chunk as ChunkEntity);
     this.queueService.postChunk(savedChunk as RecordingChunk);
-    return { id: savedChunk.id };
+    return { uuid: savedChunk.uuid };
   });
 
   fetchChunk: ChunkEndpointType["fetchChunk"] = (async ({ chunkId }) => {

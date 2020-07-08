@@ -1,5 +1,5 @@
 import { createStyles, Theme, Typography, withStyles, WithStyles } from "@material-ui/core";
-import { Group, RecordedNavigationEvent, RecordedResize, RecordedUserInput, reverseFind, SnapshotChunk } from "@xsrt/common";
+import { Group, RecordedNavigationEvent, RecordedResize, RecordedUserInput, reverseFind, SnapshotChunk } from "../../../../../common/src";
 import c from "classnames";
 import React, { RefObject, useRef } from "react";
 import { UserInputGroup } from "../../utils/recording-data-utils";
@@ -131,7 +131,7 @@ function infoSource<T extends RecordedUserInput>(
     } else if (lastEvent && !lastSnapshot) {
         return lastEvent;
     } else if (lastEvent && lastSnapshot) {
-        return lastEvent.timestamp > lastSnapshot.metadata.startTime
+        return lastEvent.timestamp > lastSnapshot.startTime.getTime()
             ? lastEvent
             : lastSnapshot;
     } else {
@@ -140,7 +140,7 @@ function infoSource<T extends RecordedUserInput>(
 }
 
 function lastSnapshotBefore(snapshots: SnapshotChunk[], time: number) {
-    return reverseFind(snapshots, snapshot => snapshot.metadata.startTime <= time);
+    return reverseFind(snapshots, snapshot => snapshot.startTime.getTime() <= time);
 }
 
 function lastEventBefore<T extends RecordedUserInput>(

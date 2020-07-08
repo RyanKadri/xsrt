@@ -1,6 +1,6 @@
 import { CircularProgress, createStyles, Theme, withStyles, WithStyles } from "@material-ui/core";
-import { between, formatPlayerTime, RecordedMutationGroup, RecordingMetadata, SnapshotChunk } from "@xsrt/common";
-import { withDependencies } from "@xsrt/common-frontend";
+import { between, formatPlayerTime, RecordedMutationGroup, SnapshotChunk } from "../../../../common/src";
+import { withDependencies } from "../../../../common-frontend/src";
 import * as React from "react";
 import { Fragment } from "react";
 import { PlaybackManager } from "../../playback/playback-manager";
@@ -70,7 +70,6 @@ class _RecordingViewer extends React.PureComponent<ViewerProps, ViewerState> {
                                     changes={ this.props.changes }
                                     currentTime={ this.state.playerTime }
                                     isPlaying={ this.state.isPlaying }
-                                    recordingMetadata={ this.props.recordingMetadata }
                                     error={ this.state.hasError ? "Something went wrong" : undefined }
                                     onError={ this.handleDownstreamError }
                                     lockUI={ this.state.settings.blockViewerOnPause }
@@ -248,7 +247,6 @@ interface ViewerProps extends WithStyles<typeof styles> {
     annotations: RecordingAnnotation[];
     regions: Region[];
 
-    recordingMetadata: RecordingMetadata;
     duration: number;
 
     bufferPos: number;

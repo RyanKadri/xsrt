@@ -1,4 +1,4 @@
-import { DependencyInjector, EndpointDefinition } from "@xsrt/common";
+import { DependencyInjector, EndpointDefinition } from "../../../common/src";
 import { Request, Response, Router } from "express";
 import { injectable, interfaces } from "inversify";
 import { RequestHandler } from "./request-handler";

@@ -1,4 +1,4 @@
-import { EndpointDefinition, InjectedProp, PayloadVerbDefinition, UrlVerbDefinition } from "@xsrt/common";
+import { EndpointDefinition, InjectedProp, PayloadVerbDefinition, UrlVerbDefinition } from "../../../common/src";
 import { Router } from "express";
 
 export type RouterSetupFn = (router: Router) => void;

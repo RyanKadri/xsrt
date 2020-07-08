@@ -1,4 +1,4 @@
-import { defineEndpoint, Type } from "@xsrt/common";
+import { defineEndpoint, Type } from "../../../common/src";
 import { DecoratorConfig } from "../decorator-server-config";
 
 export const configEndpointMetadata = defineEndpoint({

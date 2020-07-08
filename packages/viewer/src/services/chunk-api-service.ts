@@ -13,6 +13,14 @@ export class ChunkApiService {
     /* istanbul ignore next */
     async fetchChunk(chunkId: string) {
         const chunk = await this.chunkApi.fetchChunk({ chunkId });
-        return { ...chunk, assets: await Promise.all(chunk.assets.map(dataUrlToBlob)) };
+        return {
+          ...chunk,
+          assets: await Promise.all(
+            chunk.assets.map(async asset => ({
+              ...asset,
+              origUrl: await dataUrlToBlob(asset.origUrl)
+            }))
+          )
+        };
     }
 }

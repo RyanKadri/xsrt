@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config({ path: "../../.env" });
-import { DecoratorQueueService, ElasticService, initializeExpressApp, MongoInitializer } from "@xsrt/common-backend";
+import { DecoratorQueueService, ElasticService, initializeExpressApp, MongoInitializer } from "../../common-backend/src";
 import { decoratorDiConfig } from "./di.decorators";
 import { QueueConsumerService } from "./services/queue-consumer-service";
 

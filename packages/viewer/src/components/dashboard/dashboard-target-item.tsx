@@ -1,6 +1,6 @@
 import { createStyles, WithStyles, withStyles, ListItemText, ListItemIcon, ListItem } from "@material-ui/core";
 import React from "react";
-import { SiteTarget } from "@xsrt/common";
+import { SiteTarget } from "../../../../common/src";
 import SettingsIcon from "@material-ui/icons/Settings";
 
 const styles = createStyles({

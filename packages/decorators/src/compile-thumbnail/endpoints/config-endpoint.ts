@@ -1,4 +1,4 @@
-import { IServerConfig, RouteImplementation } from "@xsrt/common-backend";
+import { IServerConfig, RouteImplementation } from "../../../../common-backend/src";
 import { inject, injectable } from "inversify";
 import { DecoratorConfig } from "../../decorator-server-config";
 import { configEndpointMetadata } from "../../route-metadata/config-endpoint-metadata";

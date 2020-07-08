@@ -2,23 +2,23 @@ import { convertMapToGroups, mergeGroups, pluck, Recording, SnapshotChunk, sortA
 import { RecordingViewAction, RecordingViewState } from "./recording-view";
 
 const sortByTimestamp = sortAsc(pluck("timestamp"));
-const sortSnapshot = sortAsc<SnapshotChunk>(snap => snap.metadata.startTime);
+const sortSnapshot = sortAsc<SnapshotChunk>(snap => snap.startTime.getTime());
 
 export function recordingViewReducer(state: RecordingViewState, action: RecordingViewAction): RecordingViewState {
     switch (action.type) {
         case "fetchChunks":
             return {
                 ...state,
-                requestedChunks: state.requestedChunks.concat(action.chunks.map(chunk => chunk._id))
+                requestedChunks: state.requestedChunks.concat(action.chunks.map(chunk => chunk.uuid))
             };
         case "receiveRecording":
             return { ...state, recording: action.recording };
         case "receiveChunk":
-            const retrievedChunks = state.retrievedChunks.concat(action.chunk._id);
+            const retrievedChunks = state.retrievedChunks.concat(action.chunk.uuid);
             return {
                 ...state,
                 snapshots: state.snapshots
-                                .concat(action.chunk.type === "snapshot" ? action.chunk : [])
+                                .concat(action.chunk.chunkType === "snapshot" ? action.chunk as SnapshotChunk : [])
                                 .sort(sortSnapshot),
                 changes: state.changes
                               .concat(action.chunk.changes)
@@ -43,12 +43,12 @@ export function recordingViewReducer(state: RecordingViewState, action: Recordin
 function calcBuffer(retrievedChunks: string[], recording: Recording) {
     const chunks = recording.chunks;
     const minStopNotFetched = Math.min(...chunks
-        .filter(chunk => !retrievedChunks.includes(chunk._id))
-        .map(chunk => chunk.metadata.stopTime)
+        .filter(chunk => !retrievedChunks.includes(chunk.uuid))
+        .map(chunk => chunk.endTime.getTime())
     );
     const maxReady = Math.max(...chunks
-        .filter(chunk => retrievedChunks.includes(chunk._id))
-        .map(chunk => chunk.metadata.stopTime)
+        .filter(chunk => retrievedChunks.includes(chunk.uuid))
+        .map(chunk => chunk.endTime.getTime())
         .filter(start => start < minStopNotFetched)
     );
     return maxReady;

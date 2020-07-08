@@ -1,4 +1,4 @@
-import { defaultConfig } from "@xsrt/common";
+import { defaultConfig } from "../../../common/src";
 import { ExtensionConfig } from "../config/extension-config";
 import { RecordingStatus } from "../popup/popup-root";
 

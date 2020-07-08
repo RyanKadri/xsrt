@@ -60,6 +60,6 @@ export class RecordingStateService {
 }
 
 export interface RecordingInfo {
-    _id: string;
+    uuid: string;
     startTime: number;
 }

@@ -1,6 +1,6 @@
 /* istanbul ignore file */
-import { apiDef, assetApiSymbol, assetEndpoint, constant, dependencyGroup, GotSymbol, FetchSymbol } from "@xsrt/common";
-import { ApiDefinition, endpointDef, IExpressConfigurator, IRouteHandler, IServerConfig } from "@xsrt/common-backend";
+import { apiDef, assetApiSymbol, assetEndpoint, constant, dependencyGroup, GotSymbol, FetchSymbol } from "../../common/src";
+import { ApiDefinition, endpointDef, IExpressConfigurator, IRouteHandler, IServerConfig } from "../../common-backend/src";
 import got from "got";
 import { ConfigEndpoint } from "./compile-thumbnail/endpoints/config-endpoint";
 import { ScreenshotStaticRouteHandler } from "./compile-thumbnail/endpoints/screenshot-route-handler";

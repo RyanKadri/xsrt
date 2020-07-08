@@ -1,5 +1,5 @@
-import { NeedsInitialization, RecordingChunk } from "@xsrt/common";
-import { DecoratorQueueService, IServerConfig } from "@xsrt/common-backend";
+import { NeedsInitialization, RecordingChunk } from "../../../common/src";
+import { DecoratorQueueService, IServerConfig } from "../../../common-backend/src";
 import { Channel, connect } from "amqplib";
 import { inject, injectable, multiInject } from "inversify";
 import { DecoratorConfig } from "../decorator-server-config";
@@ -66,4 +66,4 @@ export interface QueueForwardRequest {
   payload: any;
 }
 
-export type ChunkId = Pick<RecordingChunk, "_id">;
+export type ChunkId = Pick<RecordingChunk, "uuid">;

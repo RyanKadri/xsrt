@@ -1,5 +1,5 @@
-import { DBConnectionSymbol, siteTargetEndpoint } from "@xsrt/common";
-import { errorNotFound, RouteImplementation, TargetEntity } from "@xsrt/common-backend";
+import { DBConnectionSymbol, siteTargetEndpoint, TargetEntity } from "../../../common/src";
+import { errorNotFound, RouteImplementation } from "../../../common-backend/src";
 import { inject, injectable } from "inversify";
 import { Connection, Repository } from "typeorm";
 
@@ -28,7 +28,7 @@ export class TargetEndpoint implements TargetEndpointType {
   deleteSiteTarget: TargetEndpointType["deleteSiteTarget"] = async ({ targetId }) => {
     const target = await this.targetRepo.delete({ customerId: targetId });
     if (target) {
-      return target;
+      return ;
     } else {
       return errorNotFound(`Target ${targetId} not found`);
     }
@@ -43,7 +43,8 @@ export class TargetEndpoint implements TargetEndpointType {
     return this.targetRepo.save(target);
   }
 
-  updateSiteTarget: TargetEndpointType["updateSiteTarget"] = async ({ target, targetId }) => {
-    return this.targetRepo.update({ customerId: targetId }, target);
+  updateSiteTarget: TargetEndpointType["updateSiteTarget"] = async ({ target: updates, targetId }) => {
+    const target = await this.targetRepo.findOne({ where: { customerId: targetId }});
+    return this.targetRepo.save({ ...target, ...updates });
   }
 }

@@ -1,8 +1,8 @@
 import DayjsUtils from "@date-io/dayjs";
 import { createStyles, MuiThemeProvider, withStyles } from "@material-ui/core";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import { LoggingService, SiteTarget } from "@xsrt/common";
-import { appTheme, useComponent, withDependencies } from "@xsrt/common-frontend";
+import { LoggingService, SiteTarget } from "../../../../common/src";
+import { appTheme, useComponent, withDependencies } from "../../../../common-frontend/src";
 import { MuiPickersUtilsProvider } from "material-ui-pickers";
 import React, { useEffect, useReducer } from "react";
 import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom";
@@ -35,7 +35,7 @@ function reducer(state: AppState, action: Action) {
             return {
                 ...state,
                 availableSites: (state.availableSites || [])
-                    .filter(site => site._id !== action.toDelete._id )
+                    .filter(site => site.customerId !== action.toDelete.customerId )
             };
         case "set-sites":
             return {
@@ -46,7 +46,7 @@ function reducer(state: AppState, action: Action) {
             return {
                 ...state,
                 availableSites: state.availableSites.map(
-                    oldSite => oldSite._id === action.update._id ? action.update : oldSite
+                    oldSite => oldSite.customerId === action.update.customerId ? action.update : oldSite
                 )
             };
         case "toggle-sidebar":
@@ -90,7 +90,7 @@ const _AppRoot = ({ targetApi }: AppProps) => {
                             } />
                             <Route path="/dashboard/:siteId" render={ (match) =>
                                 <DISiteDashboard
-                                    site={ state.availableSites.find(site => site._id === match.match.params.siteId )!}
+                                    site={ state.availableSites.find(site => site.customerId === match.match.params.siteId )!}
                                 />
                             } />
                             <Route path="/dashboard" render={ () =>

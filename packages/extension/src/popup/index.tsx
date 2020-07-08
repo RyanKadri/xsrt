@@ -1,5 +1,5 @@
-import { initializeApp } from "@xsrt/common";
-import { DependencyContext } from "@xsrt/common-frontend";
+import { initializeApp } from "../../../common/src";
+import { DependencyContext } from "../../../common-frontend/src";
 import React from "react";
 import ReactDOM from "react-dom";
 import { PopupRoot } from "./popup-root";

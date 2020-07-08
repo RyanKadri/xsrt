@@ -25,10 +25,10 @@ export class RecordingApiService {
 
     async deleteRecordings(selected: RecordingOverview[]): Promise<void> {
         if (selected.length === 1) {
-            await this.recordingApi.deleteRecording({ recordingId: selected[0]._id });
+            await this.recordingApi.deleteRecording({ recordingId: "" + selected[0].id });
         } else {
             await this.recordingApi.deleteMany({
-                deleteRequest: { ids: selected.map(req => req._id) },
+                deleteRequest: { ids: selected.map(req => req.id) },
             });
         }
     }

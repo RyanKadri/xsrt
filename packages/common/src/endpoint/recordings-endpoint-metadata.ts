@@ -45,7 +45,7 @@ export const recordingEndpoint = defineEndpoint({
             userAgent: new RequestHeader("user-agent"),
             referer: new RequestHeader("Referer")
         },
-        response: Type<{ _id: string }>()
+        response: Type<{ uuid: string }>()
     },
     deleteMany: {
         method: "post",
@@ -61,5 +61,5 @@ export interface CreateRecordingRequest {
 }
 
 export interface DeleteManyRecordingsRequest {
-    ids: string[];
+    ids: number[];
 }

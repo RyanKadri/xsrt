@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, OneToMany } from "typeorm";
 import { TargetEntity } from "./targets";
 import { ChunkEntity } from "./chunk";
-import { UADetails } from "./types";
+// import { UADetails } from "./types";
 
 @Entity({ name: "recording" })
 export class RecordingEntity {
@@ -18,7 +18,7 @@ export class RecordingEntity {
   chunks: ChunkEntity[];
 
   @Column({ name: "snapshot_path" })
-  thumbnailPath: string;
+  thumbnailPath: string | null;
 
   @Column({ name: "start_time" })
   startTime: Date;
@@ -27,7 +27,8 @@ export class RecordingEntity {
   duration: number | null;
 
   @Column({ name: "ua_details", type: "json" })
-  uaDetails: UADetails;
+  // uaDetails: UADetails;
+  uaDetails: any;
 
   @Column({ name: "finalized" })
   finalized: boolean;

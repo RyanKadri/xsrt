@@ -13,7 +13,7 @@ export class RecordingOptimizer {
     optimize(data: PendingDiffChunk): PendingDiffChunk;
     optimize(data: UnoptimizedSnapshotChunk | PendingDiffChunk): any {
         let snapshot: RootSnapshot | {} = {};
-        if (data.type === "snapshot") {
+        if (data.chunkType === "snapshot") {
             const root = this.optimizeSubtree(data.snapshot.root) as OptimizedHtmlElementInfo;
             snapshot = {
                 documentMetadata: data.snapshot!.documentMetadata,
@@ -23,7 +23,7 @@ export class RecordingOptimizer {
         const changes = data.changes.map(change => {
             return {
                 ...change,
-                mutations: change.mutations.map(mutation => mutation.type === "children"
+                mutations: change.mutations.map((mutation: any) => mutation.type === "children"
                     ? this.optimizeChildrenMutation(mutation)
                     : mutation.type === "attribute"
                         ? this.optimizeAttributeMutation(mutation)
@@ -36,7 +36,7 @@ export class RecordingOptimizer {
             ...data,
             snapshot,
             changes,
-            assets: this.context.getAssets().map(asset => this.resolveFullRequestUrl(asset)),
+            assets: this.context.getAssets().map(asset => ({ origUrl: this.resolveFullRequestUrl(asset)})),
         } as RecordingChunk;
     }
 

@@ -16,16 +16,15 @@
     "@types/puppeteer": "^3.0.1"
   },
   "dependencies": {
-    "@xsrt/common": "^0.9.0",
-    "@xsrt/common-backend": "^0.9.0",
     "body-parser": "^1.18.3",
     "got": "11.3.0",
     "isomorphic-unfetch": "3.0.0",
     "cors": "^2.8.5",
-    "express": "^4.17.1",
+    "express": "^4.16.4",
     "inversify": "^5.0.1",
     "puppeteer": "^3.3.0",
-    "amqplib": "^0.5.3"
+    "amqplib": "^0.5.3",
+    "typeorm": "0.2.25"
   },
   "gitHead": "179c318fa443265abd6af14cb92955b78681ab9c"
 }

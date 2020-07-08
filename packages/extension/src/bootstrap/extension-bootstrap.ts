@@ -1,6 +1,6 @@
 import "reflect-metadata";
-import { ScraperConfig } from "@xsrt/common";
-import { RecorderInitializer } from "@xsrt/recorder";
+import { ScraperConfig } from "../../../common/src";
+import { RecorderInitializer } from "../../../recorder/src";
 import { CommandMessage } from "../content/commands";
 import { ExtensionMessage, ExtensionMessageResponse } from "../content/site-channel-types";
 

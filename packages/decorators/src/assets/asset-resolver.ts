@@ -1,4 +1,4 @@
-import { assetApiSymbol, assetEndpoint, EndpointApi } from "@xsrt/common";
+import { assetApiSymbol, assetEndpoint, EndpointApi } from "../../../common/src";
 import { inject, injectable } from "inversify";
 import { AssetFallbackService } from "./asset-fallback-service";
 

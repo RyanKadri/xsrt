@@ -1,4 +1,4 @@
-import { RouteHandler } from "@xsrt/common-backend";
+import { RouteHandler } from "../../../../common-backend/src";
 import { Router, static as expressStatic } from "express";
 import { injectable } from "inversify";
 

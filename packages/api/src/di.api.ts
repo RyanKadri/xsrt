@@ -1,6 +1,6 @@
 /* istanbul ignore file */
-import { assetEndpoint, chunkEndpointMetadata, constant, dependencyGroup, GotSymbol, implementationChoice, recordingEndpoint, siteTargetEndpoint } from "@xsrt/common";
-import { ApiDefinition, endpointDef, IExpressConfigurator, IServerConfig } from "@xsrt/common-backend";
+import { assetEndpoint, chunkEndpointMetadata, constant, dependencyGroup, GotSymbol, implementationChoice, recordingEndpoint, siteTargetEndpoint } from "../../common/src";
+import { ApiDefinition, endpointDef, IExpressConfigurator, IServerConfig } from "../../common-backend/src";
 import got from "got";
 import { ApiServerConfig, ApiServerInitializer } from "./api-server-conf";
 import { ChunkEndpoint } from "./endpoints/chunk-endpoint-impl";

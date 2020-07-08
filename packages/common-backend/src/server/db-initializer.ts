@@ -1,4 +1,4 @@
-import { DBConnectionSymbol, LoggingService, NeedsInitialization } from "@xsrt/common";
+import { DBConnectionSymbol, LoggingService, NeedsInitialization } from "../../../common/src";
 import { injectable } from "inversify";
 import { Connection, createConnection } from "typeorm";
 

@@ -1,6 +1,6 @@
 import { createStyles, List, ListItem, ListItemIcon, ListItemText, Theme, Typography, withStyles, WithStyles } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
-import { NewSiteTarget, SiteTarget } from "@xsrt/common";
+import { NewSiteTarget, SiteTarget } from "../../../../common/src";
 import React, { useState } from "react";
 import { Route } from "react-router";
 import { TargetApiService } from "../../services/sites-api-service";
@@ -49,9 +49,9 @@ function _OverallDashboardView({ sites, classes, onCreateSite, onUpdateSite, onD
             <Route render={ ({ history }) =>
                 <List dense>{
                     sites.map(site =>
-                        <DashboardTargetListItem site={ site } key={ site._id }
+                        <DashboardTargetListItem site={ site } key={ site.customerId }
                                                 onEditSite={ () => setEditSiteState((_) => ({ site, open: true })) }
-                                                onNavigate={ () => history.push(`/dashboard/${site._id}`) } />
+                                                onNavigate={ () => history.push(`/dashboard/${site.customerId}`) } />
                     )
                 }
                     <ListItem button onClick={ () => setEditSiteState({ site: null, open: true }) }>

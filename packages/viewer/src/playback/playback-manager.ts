@@ -30,13 +30,13 @@ export class PlaybackManager {
 
         const newSnapshots = snapshots
             .filter(snapshot =>
-                between(snapshot.metadata.startTime, isRewind ? 0 : fromTime, toTime)
+                between(snapshot.startTime.getTime(), isRewind ? 0 : fromTime, toTime)
             );
 
         const newestSnapshot = newSnapshots[snapshots.length - 1];
 
         const adjustedPrevTime = newestSnapshot
-            ? newestSnapshot.metadata.startTime
+            ? newestSnapshot.startTime.getTime()
             : fromTime;
 
         if (isRewind ||

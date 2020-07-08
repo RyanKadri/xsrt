@@ -1,4 +1,3 @@
-import { Omit } from "@xsrt/common";
 import React, { ComponentType, useContext, useState } from "react";
 import { Dependencies, DependencyContext } from "./with-dependencies";
 

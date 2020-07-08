@@ -1,6 +1,6 @@
 import { createStyles, Dialog, Theme, Typography, withStyles, WithStyles } from "@material-ui/core";
-import { LoggingService, RecordingOverview, SiteTarget } from "@xsrt/common";
-import { useComponent } from "@xsrt/common-frontend";
+import { LoggingService, RecordingOverview, SiteTarget } from "../../../../common/src";
+import { useComponent } from "../../../../common-frontend/src";
 import React, { Fragment, useEffect, useReducer, useState } from "react";
 import { RecordingApiService } from "../../services/recording-service";
 import { UIConfigService } from "../../services/ui-config-service";
@@ -26,7 +26,7 @@ function reducer(state: State, action: Action): State {
             return {
                 ...state,
                 recordings: state.recordings
-                    .filter(rec => !action.recordings.some(sel => sel._id === rec._id )),
+                    .filter(rec => !action.recordings.some(sel => sel.uuid === rec.uuid )),
             };
         case "updateRecordings":
             return {
@@ -64,7 +64,7 @@ function _SiteDashboardView({ classes, recordingsApi, logger, site }: Props) {
     useEffect(() => {
         if (site && state.stale && !state.loading) {
             dispatch({ type: "loading"});
-            recordingsApi.fetchAvailableRecordings(site._id, state.loadingFilter)
+            recordingsApi.fetchAvailableRecordings(site.customerId, state.loadingFilter)
                 .then(fetchedRecordings => {
                     dispatch({ type: "updateRecordings", recordings: fetchedRecordings });
                 });
@@ -80,13 +80,6 @@ function _SiteDashboardView({ classes, recordingsApi, logger, site }: Props) {
                         <Typography variant="h4">
                             { site.name }
                         </Typography>
-                        { site.urls && site.urls.length === 1
-                            ? <a  target="_blank" className={classes.siteLink}
-                                href={ `${site.urls[0]}` }>
-                                { site.urls[0] }
-                            </a>
-                            : null
-                        }
                     </header>
                     { state.loading
                         ? <Typography variant="body1">Loading...</Typography>
@@ -102,8 +95,8 @@ function _SiteDashboardView({ classes, recordingsApi, logger, site }: Props) {
                     <Dialog maxWidth="lg"
                         open={ preview !== null }
                         onClose={ () => setPreview(null) }>{
-                        preview && preview.thumbnail
-                            ? <img src={`${process.env.STATIC_HOST}/screenshots/${preview.thumbnail}`}></img>
+                        preview && preview.thumbnailPath
+                            ? <img src={`${process.env.STATIC_HOST}/screenshots/${preview.thumbnailPath}`}></img>
                             : <p>No image</p>
                     }</Dialog>
                 </Fragment>

@@ -1,5 +1,5 @@
 import { createStyles, Dialog, DialogTitle, Theme, Typography, WithStyles, withStyles } from "@material-ui/core";
-import { NewSiteTarget, SiteTarget } from "@xsrt/common";
+import { NewSiteTarget, SiteTarget } from "../../../../common/src";
 import React from "react";
 import { EditSiteForm } from "./edit-site-form";
 
@@ -16,7 +16,7 @@ const _EditSiteSettingsDialog = ({ onClose, site, open, onSubmit, classes, onDel
             onClose={ onClose }>
         <DialogTitle>
             { site !== null ? `Edit Site: ${site.name}` : "Create Site" }
-            { site && <Typography className={ classes.siteId }>Site ID: { site._id }</Typography>}
+            { site && <Typography className={ classes.siteId }>Site ID: { site.customerId }</Typography>}
         </DialogTitle>
         <EditSiteForm onSubmit={ onSubmit } site={ site } onDeleteSite={ onDeleteSite } />
     </Dialog>
@@ -28,6 +28,6 @@ interface Props extends WithStyles<typeof styles> {
     site: SiteTarget | null;
     open: boolean;
     onClose: () => void;
-    onSubmit: (site: SiteTarget | NewSiteTarget) => void;
+    onSubmit: (site: SiteTarget | Pick<NewSiteTarget, "name">) => void;
     onDeleteSite: () => void;
 }

@@ -1,6 +1,6 @@
 import { createStyles, Theme, Typography, withStyles, WithStyles } from "@material-ui/core";
-import { Group, RecordedMutationGroup, RecordedUserInput, Recording, RecordingChunk, SnapshotChunk } from "@xsrt/common";
-import { withDependencies } from "@xsrt/common-frontend";
+import { Group, RecordedMutationGroup, RecordedUserInput, Recording, RecordingChunk, SnapshotChunk } from "../../../../common/src";
+import { withDependencies } from "../../../../common-frontend/src";
 import React, { useEffect, useReducer } from "react";
 import { DomPreviewService } from "../../playback/dom-preview-service";
 import { AnnotationService, RecordingAnnotation } from "../../services/annotation/annotation-service";
@@ -45,14 +45,14 @@ function _RecordingView({
     const updateBuffer = async (time = 0) => {
         if (state.recording !== null) {
             const chunksToGrab = state.recording.chunks.filter(chunk =>
-                chunk.metadata.startTime - time < uiTweaks.idealBuffer
-                    && !state.requestedChunks.includes(chunk._id)
+                chunk.startTime.getTime() - time < uiTweaks.idealBuffer
+                    && !state.requestedChunks.includes(chunk.uuid)
             );
 
             dispatch({ type: "fetchChunks", chunks: chunksToGrab });
 
             chunksToGrab.forEach(async chunkShell => {
-                const chunk = await chunkService.fetchChunk(chunkShell._id);
+                const chunk = await chunkService.fetchChunk(chunkShell.uuid);
                 dispatch({ type: "receiveChunk", chunk });
             });
         }
@@ -60,7 +60,7 @@ function _RecordingView({
 
     const calcEnd = (recording: Recording) => {
         return Math.max(
-            ...recording.chunks.map(chunk => chunk.metadata.stopTime)
+            ...recording.chunks.map(chunk => chunk.endTime.getTime())
         );
     };
 
@@ -95,7 +95,6 @@ function _RecordingView({
                 inputs={ state.inputs }
                 snapshots={ state.snapshots }
 
-                recordingMetadata={ state.recording.metadata }
                 annotations={ state.annotations }
                 regions={ state.regions }
 

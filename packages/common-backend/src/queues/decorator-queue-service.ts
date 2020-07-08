@@ -1,6 +1,6 @@
 import { Channel, connect } from "amqplib";
 import { inject, injectable } from "inversify";
-import { RecordingChunk, NeedsInitialization } from "@xsrt/common";
+import { RecordingChunk, NeedsInitialization } from "../../../common/src";
 import { initSnapshotQueue, rawChunkQueue } from "./queue-metadata";
 import { ServerConfig, IServerConfig } from "../server/express-server";
 
@@ -32,7 +32,7 @@ export class DecoratorQueueService implements NeedsInitialization {
     }
 
     async postChunk(chunk: RecordingChunk): Promise<void> {
-        this.postMessage(rawChunkQueue.name, { _id: chunk._id });
+        this.postMessage(rawChunkQueue.name, { uuid: chunk.uuid });
     }
 
     async postMessage(toQueue: string, payload: any) {

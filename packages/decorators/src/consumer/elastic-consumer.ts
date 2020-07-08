@@ -1,99 +1,103 @@
-import { LoggingService, RecordedNavigationEvent, Recording, RecordingChunk, RecordingElasticRep } from "@xsrt/common";
-import { Chunk, elasticQueue, ElasticService, initSnapshotQueue, recordingRepo, RecordingSchema } from "@xsrt/common-backend";
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
+import { Connection, Repository } from "typeorm";
+import { elasticQueue, ElasticService, initSnapshotQueue, recordingRepo } from "../../../common-backend/src";
+import { ChunkEntity, DBConnectionSymbol, LoggingService, RecordedNavigationEvent, RecordingElasticRep, RecordingEntity } from "../../../common/src";
 import { ChunkId, DecoratorConsumer } from "../services/queue-consumer-service";
 
 @injectable()
 export class ElasticConsumer implements DecoratorConsumer<ChunkId> {
 
-    readonly topic = elasticQueue.name;
+  readonly topic = elasticQueue.name;
+  private chunkRepo: Repository<ChunkEntity>;
 
-    constructor(
-        private elasticService: ElasticService,
-        private logger: LoggingService
-    ) { }
+  constructor(
+    private elasticService: ElasticService,
+    private logger: LoggingService,
+    @inject(DBConnectionSymbol) connection: Connection
+  ) {
+    this.chunkRepo = connection.getRepository(ChunkEntity);
+  }
 
-    async handle({ _id }: ChunkId) {
-        const client = this.elasticService.client;
+  async handle({ uuid }: ChunkId) {
+    const client = this.elasticService.client;
 
-        const chunkDoc = await Chunk.findById(_id);
-        if (!chunkDoc) {
-            throw new Error(`Could not find chunk with id: ${_id}`);
-        }
-
-        const chunk: RecordingChunk = chunkDoc.toObject();
-        const oldDocs = (await client.search({
-            index: recordingRepo.index,
-            type: recordingRepo.type,
-            body: {
-                query: {
-                    match: {
-                        _id: chunk.recording
-                    }
-                }
-            }
-        })).body.hits.hits;
-
-        if (oldDocs.length > 1) {
-            throw new Error(`Expected at most 1 Elastic document for chunk ${ _id } but got ${oldDocs.length}`);
-        }
-
-        let recording: Recording | undefined;
-        let oldDoc: RecordingElasticRep | undefined;
-        if (oldDocs.length === 0) {
-            const recordingDoc = await RecordingSchema.findById(chunk.recording);
-            if (!recordingDoc) {
-                throw new Error(`Could not find recording with id: ${ chunk.recording }`);
-            } else {
-                recording = recordingDoc.toObject();
-            }
-        } else {
-            oldDoc = oldDocs.length > 0 ? oldDocs[0]._source : undefined;
-        }
-        const mergedDoc = this.mergeChunkDocs(chunk, recording, oldDoc);
-
-        await client.update({
-            index: recordingRepo.index,
-            type: recordingRepo.type,
-            id: mergedDoc.recording,
-            body: {
-                doc: mergedDoc,
-                doc_as_upsert: true
-            } });
-        this.logger.info(`Updated document for chunk ${chunk._id}`);
-
-        if (chunk.type === "snapshot" && chunk.initChunk) {
-            return {
-                queue: initSnapshotQueue.name,
-                payload: chunk
-            };
-        } else {
-            return;
-        }
+    const chunk = await this.chunkRepo.findOne({ where: { uuid }, relations: ["recording", "recording.target" ] });
+    if (!chunk) {
+      throw new Error(`Could not find chunk with id: ${uuid}`);
     }
 
-    private mergeChunkDocs(
-        chunk: RecordingChunk, recording?: Recording, oldDoc?: RecordingElasticRep
-    ): RecordingElasticRep {
-        const oldUrls = oldDoc
-            ? oldDoc.urls
-            : [recording!.metadata.site];
-
-        const navigations = ((chunk.inputs || {})["soft-navigate"] || []) as RecordedNavigationEvent[];
-        const newUrls = oldUrls.concat(navigations.map(nav => nav.url));
-        if (chunk.type === "snapshot") {
-            newUrls.unshift(chunk.snapshot.documentMetadata.url.path);
+    const oldDocs = (await client.search({
+      index: recordingRepo.index,
+      type: recordingRepo.type,
+      body: {
+        query: {
+          match: {
+            _id: chunk.recording
+          }
         }
+      }
+    })).body.hits.hits;
 
-        const userAgent = oldDoc
-                            ? oldDoc.userAgent
-                            : recording!.metadata.uaDetails.browser.name;
-        return {
-            recording: oldDoc ? oldDoc.recording : chunk.recording,
-            urls: newUrls,
-            start: oldDoc ? oldDoc.start : recording!.metadata.startTime,
-            userAgent,
-            site: oldDoc ? oldDoc.site : recording!.metadata.site
-        };
+    if (oldDocs.length > 1) {
+      throw new Error(`Expected at most 1 Elastic document for chunk ${uuid} but got ${oldDocs.length}`);
     }
+
+    let recording: RecordingEntity | undefined;
+    let oldDoc: RecordingElasticRep | undefined;
+    if (oldDocs.length === 0) {
+      if (!chunk.recording) {
+        throw new Error(`Could not find recording associated with chunk: ${chunk.uuid}`);
+      } else {
+        recording = chunk.recording;
+      }
+    } else {
+      oldDoc = oldDocs.length > 0 ? oldDocs[0]._source : undefined;
+    }
+    const mergedDoc = this.mergeChunkDocs(chunk, recording, oldDoc);
+
+    await client.update({
+      index: recordingRepo.index,
+      type: recordingRepo.type,
+      id: mergedDoc.recording,
+      body: {
+        doc: mergedDoc,
+        doc_as_upsert: true
+      }
+    });
+    this.logger.info(`Updated document for chunk ${chunk.uuid}`);
+
+    if (chunk.chunkType === "snapshot" && chunk.initChunk) {
+      return {
+        queue: initSnapshotQueue.name,
+        payload: chunk
+      };
+    } else {
+      return;
+    }
+  }
+
+  private mergeChunkDocs(
+    chunk: ChunkEntity, recording?: RecordingEntity, oldDoc?: RecordingElasticRep
+  ): RecordingElasticRep {
+    const oldUrls = oldDoc
+      ? oldDoc.urls
+      : [];
+
+    const navigations = ((chunk.inputs || {})["soft-navigate"] || []) as RecordedNavigationEvent[];
+    const newUrls = oldUrls.concat(navigations.map(nav => nav.url));
+    if (chunk.chunkType === "snapshot") {
+      newUrls.unshift(chunk.snapshot.documentMetadata.url.path);
+    }
+
+    const userAgent = oldDoc
+      ? oldDoc.userAgent
+      : recording!.uaDetails.browser.name;
+    return {
+      recording: oldDoc ? oldDoc.recording : chunk.recording.uuid,
+      urls: newUrls,
+      start: oldDoc ? oldDoc.start : recording!.startTime.getTime(),
+      userAgent,
+      site: oldDoc ? oldDoc.site : recording!.target.customerId
+    };
+  }
 }

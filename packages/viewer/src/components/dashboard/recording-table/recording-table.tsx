@@ -1,5 +1,5 @@
 import { createStyles, Paper, Table, TableBody, Theme, withStyles, WithStyles } from "@material-ui/core";
-import { RecordingOverview } from "@xsrt/common";
+import { RecordingOverview } from "../../../../../common/src";
 import React, { useReducer, useState } from "react";
 import { UIConfigService } from "../../../services/ui-config-service";
 import { useDialog } from "../../utils/useDialog";
@@ -47,7 +47,7 @@ const _RecordingTable = (props: RecordingTableProps) => {
 
     const [ selected, dispatch ] = useReducer(reducer, []);
 
-    const recordings = props.recordings.concat().sort((a, b) => b.metadata.startTime - a.metadata.startTime );
+    const recordings = props.recordings.concat().sort((a, b) => b.startTime.getTime() - a.startTime.getTime() );
 
     const onSettingsChange = (newSettings: RecordingTableSettings) => {
         updateSettings(newSettings);
@@ -84,7 +84,7 @@ const _RecordingTable = (props: RecordingTableProps) => {
                         selected={ selected.includes(recording) }
                         onPreview={ onPreview }
                         onToggle={ () => dispatch({ type: "toggle", recording }) }
-                        key={ recording._id }
+                        key={ recording.uuid }
                         displayColumns={ settings.columns }
                     />
                 )

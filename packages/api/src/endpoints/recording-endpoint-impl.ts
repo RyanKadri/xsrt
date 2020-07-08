@@ -1,9 +1,10 @@
-import { DBConnectionSymbol, Recording, recordingEndpoint, UADetails, TargetEntity } from "../../../common/src";
+import { DBConnectionSymbol, Recording, recordingEndpoint, UADetails, TargetEntity, RecordingEntity } from "../../../common/src";
 import { errorInvalidCommand, errorNotFound, RouteImplementation } from "../../../common-backend/src";
 import { inject, injectable } from "inversify";
 import { Connection, Repository } from "typeorm";
 import * as parser from "ua-parser-js";
 import { RecordingService } from "../services/recording-service";
+import { v4 as uuid } from "uuid";
 
 type RecordingEndpointType = RouteImplementation<typeof recordingEndpoint>;
 
@@ -19,11 +20,11 @@ export class RecordingEndpoint implements RecordingEndpointType {
    }
 
   fetchRecording: RecordingEndpointType["fetchRecording"] = async ({ recordingId }) => {
-    const recording = this.recordingService.fetchRecording(recordingId);
+    const recording = await this.recordingService.fetchRecording(recordingId);
     if (!recording) {
       return errorNotFound(`Could not find recording with ID ${recordingId}`);
     } else {
-      return recording;
+      return recording as Recording;
     }
   }
 
@@ -45,12 +46,18 @@ export class RecordingEndpoint implements RecordingEndpointType {
     }
     const ua = new parser.UAParser(userAgent || "");
     const uaDetails = extractUADetails(ua);
-    const recordingData: Omit<Recording, "_id"> = {
-      metadata: { site: target.id, startTime: bodyData.startTime, duration: 0, uaDetails },
+    const recordingData: Omit<RecordingEntity, "id"> = {
+      duration: 0,
+      uaDetails,
+      startTime: new Date(bodyData.startTime),
+      finalized: false,
+      thumbnailPath: null,
+      target,
+      uuid: uuid(),
       chunks: []
     };
     const res = await this.recordingService.createRecording(recordingData);
-    return { id: res.id };
+    return { uuid: res.uuid };
   }
 
   deleteMany: RecordingEndpointType["deleteMany"] = async ({ deleteRequest }) => {

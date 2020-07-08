@@ -1,5 +1,5 @@
-import { assertExists } from "@xsrt/common";
-import { ExpressConfigurator, ServerConfig } from "@xsrt/common-backend";
+import { assertExists } from "../../common/src";
+import { ExpressConfigurator, ServerConfig } from "../../common-backend/src";
 import bodyParser from "body-parser";
 import cors from "cors";
 import { Express } from "express";

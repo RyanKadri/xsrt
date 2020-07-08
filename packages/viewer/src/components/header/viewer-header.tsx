@@ -1,5 +1,5 @@
 import { createStyles, withStyles, WithStyles } from "@material-ui/core";
-import { DocumentMetadata, formatDate, fullUrl, shortUrl } from "@xsrt/common";
+import { DocumentMetadata, formatDate, fullUrl, shortUrl } from "../../../../common/src";
 import React from "react";
 
 const styles = createStyles({

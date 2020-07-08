@@ -1,4 +1,4 @@
-import { RecordedMutationGroup, RecordingMetadata, SnapshotChunk } from "@xsrt/common";
+import { RecordedMutationGroup, SnapshotChunk } from "../../../../../common/src";
 import React, { useEffect, useRef } from "react";
 import { PlaybackManager } from "../../../playback/playback-manager";
 import { UserInputGroup } from "../../utils/recording-data-utils";
@@ -59,7 +59,6 @@ interface LastFrameInfo {
 }
 
 interface Props {
-    recordingMetadata: RecordingMetadata;
     snapshots: SnapshotChunk[];
     changes: RecordedMutationGroup[];
     inputs: UserInputGroup[];

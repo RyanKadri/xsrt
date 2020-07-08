@@ -31,7 +31,7 @@ export class DomManager {
 
     createInitialDocument(data: SnapshotChunk) {
         this.logger.debug("Initialized playback iframe");
-        this.assets = data.assets;
+        this.assets = data.assets.map(asset => asset.origUrl);
 
         const docType = `<!DOCTYPE ${ data.snapshot.documentMetadata.docType }>`;
         this.document.write(docType + "\n<html></html>");

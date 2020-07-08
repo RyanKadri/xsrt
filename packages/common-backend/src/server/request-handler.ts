@@ -1,4 +1,4 @@
-import { InjectionParamMap, Interface, mapDictionary, RequestUnwrapper, UrlVerbDefinition, PayloadVerbDefinition } from "@xsrt/common";
+import { InjectionParamMap, Interface, mapDictionary, RequestUnwrapper, UrlVerbDefinition, PayloadVerbDefinition } from "../../../common/src";
 import { Request, Response } from "express";
 import { injectable } from "inversify";
 import { HttpResponseCodes } from "./http-codes";

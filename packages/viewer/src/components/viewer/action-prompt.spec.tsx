@@ -1,5 +1,5 @@
 import { createShallow } from "@material-ui/core/test-utils";
-import { noop } from "@xsrt/common";
+import { noop } from "../../../../common/src";
 import { configure } from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
 import React from "react";

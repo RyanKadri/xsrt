@@ -20,8 +20,8 @@ export class RecorderApiService {
 
         if (currentRecording && startTime) {
             return {
-                _id: currentRecording,
-                startTime: this.dateManager.now() - startTime
+                uuid: currentRecording,
+                startTime: this.dateManager.now() - startTime,
             };
         } else {
             startTime = this.dateManager.now();
@@ -29,9 +29,9 @@ export class RecorderApiService {
             const recording = await this.recordingApi.createRecording({
                 recording: { site, startTime }
             });
-            this.recordingState.saveRecordingId(recording._id);
+            this.recordingState.saveRecordingId(recording.uuid);
             return {
-                _id: recording._id,
+                uuid: recording.uuid,
                 startTime: 0
             };
         }
@@ -45,7 +45,7 @@ export class RecorderApiService {
                 !debugMode ? {"Content-Encoding": "deflate"} : null
             )}
         );
-        return res._id;
+        return res.uuid;
     }
 
 }

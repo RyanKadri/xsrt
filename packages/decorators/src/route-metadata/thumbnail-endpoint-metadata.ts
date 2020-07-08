@@ -1,4 +1,4 @@
-import { defineEndpoint, RouteParamUnwrap, SnapshotChunk, Type } from "@xsrt/common";
+import { defineEndpoint, RouteParamUnwrap, SnapshotChunk, Type } from "../../../common/src";
 
 export const thumbnailEndpointMetadata = defineEndpoint({
     getThumbnailData: {

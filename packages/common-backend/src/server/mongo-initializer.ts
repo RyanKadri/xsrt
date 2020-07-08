@@ -1,4 +1,4 @@
-import { LoggingService, NeedsInitialization } from "@xsrt/common";
+import { LoggingService, NeedsInitialization } from "../../../common/src";
 import { inject, injectable } from "inversify";
 import mongoose from "mongoose";
 import { IServerConfig, ServerConfig } from "./express-server";

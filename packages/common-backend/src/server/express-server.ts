@@ -1,4 +1,4 @@
-import { LoggingService } from "@xsrt/common";
+import { LoggingService } from "../../../common/src";
 import express, { Router, Express } from "express";
 import { inject, injectable, multiInject, optional } from "inversify";
 import { RouterSetupFn } from "./route-types";

@@ -1,5 +1,5 @@
 import { Checkbox, createStyles, TableCell, TableRow, WithStyles, withStyles } from "@material-ui/core";
-import { formatDate, formatPlayerTime, RecordingOverview } from "@xsrt/common";
+import { formatDate, formatPlayerTime, RecordingOverview } from "../../../../../common/src";
 import React from "react";
 import { Link } from "react-router-dom";
 import { AvailableRecordingColumn, RecordingColumn } from "./available-columns";
@@ -16,23 +16,23 @@ const columnDefs: {
     [col in AvailableRecordingColumn ]:
         (recording: RecordingOverview, props: RecordingTableRowProps) => JSX.Element | string | null
 } = {
-    date: ({metadata, _id}) =>
-            <Link to={`/recordings/${_id}`}>
-                { formatDate(metadata.startTime) }
+    date: ({ startTime, uuid}) =>
+            <Link to={`/recordings/${uuid}`}>
+                { formatDate(startTime.getTime()) }
             </Link>,
-    duration: ({metadata}) =>
-            metadata.duration
-                ? formatPlayerTime(metadata.duration)
+    duration: ({ duration }) =>
+            duration
+                ? formatPlayerTime(duration)
                 : "N/A",
-    ua: ({metadata}) =>
-            metadata.uaDetails
-                ? `${ metadata.uaDetails.browser.name } - ${ metadata.uaDetails.os.name }`
+    ua: ({ uaDetails }) =>
+            uaDetails
+                ? `${ uaDetails.browser.name } - ${ uaDetails.os.name }`
                 : "Unknown",
     preview: (recording, props ) =>
-            recording.thumbnail
+            recording.thumbnailPath
                 ? <img
                     className={ props.classes.preview }
-                    src={ `${process.env.STATIC_HOST}/screenshots/${recording.thumbnail}` }
+                    src={ `${process.env.STATIC_HOST}/screenshots/${recording.thumbnailPath}` }
                     onClick={ () => props.onPreview(recording) } />
                 : null
 };

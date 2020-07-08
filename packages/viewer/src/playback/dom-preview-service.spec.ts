@@ -49,8 +49,8 @@ describe(DomPreviewService.name, () => {
 
 function baseSnapshot(): DeepPartial<SnapshotChunk> {
     return {
-        type: "snapshot" as "snapshot",
-        metadata: { startTime: 12 },
+        chunkType: "snapshot" as "snapshot",
+        startTime: 12,
         snapshot: {
             root: {
                 id: 1,

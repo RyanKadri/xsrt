@@ -1,5 +1,5 @@
 import { Client } from "@elastic/elasticsearch";
-import { LoggingService, NeedsInitialization } from "@xsrt/common";
+import { LoggingService, NeedsInitialization } from "../../../common/src";
 import { inject, injectable } from "inversify";
 import { IServerConfig, ServerConfig } from "../server/express-server";
 import { ElasticRepo, recordingRepo } from "./elastic-repos";

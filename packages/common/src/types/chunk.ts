@@ -1,7 +1,8 @@
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { AssetEntity } from "./asset";
 import { RecordingEntity } from "./recording";
-import { RecordedMutationGroup } from "./types";
+// import { RecordedMutationGroup } from "./types";
+import { RecordedInputChannels } from "./event-types";
 
 @Entity({ name: "chunk" })
 export class ChunkEntity {
@@ -30,7 +31,8 @@ export class ChunkEntity {
   snapshot?: any;
 
   @Column({ name: "changes", type: "json" })
-  changes: RecordedMutationGroup[];
+  // changes: RecordedMutationGroup[];
+  changes: any[];
 
   @Column({ name: "inputs", type: "json" })
   inputs: RecordedInputChannels;

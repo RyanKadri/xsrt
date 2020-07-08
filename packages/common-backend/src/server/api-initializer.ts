@@ -1,4 +1,4 @@
-import { constantWithDeps, DIDefinition, EndpointDefinition, initializeApp, NeedsInitialization } from "@xsrt/common";
+import { constantWithDeps, DIDefinition, EndpointDefinition, initializeApp, NeedsInitialization } from "../../../common/src";
 import { interfaces } from "inversify";
 import { ExpressServer, IRouteImplementation } from "./express-server";
 import { RouteImplementer } from "./implement-route";

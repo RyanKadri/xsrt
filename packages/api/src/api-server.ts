@@ -1,4 +1,4 @@
-import { DecoratorQueueService, ElasticService, initializeExpressApp, MongoInitializer } from "@xsrt/common-backend";
+import { DecoratorQueueService, ElasticService, initializeExpressApp, MongoInitializer } from "../../common-backend/src";
 import dotenv from "dotenv";
 import { apiDiConfig } from "./di.api";
 

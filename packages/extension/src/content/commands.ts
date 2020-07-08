@@ -1,4 +1,4 @@
-import { ScraperConfig } from "@xsrt/common";
+import { ScraperConfig } from "../../../common/src";
 import { postToSite } from "./site-channel";
 
 export function listenForCommands() {

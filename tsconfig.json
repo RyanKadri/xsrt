@@ -4,9 +4,8 @@
     "module": "es2015",
     "lib": ["dom", "es2018", "esnext.array"],
     "declaration": true,
+    "outDir": "dist",
     "rootDir": "./packages",
-    "baseUrl": ".",
-
     "skipLibCheck": true,
     "strict": true,
     "noImplicitAny": true,
@@ -15,6 +14,11 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
+    "strictPropertyInitialization": true,
+    "types": [
+      "jest",
+      "chrome"
+    ],
 
     "moduleResolution": "node",
     "resolveJsonModule": true,
@@ -28,10 +32,13 @@
     "downlevelIteration": true,
   },
   "include": [
-    "packages/**/*.ts",
-    "packages/**/*.tsx"
+    "packages/**/*"
   ],
+  // "files": [
+  //   "packages/decorators/src/decorator-server.ts"
+  // ],
   "exclude": [
     "node_modules",
+    "**/*.spec.*"
   ]
 }

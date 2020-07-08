@@ -1,10 +1,10 @@
-import { ViewportSize } from "@xsrt/common";
+import { ViewportSize } from "../../../../common/src";
 import { mkdir as mkdirFS } from "fs";
 import { injectable, inject } from "inversify";
 import { Browser, launch, LaunchOptions } from "puppeteer";
 import { promisify } from "util";
 import { DecoratorConfig } from "../../decorator-server-config";
-import { IServerConfig } from "@xsrt/common-backend";
+import { IServerConfig } from "../../../../common-backend/src";
 
 const mkdir = promisify(mkdirFS);
 

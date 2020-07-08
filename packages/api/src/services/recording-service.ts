@@ -1,8 +1,8 @@
-import { Recording, Without, DBConnectionSymbol } from "@xsrt/common";
-import { ElasticService, recordingRepo, RecordingEntity } from "@xsrt/common-backend";
-import { injectable, inject } from "inversify";
+import { inject, injectable } from "inversify";
+import { Connection, In, Repository } from "typeorm";
+import { ElasticService, recordingRepo } from "../../../common-backend/src";
+import { DBConnectionSymbol, RecordingEntity } from "../../../common/src";
 import { RecordingFilterParams } from "../endpoints/recording-endpoint-impl";
-import { Connection, Repository, In } from "typeorm";
 
 const defaultNumRecordings = 15;
 
@@ -44,11 +44,11 @@ export class RecordingService {
     return this.recordingRepo.findByIds(ids, { take: defaultNumRecordings });
   }
 
-  async deleteRecordings(ids: string[]) {
+  async deleteRecordings(ids: number[]) {
     return await this.recordingRepo.delete({ id: In(ids) });
   }
 
-  async createRecording(recordingData: Without<Recording, "_id">) {
+  async createRecording(recordingData: Omit<RecordingEntity, "id">) {
     return this.recordingRepo.save(recordingData);
   }
 }

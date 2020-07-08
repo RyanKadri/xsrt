@@ -32,7 +32,6 @@
     "@types/react-test-renderer": "^16.0.3"
   },
   "dependencies": {
-    "@xsrt/common": "^0.9.0",
     "got": "11.3.0",
     "inversify": "^5.0.1"
   },

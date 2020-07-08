@@ -1,5 +1,5 @@
-import { initializeApp } from "@xsrt/common";
-import { DependencyContext } from "@xsrt/common-frontend";
+import { initializeApp } from "../../common/src";
+import { DependencyContext } from "../../common-frontend/src";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { AppRoot } from "./components/app-root/app-root";

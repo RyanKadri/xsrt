@@ -1,43 +1,50 @@
-import { LoggingService, RecordingChunk } from "@xsrt/common";
-import { Chunk, elasticQueue, rawChunkQueue, RecordingSchema } from "@xsrt/common-backend";
-import { injectable } from "inversify";
+import { ChunkEntity, RecordingEntity, DBConnectionSymbol } from "../../../common/src";
+import { elasticQueue, rawChunkQueue } from "../../../common-backend/src";
+import { injectable, inject } from "inversify";
 import { AssetResolver } from "../assets/asset-resolver";
 import { ChunkId, DecoratorConsumer } from "../services/queue-consumer-service";
+import { Connection, Repository } from "typeorm";
 
 @injectable()
 export class RawChunkProcessor implements DecoratorConsumer<ChunkId> {
 
-    constructor(
-        private resolver: AssetResolver,
-        private logger: LoggingService,
-    ) { }
+  private chunkRepo: Repository<ChunkEntity>;
+  private recordingRepo: Repository<RecordingEntity>;
 
-    readonly topic = rawChunkQueue.name;
+  constructor(
+    private resolver: AssetResolver,
+    @inject(DBConnectionSymbol) connection: Connection
+  ) {
+    this.chunkRepo = connection.getRepository(ChunkEntity);
+    this.recordingRepo = connection.getRepository(RecordingEntity);
+  }
 
-    handle = async ({ _id }: ChunkId) => {
-        const chunkDoc = await Chunk.findById(_id);
-        if (!chunkDoc) {
-            throw new Error(`Tried to find nonexistent chunk ${_id}`);
-        }
-        const chunk: RecordingChunk = chunkDoc.toObject();
-        const assets = await this.resolver.resolveAssets(chunk.assets);
-        const withResolvedAssets = {
-            ...chunk,
-            assets
-        };
+  readonly topic = rawChunkQueue.name;
 
-        Chunk.findByIdAndUpdate(chunk._id, withResolvedAssets, { upsert: true });
-
-        const doc = await RecordingSchema.findByIdAndUpdate(chunk.recording, {
-            $push: { chunks: chunk._id },
-            $max: { "metadata.duration": chunk.metadata.stopTime }
-        });
-        if (!doc) {
-            this.logger.error(`Tried to add chunk to recording ${chunk.recording} but it did not exist`);
-        }
-        return {
-            queue: elasticQueue.name,
-            payload: { _id: chunk }
-        };
+  handle = async ({ uuid }: ChunkId) => {
+    const chunk = await this.chunkRepo.findOne({ where: { uuid }, relations: ["recording"]});
+    if (!chunk) {
+      throw new Error(`Tried to find nonexistent chunk ${uuid}`);
     }
+    const assets = await this.resolver.resolveAssets(chunk.assets.map(asset => asset.origUrl));
+
+    this.chunkRepo.save({
+      ...chunk,
+      assets: assets.map((asset, i) => ({ ...chunk.assets[i], proxyUrl: asset }))
+    });
+
+    const recording = await this.recordingRepo.findOneOrFail({ where: { uuid: chunk.recording.uuid } });
+    recording.chunks.push(chunk);
+    // const doc = await RecordingSchema.findByIdAndUpdate(chunk.recording, {
+    //   $push: { chunks: chunk._id },
+    //   $max: { "metadata.duration": chunk.stopTime }
+    // });
+    // if (!doc) {
+    //   this.logger.error(`Tried to add chunk to recording ${chunk.recording} but it did not exist`);
+    // }
+    return {
+      queue: elasticQueue.name,
+      payload: { uuid: chunk.uuid }
+    };
+  }
 }

@@ -13,7 +13,7 @@ const styles = (theme: Theme) => createStyles({
     },
     submitButton: {
         marginLeft: "auto",
-        marginTop: theme.spacing.unit
+        marginTop: theme.spacing(1)
     }
 });
 

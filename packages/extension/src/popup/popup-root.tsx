@@ -1,6 +1,6 @@
 import { createStyles, CssBaseline, MuiThemeProvider, Paper, Typography, withStyles, WithStyles } from "@material-ui/core";
-import { DateManager } from "@xsrt/common";
-import { appTheme, withDependencies } from "@xsrt/common-frontend";
+import { DateManager } from "../../../common/src";
+import { appTheme, withDependencies } from "../../../common-frontend/src";
 import React, { Fragment } from "react";
 import { ExtensionConfig } from "../config/extension-config";
 import { fetchTab } from "../utils/utils";

@@ -1,5 +1,6 @@
 import { SiteTarget } from "../types/types";
 import { defineEndpoint, RequestBodyUnwrap, RouteParamUnwrap, Type } from "./types";
+import { TargetEntity } from "../types/targets";
 
 const singleTargetUrl = "/targets/:targetId";
 const multiTargetUrl = "/targets";
@@ -20,7 +21,7 @@ export const siteTargetEndpoint = defineEndpoint({
         request: {
             targetId: new RouteParamUnwrap("targetId"),
         },
-        response: Type<SiteTarget>()
+        response: Type<void>()
     },
     filterTargets: {
         method: "get",
@@ -41,8 +42,8 @@ export const siteTargetEndpoint = defineEndpoint({
         url: singleTargetUrl,
         request: {
             targetId: new RouteParamUnwrap("targetId"),
-            target: new RequestBodyUnwrap<Partial<SiteTarget>>()
+            target: new RequestBodyUnwrap<Partial<TargetEntity>>()
         },
-        response: Type<SiteTarget>()
+        response: Type<TargetEntity>()
     }
 });

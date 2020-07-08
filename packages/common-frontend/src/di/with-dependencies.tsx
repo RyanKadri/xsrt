@@ -1,4 +1,4 @@
-import { DependencyInjector, Omit } from "@xsrt/common";
+import { DependencyInjector, Omit } from "../../../common/src";
 import React, { ComponentType } from "react";
 
 export const DependencyContext = React.createContext<DependencyInjector | undefined>(undefined);
