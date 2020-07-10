@@ -48,9 +48,9 @@ CREATE TABLE public.chunk
 CREATE TABLE public.asset
 (
     id serial,
-    orig_url text,
-    proxy_path text NOT NULL,
-    hash uuid NOT NULL,
+    orig_url text NOT NULL,
+    proxy_path text,
+    hash uuid,
     headers json[],
     PRIMARY KEY (id)
 );
