@@ -87,7 +87,7 @@ const viewerProd = merge(frontendCommon, {
   mode: 'production'
 });
 
-const recordingClient = merge(common('packages/recorder/lib', "packages/recorder/tsconfig.json"), {
+const recordingClient = merge(common('packages/recorder/lib', "packages/recorder/tsconfig.build.json"), {
   name: 'recording-client',
   output: {
     library: 'recorder',

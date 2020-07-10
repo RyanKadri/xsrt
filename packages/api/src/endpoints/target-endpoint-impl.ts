@@ -2,6 +2,7 @@ import { DBConnectionSymbol, siteTargetEndpoint, TargetEntity } from "../../../c
 import { errorNotFound, RouteImplementation } from "../../../common-backend/src";
 import { inject, injectable } from "inversify";
 import { Connection, Repository } from "typeorm";
+import { v4 } from "uuid";
 
 type TargetEndpointType = RouteImplementation<typeof siteTargetEndpoint>;
 
@@ -36,11 +37,19 @@ export class TargetEndpoint implements TargetEndpointType {
 
   filterTargets = async () => {
     // TODO - Add count in here
-    return this.targetRepo.find({ relations: ["recordings"] });
+    const targets = await this.targetRepo.createQueryBuilder("t")
+      .leftJoin("t.recordings", "r")
+      .addSelect("COUNT(r.id)", "numRecordings")
+      .groupBy("t.id")
+      .getMany();
+    return targets
   }
 
   createSiteTarget: TargetEndpointType["createSiteTarget"] = async ({ target }) => {
-    return this.targetRepo.save(target);
+    return this.targetRepo.save({
+      ...target,
+      customerId: v4()
+    });
   }
 
   updateSiteTarget: TargetEndpointType["updateSiteTarget"] = async ({ target: updates, targetId }) => {

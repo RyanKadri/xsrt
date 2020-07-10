@@ -7,8 +7,7 @@ export class ScreenshotStaticRouteHandler implements RouteHandler {
     readonly base = "/static/screenshot";
 
     decorateRouter(router: Router): void {
-      console.log("static")
-        router.use(expressStatic("../../dist/bootstrap"));
+      router.use(expressStatic("../../dist/bootstrap"));
     }
 
 }

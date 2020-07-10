@@ -12,7 +12,7 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "skipLibCheck": true,
-    "target": "es2018",
+    "target": "ES6",
     "lib": [
       "es2018",
       "dom",

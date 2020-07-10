@@ -12,7 +12,7 @@ const _DashboardTargetListItem = ({ site, onEditSite, onNavigate }: Props) => (
         <ListItemIcon onClick={ (e) => { onEditSite(); e.stopPropagation(); } }>
             <SettingsIcon />
         </ListItemIcon>
-        <ListItemText primary={site.name} secondary={` ${site.numRecordings} Recorings`} />
+        <ListItemText primary={site.name} />
     </ListItem>
 );
 

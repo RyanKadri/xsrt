@@ -1,4 +1,4 @@
-import { DBConnectionSymbol, LoggingService, NeedsInitialization } from "../../../common/src";
+import { DBConnectionSymbol, LoggingService, NeedsInitialization, ChunkEntity, AssetEntity, RecordingEntity, TargetEntity } from "../../../common/src";
 import { injectable } from "inversify";
 import { Connection, createConnection } from "typeorm";
 
@@ -16,7 +16,15 @@ export class DatabaseInitializer implements NeedsInitialization {
       host: process.env.DB_HOST ?? "localhost",
       port: parseInt(process.env.DB_PORT ?? "5432", 10),
       username: process.env.DB_USER,
-      password: process.env.DB_PASSWORD
+      password: process.env.DB_PASSWORD,
+      database: "xsrt",
+      schema: "public",
+      entities: [
+        AssetEntity,
+        ChunkEntity,
+        RecordingEntity,
+        TargetEntity
+      ]
     })
     this.logger.info("Connected to database!");
     return [ DBConnectionSymbol, connection ]

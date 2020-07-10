@@ -24,7 +24,15 @@ export class RecordingEndpoint implements RecordingEndpointType {
     if (!recording) {
       return errorNotFound(`Could not find recording with ID ${recordingId}`);
     } else {
-      return recording as Recording;
+      return {
+        ...recording,
+        startTime: recording.startTime.getTime(),
+        chunks: recording.chunks.map(chunk => ({
+          ...chunk,
+          startTime: chunk.startTime.getTime(),
+          endTime: chunk.endTime.getTime()
+        }))
+      } as Recording;
     }
   }
 
@@ -32,11 +40,12 @@ export class RecordingEndpoint implements RecordingEndpointType {
     await this.recordingService.deleteRecording(recordingId);
   }
 
-  filterRecordings: RecordingEndpointType["filterRecordings"] = async ({ site }) => {
-    if (!site) {
+  filterRecordings: RecordingEndpointType["filterRecordings"] = async ({ target }) => {
+    if (!target) {
       return errorInvalidCommand("You must provide a site when filtering");
     }
-    return this.recordingService.filterRecordings({ site });
+    return this.recordingService.filterRecordings({ target })
+      .then(recordings => recordings.map(r => ({ ...r, startTime: r.startTime.getTime() })));
   }
 
   createRecording: RecordingEndpointType["createRecording"] = async ({ recording: bodyData, userAgent }) => {
@@ -79,5 +88,5 @@ const extractUADetails = (ua: any): UADetails => {
 };
 
 export interface RecordingFilterParams {
-  site: string;
+  target: string;
 }

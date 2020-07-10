@@ -45,7 +45,7 @@ function _RecordingView({
     const updateBuffer = async (time = 0) => {
         if (state.recording !== null) {
             const chunksToGrab = state.recording.chunks.filter(chunk =>
-                chunk.startTime.getTime() - time < uiTweaks.idealBuffer
+                chunk.startTime - time < uiTweaks.idealBuffer
                     && !state.requestedChunks.includes(chunk.uuid)
             );
 
@@ -60,7 +60,7 @@ function _RecordingView({
 
     const calcEnd = (recording: Recording) => {
         return Math.max(
-            ...recording.chunks.map(chunk => chunk.endTime.getTime())
+            ...recording.chunks.map(chunk => chunk.endTime)
         );
     };
 

@@ -6,7 +6,7 @@
   "license": "ISC",
   "private": true,
   "scripts": {
-    "start": "ts-node-dev -r tsconfig-paths/register ./src/decorator-server.ts"
+    "start": "ts-node-dev ./src/decorator-server.ts"
   },
   "devDependencies": {
     "@types/amqplib": "^0.5.10",
@@ -24,7 +24,8 @@
     "inversify": "^5.0.1",
     "puppeteer": "^3.3.0",
     "amqplib": "^0.5.3",
-    "typeorm": "0.2.25"
+    "typeorm": "0.2.25",
+    "pg": "8.2.2"
   },
   "gitHead": "179c318fa443265abd6af14cb92955b78681ab9c"
 }

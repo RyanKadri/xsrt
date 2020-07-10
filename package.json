@@ -15,7 +15,7 @@
     "start": "lerna run start --stream",
     "start:api": "lerna run start --stream --scope=@xsrt/api",
     "start:decorator": "lerna run start --stream --scope=@xsrt/decorators",
-    "build:recorder": "webpack --config-name recording-client && cp ",
+    "build:recorder": "webpack --config-name recording-client",
     "build:publish": "npm run build:recorder && npm run build:extension",
     "publish:all": "lerna publish --skip-git --yes from-git",
     "build:tools": "webpack --mode development --config-name bootstrap-scripts",

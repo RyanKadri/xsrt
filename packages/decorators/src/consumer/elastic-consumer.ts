@@ -32,7 +32,7 @@ export class ElasticConsumer implements DecoratorConsumer<ChunkId> {
       body: {
         query: {
           match: {
-            _id: chunk.recording
+            _id: chunk.recording.uuid
           }
         }
       }

@@ -28,7 +28,7 @@ export const recordingEndpoint = defineEndpoint({
         url: multiRecordingUrl,
         method: "get",
         request: {
-            site: new RequestParamUnwrap("site"),
+            target: new RequestParamUnwrap("target"),
             before: new RequestParamUnwrap("before"),
             after: new RequestParamUnwrap("after"),
             url: new RequestParamUnwrap("url")

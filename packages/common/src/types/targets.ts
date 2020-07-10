@@ -14,4 +14,5 @@ export class TargetEntity {
 
   @OneToMany(() => RecordingEntity, recording => recording.target)
   recordings: RecordingEntity[];
+
 }

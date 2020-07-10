@@ -14,10 +14,11 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "strictPropertyInitialization": true,
+    "strictPropertyInitialization": false,
     "types": [
       "jest",
-      "chrome"
+      "chrome",
+      "node"
     ],
 
     "moduleResolution": "node",

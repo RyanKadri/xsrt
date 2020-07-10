@@ -23,8 +23,6 @@ export class Recorder {
   createSnapshotChunk(_: RecordingInfo, initChunk: boolean): PendingSnapshotChunk {
     this.lastChunk = this.timeManager.currentTime();
     return this.optimizer.optimize({
-      id: 1,
-      uuid: "",
       chunkType: "snapshot",
       snapshot: {
         root: this.domWalker.traverseNode(document.documentElement!),
@@ -52,7 +50,6 @@ export class Recorder {
       startTime: new Date(startTime),
       endTime: new Date(stopTime),
       initChunk: false,
-      uuid: "",
       assets: [],
       changes: finalize ? this.mutationRecorder.stop() : this.mutationRecorder.dump(),
       inputs: finalize ? this.inputRecorder.stop() : this.inputRecorder.dump()

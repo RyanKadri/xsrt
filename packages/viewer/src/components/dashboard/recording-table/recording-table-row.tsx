@@ -18,7 +18,7 @@ const columnDefs: {
 } = {
     date: ({ startTime, uuid}) =>
             <Link to={`/recordings/${uuid}`}>
-                { formatDate(startTime.getTime()) }
+                { formatDate(startTime) }
             </Link>,
     duration: ({ duration }) =>
             duration

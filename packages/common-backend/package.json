@@ -23,7 +23,7 @@
     "mongoose": "^5.3.1",
     "shortid": "^2.2.14",
     "amqplib": "^0.5.3",
-    "@elastic/elasticsearch": "^6.0",
+    "@elastic/elasticsearch": "^7.8",
     "typeorm": "0.2.25"
   },
   "gitHead": "179c318fa443265abd6af14cb92955b78681ab9c"

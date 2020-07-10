@@ -15,8 +15,6 @@
       "runtimeArgs": [
         "-r",
         "ts-node/register",
-        "-r",
-        "tsconfig-paths/register"
       ],
       "env": {
         "TS_NODE_PROJECT": "${workspaceFolder}/packages/api/tsconfig.json",
@@ -34,8 +32,6 @@
       "runtimeArgs": [
         "-r",
         "ts-node/register",
-        "-r",
-        "tsconfig-paths/register"
       ],
       "env": {
         "TS_NODE_PROJECT": "${workspaceFolder}/packages/api/tsconfig.json",

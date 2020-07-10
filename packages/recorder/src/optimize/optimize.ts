@@ -9,9 +9,9 @@ export class RecordingOptimizer {
     // Use the same optimization context as long as you are in the same JS execution context
     private context = new OptimizationContext();
 
-    optimize(data: UnoptimizedSnapshotChunk): PendingSnapshotChunk;
+    optimize(data: Omit<UnoptimizedSnapshotChunk, "uuid">): PendingSnapshotChunk;
     optimize(data: PendingDiffChunk): PendingDiffChunk;
-    optimize(data: UnoptimizedSnapshotChunk | PendingDiffChunk): any {
+    optimize(data: Omit<UnoptimizedSnapshotChunk, "uuid"> | PendingDiffChunk): any {
         let snapshot: RootSnapshot | {} = {};
         if (data.chunkType === "snapshot") {
             const root = this.optimizeSubtree(data.snapshot.root) as OptimizedHtmlElementInfo;

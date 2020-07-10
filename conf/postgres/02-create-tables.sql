@@ -3,7 +3,7 @@ CREATE TYPE public.chunk_type AS ENUM
 
 CREATE TABLE public.target
 (
-    id integer NOT NULL,
+    id serial,
     name text COLLATE pg_catalog."default" NOT NULL,
     customer_id text COLLATE pg_catalog."default" NOT NULL,
     CONSTRAINT target_pkey PRIMARY KEY (id)
@@ -11,10 +11,10 @@ CREATE TABLE public.target
 
 CREATE TABLE public.recording
 (
+    id serial,
     uuid uuid,
-    id integer NOT NULL,
     target integer NOT NULL,
-    snapshot_path string,
+    thumbnail_path text,
     start_time timestamp with time zone NOT NULL,
     duration integer,
     ua_details json,
@@ -28,9 +28,9 @@ CREATE TABLE public.recording
 
 CREATE TABLE public.chunk
 (
-    id integer,
+    id serial,
     uuid uuid,
-    type chunk_type NOT NULL,
+    chunk_type chunk_type NOT NULL,
     start_time timestamp with time zone NOT NULL,
     end_time timestamp with time zone NOT NULL,
     recording integer NOT NULL,
@@ -39,7 +39,7 @@ CREATE TABLE public.chunk
     changes json[] NOT NULL,
     inputs json NOT NULL,
     CONSTRAINT chunk_pkey PRIMARY KEY (id),
-    CONSTRAINT recording_fkey FOREIGN KEY (id)
+    CONSTRAINT recording_fkey FOREIGN KEY (recording)
       REFERENCES public.recording (id) MATCH SIMPLE
       ON UPDATE NO ACTION
       ON DELETE CASCADE
@@ -47,7 +47,7 @@ CREATE TABLE public.chunk
 
 CREATE TABLE public.asset
 (
-    id integer,
+    id serial,
     orig_url text,
     proxy_path text NOT NULL,
     hash uuid NOT NULL,

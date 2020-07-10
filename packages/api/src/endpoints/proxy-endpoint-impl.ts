@@ -1,4 +1,4 @@
-import { assetEndpoint, GotSymbol, AssetEntity } from "../../../common/src";
+import { assetEndpoint, GotSymbol, AssetEntity, DBConnectionSymbol } from "../../../common/src";
 import { downloadResponse, errorNotFound, IServerConfig, RouteImplementation } from "../../../common-backend/src";
 import { Got } from "got";
 import { inject, injectable } from "inversify";
@@ -18,7 +18,7 @@ export class AssetEndpoint implements AssetEndpointType {
     @inject(IServerConfig) private config: ApiServerConfig,
     private streamService: AssetStreamService,
     @inject(GotSymbol) private got: Got,
-    connection: Connection
+    @inject(DBConnectionSymbol) connection: Connection
   ) {
     this.assetRepo = connection.getRepository(AssetEntity);
   }

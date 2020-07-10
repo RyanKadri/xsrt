@@ -2,7 +2,7 @@ import { convertMapToGroups, mergeGroups, pluck, Recording, SnapshotChunk, sortA
 import { RecordingViewAction, RecordingViewState } from "./recording-view";
 
 const sortByTimestamp = sortAsc(pluck("timestamp"));
-const sortSnapshot = sortAsc<SnapshotChunk>(snap => snap.startTime.getTime());
+const sortSnapshot = sortAsc<SnapshotChunk>(snap => snap.startTime);
 
 export function recordingViewReducer(state: RecordingViewState, action: RecordingViewAction): RecordingViewState {
     switch (action.type) {
@@ -44,11 +44,11 @@ function calcBuffer(retrievedChunks: string[], recording: Recording) {
     const chunks = recording.chunks;
     const minStopNotFetched = Math.min(...chunks
         .filter(chunk => !retrievedChunks.includes(chunk.uuid))
-        .map(chunk => chunk.endTime.getTime())
+        .map(chunk => chunk.endTime)
     );
     const maxReady = Math.max(...chunks
         .filter(chunk => retrievedChunks.includes(chunk.uuid))
-        .map(chunk => chunk.endTime.getTime())
+        .map(chunk => chunk.endTime)
         .filter(start => start < minStopNotFetched)
     );
     return maxReady;

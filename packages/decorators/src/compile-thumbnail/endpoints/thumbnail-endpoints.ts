@@ -20,11 +20,15 @@ export class ThumbnailEndpoint implements ThumbnailEndpointType {
    }
 
   getThumbnailData: ThumbnailEndpointType["getThumbnailData"] = async ({ chunkId }) => {
-    const chunk = await this.chunkRepo.findOne(chunkId);
+    const chunk = await this.chunkRepo.findOne({ where: { uuid: chunkId }, relations: ["assets"] });
     if (!chunk) {
       return errorNotFound(`Could not find chunk ${chunkId}`);
     }
-    return chunk as SnapshotChunk;
+    return {
+      ...chunk,
+      startTime: chunk.startTime.getTime(),
+      endTime: chunk.endTime.getTime()
+    } as SnapshotChunk;
   }
 
   deleteThumbnail: ThumbnailEndpointType["deleteThumbnail"] = async ({ recordingId }) => {

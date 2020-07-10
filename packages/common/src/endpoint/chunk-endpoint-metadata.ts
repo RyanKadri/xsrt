@@ -7,7 +7,7 @@ export const chunkEndpointMetadata = defineEndpoint({
         method: "post",
         url: "/recordings/:recordingId/chunks",
         request: {
-            chunk: new RequestBodyUnwrap<Omit<RecordingChunk, "id">>(),
+            chunk: new RequestBodyUnwrap<Omit<RecordingChunk, "uuid">>(),
             recordingId: new RouteParamUnwrap("recordingId"),
         },
         response: Type<{ uuid: string }>()

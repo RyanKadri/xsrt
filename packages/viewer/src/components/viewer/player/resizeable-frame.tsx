@@ -131,7 +131,7 @@ function infoSource<T extends RecordedUserInput>(
     } else if (lastEvent && !lastSnapshot) {
         return lastEvent;
     } else if (lastEvent && lastSnapshot) {
-        return lastEvent.timestamp > lastSnapshot.startTime.getTime()
+        return lastEvent.timestamp > lastSnapshot.startTime
             ? lastEvent
             : lastSnapshot;
     } else {
@@ -140,7 +140,7 @@ function infoSource<T extends RecordedUserInput>(
 }
 
 function lastSnapshotBefore(snapshots: SnapshotChunk[], time: number) {
-    return reverseFind(snapshots, snapshot => snapshot.startTime.getTime() <= time);
+    return reverseFind(snapshots, snapshot => snapshot.startTime <= time);
 }
 
 function lastEventBefore<T extends RecordedUserInput>(

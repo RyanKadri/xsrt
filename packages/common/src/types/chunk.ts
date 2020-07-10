@@ -1,4 +1,4 @@
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn, JoinColumn } from "typeorm";
 import { AssetEntity } from "./asset";
 import { RecordingEntity } from "./recording";
 // import { RecordedMutationGroup } from "./types";
@@ -21,7 +21,8 @@ export class ChunkEntity {
   @Column({ name: "end_time" })
   endTime: Date;
 
-  @ManyToOne(() => RecordingEntity)
+  @ManyToOne(() => RecordingEntity, recording => recording.chunks)
+  @JoinColumn({ name: "recording" })
   recording: RecordingEntity;
 
   @Column({ name: "init_chunk" })
@@ -37,8 +38,8 @@ export class ChunkEntity {
   @Column({ name: "inputs", type: "json" })
   inputs: RecordedInputChannels;
 
-  @ManyToMany(() => AssetEntity)
-  @JoinTable({ name: "asset", joinColumn: { name: "asset_id" }, inverseJoinColumn: { name: "chunk_id" } })
+  @ManyToMany(() => AssetEntity, { cascade: ["insert", "update", "remove"] })
+  @JoinTable({ name: "chunk_assets", joinColumn: { name: "chunk_id" }, inverseJoinColumn: { name: "asset_id" } })
   assets: AssetEntity[]
 
 }

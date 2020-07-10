@@ -61,8 +61,10 @@ interface BaseScrapedRule {
 }
 
 export type BaseRecording = Pick<RecordingEntity,
-  "id" | "uuid" | "thumbnailPath" | "startTime" | "duration" | "uaDetails" | "finalized"
->
+  "id" | "uuid" | "thumbnailPath" | "duration" | "uaDetails" | "finalized"
+> & {
+  startTime: number;
+}
 
 export type RecordingOverview = BaseRecording & {
   chunks: ChunkOverview[];
@@ -92,8 +94,8 @@ export type RecordingChunk = SnapshotChunk | DiffChunk;
 
 export type PendingChunk = PendingSnapshotChunk | PendingDiffChunk;
 
-export type PendingSnapshotChunk = Omit<SnapshotChunk, "id">;
-export type PendingDiffChunk = Omit<DiffChunk, "id">;
+export type PendingSnapshotChunk = Omit<SnapshotChunk, "uuid">;
+export type PendingDiffChunk = Omit<DiffChunk, "uuid">;
 
 export interface UnoptimizedSnapshotChunk extends BaseSnapshot {
   chunkType: "snapshot";
@@ -117,7 +119,10 @@ export interface BaseSnapshotWithAssets extends BaseSnapshot {
   assets: Asset[];
 }
 
-export type BaseSnapshot = Pick<ChunkEntity, "id" | "uuid" | "initChunk" | "startTime" | "endTime" | "changes" | "inputs">;
+export type BaseSnapshot = Pick<ChunkEntity, "uuid" | "initChunk" | "changes" | "inputs"> & {
+  startTime: number;
+  endTime: number;
+};
 
 export interface UnoptimizedRootSnapshot {
   documentMetadata: DocumentMetadata;
@@ -213,9 +218,7 @@ export interface ViewportSize {
   width: number;
 }
 
-export type SiteTarget = Pick<TargetEntity, "id" | "name" | "customerId"> & {
-  numRecordings?: number;
-}
+export type SiteTarget = Pick<TargetEntity, "id" | "name" | "customerId">
 
 export type NewSiteTarget = Omit<SiteTarget, "id">;
 

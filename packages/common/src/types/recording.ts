@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, OneToMany } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, OneToMany, JoinColumn } from "typeorm";
 import { TargetEntity } from "./targets";
 import { ChunkEntity } from "./chunk";
 // import { UADetails } from "./types";
@@ -11,19 +11,20 @@ export class RecordingEntity {
   @Column({ name: "uuid" })
   uuid: string;
 
-  @ManyToOne(() => TargetEntity)
+  @ManyToOne(() => TargetEntity, target => target.recordings)
+  @JoinColumn({ name: "target" })
   target: TargetEntity;
 
   @OneToMany(() => ChunkEntity, chunk => chunk.recording)
   chunks: ChunkEntity[];
 
-  @Column({ name: "snapshot_path" })
+  @Column({ name: "thumbnail_path", type: "text", nullable: true })
   thumbnailPath: string | null;
 
   @Column({ name: "start_time" })
   startTime: Date;
 
-  @Column({ name: "duration" })
+  @Column({ name: "duration", type: "integer", nullable: true })
   duration: number | null;
 
   @Column({ name: "ua_details", type: "json" })
