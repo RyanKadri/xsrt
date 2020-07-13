@@ -1,11 +1,7 @@
-import { assetEndpoint, GotSymbol, AssetEntity, DBConnectionSymbol } from "../../../common/src";
-import { downloadResponse, errorNotFound, IServerConfig, RouteImplementation } from "../../../common-backend/src";
-import { Got } from "got";
 import { inject, injectable } from "inversify";
-import { join } from "path";
-import { ApiServerConfig } from "../api-server-conf";
-import { AssetStreamService } from "../services/asset-stream-service";
 import { Connection, Repository } from "typeorm";
+import { downloadResponse, errorNotFound, RouteImplementation } from "../../../common-backend/src";
+import { assetEndpoint, AssetEntity, DBConnectionSymbol } from "../../../common/src";
 
 type AssetEndpointType = RouteImplementation<typeof assetEndpoint>;
 
@@ -15,9 +11,6 @@ export class AssetEndpoint implements AssetEndpointType {
   private assetRepo: Repository<AssetEntity>;
 
   constructor(
-    @inject(IServerConfig) private config: ApiServerConfig,
-    private streamService: AssetStreamService,
-    @inject(GotSymbol) private got: Got,
     @inject(DBConnectionSymbol) connection: Connection
   ) {
     this.assetRepo = connection.getRepository(AssetEntity);
@@ -32,45 +25,4 @@ export class AssetEndpoint implements AssetEndpointType {
     }
   }
 
-  createAsset: AssetEndpointType["createAsset"] = async ({ proxyReq, userAgent }) => {
-    const assets = await Promise.all(
-      proxyReq.urls.map(url =>
-        this.proxySingleAsset(new URL(url), userAgent)
-      )
-    );
-    return {
-      assets: assets.map(asset =>
-        "error" in asset
-          ? null
-          : asset.id
-      )
-    };
-  }
-
-  private proxySingleAsset = async (url: URL, userAgent = "") => {
-    try {
-      const resp = await this.got.get(url.href, {
-        headers: { ["User-Agent"]: userAgent }, // Retrieve asset as requester's user agent
-        responseType: "buffer"
-      });
-
-      const saveDir = join(this.config.assetDir, url.hostname);
-
-      const res = await this.streamService.saveStream(resp.rawBody, saveDir, url);
-
-      const headers = Object.entries(resp.headers as any)
-        .map(([name, value]) => ({ name, value: value as string }));
-
-      return this.assetRepo.save({
-        origUrl: url.toString(),
-        hash: res.hash,
-        headers,
-        proxyPath: res.path
-      })
-    } catch (e) {
-      return {
-        error: true,
-      };
-    }
-  }
 }

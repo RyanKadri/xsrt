@@ -1,7 +1,6 @@
 import { ChunkEntity, RecordingEntity, DBConnectionSymbol, LoggingService } from "../../../common/src";
 import { elasticQueue, rawChunkQueue } from "../../../common-backend/src";
 import { injectable, inject } from "inversify";
-import { AssetResolver } from "../assets/asset-resolver";
 import { ChunkId, DecoratorConsumer } from "../services/queue-consumer-service";
 import { Connection, Repository } from "typeorm";
 
@@ -12,7 +11,6 @@ export class RawChunkProcessor implements DecoratorConsumer<ChunkId> {
   private recordingRepo: Repository<RecordingEntity>;
 
   constructor(
-    private resolver: AssetResolver,
     private logger: LoggingService,
     @inject(DBConnectionSymbol) connection: Connection,
   ) {
@@ -27,12 +25,6 @@ export class RawChunkProcessor implements DecoratorConsumer<ChunkId> {
     if (!chunk) {
       throw new Error(`Tried to find nonexistent chunk ${uuid}`);
     }
-    const assets = await this.resolver.resolveAssets(chunk.assets.map(asset => asset.origUrl));
-
-    this.chunkRepo.save({
-      ...chunk,
-      assets: assets.map((asset, i) => ({ ...chunk.assets[i], proxyUrl: asset }))
-    });
 
     const recording = await this.recordingRepo.findOneOrFail({ where: { uuid: chunk.recording.uuid }, relations: ["chunks"] });
     recording.chunks.push(chunk);

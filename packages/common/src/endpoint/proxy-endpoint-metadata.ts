@@ -1,4 +1,4 @@
-import { defineEndpoint, RequestBodyUnwrap, RequestHeader, RouteParamUnwrap, Type } from "./types";
+import { defineEndpoint, RouteParamUnwrap, Type } from "./types";
 
 export const assetApiSymbol = Symbol("AssetApiSymbol");
 export const assetEndpoint = defineEndpoint({
@@ -9,16 +9,5 @@ export const assetEndpoint = defineEndpoint({
       assetId: new RouteParamUnwrap("assetId")
     },
     response: Type<any>()
-  },
-  createAsset: {
-    url: "/proxy",
-    method: "post",
-    request: {
-      proxyReq: new RequestBodyUnwrap<{ urls: string[] }>(),
-    },
-    clientHeaders: {
-      userAgent: new RequestHeader("user-agent")
-    },
-    response: Type<{ assets: (number | null)[] }>()
   }
 });

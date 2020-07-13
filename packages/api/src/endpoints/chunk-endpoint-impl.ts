@@ -3,6 +3,7 @@ import { DecoratorQueueService, errorNotFound, RouteImplementation } from "../..
 import { inject, injectable } from "inversify";
 import { Connection, Repository } from "typeorm";
 import { v4 as uuid } from "uuid";
+import { AssetResolver } from "../services/assets/asset-resolver";
 
 type ChunkEndpointType = RouteImplementation<typeof chunkEndpointMetadata>;
 
@@ -14,21 +15,32 @@ export class ChunkEndpoint implements ChunkEndpointType {
 
   constructor(
     private queueService: DecoratorQueueService,
+    private resolver: AssetResolver,
     @inject(DBConnectionSymbol) connection: Connection
   ) {
     this.chunkRepo = connection.getRepository(ChunkEntity);
     this.recordingRepo = connection.getRepository(RecordingEntity);
   }
 
-  createChunk: ChunkEndpointType["createChunk"] = (async ({ chunk, recordingId }) => {
+  createChunk: ChunkEndpointType["createChunk"] = (async ({ chunk, recordingId, userAgent }) => {
     const recording = await this.recordingRepo.findOne({ where: { uuid: recordingId }})
-    const savedChunk = await this.chunkRepo.save({
-      ...chunk,
-      uuid: uuid(),
-      recording: recording
-    });
-    this.queueService.postChunk(savedChunk as RecordingChunk);
-    return { uuid: savedChunk.uuid };
+    const chunkUuid = uuid();
+
+    // This intentionally is allowed to finish after the main request because chunks may have many assets
+    // and this could be a slow process. Should not slow down the client.
+    // TODO - Potentially move this to a queueing approach?
+    this.resolver.resolveAssets(chunk.assets, userAgent)
+      .then(async assets => {
+        const savedChunk = await this.chunkRepo.save({
+          ...chunk,
+          uuid: chunkUuid,
+          recording: recording,
+          assets
+        });
+        this.queueService.postChunk(savedChunk as RecordingChunk);
+      });
+
+    return { uuid: chunkUuid };
   });
 
   fetchChunk: ChunkEndpointType["fetchChunk"] = (async ({ chunkId }) => {

@@ -50,8 +50,8 @@ CREATE TABLE public.asset
     id serial,
     orig_url text NOT NULL,
     proxy_path text,
-    hash uuid,
-    headers json[],
+    hash text,
+    headers json,
     PRIMARY KEY (id)
 );
 
