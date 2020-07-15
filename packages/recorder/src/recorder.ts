@@ -28,8 +28,8 @@ export class Recorder {
         root: this.domWalker.traverseNode(document.documentElement!),
         documentMetadata: extractMetadata(document, location)
       },
-      startTime: new Date(this.timeManager.fetchSessionStart()),
-      endTime: new Date(this.lastChunk),
+      startTime: this.timeManager.fetchSessionStart(),
+      endTime: this.lastChunk,
       changes: [],
       inputs: {},
       initChunk
@@ -47,8 +47,8 @@ export class Recorder {
 
     return this.optimizer.optimize({
       chunkType: "diff" as const,
-      startTime: new Date(startTime),
-      endTime: new Date(stopTime),
+      startTime: startTime,
+      endTime: stopTime,
       initChunk: false,
       assets: [],
       changes: finalize ? this.mutationRecorder.stop() : this.mutationRecorder.dump(),

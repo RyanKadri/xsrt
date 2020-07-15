@@ -1,33 +1,35 @@
 # Build environment
-FROM node:11.9.0 as builder
+FROM node:12.18.2 as builder
 WORKDIR /app/
 
 COPY package*.json ./
 RUN npm set progress=false
-RUN npm install --no-audit --no-optional
-COPY packages packages
+RUN npm install --no-audit
+COPY packages/common/package.json ./packages/common/package.json
+COPY packages/common-backend/package.json ./packages/common-backend/package.json
+COPY packages/api/package.json ./packages/api/package.json
+COPY packages/decorators/package.json ./packages/decorators/package.json
 COPY lerna.json ./
 RUN npx lerna bootstrap --hoist
+COPY packages packages
+COPY tsconfig.json ./
 COPY webpack.config.js ./
 
-# Backend build environment
 FROM builder as backend-builder
-RUN npm run build:backend -- --mode production
+RUN npm run package:backend
 
-# Base image for api and decorator servers
-FROM node:11.9.0-slim as backend-base
-WORKDIR /app/
-COPY --from=backend-builder /app/node_modules ./node_modules
-
-# API app server
-FROM backend-base as api
-COPY --from=backend-builder /app/dist/backend/api-server.bundle.js* ./
+# Backend builder
+FROM node:12.18.2 as api
+WORKDIR /app
+COPY --from=backend-builder /app/dist/backend/api-server.bundle.js /app/api.js
 ARG port
 EXPOSE ${port}
-CMD ["node", "./api-server.bundle.js"]
+CMD ["node", "./api.js"]
 
-# Decorator app server
-FROM backend-base as decorator
+# Decorator server
+FROM node:12.18.2 as decorator
+
+# Run everything after as non-privileged user.
 RUN apt-get update && apt-get install -yq libgconf-2-4
 RUN apt-get update && apt-get install -y wget --no-install-recommends \
     && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
@@ -42,30 +44,27 @@ RUN apt-get update && apt-get install -y wget --no-install-recommends \
 ADD https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64 /usr/local/bin/dumb-init
 RUN chmod +x /usr/local/bin/dumb-init
 
-# Install puppeteer so it's available in the container.
-RUN npm i puppeteer
+WORKDIR /app
 
 # Add user so we don't need --no-sandbox.
 RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
     && mkdir -p /home/pptruser/Downloads \
     && chown -R pptruser:pptruser /home/pptruser \
-    && chown -R pptruser:pptruser /node_modules \
+    && chown -R pptruser:pptruser /app \
     && mkdir -p /var/storage \
     && chown -R pptruser:pptruser /var/storage
 
-# Run everything after as non-privileged user.
 USER pptruser
 
-COPY --from=backend-builder /app/dist/backend/decorator-server.bundle.js* ./
+# Install puppeteer so it's available in the container.
+RUN npm i puppeteer
 
+COPY --from=backend-builder /app/dist/backend/decorator-server.bundle.js /app/decorator-server.js
 ARG port
 EXPOSE ${port}
-ENTRYPOINT ["dumb-init", "--"]
-CMD ["node", "./decorator-server.bundle.js"]
 
-# Frontend build environment
-FROM builder as frontend-builder
-RUN npm run build:viewer
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["node", "./decorator-server.js"]
 
 # Frontend Nginx reverse proxy
 FROM nginx:1.15.8 as dev-nginx

@@ -71,7 +71,6 @@ const viewerDev = merge(frontendCommon, {
     hot: false,
     inline: false,
     proxy: {
-      '/api': process.env.API_SERVER || `http://localhost:${process.env.API_PORT}`,
       '/assets': process.env.STATIC_ASSET_SERVER,
     },
   },
@@ -147,10 +146,10 @@ const compileExtension = merge(common('packages/extension/dist', 'packages/exten
   mode: "production"
 });
 
-const compileBackend = merge(common("dist/backend", "packages/api/tsconfig.json"), {
+const compileBackend = merge(common("dist/backend", "packages/api/tsconfig.build.json"), {
   name: 'compile-backend',
   devtool: 'inline-sourcemaps',
-  externals: [nodeExternals()],
+  externals: ["pg-native"],
   target: 'node',
   entry: {
     ['api-server']: './packages/api/src/api-server.ts',

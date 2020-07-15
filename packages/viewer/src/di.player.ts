@@ -14,7 +14,7 @@ import { ResizeAnnotator } from "./services/annotation/resize-annotator";
 import { UnloadAnnotator } from "./services/annotation/unload-annotator";
 
 export const diConfig: DIDefinition[] = [
-    constant(ScraperConfigToken, { debugMode: false, backendUrl: process.env.API_SERVER }),
+    constant(ScraperConfigToken, { debugMode: false, backendUrl: process.env.API_HOST }),
     constantWithDeps(DomManager, [LoggingService], (logger: LoggingService) => new DomManager(logger)),
     constant(FetchSymbol, window.fetch.bind(window)),
     constant(LocalStorageSymbol, localStorage),
@@ -26,7 +26,7 @@ export const diConfig: DIDefinition[] = [
     dependencyGroup(IInputAnnotator, [
         ResizeAnnotator, InputEventAnnotator, UnloadAnnotator
     ]),
-    apiDef(chunkApiSymbol, chunkEndpointMetadata),
-    apiDef(siteTargetApiSymbol, siteTargetEndpoint),
-    apiDef(recordingApiSymbol, recordingEndpoint)
+    apiDef(chunkApiSymbol, chunkEndpointMetadata, { baseUrl: process.env.API_HOST ?? "http://localhost:8080" }),
+    apiDef(siteTargetApiSymbol, siteTargetEndpoint, { baseUrl: process.env.API_HOST ?? "http://localhost:8080" }),
+    apiDef(recordingApiSymbol, recordingEndpoint, { baseUrl: process.env.API_HOST ?? "http://localhost:8080" })
 ];

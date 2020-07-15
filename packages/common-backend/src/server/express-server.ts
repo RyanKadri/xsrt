@@ -17,7 +17,6 @@ export interface RouteHandler {
 export const IServerConfig = Symbol("ServerConfig");
 export interface ServerConfig {
     port: number;
-    mongoUrl: string; // Should this be in the service-specific configs?
     rabbitHost: string;
     elasticUrl: string;
 }

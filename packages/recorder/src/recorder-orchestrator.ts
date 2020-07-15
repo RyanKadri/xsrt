@@ -64,7 +64,7 @@ export class RecorderOrchestrator {
 
     private reportChunk(chunk: PendingChunk, initInfo: RecordingInfo, unloading: boolean) {
         if (!unloading) {
-            this.latestEnd = Math.max(chunk.endTime.getTime(), this.latestEnd),
+            this.latestEnd = Math.max(chunk.endTime, this.latestEnd),
             this.recorderApi.postToBackend(chunk, initInfo.uuid, this.config.debugMode);
         } else {
             this.recorderState.savePendingChunk(chunk);

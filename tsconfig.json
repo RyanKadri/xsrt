@@ -17,10 +17,8 @@
     "strictPropertyInitialization": false,
     "types": [
       "jest",
-      "chrome",
       "node"
     ],
-
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "inlineSourceMap": true,

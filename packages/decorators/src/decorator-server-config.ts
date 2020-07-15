@@ -7,7 +7,6 @@ import { injectable } from "inversify";
 
 export const decoratorConfig: DecoratorConfig = {
     port: parseInt(process.env.DECORATOR_PORT!, 10),
-    mongoUrl: `${process.env.MONGO_URL}`,
     screenshotDir: `${process.env.STORAGE_LOCATION}/screenshots`,
     recordingHost: assertExists(process.env.API_HOST),
     rabbitHost: process.env.RABBIT_HOST || "localhost",
@@ -17,7 +16,6 @@ export const decoratorConfig: DecoratorConfig = {
 
 export interface DecoratorConfig extends ServerConfig {
   port: number
-  mongoUrl: string;
   screenshotDir: string;
   recordingHost: string;
   rabbitHost: string;

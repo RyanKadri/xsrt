@@ -12,18 +12,22 @@ services:
     build:
       context: .
       dockerfile: ./conf/postgres/postgres.Dockerfile
-  app:
+  api:
     expose:
       - ${API_PORT}
+    ports:
+      - ${API_PORT}:${API_PORT}
     volumes:
       - stored-files:${STORAGE_LOCATION}
-    depends_on:
-      - decorator
     environment:
-      - POSTGRES_URL=postgres://postgres/recordings
+      - ELASTIC_HOST=http://elastic:9200
+      - RABBIT_HOST=rabbit
       - DECORATOR_URL=http://decorator:${DECORATOR_PORT}
       - API_PORT=${API_PORT}
       - STORAGE_LOCATION=${STORAGE_LOCATION}
+      - DB_HOST=postgres
+      - DB_USER=guest
+      - DB_PASSWORD=guest
     build:
       context: .
       target: api
@@ -35,9 +39,14 @@ services:
     volumes:
       - stored-files:${STORAGE_LOCATION}
     environment:
-      - POSTGRES_URL=postgres://postgres/recordings
       - DECORATOR_PORT=${DECORATOR_PORT}
-      - API_SERVER=http://app:${API_PORT}
+      - STORAGE_LOCATION=${STORAGE_LOCATION}
+      - API_HOST=http://api:${API_PORT}
+      - RABBIT_HOST=rabbit
+      - ELASTIC_HOST=http://elastic:9200
+      - DB_HOST=postgres
+      - DB_USER=guest
+      - DB_PASSWORD=guest
     build:
       context: .
       target: decorator
