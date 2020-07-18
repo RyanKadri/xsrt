@@ -22,6 +22,6 @@ export * from "./utils/format-utils";
 export * from "./utils/functional-utils";
 export * from "./utils/input-utils";
 export * from "./utils/local-storage.service";
-export { LoggingService } from "./utils/log-service";
+export * from "./utils/log-service";
 export * from "./utils/tree-utils";
 export * from "./utils/type-utils";

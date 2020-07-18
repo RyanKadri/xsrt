@@ -5,7 +5,7 @@ export const chunkApiSymbol = Symbol("chunkApi");
 export const chunkEndpointMetadata = defineEndpoint({
   createChunk: {
     method: "post",
-    url: "/recordings/:recordingId/chunks",
+    url: "/api/recordings/:recordingId/chunks",
     request: {
       chunk: new RequestBodyUnwrap<Omit<RecordingChunk, "uuid">>(),
       recordingId: new RouteParamUnwrap("recordingId"),

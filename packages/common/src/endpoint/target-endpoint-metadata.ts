@@ -2,8 +2,8 @@ import { SiteTarget } from "../types/types";
 import { defineEndpoint, RequestBodyUnwrap, RouteParamUnwrap, Type } from "./types";
 import { TargetEntity } from "../types/targets";
 
-const singleTargetUrl = "/targets/:targetId";
-const multiTargetUrl = "/targets";
+const singleTargetUrl = "/api/targets/:targetId";
+const multiTargetUrl = "/api/targets";
 
 export const siteTargetApiSymbol = Symbol("siteTargetApi");
 export const siteTargetEndpoint = defineEndpoint({

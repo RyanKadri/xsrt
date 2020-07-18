@@ -1,24 +1,15 @@
 {
-    "extends": "./packages/tsconfig.settings.json",
-    "compilerOptions": {
-        "module": "commonjs",
-        "outDir": "dist/spec",
-        "sourceMap": true,
-        "baseUrl": "./packages",
-        "skipLibCheck": true,
-        "paths": {
-            "@xsrt/common": ["./common/src"],
-            "@xsrt/common-backend": ["./common-backend/src"],
-            "@xsrt/common-frontend": ["./common-frontend/src"],
-            "@xsrt/recorder": ["./recorder/src"],
-        }
-    },
-    "include": [
-        "packages/**/src/**/*.ts",
-        "packages/**/src/**/*.tsx",
-        "packages/viewer/src/module.d.ts"
-    ],
-    "exclude": [
-        "packages/**/node_modules/**/*"
-    ]
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "sourceMap": true,
+    "skipLibCheck": true,
+  },
+  "include": [
+    "packages/**/*.spec.ts",
+    "packages/**/*.spec.tsx",
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

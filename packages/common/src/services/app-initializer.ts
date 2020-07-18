@@ -1,13 +1,12 @@
 import { Container, interfaces } from "inversify";
 import { ApiConfig, EndpointDefinition } from "../endpoint/types";
 import { ApiCreationService } from "../server/create-api";
-import { Interface } from "../utils/type-utils";
 import { DependencyInjector } from "./dependency-injector";
 
 export async function initializeApp(
   definitions: DIDefinition[],
   needsInitialization: interfaces.Newable<NeedsInitialization>[] = [],
-  container: Interface<Container> = new Container({ autoBindInjectable: true, defaultScope: "Singleton" })
+  container: Pick<Container, "bind" | "get"> = new Container({ autoBindInjectable: true, defaultScope: "Singleton" })
 ): Promise<DependencyInjector> {
   const injector = new DependencyInjector(container);
   container.bind(DependencyInjector).toConstantValue(injector);
@@ -26,7 +25,7 @@ export async function initializeApp(
   return injector;
 }
 
-function bindInitializer(initializer: DIDefinition, container: Interface<Container>) {
+function bindInitializer(initializer: DIDefinition, container: Pick<Container, "bind" | "get">) {
   switch (initializer.type) {
     case "api":
       const apiCreator = container.get(ApiCreationService);

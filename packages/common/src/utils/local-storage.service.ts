@@ -1,12 +1,11 @@
 import { inject, injectable } from "inversify";
 import { LocalStorageSymbol } from "../di/di.tokens";
-import { Interface } from "./type-utils";
 
 @injectable()
 export class LocalStorageService {
 
     constructor(
-        @inject(LocalStorageSymbol) private localStorage: Interface<Storage>
+        @inject(LocalStorageSymbol) private localStorage: Pick<Storage, "setItem" | "getItem" | "removeItem">
     ) { }
 
     saveItem(key: string, val: string | number | boolean | object) {

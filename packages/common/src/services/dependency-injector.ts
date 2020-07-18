@@ -1,13 +1,12 @@
 import { Container, inject, injectable } from "inversify";
 import { ContainerSymbol } from "../di/di.tokens";
-import { Interface } from "../utils/type-utils";
 import { DIToken } from "./app-initializer";
 
 @injectable()
 export class DependencyInjector {
 
     constructor(
-        @inject(ContainerSymbol) private diContainer: Interface<Container>
+        @inject(ContainerSymbol) private diContainer: Pick<Container, "get">
     ) { }
 
     inject<T>(token: DIToken<T>) {

@@ -2,7 +2,7 @@ import { inject, injectable, optional } from "inversify";
 import { ScraperConfig, ScraperConfigToken } from "../config/scraper-config";
 
 @injectable()
-export class LoggingService {
+export class LoggingService implements ILoggingService {
 
     constructor(
         @optional() @inject(ScraperConfigToken) private config: Pick<ScraperConfig, "debugMode">
@@ -22,10 +22,7 @@ export class LoggingService {
     // tslint:enable:no-console
 
     private createLogger(logFn: typeof console.log) {
-        const log: {
-            (context: (...args: any[]) => any, message: any): void
-            (message: any): void
-        } = (first: any, second?: any) => {
+        const log: LogFn = (first: any, second?: any) => {
             if (this.config.debugMode) {
                 if (typeof first === "function") {
                     logFn(`${first.name}: ${second}`);
@@ -39,4 +36,23 @@ export class LoggingService {
 
     }
 
+}
+
+export class NoopLogger implements ILoggingService {
+  debug() {}
+  info() {}
+  warn() {}
+  error() {}
+}
+
+export interface ILoggingService {
+  debug: LogFn;
+  info: LogFn;
+  warn: LogFn;
+  error: LogFn;
+}
+
+type LogFn = {
+    (context: (...args: any[]) => any, message: any): void
+    (message: any): void
 }

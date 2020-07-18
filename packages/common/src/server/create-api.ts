@@ -57,7 +57,7 @@ export class ApiCreationService {
       ? apiConfig.baseUrl
       : "";
 
-    const initUrl = `${baseUrl}/api${path}`;
+    const initUrl = `${baseUrl}${path}`;
     return Object.entries(replacements)
       .reduce((acc, [key, val]) => {
         return acc.replace(new RegExp(`:${key}`, "g"), val);

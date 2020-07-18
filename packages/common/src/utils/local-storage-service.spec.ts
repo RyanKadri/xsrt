@@ -46,9 +46,10 @@ describe(LocalStorageService.name, () => {
     })
 })
 
-function mockLocalStorage(val: string | null | undefined) {
-    return jasmine.createSpyObj<Storage>("localStorage", {
-        getItem: val,
-        setItem: undefined
-    });
+function mockLocalStorage(val: string | null | undefined): ConstructorParameters<typeof LocalStorageService>[0] {
+    return {
+      getItem: jest.fn().mockReturnValue(val),
+      setItem: jest.fn(),
+      removeItem: jest.fn()
+    };
 }

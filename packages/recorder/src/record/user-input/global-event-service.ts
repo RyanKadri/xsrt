@@ -1,5 +1,5 @@
-import { DocumentSymbol, Interface, WindowSymbol } from "../../../../common/src";
 import { inject, injectable } from "inversify";
+import { DocumentSymbol, WindowSymbol } from "../../../../common/src";
 
 @injectable()
 export class GlobalEventService {
@@ -10,8 +10,8 @@ export class GlobalEventService {
     private currListener = 0;
 
     constructor(
-        @inject(DocumentSymbol) private document: Interface<Document>,
-        @inject(WindowSymbol) private window: Interface<Window>
+        @inject(DocumentSymbol) private document: Pick<Document, "addEventListener" | "removeEventListener">,
+        @inject(WindowSymbol) private window: Pick<Window, "addEventListener" | "removeEventListener">
     ) { }
 
     addEventListener(
