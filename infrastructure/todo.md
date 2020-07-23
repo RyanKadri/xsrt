@@ -1,0 +1,47 @@
+To Do:
+  - Monitoring
+  - IPv6 Networking
+AWS - Done:
+  - Set up VPC
+    - Public, Services, 
+  - Set up SNS
+    - Set up IAM role
+  - Set up RDS
+    - Set up Security Group
+    - Verify scaling / billing
+    - Users / permissions
+    - CNAME
+  - Set up Bastion Host
+    - Port forwarding for RDS
+    - Security Groups
+    - Auto-update
+    - User
+    - Systems Manager Port Forwarding?
+    - Elastic IP
+    - Replace with systems manager?
+    - Lock down SSH Key
+  - Managed ElasticSearch
+    - Access Control Policy
+    - Kibana?
+  - Security Groups
+    - Public API
+    - Microservices
+    - DB
+    - Bastion
+    - ES
+  - Static Hosting
+    - S3 and CloudFront
+  - Storage
+    - S3 and CloudFront
+  - IAM
+    - Access SNS
+    - Access S3
+  - ECR
+    - With CNAME
+  - NAT Gateway
+XSRT CLI
+  - Shut down and start up
+    - Bastion
+    - RDS
+    - ElasticSearch
+    - ECS

@@ -2,6 +2,7 @@
 *Dockerfile*
 *docker-compose*
 node_modules/
+**/node_modules
 dist/
 coverage/
 .nyc_output/
@@ -11,5 +12,5 @@ docs/
 scripts/
 spec/
 .env
-lib/
-lib-cjs/
+**/lib
+**/lib-cjs/

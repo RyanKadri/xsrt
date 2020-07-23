@@ -26,7 +26,8 @@
     "puppeteer": "^3.3.0",
     "amqplib": "^0.5.3",
     "typeorm": "0.2.25",
-    "pg": "8.2.2"
+    "pg": "8.2.2",
+    "aws-sdk": "2.715.0"
   },
   "gitHead": "179c318fa443265abd6af14cb92955b78681ab9c"
 }

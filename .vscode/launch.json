@@ -59,6 +59,12 @@
       "internalConsoleOptions": "neverOpen",
       "sourceMaps": true
     },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Current Script",
+      "program": "${workspaceFolder}/${relativeFile}"
+    }
   ],
   "compounds": [
     {

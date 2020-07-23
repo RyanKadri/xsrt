@@ -19,11 +19,10 @@ FROM builder as backend-builder
 RUN npm run package:backend
 
 # Backend builder
-FROM node:12.18.2 as api
+FROM node:12.18.2-alpine as api
 WORKDIR /app
 COPY --from=backend-builder /app/dist/backend/api-server.bundle.js /app/api.js
-ARG port
-EXPOSE ${port}
+EXPOSE 8080
 CMD ["node", "./api.js"]
 
 # Decorator server
@@ -60,8 +59,7 @@ USER pptruser
 RUN npm i puppeteer
 
 COPY --from=backend-builder /app/dist/backend/decorator-server.bundle.js /app/decorator-server.js
-ARG port
-EXPOSE ${port}
+EXPOSE 8080
 
 ENTRYPOINT ["dumb-init", "--"]
 CMD ["node", "./decorator-server.js"]
