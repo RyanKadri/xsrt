@@ -152,8 +152,8 @@ const compileBackend = merge(common("dist/backend", "packages/api/tsconfig.build
   externals: ["pg-native"],
   target: 'node',
   entry: {
-    ['api-server']: './packages/api/src/api-server.ts',
-    ['decorator-server']: './packages/decorators/src/decorator-server.ts'
+    ['api-server']: './packages/api/src/index.ts',
+    ['decorator-server']: './packages/decorators/src/index.ts'
   },
   mode: "development"
 })

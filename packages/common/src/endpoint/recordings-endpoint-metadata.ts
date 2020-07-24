@@ -2,8 +2,8 @@ import { Recording, RecordingOverview } from "../types/types";
 import { defineEndpoint, RequestBodyUnwrap, RequestHeader, RequestParamUnwrap, RouteParamUnwrap, Type } from "./types";
 
 const recordingIdParam = "recordingId";
-const singleRecordingUrl = `/api/recordings/:${recordingIdParam}`;
-const multiRecordingUrl = `/api/recordings`;
+const singleRecordingUrl = `/recordings/:${recordingIdParam}`;
+const multiRecordingUrl = `/recordings`;
 const recordingId = new RouteParamUnwrap(recordingIdParam);
 
 export const recordingApiSymbol = Symbol("recordingApi");

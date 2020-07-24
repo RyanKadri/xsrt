@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "build": "tsc -p ./tsconfig.build.json",
-    "start": "ts-node-dev ./src/decorator-server.ts"
+    "start": "ts-node-dev ./src/index.ts"
   },
   "devDependencies": {
     "@types/amqplib": "^0.5.10",

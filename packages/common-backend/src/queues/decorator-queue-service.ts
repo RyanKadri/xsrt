@@ -10,33 +10,33 @@ let _channel: Channel | undefined;
 
 @injectable()
 export class DecoratorQueueService implements NeedsInitialization {
-    static diName = "queueService";
+  static diName = "queueService";
 
-    constructor(
-        @inject(IServerConfig) private config: Pick<ServerConfig, "rabbitHost">
-    ) { }
+  constructor(
+    @inject(IServerConfig) private config: Pick<ServerConfig, "rabbitHost">
+  ) { }
 
-    async initialize(): Promise<void> {
-        const conn = await connect({ hostname: this.config.rabbitHost, username: "guest", password: "guest" });
-        _channel = await conn.createChannel();
-        await this.channel.assertQueue(rawChunkQueue.name, { durable: true });
-        await this.channel.assertQueue(initSnapshotQueue.name, { durable: true });
+  async initialize(): Promise<void> {
+    const conn = await connect({ hostname: this.config.rabbitHost, username: "guest", password: "guest" });
+    _channel = await conn.createChannel();
+    await this.channel.assertQueue(rawChunkQueue.name, { durable: true });
+    await this.channel.assertQueue(initSnapshotQueue.name, { durable: true });
+  }
+
+  get channel() {
+    if (_channel) {
+      return _channel;
+    } else {
+      throw new Error("Expected the queue service to be initialized");
     }
+  }
 
-    get channel() {
-        if (_channel) {
-            return _channel;
-        } else {
-            throw new Error("Expected the queue service to be initialized");
-        }
-    }
+  async postChunk(chunk: RecordingChunk): Promise<void> {
+    this.postMessage(rawChunkQueue.name, { uuid: chunk.uuid });
+  }
 
-    async postChunk(chunk: RecordingChunk): Promise<void> {
-        this.postMessage(rawChunkQueue.name, { uuid: chunk.uuid });
-    }
-
-    async postMessage(toQueue: string, payload: any) {
-        this.channel.sendToQueue(toQueue, Buffer.from(JSON.stringify(payload)));
-    }
+  async postMessage(toQueue: string, payload: any) {
+    this.channel.sendToQueue(toQueue, Buffer.from(JSON.stringify(payload)));
+  }
 
 }

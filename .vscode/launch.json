@@ -10,14 +10,14 @@
       "name": "Launch API",
       "cwd": "${workspaceFolder}/packages/api",
       "args": [
-        "${workspaceFolder}/packages/api/src/api-server.ts"
+        "${workspaceFolder}/packages/api/src/index.ts"
       ],
       "runtimeArgs": [
         "-r",
         "ts-node/register",
       ],
       "env": {
-        "TS_NODE_PROJECT": "${workspaceFolder}/packages/api/tsconfig.json",
+        "TS_NODE_PROJECT": "${workspaceFolder}/packages/api/tsconfig.build.json",
         "TS_NODE_TRANSPILE_ONLY": "true"
       }
     },
@@ -27,14 +27,14 @@
       "name": "Launch Decorators",
       "cwd": "${workspaceFolder}/packages/decorators",
       "args": [
-        "${workspaceFolder}/packages/decorators/src/decorator-server.ts"
+        "${workspaceFolder}/packages/decorators/src/index.ts"
       ],
       "runtimeArgs": [
         "-r",
         "ts-node/register",
       ],
       "env": {
-        "TS_NODE_PROJECT": "${workspaceFolder}/packages/api/tsconfig.json",
+        "TS_NODE_PROJECT": "${workspaceFolder}/packages/api/tsconfig.build.json",
         "TS_NODE_TRANSPILE_ONLY": "true"
       }
     },
