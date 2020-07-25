@@ -1,6 +1,6 @@
 /* istanbul ignore file */
-import { apiDef, assetApiSymbol, assetEndpoint, constant, dependencyGroup, GotSymbol, FetchSymbol } from "../../common/src";
-import { ApiDefinition, endpointDef, IExpressConfigurator, IRouteHandler, IServerConfig } from "../../common-backend/src";
+import { apiDef, assetApiSymbol, assetEndpoint, constant, dependencyGroup, GotSymbol, FetchSymbol, implementationChoice } from "../../common/src";
+import { ApiDefinition, endpointDef, IExpressConfigurator, IRouteHandler, IServerConfig, IChunkSender, SQSChunkSender, RabbitChunkSender } from "../../common-backend/src";
 import got from "got";
 import { ConfigEndpoint } from "./compile-thumbnail/endpoints/config-endpoint";
 import { ScreenshotStaticRouteHandler } from "./compile-thumbnail/endpoints/screenshot-route-handler";
@@ -19,6 +19,7 @@ export const decoratorDiConfig: ApiDefinition[] = [
     constant(IServerConfig, decoratorConfig),
     constant(GotSymbol, got),
     constant(FetchSymbol, unfetch),
+    implementationChoice(IChunkSender, (process.env.USE_SQS === "true" ? SQSChunkSender : RabbitChunkSender) as any),
     apiDef(assetApiSymbol, assetEndpoint, { baseUrl: decoratorConfig.proxyHost }),
     dependencyGroup(IExpressConfigurator, [
         DecoratorExpressConfigurator

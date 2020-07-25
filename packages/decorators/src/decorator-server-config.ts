@@ -6,12 +6,14 @@ import { Express } from "express";
 import { injectable } from "inversify";
 
 export const decoratorConfig: DecoratorConfig = {
-    port: parseInt(process.env.DECORATOR_PORT!, 10),
-    screenshotDir: `${process.env.STORAGE_LOCATION}/screenshots`,
-    recordingHost: assertExists(process.env.API_HOST),
-    rabbitHost: process.env.RABBIT_HOST || "localhost",
-    elasticUrl: process.env.ELASTIC_HOST || "http://localhost:9200",
-    proxyHost: assertExists(process.env.API_HOST)
+  port: parseInt(process.env.DECORATOR_PORT || "8080", 10),
+  screenshotDir: `${process.env.STORAGE_LOCATION}/screenshots`,
+  recordingHost: assertExists(process.env.API_HOST),
+  rabbitHost: process.env.RABBIT_HOST || "localhost",
+  elasticUrl: process.env.ELASTIC_HOST || "http://localhost:9200",
+  proxyHost: assertExists(process.env.API_HOST),
+  awsRegion: process.env.AWS_REGION,
+  sqsBaseUrl: process.env.SQS_BASE_URL
 }
 
 export interface DecoratorConfig extends ServerConfig {
@@ -26,11 +28,11 @@ export interface DecoratorConfig extends ServerConfig {
 @injectable()
 export class DecoratorExpressConfigurator implements ExpressConfigurator {
 
-    async initialize(app: Express) {
-        app.use(bodyParser.urlencoded({ extended: false }));
-        app.use(bodyParser.json());
-        app.use(cors());
-        app.options("*", cors());
-    }
+  async initialize(app: Express) {
+    app.use(bodyParser.urlencoded({ extended: false }));
+    app.use(bodyParser.json());
+    app.use(cors());
+    app.options("*", cors());
+  }
 
 }

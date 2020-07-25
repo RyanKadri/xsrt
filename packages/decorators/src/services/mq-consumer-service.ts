@@ -1,31 +1,24 @@
-import { NeedsInitialization, RecordingChunk } from "../../../common/src";
-import { DecoratorQueueService, IServerConfig } from "../../../common-backend/src";
-import { Channel, connect } from "amqplib";
+import { Channel } from "amqplib";
 import { inject, injectable, multiInject } from "inversify";
-import { DecoratorConfig } from "../decorator-server-config";
+import { IChunkSender, QueueInfo, QueueSender } from "../../../common-backend/src";
+import { NeedsInitialization, RabbitChannelSymbol, RecordingChunk } from "../../../common/src";
 import { IDecoratorConsumer } from "../di.decorators";
 
 @injectable()
-export class QueueConsumerService implements NeedsInitialization {
+export class MQConsumerService implements NeedsInitialization {
 
   private handlers = new Map<string, QueueMessageCallback<any>[]>();
-  private chann: Channel | undefined;
 
   constructor(
-    @inject(IServerConfig) private config: Pick<DecoratorConfig, "rabbitHost">,
-    private queueService: DecoratorQueueService,
+    @inject(RabbitChannelSymbol) private channel: Channel,
+    @inject(IChunkSender) private queueService: QueueSender<RecordingChunk>,
     @multiInject(IDecoratorConsumer) private listeners: DecoratorConsumer<any>[]
   ) { }
 
   async initialize() {
-    const conn = await connect({ hostname: this.config.rabbitHost, username: "guest", password: "guest" });
-    this.chann = await conn.createChannel();
-    await Promise.all(
-      this.listeners.map(listener => this.chann!.assertQueue(listener.topic, { durable: true }))
-    );
     await Promise.all(
       this.listeners.map(listener =>
-        this.registerListener(listener.topic, listener.handle.bind(listener))
+        this.registerListener(listener.topic.mq.name, listener.handle.bind(listener))
       )
     );
   }
@@ -34,7 +27,7 @@ export class QueueConsumerService implements NeedsInitialization {
     const oldCallbacks = this.handlers.get(topic);
     this.handlers.set(topic, (oldCallbacks || []).concat(handler));
 
-    await this.chann!.consume(topic, async (msg) => {
+    await this.channel.consume(topic, async (msg) => {
       if (msg === null) { return; }
       const callbacks = this.handlers.get(topic) || [];
       const value = msg.content.toString();
@@ -44,25 +37,25 @@ export class QueueConsumerService implements NeedsInitialization {
       responses.forEach(resp => {
         if (resp) { this.forwardResponse(resp); }
       });
-      this.chann!.ack(msg);
+      this.channel.ack(msg);
     });
   }
 
   // TODO - Handle failures here
   private async forwardResponse(resp: QueueForwardRequest) {
-    this.queueService.postMessage(resp.queue, resp.payload);
+    this.queueService.post(resp.payload, resp.queue);
   }
 }
 
 export type QueueMessageCallback<T> = (msg: T) => Promise<QueueForwardRequest | void>;
 
 export interface DecoratorConsumer<T> {
-  topic: string;
+  topic: QueueInfo;
   handle: QueueMessageCallback<T>;
 }
 
 export interface QueueForwardRequest {
-  queue: string;
+  queue: QueueInfo;
   payload: any;
 }
 

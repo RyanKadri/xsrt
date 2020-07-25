@@ -1,14 +1,15 @@
 import dotenv from "dotenv";
 dotenv.config({ path: "../../.env" });
-import { DecoratorQueueService, ElasticService, initializeExpressApp, DatabaseInitializer } from "../../common-backend/src";
+import { ElasticService, initializeExpressApp, DatabaseInitializer, SQSInitializer, RabbitInitializer } from "../../common-backend/src";
 import { decoratorDiConfig } from "./di.decorators";
-import { QueueConsumerService } from "./services/queue-consumer-service";
+import { MQConsumerService } from "./services/mq-consumer-service";
+import { SQSConsumerService } from "./services/sqs-consumer-service";
 
 (async () => {
     await initializeExpressApp(decoratorDiConfig, [
         DatabaseInitializer,
         ElasticService,
-        DecoratorQueueService,
-        QueueConsumerService,
+        process.env.USE_SQS === "true" ? SQSInitializer : RabbitInitializer,
+        process.env.USE_SQS === "true" ? SQSConsumerService : MQConsumerService,
     ]);
 })();

@@ -1,11 +1,12 @@
 import { ChunkEntity, RecordingEntity, DBConnectionSymbol, LoggingService } from "../../../common/src";
-import { elasticQueue, rawChunkQueue } from "../../../common-backend/src";
+import { rawChunkQueueInfo, elasticQueueInfo } from "../../../common-backend/src";
 import { injectable, inject } from "inversify";
-import { ChunkId, DecoratorConsumer } from "../services/queue-consumer-service";
+import { ChunkId, DecoratorConsumer } from "../services/mq-consumer-service";
 import { Connection, Repository } from "typeorm";
 
 @injectable()
 export class RawChunkProcessor implements DecoratorConsumer<ChunkId> {
+  readonly topic = rawChunkQueueInfo;
 
   private chunkRepo: Repository<ChunkEntity>;
   private recordingRepo: Repository<RecordingEntity>;
@@ -17,8 +18,6 @@ export class RawChunkProcessor implements DecoratorConsumer<ChunkId> {
     this.chunkRepo = connection.getRepository(ChunkEntity);
     this.recordingRepo = connection.getRepository(RecordingEntity);
   }
-
-  readonly topic = rawChunkQueue.name;
 
   handle = async ({ uuid }: ChunkId) => {
     const chunk = await this.chunkRepo.findOne({ where: { uuid }, relations: ["recording", "assets"]});
@@ -34,7 +33,7 @@ export class RawChunkProcessor implements DecoratorConsumer<ChunkId> {
       this.logger.error(`Tried to add chunk to recording ${chunk.recording} but it did not exist`);
     }
     return {
-      queue: elasticQueue.name,
+      queue: elasticQueueInfo,
       payload: { uuid: chunk.uuid }
     };
   }

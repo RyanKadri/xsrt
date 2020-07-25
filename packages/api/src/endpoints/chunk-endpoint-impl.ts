@@ -1,5 +1,5 @@
 import { chunkEndpointMetadata, DBConnectionSymbol, DiffChunk, SnapshotChunk, RecordingChunk, ChunkEntity, RecordingEntity } from "../../../common/src";
-import { DecoratorQueueService, errorNotFound, RouteImplementation } from "../../../common-backend/src";
+import { errorNotFound, RouteImplementation, QueueSender, IChunkSender, rawChunkQueueInfo } from "../../../common-backend/src";
 import { inject, injectable } from "inversify";
 import { Connection, Repository } from "typeorm";
 import { v4 as uuid } from "uuid";
@@ -14,7 +14,7 @@ export class ChunkEndpoint implements ChunkEndpointType {
   private recordingRepo: Repository<RecordingEntity>;
 
   constructor(
-    private queueService: DecoratorQueueService,
+    @inject(IChunkSender) private queueService: QueueSender<RecordingChunk>,
     private resolver: AssetResolver,
     @inject(DBConnectionSymbol) connection: Connection
   ) {
@@ -37,7 +37,7 @@ export class ChunkEndpoint implements ChunkEndpointType {
           recording: recording,
           assets
         });
-        this.queueService.postChunk(savedChunk as RecordingChunk);
+        this.queueService.post(savedChunk as RecordingChunk, rawChunkQueueInfo);
       });
 
     return { uuid: chunkUuid };

@@ -1,12 +1,12 @@
-import { DecoratorQueueService, ElasticService, initializeExpressApp, DatabaseInitializer } from "../../common-backend/src";
 import dotenv from "dotenv";
+dotenv.config({ path: "../../.env" });
+import { ElasticService, initializeExpressApp, DatabaseInitializer, RabbitInitializer, SQSInitializer } from "../../common-backend/src";
 import { apiDiConfig } from "./di.api";
 
 (async () => {
-  dotenv.config({ path: "../../.env" });
   await initializeExpressApp(apiDiConfig, [
     DatabaseInitializer,
     ElasticService,
-    DecoratorQueueService,
+    process.env.USE_SQS === "true" ? SQSInitializer : RabbitInitializer,
   ]);
 })();

@@ -17,7 +17,9 @@ export interface RouteHandler {
 export const IServerConfig = Symbol("ServerConfig");
 export interface ServerConfig {
   port: number;
-  rabbitHost: string;
+  rabbitHost?: string;
+  sqsBaseUrl?: string;
+  awsRegion?: string;
   elasticUrl: string;
 }
 

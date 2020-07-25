@@ -1,13 +1,13 @@
 import { LoggingService, ChunkEntity, RecordingEntity, DBConnectionSymbol } from "../../../common/src";
-import { initSnapshotQueue } from "../../../common-backend/src";
+import { initSnapshotQueueInfo } from "../../../common-backend/src";
 import { injectable, inject } from "inversify";
 import { ThumbnailCompiler } from "../compile-thumbnail/compiler/to-image";
-import { ChunkId, DecoratorConsumer } from "../services/queue-consumer-service";
+import { ChunkId, DecoratorConsumer } from "../services/mq-consumer-service";
 import { Connection, Repository } from "typeorm";
 
 @injectable()
 export class ScreenshotConsumer implements DecoratorConsumer<ChunkId> {
-  readonly topic = initSnapshotQueue.name;
+  readonly topic = initSnapshotQueueInfo;
 
   private chunkRepo: Repository<ChunkEntity>;
   private recordingRepo: Repository<RecordingEntity>;

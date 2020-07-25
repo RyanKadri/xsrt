@@ -1,5 +1,8 @@
 // tslint:disable:max-line-length
-export { DecoratorQueueService } from "./queues/decorator-queue-service";
+export * from "./queues/rabbit-initializer";
+export * from "./queues/sqs-initializer";
+export * from "./queues/rabbit-chunk-sender";
+export * from "./queues/sqs-chunk-sender";
 export * from "./queues/queue-metadata";
 export { ApiDefinition, endpointDef, initializeExpressApp } from "./server/api-initializer";
 export { ExpressConfigurator, ExpressServer, IExpressConfigurator, IRouteHandler, IRouteImplementation, IServerConfig, RouteHandler, ServerConfig } from "./server/express-server";

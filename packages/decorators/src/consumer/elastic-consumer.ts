@@ -1,13 +1,13 @@
 import { inject, injectable } from "inversify";
 import { Connection, Repository } from "typeorm";
-import { elasticQueue, ElasticService, initSnapshotQueue, recordingRepo } from "../../../common-backend/src";
+import { ElasticService, initSnapshotQueueInfo, recordingRepo, elasticQueueInfo } from "../../../common-backend/src";
 import { ChunkEntity, DBConnectionSymbol, LoggingService, RecordedNavigationEvent, RecordingElasticRep, RecordingEntity } from "../../../common/src";
-import { ChunkId, DecoratorConsumer } from "../services/queue-consumer-service";
+import { ChunkId, DecoratorConsumer } from "../services/mq-consumer-service";
 
 @injectable()
 export class ElasticConsumer implements DecoratorConsumer<ChunkId> {
 
-  readonly topic = elasticQueue.name;
+  readonly topic = elasticQueueInfo;
   private chunkRepo: Repository<ChunkEntity>;
 
   constructor(
@@ -68,7 +68,7 @@ export class ElasticConsumer implements DecoratorConsumer<ChunkId> {
 
     if (chunk.chunkType === "snapshot" && chunk.initChunk) {
       return {
-        queue: initSnapshotQueue.name,
+        queue: initSnapshotQueueInfo,
         payload: chunk
       };
     } else {
