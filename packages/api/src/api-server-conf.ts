@@ -12,6 +12,7 @@ export class ApiServerConfig implements ServerConfig {
   readonly elasticUrl = process.env.ELASTIC_HOST || "http://localhost:9200";
   readonly awsRegion = process.env.AWS_REGION;
   readonly sqsBaseUrl = process.env.SQS_BASE_URL;
+  readonly assetBucket = process.env.ASSET_BUCKET;
 }
 
 // TODO - Refactoring this out to a common module will simplify dependencies and reduce duplication

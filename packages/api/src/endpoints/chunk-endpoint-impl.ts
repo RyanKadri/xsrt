@@ -15,7 +15,7 @@ export class ChunkEndpoint implements ChunkEndpointType {
 
   constructor(
     @inject(IChunkSender) private queueService: QueueSender<RecordingChunk>,
-    private resolver: AssetResolver,
+    private assetResolver: AssetResolver,
     @inject(DBConnectionSymbol) connection: Connection
   ) {
     this.chunkRepo = connection.getRepository(ChunkEntity);
@@ -29,7 +29,7 @@ export class ChunkEndpoint implements ChunkEndpointType {
     // This intentionally is allowed to finish after the main request because chunks may have many assets
     // and this could be a slow process. Should not slow down the client.
     // TODO - Potentially move this to a queueing approach?
-    this.resolver.resolveAssets(chunk.assets, userAgent)
+    this.assetResolver.resolveAssets(chunk.assets, userAgent)
       .then(async assets => {
         const savedChunk = await this.chunkRepo.save({
           ...chunk,

@@ -9,17 +9,21 @@ import { AssetEndpoint } from "./endpoints/proxy-endpoint-impl";
 import { RecordingEndpoint } from "./endpoints/recording-endpoint-impl";
 import { ServerStatsEndpoint } from "./endpoints/server-stats-endpoint-impl";
 import { TargetEndpoint } from "./endpoints/target-endpoint-impl";
+import { S3StorageService } from "./services/assets/s3-asset-storage-service";
+import { FSStorageService } from "./services/assets/fs-asset-storage-service";
+import { IAssetStorageService } from "./services/assets/asset-storage-service";
 
 export const apiDiConfig: ApiDefinition[] = [
-    implementationChoice(IServerConfig, ApiServerConfig),
-    constant(GotSymbol, got),
-    implementationChoice(IChunkSender, (process.env.USE_SQS === "true" ? SQSChunkSender : RabbitChunkSender) as any),
-    dependencyGroup(IExpressConfigurator, [
-        ApiServerInitializer
-    ]),
-    endpointDef(chunkEndpointMetadata, ChunkEndpoint),
-    endpointDef(assetEndpoint, AssetEndpoint),
-    endpointDef(recordingEndpoint, RecordingEndpoint),
-    endpointDef(siteTargetEndpoint, TargetEndpoint),
-    endpointDef(serverStatsMetadata, ServerStatsEndpoint)
+  implementationChoice(IServerConfig, ApiServerConfig),
+  constant(GotSymbol, got),
+  implementationChoice(IChunkSender, (process.env.USE_SQS === "true" ? SQSChunkSender : RabbitChunkSender) as any),
+  implementationChoice(IAssetStorageService, (process.env.USE_S3 === "true" ? S3StorageService : FSStorageService) as any),
+  dependencyGroup(IExpressConfigurator, [
+    ApiServerInitializer
+  ]),
+  endpointDef(chunkEndpointMetadata, ChunkEndpoint),
+  endpointDef(assetEndpoint, AssetEndpoint),
+  endpointDef(recordingEndpoint, RecordingEndpoint),
+  endpointDef(siteTargetEndpoint, TargetEndpoint),
+  endpointDef(serverStatsMetadata, ServerStatsEndpoint)
 ];

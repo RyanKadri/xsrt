@@ -1,19 +1,17 @@
+import { createHash } from "crypto";
 import { Got } from "got/dist/source";
 import { inject, injectable } from "inversify";
 import { join } from "path";
-import { IServerConfig } from "../../../../common-backend/src";
-import { Asset, GotSymbol, DBConnectionSymbol, AssetEntity } from "../../../../common/src";
-import { ApiServerConfig } from "../../api-server-conf";
-import { AssetStreamService } from "./asset-stream-service";
 import { Connection, Repository } from "typeorm";
+import { Asset, AssetEntity, DBConnectionSymbol, GotSymbol } from "../../../../common/src";
+import { IAssetStorageService, AssetStorageService } from "./asset-storage-service";
 
 @injectable()
 export class AssetResolver {
 
   private assetRepo: Repository<AssetEntity>;
   constructor(
-    @inject(IServerConfig) private config: ApiServerConfig,
-    private streamService: AssetStreamService,
+    @inject(IAssetStorageService) private storageService: AssetStorageService,
     @inject(GotSymbol) private got: Got,
     @inject(DBConnectionSymbol) connection: Connection
   ) {
@@ -23,13 +21,13 @@ export class AssetResolver {
   async resolveAssets(rawAssets: Asset[], userAgent?: string) {
     const assets = await Promise.all(
       rawAssets.map(asset =>
-        this.proxySingleAsset(asset, userAgent)
+        this.storeSingleAsset(asset, userAgent)
       )
     );
     return assets
   }
 
-  private proxySingleAsset = async (asset: Asset, userAgent = "") => {
+  private storeSingleAsset = async (asset: Asset, userAgent = "") => {
     try {
       const url = new URL(asset.origUrl);
       const resp = await this.got.get(url.href, {
@@ -37,9 +35,26 @@ export class AssetResolver {
         responseType: "buffer"
       });
 
-      const saveDir = join(this.config.assetDir, url.hostname);
+      // TODO - May need to watch for overwrite collisions here. Consider shortid?
+      const matches = url.pathname.match(/\/([^/]+)$/); // File name
+      const baseName = matches ? matches[1] : "root";
+      const hashStream = createHash("sha1");
+      hashStream.update(resp.rawBody);
+      const hash = hashStream.digest("base64");
 
-      return this.streamService.saveStream(asset, resp.rawBody, saveDir);
+      const existingAsset = await this.assetRepo.findOne({ where: { hash }});
+      if(!existingAsset) {
+        const safeHash = hash.replace(/[\/+=-]/g, "_");
+        const saveLocation = join(url.hostname, `${safeHash}-${baseName}`);
+        await this.storageService.saveAsset(resp.rawBody, saveLocation);
+        return this.assetRepo.save({
+          ...asset,
+          hash,
+          proxyPath: saveLocation
+        })
+      } else {
+        return existingAsset;
+      }
     } catch (e) {
       const placeholderAsset = await this.assetRepo.findOne({ where: { origUrl: asset.origUrl, proxyPath: null } })
       return placeholderAsset

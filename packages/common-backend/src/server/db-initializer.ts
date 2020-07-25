@@ -6,7 +6,6 @@ import { Connection, createConnection } from "typeorm";
 export class DatabaseInitializer implements NeedsInitialization {
 
   constructor(
-    // @inject(IServerConfig) private config: ServerConfig,
     private logger: LoggingService
   ) { }
 
