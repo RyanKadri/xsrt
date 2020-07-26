@@ -36,7 +36,7 @@ CREATE TABLE public.chunk
     recording integer NOT NULL,
     init_chunk boolean NOT NULL,
     snapshot json NOT NULL,
-    changes json[] NOT NULL,
+    changes json NOT NULL,
     inputs json NOT NULL,
     CONSTRAINT chunk_pkey PRIMARY KEY (id),
     CONSTRAINT recording_fkey FOREIGN KEY (recording)

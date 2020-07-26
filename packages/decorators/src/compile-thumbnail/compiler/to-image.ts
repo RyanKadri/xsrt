@@ -10,48 +10,52 @@ const defaultUA = "Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWe
 @injectable()
 export class ThumbnailCompiler {
 
-    constructor(
-        @inject(IServerConfig) private decoratorConfig: DecoratorConfig
-    ) {}
+  constructor(
+    @inject(IServerConfig) private decoratorConfig: DecoratorConfig
+  ) { }
 
-    private browser?: Browser;
-    // TODO - Figure out issues related to rendering images in headless
-    private readonly launchConfig: LaunchOptions = {
-        headless: false
-    };
+  private browser?: Browser;
+  // TODO - Figure out issues related to rendering images in headless
+  private readonly launchConfig: LaunchOptions = {
+    headless: process.env.HEADLESS !== "false",
+    executablePath: process.env.CHROME_EXECUTABLE,
+    args: [
+      "--no-sandbox"
+    ]
+  };
 
-    private async newPage() {
-        if (!this.browser) {
-            this.browser = await launch(this.launchConfig);
-        } else {
-            try {
-                await this.browser.version();
-            } catch (e) {
-                this.browser = await launch(this.launchConfig);
-            }
-        }
-        return await this.browser.newPage();
+  private async newPage() {
+    if (!this.browser) {
+      this.browser = await launch(this.launchConfig);
+    } else {
+      try {
+        await this.browser.version();
+      } catch (e) {
+        this.browser = await launch(this.launchConfig);
+      }
     }
+    return await this.browser.newPage();
+  }
 
-    async createThumbnail(forChunk: string) {
-        const page = await this.newPage();
-        try {
-            await page.setUserAgent(defaultUA);
+  async createThumbnail(forChunk: string) {
+    const page = await this.newPage();
+    try {
+      await page.setUserAgent(defaultUA);
 
-            // Note - This URL must contain the protocol or it will break headless chrome. Also keep this as
-            // localhost because this currently assumes the decorator service will serve the screenshot static page
-            const hostPart = `http://localhost:${this.decoratorConfig.port}`;
-            const screenshotPage = `static/screenshot/index.html`;
-            await page.goto(`${hostPart}/${screenshotPage}?chunk=${forChunk}`);
-            await page.waitForFunction(`window['targetViewport']`, { polling: 100 });
+      // Note - This URL must contain the protocol or it will break headless chrome. Also keep this as
+      // localhost because this currently assumes the decorator service will serve the screenshot static page
+      const hostPart = `http://localhost:${this.decoratorConfig.port}`;
+      const screenshotPage = `static/screenshot/index.html`;
+      await page.goto(`${hostPart}/${screenshotPage}?chunk=${forChunk}`);
+      await page.waitForFunction(`window['targetViewport']`, { polling: 100 });
 
-            const targetViewport = await page.evaluate(`window['targetViewport']`) as ViewportSize;
-            await page.setViewport({ height: targetViewport.height, width: targetViewport.width });
-            const buffer = await page.screenshot({ encoding: "binary" });
-            return buffer;
-        } finally {
-            page.close();
-        }
+      const targetViewport = await page.evaluate(`window['targetViewport']`) as ViewportSize;
+      await page.setViewport({ height: targetViewport.height, width: targetViewport.width });
+      const buffer = await page.screenshot({ encoding: "binary" });
+      return buffer;
+    } finally {
+      page.close();
     }
+  }
 
 }

@@ -45,6 +45,9 @@ const frontendCommon = merge(common('dist/web', "packages/viewer/tsconfig.json")
   entry: {
     viewer: './packages/viewer/src/index.tsx',
   },
+  output: {
+    filename: '[name].[hash].bundle.js',
+  },
   resolve: {
     extensions: [".wasm", ".ts", ".tsx", ".mjs", ".cjs", ".js", ".json"],
   },
@@ -81,7 +84,7 @@ const viewerProd = merge(frontendCommon, {
   name: 'viewer-prod',
   plugins: [
     new BundleAnalyzerPlugin({ analyzerMode: 'static' }),
-    new DotEnv()
+    new DotEnv({ path: "./.env.prod" })
   ],
   mode: 'production'
 });

@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { initializeApp } from "../../common/src";
 import { DependencyContext } from "../../common-frontend/src";
 import * as React from "react";

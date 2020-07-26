@@ -9,21 +9,24 @@ import { ResizeRecorder } from "./record/user-input/resize-recorder";
 import { ScrollRecorder } from "./record/user-input/scroll-recorder";
 import { PopStateRecorder } from "./record/user-input/soft-navigate-recorder";
 import { UnloadRecorder } from "./record/user-input/unload-recorder";
+import { XSRTConfig } from "./public-starter";
 
-const baseUrl = assertExists(process.env.API_HOST, "API base URL");
-
-export const diConfig: DIDefinition[] = [
-    constant(LocationSymbol, location),
-    constant(DocumentSymbol, document),
-    constant(WindowSymbol, window),
-    constant(FetchSymbol, window.fetch.bind(window)),
-    constant(LocalStorageSymbol, localStorage),
-    dependencyGroup(IUserInputRecorder, [
-        MouseRecorder, ScrollRecorder, HtmlInputRecorder,
-        FocusRecorder, ResizeRecorder, KeystrokeRecorder,
-        UnloadRecorder, PopStateRecorder
-    ]),
-    apiDef(recordingApiSymbol, recordingEndpoint, { baseUrl }),
-    apiDef(assetApiSymbol, assetEndpoint, { baseUrl }),
-    apiDef(chunkApiSymbol, chunkEndpointMetadata, { baseUrl }),
-];
+export function setupDI(config: XSRTConfig) {
+  const baseUrl = assertExists(config.backendUrl, "backend URL");
+  const diConfig: DIDefinition[] = [
+      constant(LocationSymbol, location),
+      constant(DocumentSymbol, document),
+      constant(WindowSymbol, window),
+      constant(FetchSymbol, window.fetch.bind(window)),
+      constant(LocalStorageSymbol, localStorage),
+      dependencyGroup(IUserInputRecorder, [
+          MouseRecorder, ScrollRecorder, HtmlInputRecorder,
+          FocusRecorder, ResizeRecorder, KeystrokeRecorder,
+          UnloadRecorder, PopStateRecorder
+      ]),
+      apiDef(recordingApiSymbol, recordingEndpoint, { baseUrl }),
+      apiDef(assetApiSymbol, assetEndpoint, { baseUrl }),
+      apiDef(chunkApiSymbol, chunkEndpointMetadata, { baseUrl }),
+  ];
+  return diConfig;
+}

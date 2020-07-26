@@ -34,9 +34,15 @@ export class ChunkEndpoint implements ChunkEndpointType {
           ...chunk,
           uuid: chunkUuid,
           recording: recording,
-          assets
+          assets,
+          startTime: new Date(chunk.startTime),
+          endTime: new Date(chunk.endTime)
         });
-        this.queueService.post(savedChunk as RecordingChunk, rawChunkQueueInfo);
+        this.queueService.post({
+          ...savedChunk,
+          startTime: savedChunk.startTime.getTime(),
+          endTime: savedChunk.endTime.getTime()
+        } as RecordingChunk, rawChunkQueueInfo);
       });
 
     return { uuid: chunkUuid };

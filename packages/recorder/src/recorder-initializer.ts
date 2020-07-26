@@ -1,7 +1,7 @@
 import { constant, initializeApp, LocalStorageService, ScraperConfig, ScraperConfigToken as ConfigToken } from "../../common/src";
 import { RecorderApiService } from "./api/recorder-api-service";
 import { RecordingInfo, RecordingStateService } from "./api/recording-state-service";
-import { diConfig } from "./di.recorder";
+import { setupDI } from "./di.recorder";
 import { PatchService } from "./record/patch/patch-service";
 import { RecorderOrchestrator } from "./recorder-orchestrator";
 
@@ -32,7 +32,7 @@ export class RecorderInitializer {
     async initialize(config: ScraperConfig) {
         const injector = await initializeApp([
             constant(ConfigToken, config),
-            ...diConfig
+            ...setupDI(config)
         ]);
 
         this.orchestrator = injector.inject(RecorderOrchestrator);

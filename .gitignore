@@ -4,6 +4,7 @@ data.json
 coverage/
 .nyc_output/
 .env
+.env.prod
 secret/
 lib/
 lib-cjs/
