@@ -45,7 +45,7 @@ export class AssetResolver {
       const existingAsset = await this.assetRepo.findOne({ where: { hash }});
       if(!existingAsset) {
         const safeHash = hash.replace(/[\/+=-]/g, "_");
-        const saveLocation = join(url.hostname, `${safeHash}-${baseName}`);
+        const saveLocation = join("assets", url.hostname, `${safeHash}-${baseName}`);
         await this.storageService.saveAsset(resp.rawBody, saveLocation);
         return this.assetRepo.save({
           ...asset,

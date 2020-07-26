@@ -7,18 +7,18 @@ import { injectable } from "inversify";
 
 export const decoratorConfig: DecoratorConfig = {
   port: parseInt(process.env.DECORATOR_PORT || "8080", 10),
-  screenshotDir: `${process.env.STORAGE_LOCATION}/screenshots`,
+  assetDir: `${process.env.STORAGE_LOCATION}`,
   recordingHost: assertExists(process.env.API_HOST),
   rabbitHost: process.env.RABBIT_HOST || "localhost",
   elasticUrl: process.env.ELASTIC_HOST || "http://localhost:9200",
   proxyHost: assertExists(process.env.API_HOST),
   awsRegion: process.env.AWS_REGION,
-  sqsBaseUrl: process.env.SQS_BASE_URL
+  sqsBaseUrl: process.env.SQS_BASE_URL,
+  assetBucket: process.env.ASSET_BUCKET
 }
 
 export interface DecoratorConfig extends ServerConfig {
   port: number
-  screenshotDir: string;
   recordingHost: string;
   rabbitHost: string;
   elasticUrl: string;

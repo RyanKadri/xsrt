@@ -1,12 +1,8 @@
-import { ViewportSize } from "../../../../common/src";
-import { mkdir as mkdirFS } from "fs";
-import { injectable, inject } from "inversify";
+import { inject, injectable } from "inversify";
 import { Browser, launch, LaunchOptions } from "puppeteer";
-import { promisify } from "util";
-import { DecoratorConfig } from "../../decorator-server-config";
 import { IServerConfig } from "../../../../common-backend/src";
-
-const mkdir = promisify(mkdirFS);
+import { ViewportSize } from "../../../../common/src";
+import { DecoratorConfig } from "../../decorator-server-config";
 
 // tslint:disable-next-line:max-line-length
 const defaultUA = "Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1";
@@ -51,17 +47,8 @@ export class ThumbnailCompiler {
 
             const targetViewport = await page.evaluate(`window['targetViewport']`) as ViewportSize;
             await page.setViewport({ height: targetViewport.height, width: targetViewport.width });
-            try {
-                await mkdir(this.decoratorConfig.screenshotDir);
-            } catch (e) {
-                if (e.code !== "EEXIST") {
-                    throw e;
-                }
-            }
-            const fileName = `${forChunk}.png`;
-            const path = `${this.decoratorConfig.screenshotDir}/${fileName}`;
-            await page.screenshot({ path });
-            return fileName;
+            const buffer = await page.screenshot({ encoding: "binary" });
+            return buffer;
         } finally {
             page.close();
         }

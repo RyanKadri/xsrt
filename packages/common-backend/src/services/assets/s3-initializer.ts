@@ -1,8 +1,7 @@
 import { injectable, inject } from "inversify";
 import S3 from "aws-sdk/clients/s3"
 import { NeedsInitialization, assertExists } from "../../../../common/src";
-import { IServerConfig } from "../../../../common-backend/src";
-import { ApiServerConfig } from "../../api-server-conf";
+import { ServerConfig, IServerConfig } from "../../server/express-server";
 
 export const S3ClientSymbol = Symbol("S3Client");
 
@@ -10,7 +9,7 @@ export const S3ClientSymbol = Symbol("S3Client");
 export class S3Initializer implements NeedsInitialization {
 
   constructor(
-    @inject(IServerConfig) private config: Pick<ApiServerConfig, "assetBucket" | "awsRegion">
+    @inject(IServerConfig) private config: Pick<ServerConfig, "assetBucket" | "awsRegion">
   ) {}
 
   async initialize(): Promise<[symbol, S3]> {

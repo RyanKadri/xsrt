@@ -9,7 +9,7 @@
   "sideEffects": false,
   "scripts": {
     "clean:dependencies": "lerna clean",
-    "clean:data": "ts-node ./scripts/cleanup-all.ts",
+    "clean:data": "ts-node --transpile-only --project ./tsconfig.tools.json ./scripts/cleanup-all.ts",
     "initialize": "npm install && lerna bootstrap --hoist",
     "package:backend": "webpack --config-name compile-backend",
     "build:viewer": "webpack --config-name viewer-prod",

@@ -26,7 +26,7 @@ export const diConfig: DIDefinition[] = [
     dependencyGroup(IInputAnnotator, [
         ResizeAnnotator, InputEventAnnotator, UnloadAnnotator
     ]),
-    apiDef(chunkApiSymbol, chunkEndpointMetadata, { baseUrl: process.env.API_HOST ?? "http://localhost:8080" }),
-    apiDef(siteTargetApiSymbol, siteTargetEndpoint, { baseUrl: process.env.API_HOST ?? "http://localhost:8080" }),
-    apiDef(recordingApiSymbol, recordingEndpoint, { baseUrl: process.env.API_HOST ?? "http://localhost:8080" })
+    apiDef(chunkApiSymbol, chunkEndpointMetadata, { baseUrl: process.env.API_HOST + "/api" }),
+    apiDef(siteTargetApiSymbol, siteTargetEndpoint, { baseUrl: process.env.API_HOST + "/api" }),
+    apiDef(recordingApiSymbol, recordingEndpoint, { baseUrl: process.env.API_HOST + "/api" })
 ];

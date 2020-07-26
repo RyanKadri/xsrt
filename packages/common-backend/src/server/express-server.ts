@@ -21,6 +21,8 @@ export interface ServerConfig {
   sqsBaseUrl?: string;
   awsRegion?: string;
   elasticUrl: string;
+  assetDir?: string;
+  assetBucket?: string;
 }
 
 export const IRouteImplementation = Symbol("RouteImplementation");

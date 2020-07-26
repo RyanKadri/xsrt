@@ -1,9 +1,9 @@
 import { mkdir, writeFile } from "fs";
-import { injectable } from "inversify";
+import { injectable, inject } from "inversify";
 import { join, dirname } from "path";
 import { promisify } from "util";
-import { ApiServerConfig } from "../../api-server-conf";
 import { AssetStorageService } from "./asset-storage-service";
+import { IServerConfig, ServerConfig } from "../../server/express-server";
 
 const mkdirFs = promisify(mkdir);
 const writeFileFs = promisify(writeFile);
@@ -12,12 +12,12 @@ const writeFileFs = promisify(writeFile);
 export class FSStorageService implements AssetStorageService {
 
   constructor(
-    private config: ApiServerConfig
+    @inject(IServerConfig) private config: ServerConfig
   ) { }
 
   // Can we stream this? Is there a good way to use headers to avoid doing the hashing process all the time?
   async saveAsset(data: Buffer, savePath: string): Promise<void> {
-    const saveLocation = join(this.config.assetDir, savePath);
+    const saveLocation = join(this.config.assetDir!, savePath);
     await mkdirFs(dirname(saveLocation), { recursive: true });
     await writeFileFs(saveLocation, data)
   }

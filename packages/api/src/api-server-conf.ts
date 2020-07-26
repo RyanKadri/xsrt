@@ -7,7 +7,7 @@ import { injectable } from "inversify";
 @injectable()
 export class ApiServerConfig implements ServerConfig {
   readonly port = parseInt(process.env.API_PORT || "8080", 10);
-  readonly assetDir = `${process.env.STORAGE_LOCATION}/assets`;
+  readonly assetDir = `${process.env.STORAGE_LOCATION}`;
   readonly rabbitHost = process.env.RABBIT_HOST || "localhost";
   readonly elasticUrl = process.env.ELASTIC_HOST || "http://localhost:9200";
   readonly awsRegion = process.env.AWS_REGION;

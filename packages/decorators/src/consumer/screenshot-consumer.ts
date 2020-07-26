@@ -1,5 +1,5 @@
 import { LoggingService, ChunkEntity, RecordingEntity, DBConnectionSymbol } from "../../../common/src";
-import { initSnapshotQueueInfo } from "../../../common-backend/src";
+import { initSnapshotQueueInfo, IAssetStorageService, AssetStorageService } from "../../../common-backend/src";
 import { injectable, inject } from "inversify";
 import { ThumbnailCompiler } from "../compile-thumbnail/compiler/to-image";
 import { ChunkId, DecoratorConsumer } from "../services/mq-consumer-service";
@@ -15,7 +15,8 @@ export class ScreenshotConsumer implements DecoratorConsumer<ChunkId> {
   constructor(
     private thumbnailCompiler: ThumbnailCompiler,
     private logger: LoggingService,
-    @inject(DBConnectionSymbol) connection: Connection
+    @inject(DBConnectionSymbol) connection: Connection,
+    @inject(IAssetStorageService) private storageService: AssetStorageService
   ) {
     this.chunkRepo = connection.getRepository(ChunkEntity);
     this.recordingRepo = connection.getRepository(RecordingEntity);
@@ -28,7 +29,11 @@ export class ScreenshotConsumer implements DecoratorConsumer<ChunkId> {
         this.logger.error("Tried to make a snapshot from a diff chunk");
         return;
       }
-      const path = await this.thumbnailCompiler.createThumbnail(uuid);
+      const buffer = await this.thumbnailCompiler.createThumbnail(uuid);
+
+      const fileName = `${uuid}.png`;
+      const path = `screenshots/${fileName}`;
+      await this.storageService.saveAsset(buffer, path)
       chunk.recording.thumbnailPath = path;
       await this.recordingRepo.save(chunk.recording);
     } else {

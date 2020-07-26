@@ -1,9 +1,8 @@
 import { chunkEndpointMetadata, DBConnectionSymbol, DiffChunk, SnapshotChunk, RecordingChunk, ChunkEntity, RecordingEntity } from "../../../common/src";
-import { errorNotFound, RouteImplementation, QueueSender, IChunkSender, rawChunkQueueInfo } from "../../../common-backend/src";
+import { errorNotFound, RouteImplementation, QueueSender, IChunkSender, rawChunkQueueInfo, AssetResolver } from "../../../common-backend/src";
 import { inject, injectable } from "inversify";
 import { Connection, Repository } from "typeorm";
 import { v4 as uuid } from "uuid";
-import { AssetResolver } from "../services/assets/asset-resolver";
 
 type ChunkEndpointType = RouteImplementation<typeof chunkEndpointMetadata>;
 

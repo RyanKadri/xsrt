@@ -11,4 +11,8 @@ export { downloadResponse, errorInvalidCommand, errorNotFound } from "./server/r
 export * from "./server/route-types";
 export * from "./services/elastic-repos";
 export * from "./services/elastic-service";
-
+export * from "./services/assets/asset-resolver";
+export * from "./services/assets/asset-storage-service";
+export * from "./services/assets/fs-asset-storage-service";
+export * from "./services/assets/s3-asset-storage-service";
+export * from "./services/assets/s3-initializer";

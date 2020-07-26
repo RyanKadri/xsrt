@@ -1,8 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config({ path: "../../.env" });
-import { ElasticService, initializeExpressApp, DatabaseInitializer, RabbitInitializer, SQSInitializer } from "../../common-backend/src";
+import { ElasticService, initializeExpressApp, DatabaseInitializer, RabbitInitializer, SQSInitializer, S3Initializer } from "../../common-backend/src";
 import { apiDiConfig } from "./di.api";
-import { S3Initializer } from "./services/storage/s3-initializer";
 import { interfaces } from "inversify";
 import { NeedsInitialization } from "../../common/src";
 
