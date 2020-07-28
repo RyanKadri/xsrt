@@ -16,6 +16,6 @@ Resources:
   NetworkingResources:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: ./networking.yml
+      TemplateURL: ./elasticsearch.yml
       Parameters:
         EnvironmentName: !Ref Environment
