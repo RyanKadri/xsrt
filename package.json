@@ -1,6 +1,6 @@
 {
   "name": "xsrt",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "A Cross-Session Screen Recording tool (XSRT)",
   "repository": {
     "type": "git",
