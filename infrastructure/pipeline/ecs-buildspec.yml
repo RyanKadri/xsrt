@@ -1,45 +1,28 @@
 version: 0.2
 
 phases:
-  #install:
-    #If you use the Ubuntu standard image 2.0 or later, you must specify runtime-versions.
-    #If you specify runtime-versions and use an image other than Ubuntu standard image 2.0, the build fails.
-    #runtime-versions:
-      # name: version
-      # name: version
-    #commands:
-      # - command
-      # - command
+  install:
+    runtime-versions:
+      nodejs: 10
   pre_build:
     commands:
       - echo Logging into ECR
       - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
+      - IMAGE_TAG=$(node -p -e "require('./package.json').version")
+      - COMMIT_TAG=$(git tag --points-at HEAD)
+      - if [ -n "$COMMIT_TAG" ]; then IMAGE_TAG="$IMAGE_TAG-$(date +%y%m%d%H%M%S); fi"
+      - REPOSITORY_URL=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO
   build:
     commands:
       - echo Starting build on `date`
       - echo Building docker image
       - docker build --target $DOCKER_TARGET -t $IMAGE_REPO:$IMAGE_TAG .
-      - docker tag $IMAGE_REPO:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO:$IMAGE_TAG
+      - docker tag $IMAGE_REPO:$IMAGE_TAG $REPOSITORY_URL:$IMAGE_TAG
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO:$IMAGE_TAG
-#reports:
-  #report-name-or-arn:
-    #files:
-      # - location
-      # - location
-    #base-directory: location
-    #discard-paths: yes
-    #file-format: JunitXml | CucumberJson
-#artifacts:
-  #files:
-    # - location
-    # - location
-  #name: $(date +%Y-%m-%d)
-  #discard-paths: yes
-  #base-directory: location
-#cache:
-  #paths:
-    # - paths
+      - docker push $REPOSITORY_URL:$IMAGE_TAG
+      - printf '[{"name":"%s","imageUri":"%s"}]' $IMAGE_REPO $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+  artifacts:
+    files: imagedefinitions.json

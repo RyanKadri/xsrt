@@ -13,24 +13,9 @@ Parameters:
 Conditions:
   HasSitePrefix: !Not [!Equals [!Ref "Environment", "prod"]]
 Resources:
-  StaticWeb:
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      TemplateURL: ./static-web.yml
-      Parameters:
-        EnvironmentName: !Ref Environment
   NetworkingResources:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: ./networking.yml
       Parameters:
         EnvironmentName: !Ref Environment
-  DNS:
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      TemplateURL: ./dns.yml
-      Parameters:
-        HostedZone: !Join ["", [!Ref HostedZoneName, "."]]
-        ViewerSiteAddress: !If
-        ViewerSiteDestination: !GetAtt StaticWeb.Outputs.CloudFrontDomain
-        ServiceDestination: !GetAtt LoadBalancer.Outputs.DNSName
