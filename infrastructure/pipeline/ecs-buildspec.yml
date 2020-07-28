@@ -10,7 +10,7 @@ phases:
       - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
       - IMAGE_TAG=$(node -p -e "require('./package.json').version")
       - COMMIT_TAG=$(git tag --points-at HEAD)
-      - if [ -n "$COMMIT_TAG" ]; then IMAGE_TAG="$IMAGE_TAG-$(date +%y%m%d%H%M%S); fi"
+      - if [ -n "$COMMIT_TAG" ]; then IMAGE_TAG="$IMAGE_TAG-$(date +%y%m%d%H%M%S)"; fi
       - REPOSITORY_URL=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO
   build:
     commands:
