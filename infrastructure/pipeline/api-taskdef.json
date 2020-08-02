@@ -1,0 +1,116 @@
+{
+  "family": "xsrt-api-fg",
+  "executionRoleArn": "arn:aws:iam::307651132348:role/xsrt-service-role",
+  "taskRoleArn": "arn:aws:iam::307651132348:role/xsrt-service-role",
+  "taskDefinitionArn": "arn:aws:ecs:us-east-1:307651132348:task-definition/xsrt-api-fg:8",
+  "networkMode": "awsvpc",
+  "cpu": "512",
+  "status": "ACTIVE",
+  "containerDefinitions": [
+    {
+      "name": "api",
+      "image": "<API_IMAGE_NAME>",
+      "essential": true,
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/xsrt-api-fg",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "portMappings": [
+        {
+          "hostPort": 8080,
+          "protocol": "tcp",
+          "containerPort": 8080
+        }
+      ],
+      "cpu": 0,
+      "environment": [
+        {
+          "name": "ASSET_BUCKET",
+          "value": "xsrt-storage"
+        },
+        {
+          "name": "AWS_REGION",
+          "value": "us-east-1"
+        },
+        {
+          "name": "DB_HOST",
+          "value": "db.xsrt-app.com"
+        },
+        {
+          "name": "DB_PASSWORD",
+          "value": "xsrt"
+        },
+        {
+          "name": "DB_USER",
+          "value": "xsrt"
+        },
+        {
+          "name": "ELASTIC_HOST",
+          "value": "https://vpc-xsrt-elasticsearch-vrxd2a2kezezkjkq662xgfvqwu.us-east-1.es.amazonaws.com"
+        },
+        {
+          "name": "SQS_BASE_URL",
+          "value": "https://sqs.us-east-1.amazonaws.com/307651132348"
+        },
+        {
+          "name": "USE_S3",
+          "value": "true"
+        },
+        {
+          "name": "USE_SQS",
+          "value": "true"
+        }
+      ]
+    }
+  ],
+  "memory": "1024",
+  "compatibilities": [
+    "EC2",
+    "FARGATE"
+  ],
+  "requiresAttributes": [
+    {
+      "targetId": null,
+      "targetType": null,
+      "value": null,
+      "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+    },
+    {
+      "targetId": null,
+      "targetType": null,
+      "value": null,
+      "name": "ecs.capability.execution-role-awslogs"
+    },
+    {
+      "targetId": null,
+      "targetType": null,
+      "value": null,
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+    },
+    {
+      "targetId": null,
+      "targetType": null,
+      "value": null,
+      "name": "com.amazonaws.ecs.capability.task-iam-role"
+    },
+    {
+      "targetId": null,
+      "targetType": null,
+      "value": null,
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+    },
+    {
+      "targetId": null,
+      "targetType": null,
+      "value": null,
+      "name": "ecs.capability.task-eni"
+    }
+  ],
+  "requiresCompatibilities": [
+    "FARGATE"
+  ]
+}

@@ -1,0 +1,15 @@
+version: 0.0
+Resources:
+  - TargetService:
+      Type: AWS::ECS::Service
+      Properties:
+        TaskDefinition: <TASK_DEFINITION>
+        LoadBalancerInfo:
+          ContainerName: "api"
+          ContainerPort: 8080
+        PlatformVersion: "LATEST"
+        NetworkConfiguration:
+          AwsvpcConfiguration:
+            Subnets: ["subnet-0adc6c9f9d371fb6e","subnet-08c0e19f3e53d59ba","subnet-01cb55f4ee0e3b84c"]
+            SecurityGroups: ["sg-02548ccb2c1512b7b"]
+            AssignPublicIp: "DISABLED"
