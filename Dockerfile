@@ -26,7 +26,7 @@ EXPOSE 8080
 CMD ["node", "./api.js"]
 
 # Decorator server
-FROM node:12.18.2-alpine as decorator
+FROM node:12.18.2-alpine as decorators
 
 RUN apk update && apk add --no-cache nmap && \
     echo @edge http://nl.alpinelinux.org/alpine/edge/community >> /etc/apk/repositories && \

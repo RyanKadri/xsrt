@@ -43,7 +43,7 @@ services:
       - CHROME_EXECUTABLE=/usr/bin/chromium-browser
     build:
       context: .
-      target: decorator
+      target: decorators
       args:
         port: "${DECORATOR_PORT}"
   static:
