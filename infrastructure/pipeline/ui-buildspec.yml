@@ -1,0 +1,25 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 10
+  pre_build:
+    commands:
+      - echo Logging into ECR
+      - IMAGE_TAG=$(node -p -e "require('./package.json').version")
+      - IMAGE_TAG="$IMAGE_TAG-$(date +%y%m%d%H%M%S)"
+  build:
+    commands:
+      - echo Starting build on `date`
+      - npm run build:viewer
+  # post_build:
+  #   commands:
+  #     - echo Build completed on `date`
+  #     - echo Pushing the Docker image...
+  #     - docker push $REPOSITORY_URL:$IMAGE_TAG
+  #     - printf '{"ImageURI":"%s"}' $REPOSITORY_URL:$IMAGE_TAG > imageDetail.json
+  #     - printf '[{"name":"%s","imageUri":"%s"}]' $TASK_CONTAINER_NAME $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+artifacts:
+  files:
+    - dist/web/*
