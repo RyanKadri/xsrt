@@ -9,6 +9,8 @@ phases:
       - echo Logging into ECR
       - IMAGE_TAG=$(node -p -e "require('./package.json').version")
       - IMAGE_TAG="$IMAGE_TAG-$(date +%y%m%d%H%M%S)"
+      - echo Installing dependencies
+      - npm install
   build:
     commands:
       - echo Starting build on `date`
