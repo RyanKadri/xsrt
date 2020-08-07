@@ -9,6 +9,8 @@ secret/
 lib/
 lib-cjs/
 /storage/
+.idea/
+.terraform/
 
 .npmrc
 lerna-debug.log
