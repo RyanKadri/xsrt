@@ -1,31 +1,8 @@
-provider "aws" {
-  version = "~> 3.0"
-  region  = "us-east-2"
-}
-
-provider "aws" {
-  version = "~> 3.0"
-  region = "us-east-1"
-  alias = "us-east-1"
-}
-
-terraform {
-  backend "s3" {
-    bucket = "xsrt-iac"
-    key = "terraform/terraform.tfstate"
-    region = "us-east-2"
-  }
-}
-
 resource "aws_vpc" "main-vpc" {
   cidr_block = "10.0.0.0/16"
   tags = {
     Name = "xsrt-main"
   }
-}
-
-data "aws_availability_zones" "available" {
-  state = "available"
 }
 
 resource "aws_subnet" "xsrt-public" {
@@ -108,7 +85,7 @@ resource "aws_route_table" "private_table" {
 
   route {
     ipv6_cidr_block = "::/0"
-    gateway_id = aws_egress_only_internet_gateway.main_eig.id
+    egress_only_gateway_id = aws_egress_only_internet_gateway.main_eig.id
   }
 
   tags = {

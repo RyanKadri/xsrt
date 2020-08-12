@@ -17,7 +17,8 @@
     "strictPropertyInitialization": false,
     "types": [
       "jest",
-      "node"
+      "node",
+      "chrome"
     ],
     "moduleResolution": "node",
     "resolveJsonModule": true,

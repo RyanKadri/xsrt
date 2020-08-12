@@ -59,12 +59,6 @@ data "aws_iam_policy_document" "storage_policy" {
   }
 }
 
-data aws_acm_certificate wildcard-cert {
-  domain = "*.xsrt-app.com"
-  statuses = ["ISSUED"]
-  provider = aws.us-east-1
-}
-
 resource "aws_cloudfront_distribution" "viewer-dist" {
   enabled = true
   aliases = ["viewer-${var.env}.xsrt-app.com"]
@@ -109,6 +103,9 @@ resource "aws_cloudfront_distribution" "viewer-dist" {
         forward = "none"
       }
     }
+    min_ttl = 0
+    max_ttl = 0
+    default_ttl = 0
   }
   custom_error_response {
     error_code = 404
