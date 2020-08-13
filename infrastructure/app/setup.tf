@@ -36,3 +36,8 @@ data aws_acm_certificate wildcard-cert {
   statuses = ["ISSUED"]
   provider = aws.us-east-1
 }
+
+data aws_acm_certificate wildcard-regional-cert {
+  domain = "*.xsrt-app.com"
+  statuses = ["ISSUED"]
+}

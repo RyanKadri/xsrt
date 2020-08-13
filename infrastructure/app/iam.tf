@@ -27,6 +27,9 @@ resource "aws_iam_policy" "xsrt-storage" {
   name = "xsrt-storage-${var.env}"
 }
 
+data "aws_iam_policy" "code-deploy-ecs" {
+  arn = "arn:aws:iam::aws:policy/AWSCodeDeployRoleForECS"
+}
 
 data "aws_iam_policy_document" "xsrt-secrets" {
   statement {
@@ -135,6 +138,126 @@ data "aws_iam_policy_document" "xsrt-images" {
 resource "aws_iam_policy" "xsrt-images" {
   name = "xsrt-images-${var.env}"
   policy = data.aws_iam_policy_document.xsrt-images.json
+}
+
+data "aws_iam_policy_document" "xsrt-container-builder" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:BatchGetImage",
+      "ecr:CompleteLayerUpload",
+      "ecr:DescribeImages",
+      "ecr:UploadLayerPart",
+      "ecr:InitiateLayerUpload",
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:PutImage"
+    ]
+    resources = [
+      aws_ecr_repository.api-repo.arn,
+      aws_ecr_repository.decorators-repo.arn
+    ]
+  }
+  statement {
+    effect = "Allow"
+    actions = [
+      "ecr:GetAuthorizationToken"
+    ]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "xsrt-container-builder" {
+  name = "xsrt-container-builder-${var.env}"
+  policy = data.aws_iam_policy_document.xsrt-container-builder.json
+}
+
+data "aws_iam_policy_document" "xsrt-pipeline-bucket-access" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:PutObject",
+      "s3:GetObject",
+      "s3:DeleteObjectVersion",
+      "s3:GetObjectVersionTagging",
+      "s3:PutObjectVersionTagging",
+      "s3:GetObjectTagging",
+      "s3:PutObjectTagging",
+      "s3:DeleteObject",
+      "s3:GetBucketPolicy",
+      "s3:GetObjectVersion"
+    ]
+    resources = [
+      aws_s3_bucket.pipeline-bucket.arn,
+      "${aws_s3_bucket.pipeline-bucket.arn}/*",
+      aws_s3_bucket.viewer-bucket.arn,
+      "${aws_s3_bucket.viewer-bucket.arn}/*"
+    ]
+  }
+  statement {
+    effect = "Allow"
+    actions = ["s3:HeadBucket"]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "pipeline-access" {
+  name = "xsrt-pipeline-bucket-access-${var.env}"
+  policy = data.aws_iam_policy_document.xsrt-pipeline-bucket-access.json
+}
+
+data "aws_iam_policy_document" "xsrt-ecs-deploy" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "codedeploy:GetDeploymentInstance",
+      "codedeploy:CreateDeployment",
+      "codedeploy:GetApplicationRevision",
+      "codedeploy:GetDeploymentConfig",
+      "ecs:StartTask",
+      "ecs:RegisterContainerInstance",
+      "codedeploy:CreateDeploymentConfig",
+      "codedeploy:UpdateDeploymentGroup",
+      "codedeploy:CreateDeploymentGroup",
+      "ecs:UpdateService",
+      "ecs:CreateService",
+      "ecs:RunTask",
+      "ecs:ListTasks",
+      "ecs:StopTask",
+      "ecs:DescribeServices",
+      "ecs:DescribeContainerInstances",
+      "ecs:DeregisterContainerInstance",
+      "ecs:DescribeTasks",
+      "codedeploy:GetApplication",
+      "codedeploy:GetDeploymentGroup",
+      "codedeploy:UpdateApplication",
+      "codedeploy:DeleteDeploymentConfig",
+      "codedeploy:RegisterApplicationRevision",
+      "ecs:DeleteService",
+      "ecs:DescribeClusters",
+      "codedeploy:DeleteDeploymentGroup",
+      "codedeploy:GetDeployment"
+    ]
+    resources = [
+      "*" // TODO - Fix this before prod
+    ]
+  }
+  statement {
+    effect = "Allow"
+    actions = [
+      "ecs:DeregisterTaskDefinition",
+      "ecs:ListServices",
+      "ecs:RegisterTaskDefinition",
+      "codedeploy:GetDeploymentTarget",
+      "codedeploy:StopDeployment",
+      "codedeploy:ContinueDeployment",
+      "ecs:ListTaskDefinitions",
+      "ecs:DescribeTaskDefinition"
+    ]
+    resources = [
+      "*" // TODO - Fix this before prod
+    ]
+  }
 }
 
 data "aws_iam_policy_document" "xsrt-services-assume" {

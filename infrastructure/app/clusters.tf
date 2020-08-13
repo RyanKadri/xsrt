@@ -69,7 +69,7 @@ resource "aws_ecs_task_definition" "api-task" {
     [
       {
         "name": "api",
-        "image": "dummy",
+        "image": "${aws_ecr_repository.api-repo.repository_url}:latest",
         "essential": true,
         "logConfiguration": {
           "logDriver": "awslogs",
@@ -90,6 +90,105 @@ resource "aws_ecs_task_definition" "api-task" {
       }
     ]
   DEF
+}
+
+resource "aws_alb_target_group" "dummy-tg" {
+  name = "xsrt-dummy-tg"
+  target_type = "instance"
+  protocol = "HTTP"
+  port = 80
+  vpc_id = aws_vpc.main-vpc.id
+}
+
+resource "aws_alb_target_group" "api-tg" {
+  name = "xsrt-api-${var.env}-tg"
+  target_type = "ip"
+  protocol = "HTTP"
+  port = 8080
+  vpc_id = aws_vpc.main-vpc.id
+  health_check {
+    enabled = true
+    healthy_threshold = 5
+    unhealthy_threshold = 2
+    port = "traffic-port"
+    path = "/api/health"
+  }
+}
+
+resource "aws_alb_target_group" "api-tg-beta" {
+  name = "xsrt-api-${var.env}-tg-beta"
+  target_type = "ip"
+  protocol = "HTTP"
+  port = 8080
+  vpc_id = aws_vpc.main-vpc.id
+  health_check {
+    enabled = true
+    healthy_threshold = 5
+    unhealthy_threshold = 2
+    port = "traffic-port"
+    path = "/api/health"
+  }
+}
+
+resource "aws_alb" "api-lb" {
+  name = "xsrt-api-${var.env}"
+  load_balancer_type = "application"
+  internal = false
+  ip_address_type = "ipv4"
+  enable_http2 = true
+  enable_cross_zone_load_balancing = true
+  security_groups = [aws_security_group.xsrt-public-api.id]
+  subnets = aws_subnet.xsrt-public.*.id
+}
+
+resource "aws_alb_listener" "api-listener" {
+  load_balancer_arn = aws_alb.api-lb.arn
+  port = 443
+  protocol = "HTTPS"
+  certificate_arn = data.aws_acm_certificate.wildcard-regional-cert.arn
+  ssl_policy = "ELBSecurityPolicy-TLS-1-2-2017-01"
+  default_action {
+    type = "forward"
+    target_group_arn = aws_alb_target_group.dummy-tg.arn
+  }
+}
+
+resource "aws_alb_listener_rule" "api-rule" {
+  listener_arn = aws_alb_listener.api-listener.arn
+  action {
+    type = "forward"
+    target_group_arn = aws_alb_target_group.api-tg.arn
+  }
+  condition {
+    path_pattern {
+      values = ["/api/*"]
+    }
+  }
+}
+
+resource "aws_ecs_service" "api-service" {
+  name = "api"
+  cluster = aws_ecs_cluster.api-cluster.id
+  task_definition = aws_ecs_task_definition.api-task.arn
+  desired_count = 1
+  deployment_minimum_healthy_percent = 100 // TODO - Update this in prod
+  deployment_maximum_percent = 200
+
+  load_balancer {
+    container_name = "api"
+    container_port = 8080
+    target_group_arn = aws_alb_target_group.api-tg.arn
+  }
+
+  deployment_controller {
+    type = "CODE_DEPLOY"
+  }
+
+  network_configuration {
+    subnets = aws_subnet.xsrt-private.*.id
+    assign_public_ip = false
+    security_groups = [aws_security_group.xsrt-services.id]
+  }
 }
 
 resource "aws_ecs_task_definition" "decorators-task" {
