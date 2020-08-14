@@ -24,7 +24,7 @@ phases:
       - docker push $REPOSITORY_URL:$IMAGE_TAG
       - printf '{"ImageURI":"%s"}' $REPOSITORY_URL:$IMAGE_TAG > imageDetail.json
       - printf '[{"name":"%s","imageUri":"%s"}]' $TASK_CONTAINER_NAME $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
-      - envsubst < infrastructure/pipeline/api-taskdef.yml > api-taskdef.yml
+      - envsubst < infrastructure/pipeline/api-taskdef.json > api-taskdef.yml
 artifacts:
   files:
     - imageDetail.json
