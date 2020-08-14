@@ -1,9 +1,8 @@
 import SQS from "aws-sdk/clients/sqs";
 import { inject, injectable, multiInject } from "inversify";
-import { IChunkSender, QueueInfo, QueueSender, SQSInfo, IServerConfig } from "../../../common-backend/src";
+import { IChunkSender, QueueInfo, QueueSender, SQSInfo } from "../../../common-backend/src";
 import { NeedsInitialization, RecordingChunk, SQSConnectionSymbol } from "../../../common/src";
 import { IDecoratorConsumer } from "../di.decorators";
-import { DecoratorConfig } from "../decorator-server-config";
 
 @injectable()
 export class SQSConsumerService implements NeedsInitialization {
@@ -12,7 +11,6 @@ export class SQSConsumerService implements NeedsInitialization {
 
   constructor(
     @inject(SQSConnectionSymbol) private sqs: SQS,
-    @inject(IServerConfig) private config: Pick<DecoratorConfig, "sqsBaseUrl">,
     @inject(IChunkSender) private queueService: QueueSender<RecordingChunk>,
     @multiInject(IDecoratorConsumer) private listeners: DecoratorConsumer<any>[]
   ) { }
@@ -32,7 +30,7 @@ export class SQSConsumerService implements NeedsInitialization {
   }
 
   private async listenQueue(queuePath: string) {
-    const finalQueueUrl = this.config.sqsBaseUrl + "/" + queuePath;
+    const finalQueueUrl = queuePath;
     try {
       const resp = await this.sqs.receiveMessage({
         QueueUrl: finalQueueUrl,

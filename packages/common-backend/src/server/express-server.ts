@@ -18,7 +18,9 @@ export const IServerConfig = Symbol("ServerConfig");
 export interface ServerConfig {
   port: number;
   rabbitHost?: string;
-  sqsBaseUrl?: string;
+  rawChunkUrl?: string;
+  elasticQueueUrl?: string;
+  snapshotQueueUrl?: string;
   awsRegion?: string;
   elasticUrl: string;
   assetDir?: string;

@@ -1,9 +1,11 @@
+import { ServerConfig } from "../server/express-server";
+
 export const rawChunkQueueInfo: QueueInfo = {
   mq: {
     name: "RawChunks"
   },
   sqs: {
-    queuePath: "xsrt-raw-chunks"
+    queuePath: "rawChunkUrl"
   }
 };
 
@@ -12,7 +14,7 @@ export const initSnapshotQueueInfo: QueueInfo = {
     name: "SnapshotChunks"
   },
   sqs: {
-    queuePath: "xsrt-snapshot-chunks"
+    queuePath: "snapshotQueueUrl"
   }
 };
 
@@ -21,7 +23,7 @@ export const elasticQueueInfo: QueueInfo = {
     name: "ElasticQueue"
   },
   sqs: {
-    queuePath: "xsrt-elastic"
+    queuePath: "elasticQueueUrl"
   }
 };
 
@@ -30,8 +32,8 @@ export interface QueueSender<T> {
 }
 
 export interface QueueInfo {
-  sqs: SQSInfo;
   mq: MQInfo
+  sqs: SQSInfo
 }
 
 export interface MQInfo {
@@ -39,7 +41,7 @@ export interface MQInfo {
 }
 
 export interface SQSInfo {
-  queuePath: string;
+  queuePath: keyof ServerConfig;
 }
 
 export const IChunkSender = Symbol("ChunkSender");

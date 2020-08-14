@@ -52,8 +52,16 @@
           "value": "${ELASTIC_HOST}"
         },
         {
-          "name": "SQS_BASE_URL",
-          "value": "${SQS_BASE_URL}"
+          "name": "RAW_CHUNK_QUEUE",
+          "value": "${RAW_CHUNK_QUEUE}"
+        },
+        {
+          "name":  "SNAPSHOT_QUEUE",
+          "value": "${SNAPSHOT_QUEUE}"
+        },
+        {
+          "name": "ELASTIC_QUEUE",
+          "value": "${ELASTIC_QUEUE}"
         },
         {
           "name": "USE_S3",

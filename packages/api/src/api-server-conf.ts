@@ -11,7 +11,9 @@ export class ApiServerConfig implements ServerConfig {
   readonly rabbitHost = process.env.RABBIT_HOST || "localhost";
   readonly elasticUrl = process.env.ELASTIC_HOST || "http://localhost:9200";
   readonly awsRegion = process.env.AWS_REGION;
-  readonly sqsBaseUrl = process.env.SQS_BASE_URL;
+  readonly rawChunkUrl = process.env.RAW_CHUNK_QUEUE;
+  readonly elasticQueueUrl = process.env.ELASTIC_QUEUE;
+  readonly snapshotQueueUrl = process.env.SNAPSHOT_QUEUE;
   readonly assetBucket = process.env.ASSET_BUCKET;
 }
 

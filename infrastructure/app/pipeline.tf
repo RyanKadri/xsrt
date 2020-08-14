@@ -21,8 +21,16 @@ locals {
       value = aws_elasticsearch_domain.xsrt-elastic.endpoint
     },
     {
-      name = "SQS_BASE_URL",
-      value = "https://sqs.us-east-1.amazonaws.com/307651132348"
+      name = "RAW_CHUNK_QUEUE",
+      value = aws_sqs_queue.raw-chunks-queue.id
+    },
+    {
+      name = "SNAPSHOT_QUEUE",
+      value = aws_sqs_queue.snapshot-queue.id
+    },
+    {
+      name = "ELASTIC_QUEUE",
+      value = aws_sqs_queue.elastic-queue.id
     },
     {
       name = "USE_S3",

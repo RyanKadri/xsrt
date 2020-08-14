@@ -13,7 +13,9 @@ export const decoratorConfig: DecoratorConfig = {
   elasticUrl: process.env.ELASTIC_HOST || "http://localhost:9200",
   proxyHost: assertExists(process.env.API_HOST),
   awsRegion: process.env.AWS_REGION,
-  sqsBaseUrl: process.env.SQS_BASE_URL,
+  rawChunkUrl: process.env.RAW_CHUNK_QUEUE,
+  elasticQueueUrl: process.env.ELASTIC_QUEUE,
+  snapshotQueueUrl: process.env.SNAPSHOT_QUEUE,
   assetBucket: process.env.ASSET_BUCKET
 }
 
