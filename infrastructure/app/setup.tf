@@ -31,6 +31,8 @@ data "aws_region" "stack-region" {
   provider = aws
 }
 
+data "aws_caller_identity" "current" {}
+
 data aws_acm_certificate wildcard-cert {
   domain = "*.xsrt-app.com"
   statuses = ["ISSUED"]

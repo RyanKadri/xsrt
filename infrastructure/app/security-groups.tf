@@ -10,6 +10,13 @@ resource "aws_security_group" "bastion-sg" {
     cidr_blocks = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
   }
+
+  egress {
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
 
 resource "aws_security_group" "xsrt-public-api" {
@@ -32,6 +39,13 @@ resource "aws_security_group" "xsrt-public-api" {
     ipv6_cidr_blocks = ["::/0"]
     self = true
   }
+
+  egress {
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
 
 resource "aws_security_group" "xsrt-services" {
@@ -52,6 +66,13 @@ resource "aws_security_group" "xsrt-services" {
     to_port = 443
     security_groups = [aws_security_group.xsrt-public-api.id]
   }
+
+  egress {
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
 
 resource "aws_security_group" "db-sg" {
@@ -64,6 +85,13 @@ resource "aws_security_group" "db-sg" {
     protocol = "tcp"
     to_port = 5432
     security_groups = [aws_security_group.bastion-sg.id, aws_security_group.xsrt-services.id, aws_security_group.xsrt-public-api.id]
+  }
+
+  egress {
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
@@ -80,5 +108,12 @@ resource "aws_security_group" "elastic-sg" {
       to_port = ingress.key
       security_groups = [aws_security_group.xsrt-public-api.id, aws_security_group.xsrt-services.id, aws_security_group.bastion-sg.id]
     }
+  }
+
+  egress {
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }

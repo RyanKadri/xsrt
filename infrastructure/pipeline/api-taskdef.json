@@ -1,8 +1,7 @@
 {
-  "family": "xsrt-api-fg",
-  "executionRoleArn": "arn:aws:iam::307651132348:role/xsrt-service-role",
-  "taskRoleArn": "arn:aws:iam::307651132348:role/xsrt-service-role",
-  "taskDefinitionArn": "arn:aws:ecs:us-east-1:307651132348:task-definition/xsrt-api-fg:8",
+  "family": "${TASK_DEF_FAMILY}",
+  "executionRoleArn": "${EXECUTION_ROLE}",
+  "taskRoleArn": "${EXECUTION_ROLE}",
   "networkMode": "awsvpc",
   "cpu": "512",
   "status": "ACTIVE",
@@ -30,39 +29,39 @@
       "environment": [
         {
           "name": "ASSET_BUCKET",
-          "value": "xsrt-storage"
+          "value": "${ASSET_BUCKET}"
         },
         {
           "name": "AWS_REGION",
-          "value": "us-east-1"
+          "value": "${AWS_REGION}"
         },
         {
           "name": "DB_HOST",
-          "value": "db.xsrt-app.com"
+          "value": "${DB_HOST}"
         },
         {
           "name": "DB_PASSWORD",
-          "value": "xsrt"
+          "valueFrom": "${DB_PASSWORD}"
         },
         {
           "name": "DB_USER",
-          "value": "xsrt"
+          "value": "${DB_USER}"
         },
         {
           "name": "ELASTIC_HOST",
-          "value": "https://vpc-xsrt-elasticsearch-vrxd2a2kezezkjkq662xgfvqwu.us-east-1.es.amazonaws.com"
+          "value": "${ELASTIC_HOST}"
         },
         {
           "name": "SQS_BASE_URL",
-          "value": "https://sqs.us-east-1.amazonaws.com/307651132348"
+          "value": "${SQS_BASE_URL}"
         },
         {
           "name": "USE_S3",
-          "value": "true"
+          "value": "${USE_S3}"
         },
         {
           "name": "USE_SQS",
-          "value": "true"
+          "value": "${USE_SQS}"
         }
       ]
     }

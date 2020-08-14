@@ -1,3 +1,7 @@
+locals {
+  region-account = "${data.aws_region.stack-region.name}:${data.aws_caller_identity.current.account_id}"
+}
+
 data "aws_iam_policy_document" "storage-policy-doc" {
   statement {
     effect = "Allow"
@@ -201,12 +205,12 @@ data "aws_iam_policy_document" "xsrt-pipeline-bucket-access" {
   }
 }
 
-resource "aws_iam_policy" "pipeline-access" {
+resource "aws_iam_policy" "xsrt-pipeline-bucket-access" {
   name = "xsrt-pipeline-bucket-access-${var.env}"
   policy = data.aws_iam_policy_document.xsrt-pipeline-bucket-access.json
 }
 
-data "aws_iam_policy_document" "xsrt-ecs-deploy" {
+data "aws_iam_policy_document" "xsrt-pipeline-ecs-deploy" {
   statement {
     effect = "Allow"
     actions = [
@@ -260,6 +264,127 @@ data "aws_iam_policy_document" "xsrt-ecs-deploy" {
   }
 }
 
+resource "aws_iam_policy" "xsrt-pipeline-ecs-deploy" {
+  policy = data.aws_iam_policy_document.xsrt-pipeline-ecs-deploy.json
+  name = "xsrt-pipeline-ecs-delpoy-${var.env}"
+}
+
+data aws_iam_policy_document xsrt-pipeline-network-access {
+  statement {
+    effect = "Allow"
+    actions = [
+      "ec2:CreateNetworkInterface",
+      "ec2:DescribeDhcpOptions",
+      "ec2:DescribeNetworkInterfaces",
+      "ec2:DeleteNetworkInterface",
+      "ec2:DescribeSubnets",
+      "ec2:DescribeSecurityGroups",
+      "ec2:DescribeVpcs"
+    ]
+    resources = ["*"]
+  }
+  statement {
+    effect = "Allow"
+    actions = [
+      "ec2:CreateNetworkInterfacePermission"
+    ]
+    resources = [
+      "arn:aws:ec2:${local.region-account}:network-interface/*"
+    ]
+    condition {
+      test = "StringEquals"
+      values = aws_subnet.xsrt-private.*.arn
+      variable = "ec2:Subnet"
+    }
+    condition {
+      test = "StringEquals"
+      values = ["codebuild.amazonaws.com"]
+      variable = "ec2:AuthorizedService"
+    }
+  }
+}
+
+resource "aws_iam_policy" "xsrt-pipeline-network-access" {
+  name = "xsrt-pipeline-network-access-${var.env}"
+  policy = data.aws_iam_policy_document.xsrt-pipeline-network-access.json
+}
+
+data "aws_iam_policy_document" "xsrt-pipeline-logging" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents"
+    ]
+    resources = [
+      "arn:aws:logs:${local.region-account}:log-group:/xsrt/build/${var.env}",
+      "arn:aws:logs:${local.region-account}:log-group:/xsrt/build/${var.env}:*"
+    ]
+  }
+}
+
+resource "aws_iam_policy" "xsrt-pipeline-logging" {
+  name = "xsrt-pipeline-logging-${var.env}"
+  policy = data.aws_iam_policy_document.xsrt-pipeline-logging.json
+}
+
+data "aws_iam_policy_document" "xsrt-pipeline-base" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "logs:CreateLogGroup"
+    ]
+    resources = ["*"] //TODO - Prodify
+  }
+  statement {
+    effect = "Allow"
+    actions = [
+      "codebuild:BatchGetProjects",
+      "codebuild:BatchGetReports",
+      "codebuild:DescribeTestCases",
+      "codebuild:StopBuild",
+      "s3:GetBucketAcl",
+      "logs:PutLogEvents",
+      "codebuild:BatchGetBuilds",
+      "codebuild:CreateReportGroup",
+      "codebuild:CreateReport",
+      "logs:CreateLogStream",
+      "codebuild:UpdateReport",
+      "codebuild:StartBuild",
+      "codebuild:BatchGetReportGroups",
+      "codebuild:BatchPutTestCases",
+      "s3:GetBucketLocation"
+    ]
+    resources = [
+      "arn:aws:codebuild:${local.region-account}:report-group/xsrt-*",
+      aws_codebuild_project.xsrt-api-build.arn,
+      aws_s3_bucket.pipeline-bucket.arn,
+      aws_s3_bucket.viewer-bucket.arn,
+      "arn:aws:logs:${local.region-account}:log-group:/aws/codebuild/xsrt-api",
+      "arn:aws:logs:${local.region-account}:log-group:/aws/codebuild/xsrt-api:*"
+    ]
+  }
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:PutObject",
+      "s3:GetObject",
+      "s3:GetObjectVersion"
+    ]
+    resources = [
+      "${aws_s3_bucket.pipeline-bucket.arn}/*",
+      "${aws_s3_bucket.viewer-bucket.arn}/*"
+    ]
+  }
+  // Note - I skipped a policy for a shared s3 bucket. Do I need that?
+}
+
+resource "aws_iam_policy" "xsrt-pipeline-base" {
+  policy = data.aws_iam_policy_document.xsrt-pipeline-base.json
+  name = "xsrt-pipeline-base-${var.env}"
+}
+
 data "aws_iam_policy_document" "xsrt-services-assume" {
   statement {
     actions = [
@@ -300,4 +425,60 @@ resource "aws_iam_role_policy_attachment" "xsrt-services-logging" {
 resource "aws_iam_role_policy_attachment" "xsrt-services-images" {
   policy_arn = aws_iam_policy.xsrt-images.arn
   role = aws_iam_role.xsrt-services.name
+}
+
+data "aws_iam_policy_document" "xsrt-builder-assume" {
+  statement {
+    actions = [
+      "sts:AssumeRole"
+    ]
+    principals {
+      identifiers = [
+        "codedeploy.amazonaws.com",
+        "codebuild.amazonaws.com",
+        "codepipeline.amazonaws.com"
+      ]
+      type = "Service"
+    }
+  }
+}
+
+resource "aws_iam_role" "xsrt-builder" {
+  assume_role_policy = data.aws_iam_policy_document.xsrt-builder-assume.json
+  name = "xsrt-builder-${var.env}"
+}
+
+resource "aws_iam_role_policy_attachment" "xsrt-builder-codedeploy" {
+  policy_arn = data.aws_iam_policy.code-deploy-ecs.arn
+  role = aws_iam_role.xsrt-builder.name
+}
+
+resource "aws_iam_role_policy_attachment" "xsrt-builder-container-build" {
+  policy_arn = aws_iam_policy.xsrt-container-builder.arn
+  role = aws_iam_role.xsrt-builder.name
+}
+
+resource "aws_iam_role_policy_attachment" "xsrt-builder-network" {
+  policy_arn = aws_iam_policy.xsrt-pipeline-network-access.arn
+  role = aws_iam_role.xsrt-builder.name
+}
+
+resource "aws_iam_role_policy_attachment" "xsrt-builder-pipeline-buckets" {
+  policy_arn = aws_iam_policy.xsrt-pipeline-bucket-access.arn
+  role = aws_iam_role.xsrt-builder.name
+}
+
+resource "aws_iam_role_policy_attachment" "xsrt-builder-ecs-deploy" {
+  policy_arn = aws_iam_policy.xsrt-pipeline-ecs-deploy.arn
+  role = aws_iam_role.xsrt-builder.name
+}
+
+resource "aws_iam_role_policy_attachment" "xsrt-builder-logging" {
+  policy_arn = aws_iam_policy.xsrt-pipeline-logging.arn
+  role = aws_iam_role.xsrt-builder.name
+}
+
+resource "aws_iam_role_policy_attachment" "xsrt-builder-base" {
+  policy_arn = aws_iam_policy.xsrt-pipeline-base.arn
+  role = aws_iam_role.xsrt-builder.name
 }

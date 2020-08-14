@@ -32,3 +32,12 @@ resource "aws_route53_record" "storage-dist" {
   }
 }
 
+resource "aws_route53_record" "bastion-eip" {
+  name = "bastion-${var.env}.${data.aws_route53_zone.xsrt-zone.name}"
+  type = "A"
+  zone_id = data.aws_route53_zone.xsrt-zone.zone_id
+  records = [
+    aws_eip.bastion-ip.public_ip
+  ]
+  ttl = 300
+}

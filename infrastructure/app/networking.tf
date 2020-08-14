@@ -114,3 +114,29 @@ resource "aws_nat_gateway" "main-nat" {
   }
 }
 
+data "aws_ami" "bastion" {
+  name_regex = "^amzn2-ami-hvm-2\\..*"
+  most_recent = true
+  owners = [
+    "amazon"
+  ]
+}
+
+resource "aws_instance" "bastion" {
+  ami = data.aws_ami.bastion.id
+  instance_type = "t2.micro"
+  vpc_security_group_ids = [aws_security_group.bastion-sg.id]
+  subnet_id = aws_subnet.xsrt-public[0].id
+  key_name = aws_key_pair.bastion-key.key_name
+}
+
+resource "aws_eip" "bastion-ip" {
+  instance = aws_instance.bastion.id
+  depends_on = [aws_internet_gateway.main_ig]
+  vpc = true
+}
+
+resource "aws_key_pair" "bastion-key" {
+  key_name = "xsrt-bastion-${var.env}-key"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDPA0GVVwKesvQAwXS2Nc3F1y441S+t8BHW+Xl+zkcK1aGPf5xpyTbnfmIOe4S5IcgHkR/G7Y8LRtDvXQDq+KAg2pLkyGhJTmC6BZLfSmwl9DAn1iPiX674I1nIaLqypvRS7giezD8+iGimDzpDLsdsYll0A/KlISl/ltAIaPJiaZKXs5j2+73FdVig7A2uFfo2dbLi5zUfrhf9kfaTRDmFf72SVoXosVe7+ktTntWHN5bPPAHSnUKWjlMeYPNsAl8j2uqer6jsCzB2VmAfjE7yftR68JSpDcOyQZWdPvMvSu1PxutlGZ+y8gjN68v2VtXdb94aJhN9zVafnJS4cDih"
+}

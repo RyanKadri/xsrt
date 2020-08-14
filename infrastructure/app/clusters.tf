@@ -6,49 +6,6 @@ resource "aws_ecr_repository" "decorators-repo" {
   name = "xsrt/decorators"
 }
 
-locals {
-  api-env = [
-    {
-      name = "ASSET_BUCKET",
-      value = aws_s3_bucket.storage-bucket.bucket
-    },
-    {
-      name = "AWS_REGION",
-      value = data.aws_region.stack-region.name
-    },
-    {
-      name = "DB_HOST",
-      value = aws_route53_record.db-record.name
-    },
-    {
-      name = "DB_USER",
-      value = "xsrt"
-    },
-    {
-      name = "ELASTIC_HOST",
-      value = aws_elasticsearch_domain.xsrt-elastic.endpoint
-    },
-    {
-      name = "SQS_BASE_URL",
-      value = "https://sqs.us-east-1.amazonaws.com/307651132348"
-    },
-    {
-      name = "USE_S3",
-      value = "true"
-    },
-    {
-      name = "USE_SQS",
-      value = "true"
-    }
-  ]
-  api-secrets = [
-    {
-      name = "DB_PASSWORD",
-      valueFrom = data.aws_ssm_parameter.db-pass.name
-    }
-  ]
-}
-
 resource "aws_ecs_cluster" "api-cluster" {
   name = "xsrt-public-api"
 }
@@ -85,15 +42,17 @@ resource "aws_ecs_task_definition" "api-task" {
             "protocol": "tcp",
             "containerPort": 8080
           }
-        ],
-        "environment": ${ jsonencode(local.api-env) }
+        ]
       }
     ]
   DEF
 }
 
 resource "aws_alb_target_group" "dummy-tg" {
-  name = "xsrt-dummy-tg"
+  lifecycle {
+    create_before_destroy = true
+  }
+  name = "xsrt-dummy-${var.env}-tg"
   target_type = "instance"
   protocol = "HTTP"
   port = 80
@@ -181,7 +140,7 @@ resource "aws_ecs_service" "api-service" {
   }
 
   deployment_controller {
-    type = "CODE_DEPLOY"
+    type = "ECS"
   }
 
   network_configuration {
@@ -219,9 +178,23 @@ resource "aws_ecs_task_definition" "decorators-task" {
             "protocol": "tcp",
             "containerPort": 8080
           }
-        ],
-        "environment": ${ jsonencode(local.api-env) }
+        ]
       }
     ]
   DEF
+}
+
+resource "aws_ecs_service" "decorators-service" {
+  name = "decorators"
+  cluster = aws_ecs_cluster.background-cluster.id
+  task_definition = aws_ecs_task_definition.api-task.arn
+  desired_count = 1
+  deployment_minimum_healthy_percent = 100 // TODO - Update this in prod
+  deployment_maximum_percent = 200
+
+  network_configuration {
+    subnets = aws_subnet.xsrt-private.*.id
+    assign_public_ip = false
+    security_groups = [aws_security_group.xsrt-services.id]
+  }
 }
