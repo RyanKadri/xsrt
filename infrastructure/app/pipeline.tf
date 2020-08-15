@@ -360,7 +360,7 @@ resource "aws_codepipeline" "xsrt-api" {
         TaskDefinitionTemplateArtifact = "build_output"
         TaskDefinitionTemplatePath = "api-taskdef.json"
         AppSpecTemplateArtifact = "source_output"
-        AppSpecTemplatePath = "infrastructure/pipeline/api-appspec.yaml"
+        AppSpecTemplatePath = "infrastructure/pipeline/api-appspec.yml"
         Image1ArtifactName = "build_output"
         Image1ContainerName = "API_IMAGE_NAME"
       }
