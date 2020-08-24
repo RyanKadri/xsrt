@@ -503,3 +503,8 @@ resource "aws_iam_role_policy_attachment" "xsrt-builder-base" {
   policy_arn = aws_iam_policy.xsrt-pipeline-base.arn
   role = aws_iam_role.xsrt-builder.name
 }
+
+resource "aws_iam_role_policy_attachment" "xsrt-pipeline-secrets" {
+  policy_arn = aws_iam_policy.xsrt-secrets.arn
+  role = aws_iam_role.xsrt-builder.name
+}

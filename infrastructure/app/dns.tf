@@ -41,3 +41,14 @@ resource "aws_route53_record" "bastion-eip" {
   ]
   ttl = 300
 }
+
+resource "aws_route53_record" "api" {
+  name = "api-${var.env}.${data.aws_route53_zone.xsrt-zone.name}"
+  type = "A"
+  zone_id = data.aws_route53_zone.xsrt-zone.zone_id
+  alias {
+    evaluate_target_health = false
+    name = aws_alb.api-lb.dns_name
+    zone_id = aws_alb.api-lb.zone_id
+  }
+}

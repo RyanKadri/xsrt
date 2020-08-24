@@ -18,7 +18,7 @@ locals {
     },
     {
       name = "ELASTIC_HOST",
-      value = aws_elasticsearch_domain.xsrt-elastic.endpoint
+      value = "https://${aws_elasticsearch_domain.xsrt-elastic.endpoint}"
     },
     {
       name = "RAW_CHUNK_QUEUE",
@@ -264,7 +264,7 @@ resource "aws_codebuild_project" "xsrt-viewer-build" {
 
     environment_variable {
       name = "API_HOST"
-      value = "https://${aws_route53_record.viewer-frontend.fqdn}"
+      value = "https://${aws_route53_record.api.fqdn}"
     }
 
     environment_variable {
