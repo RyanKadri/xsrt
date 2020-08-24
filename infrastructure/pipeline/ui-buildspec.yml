@@ -16,4 +16,5 @@ phases:
       - npm run build:viewer
 artifacts:
   files:
-    - dist/web/*
+    - "**/*"
+  base-directory: "dist"
