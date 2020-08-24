@@ -41,10 +41,6 @@
           "value": "${DB_HOST}"
         },
         {
-          "name": "DB_PASSWORD",
-          "valueFrom": "${DB_PASSWORD}"
-        },
-        {
           "name": "DB_USER",
           "value": "${DB_USER}"
         },
@@ -71,6 +67,12 @@
         {
           "name": "USE_SQS",
           "value": "${USE_SQS}"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "DB_PASSWORD",
+          "valueFrom": "${DB_PASSWORD}"
         }
       ]
     }
