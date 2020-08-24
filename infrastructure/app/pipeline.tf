@@ -130,6 +130,14 @@ resource "aws_codebuild_project" "xsrt-api-build" {
       name = "TASK_CONTAINER_NAME"
       value = "api"
     }
+    environment_variable {
+      name = "PRIVATE_SUBNETS"
+      value = jsonencode(aws_subnet.xsrt-private.*.id)
+    }
+    environment_variable {
+      name = "API_SECURITY_GROUPS"
+      value = "[${aws_security_group.xsrt-public-api.id}]"
+    }
     dynamic "environment_variable" {
       for_each = local.api-env
       content {
@@ -307,6 +315,9 @@ resource "aws_codedeploy_deployment_group" "api" {
 }
 
 resource "aws_codepipeline" "xsrt-api" {
+  lifecycle {
+    ignore_changes = [stage[0].action[0].configuration]
+  }
   name = "xsrt-api-${var.env}"
   role_arn = aws_iam_role.xsrt-builder.arn
   artifact_store {
@@ -353,14 +364,14 @@ resource "aws_codepipeline" "xsrt-api" {
       owner = "AWS"
       provider = "CodeDeployToECS"
       version = "1"
-      input_artifacts = ["source_output", "build_output"]
+      input_artifacts = ["build_output"]
       configuration = {
         ApplicationName = aws_codedeploy_app.api.name
         DeploymentGroupName = aws_codedeploy_deployment_group.api.deployment_group_name
         TaskDefinitionTemplateArtifact = "build_output"
         TaskDefinitionTemplatePath = "api-taskdef.json"
-        AppSpecTemplateArtifact = "source_output"
-        AppSpecTemplatePath = "infrastructure/pipeline/api-appspec.yml"
+        AppSpecTemplateArtifact = "build_output"
+        AppSpecTemplatePath = "api-appspec.yml"
         Image1ArtifactName = "build_output"
         Image1ContainerName = "API_IMAGE_NAME"
       }

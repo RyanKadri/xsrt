@@ -17,7 +17,7 @@ resource "aws_ecs_cluster" "background-cluster" {
 resource "aws_ecs_task_definition" "api-task" {
   family = "xsrt-api"
   task_role_arn = aws_iam_role.xsrt-services.arn
-  execution_role_arn = aws_iam_role.xsrt-services.arn
+  execution_role_arn = aws_iam_role.xsrt-builder.arn
   network_mode = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu = 512
@@ -132,6 +132,7 @@ resource "aws_ecs_service" "api-service" {
   desired_count = 1
   deployment_minimum_healthy_percent = 100 // TODO - Update this in prod
   deployment_maximum_percent = 200
+  launch_type = "FARGATE"
 
   load_balancer {
     container_name = "api"
@@ -140,7 +141,7 @@ resource "aws_ecs_service" "api-service" {
   }
 
   deployment_controller {
-    type = "ECS"
+    type = "CODE_DEPLOY"
   }
 
   network_configuration {

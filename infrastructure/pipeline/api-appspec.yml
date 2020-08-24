@@ -7,3 +7,8 @@ Resources:
         LoadBalancerInfo:
           ContainerName: "api"
           ContainerPort: 8080
+        NetworkConfiguration:
+          AwsvpcConfiguration:
+            Subnets: ${PRIVATE_SUBNETS}
+            SecurityGroups: ${API_SECURITY_GROUPS}
+            AssignPublicIp: "DISABLED"

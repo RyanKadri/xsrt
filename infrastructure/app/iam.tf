@@ -377,7 +377,19 @@ data "aws_iam_policy_document" "xsrt-pipeline-base" {
       "${aws_s3_bucket.viewer-bucket.arn}/*"
     ]
   }
-  // Note - I skipped a policy for a shared s3 bucket. Do I need that?
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:PutObject",
+      "s3:GetObject",
+      "s3:GetBucketAcl",
+      "s3:GetBucketLocation",
+      "s3:GetObjectVersion"
+    ]
+    resources = [
+      "arn:aws:s3:::codepipeline-${data.aws_region.stack-region.name}-*"
+    ]
+  }
 }
 
 resource "aws_iam_policy" "xsrt-pipeline-base" {
@@ -436,7 +448,8 @@ data "aws_iam_policy_document" "xsrt-builder-assume" {
       identifiers = [
         "codedeploy.amazonaws.com",
         "codebuild.amazonaws.com",
-        "codepipeline.amazonaws.com"
+        "codepipeline.amazonaws.com",
+        "ecs-tasks.amazonaws.com"
       ]
       type = "Service"
     }
