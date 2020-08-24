@@ -313,9 +313,14 @@ data "aws_iam_policy_document" "xsrt-pipeline-logging" {
   statement {
     effect = "Allow"
     actions = [
-      "logs:CreateLogGroup",
+      "logs:CreateLogDelivery",
       "logs:CreateLogStream",
-      "logs:PutLogEvents"
+      "logs:DescribeLogGroups",
+      "logs:DescribeLogStreams",
+      "logs:CreateLogGroup",
+      "logs:GetLogDelivery",
+      "logs:PutLogEvents",
+      "logs:DescribeDestinations"
     ]
     resources = [
       "arn:aws:logs:${local.region-account}:log-group:/xsrt/build/${var.env}",
@@ -360,6 +365,8 @@ data "aws_iam_policy_document" "xsrt-pipeline-base" {
     resources = [
       "arn:aws:codebuild:${local.region-account}:report-group/xsrt-*",
       aws_codebuild_project.xsrt-api-build.arn,
+      aws_codebuild_project.xsrt-viewer-build.arn,
+      aws_codebuild_project.xsrt-decorators-build.arn,
       aws_s3_bucket.pipeline-bucket.arn,
       aws_s3_bucket.viewer-bucket.arn,
       "arn:aws:logs:${local.region-account}:log-group:/aws/codebuild/xsrt-api",

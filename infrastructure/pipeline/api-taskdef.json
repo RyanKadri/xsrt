@@ -15,7 +15,8 @@
         "options": {
           "awslogs-group": "/xsrt/api",
           "awslogs-region": "${AWS_REGION}",
-          "awslogs-stream-prefix": "api"
+          "awslogs-stream-prefix": "api",
+          "awslogs-create-group": true
         }
       },
       "portMappings": [
