@@ -103,9 +103,9 @@ resource "aws_security_group" "elastic-sg" {
   dynamic "ingress" {
     for_each = [443, 9200]
     content {
-      from_port = ingress.key
+      from_port = ingress.value
       protocol = "tcp"
-      to_port = ingress.key
+      to_port = ingress.value
       security_groups = [aws_security_group.xsrt-public-api.id, aws_security_group.xsrt-services.id, aws_security_group.bastion-sg.id]
     }
   }

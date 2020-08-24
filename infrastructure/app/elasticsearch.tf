@@ -1,9 +1,13 @@
+locals {
+  es-domain = "xsrt-elasticsearch-${var.env}"
+}
+
 data "aws_iam_role" "es" {
   name = "AWSServiceRoleForAmazonElasticsearchService"
 }
 
 resource "aws_elasticsearch_domain" "xsrt-elastic" {
-  domain_name = "xsrt-elasticsearch"
+  domain_name = local.es-domain
   elasticsearch_version = "7.4"
 
   vpc_options {
@@ -22,6 +26,19 @@ resource "aws_elasticsearch_domain" "xsrt-elastic" {
   snapshot_options {
     automated_snapshot_start_hour = 23
   }
+  access_policies = <<CONFIG
+    {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Action": "es:*",
+                "Principal": "*",
+                "Effect": "Allow",
+                "Resource": "arn:aws:es:${data.aws_region.stack-region.name}:${data.aws_caller_identity.current.account_id}:domain/${local.es-domain}/*"
+            }
+        ]
+    }
+    CONFIG
   tags = {
     Name = "xsrt-elasticsearch"
   }
