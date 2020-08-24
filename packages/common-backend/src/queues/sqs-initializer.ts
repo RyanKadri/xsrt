@@ -23,9 +23,10 @@ export class SQSInitializer implements NeedsInitialization {
   }
 
   private async verifyQueue(sqs: SQS, queue: SQSInfo) {
-    const queues = await sqs.listQueues({ QueueNamePrefix: queue.queuePath }).promise();
-    if (!queues.$response.data || !queues.$response.data.QueueUrls?.some(url => url.endsWith(queue.queuePath))) {
-      throw new Error(`Could not find queue: ${ queue.queuePath }`);
+    const queueName = this.config[queue.queuePath] as string;
+    const queues = await sqs.listQueues({ QueueNamePrefix: queueName }).promise();
+    if (!queues.$response.data || !queues.$response.data.QueueUrls?.some(url => url.endsWith(queueName))) {
+      throw new Error(`Could not find queue: ${ queueName }`);
     }
   }
 }
