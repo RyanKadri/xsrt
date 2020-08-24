@@ -7,6 +7,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const nodeExternals = require("webpack-node-externals");
 const DotEnv = require("dotenv-webpack");
+const webpack = require("webpack");
 
 const common = (output, tsconfig) => ({
   devtool: 'source-map',
