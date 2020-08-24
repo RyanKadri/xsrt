@@ -84,7 +84,7 @@ const viewerProd = merge(frontendCommon, {
   name: 'viewer-prod',
   plugins: [
     new BundleAnalyzerPlugin({ analyzerMode: 'static' }),
-    new DotEnv({ path: "./.env.prod" })
+    new webpack.EnvironmentPlugin(["API_HOST", "STATIC_HOST"])
   ],
   mode: 'production'
 });

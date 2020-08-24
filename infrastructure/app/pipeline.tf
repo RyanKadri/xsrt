@@ -261,6 +261,16 @@ resource "aws_codebuild_project" "xsrt-viewer-build" {
     image = "aws/codebuild/standard:4.0"
     type = "LINUX_CONTAINER"
     image_pull_credentials_type = "CODEBUILD"
+
+    environment_variable {
+      name = "API_HOST"
+      value = "https://${aws_route53_record.viewer-frontend.fqdn}"
+    }
+
+    environment_variable {
+      name = "STATIC_HOST"
+      value = "https://${aws_route53_record.storage-dist.fqdn}"
+    }
   }
 
 }
