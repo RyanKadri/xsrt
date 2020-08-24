@@ -319,7 +319,8 @@ data "aws_iam_policy_document" "xsrt-pipeline-logging" {
     ]
     resources = [
       "arn:aws:logs:${local.region-account}:log-group:/xsrt/build/${var.env}",
-      "arn:aws:logs:${local.region-account}:log-group:/xsrt/build/${var.env}:*"
+      "arn:aws:logs:${local.region-account}:log-group:/xsrt/build/${var.env}:*",
+      "*"
     ]
   }
 }

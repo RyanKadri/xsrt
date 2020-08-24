@@ -349,7 +349,7 @@ resource "aws_codepipeline" "xsrt-api" {
     name = "Build"
     action {
       category = "Build"
-      name = "Build"
+      name = "BuildAPI"
       owner = "AWS"
       provider = "CodeBuild"
       input_artifacts = ["source_output"]
@@ -359,12 +359,24 @@ resource "aws_codepipeline" "xsrt-api" {
         ProjectName = aws_codebuild_project.xsrt-api-build.name
       }
     }
+    action {
+      category = "Build"
+      name = "BuildUI"
+      owner = "AWS"
+      provider = "CodeBuild"
+      input_artifacts = ["source_output"]
+      output_artifacts = ["ui_output"]
+      version = "1"
+      configuration = {
+        ProjectName = aws_codebuild_project.xsrt-viewer-build.name
+      }
+    }
   }
   stage {
     name = "Deploy"
     action {
       category = "Deploy"
-      name = "Deploy"
+      name = "DeployAPI"
       owner = "AWS"
       provider = "CodeDeployToECS"
       version = "1"
@@ -378,6 +390,18 @@ resource "aws_codepipeline" "xsrt-api" {
         AppSpecTemplatePath = "api-appspec.yml"
         Image1ArtifactName = "build_output"
         Image1ContainerName = "API_IMAGE_NAME"
+      }
+    }
+    action {
+      category = "Deploy"
+      name = "DeployUI"
+      owner = "AWS"
+      provider = "S3"
+      version = "1"
+      input_artifacts = ["ui_output"]
+      configuration = {
+        BucketName = aws_s3_bucket.viewer-bucket.bucket
+        Extract = true
       }
     }
   }
