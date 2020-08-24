@@ -1,7 +1,7 @@
 {
   "family": "${TASK_DEF_FAMILY}",
   "executionRoleArn": "${EXECUTION_ROLE}",
-  "taskRoleArn": "${EXECUTION_ROLE}",
+  "taskRoleArn": "${TASK_ROLE}",
   "networkMode": "awsvpc",
   "cpu": "512",
   "status": "ACTIVE",

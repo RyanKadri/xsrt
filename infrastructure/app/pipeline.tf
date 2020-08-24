@@ -49,8 +49,12 @@ locals {
       value = aws_ecs_task_definition.api-task.family
     },
     {
-      name = "EXECUTION_ROLE",
+      name = "TASK_ROLE",
       value = aws_iam_role.xsrt-services.arn
+    },
+    {
+      name = "EXECUTION_ROLE",
+      value = aws_iam_role.xsrt-builder.arn
     }
   ]
 }
@@ -136,7 +140,7 @@ resource "aws_codebuild_project" "xsrt-api-build" {
     }
     environment_variable {
       name = "API_SECURITY_GROUPS"
-      value = "[${aws_security_group.xsrt-public-api.id}]"
+      value = jsonencode([aws_security_group.xsrt-public-api.id])
     }
     dynamic "environment_variable" {
       for_each = local.api-env
