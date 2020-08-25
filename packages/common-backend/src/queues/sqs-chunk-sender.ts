@@ -2,15 +2,17 @@ import SQS from "aws-sdk/clients/sqs";
 import { inject, injectable } from "inversify";
 import { RecordingChunk, SQSConnectionSymbol } from "../../../common/src";
 import { QueueInfo, QueueSender } from "./queue-metadata";
+import { IServerConfig, ServerConfig } from "../server/express-server";
 
 @injectable()
 export class SQSChunkSender implements QueueSender<RecordingChunk> {
   constructor(
+    @inject(IServerConfig) private config: ServerConfig,
     @inject(SQSConnectionSymbol) private sqs: SQS
   ) { }
 
   async post(chunk: RecordingChunk, queueInfo: QueueInfo): Promise<void> {
-    return this.postMessage(queueInfo.sqs.queuePath, { uuid: chunk.uuid });
+    return this.postMessage(this.config[queueInfo.sqs.queuePath] as string, { uuid: chunk.uuid });
   }
 
   private async postMessage(toQueue: string, payload: any) {

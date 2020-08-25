@@ -154,7 +154,7 @@ resource "aws_ecs_service" "api-service" {
 resource "aws_ecs_task_definition" "decorators-task" {
   family = "xsrt-decorators"
   task_role_arn = aws_iam_role.xsrt-services.arn
-  execution_role_arn = aws_iam_role.xsrt-services.arn
+  execution_role_arn = aws_iam_role.xsrt-builder.arn
   network_mode = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu = 512

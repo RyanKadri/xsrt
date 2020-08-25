@@ -1,6 +1,6 @@
 import SQS from "aws-sdk/clients/sqs";
 import { inject, injectable, multiInject } from "inversify";
-import { IChunkSender, QueueInfo, QueueSender, SQSInfo } from "../../../common-backend/src";
+import { IChunkSender, QueueInfo, QueueSender, SQSInfo, ServerConfig, IServerConfig } from "../../../common-backend/src";
 import { NeedsInitialization, RecordingChunk, SQSConnectionSymbol } from "../../../common/src";
 import { IDecoratorConsumer } from "../di.decorators";
 
@@ -10,6 +10,7 @@ export class SQSConsumerService implements NeedsInitialization {
   private handlers = new Map<string, QueueMessageCallback<any>[]>();
 
   constructor(
+    @inject(IServerConfig) private config: ServerConfig,
     @inject(SQSConnectionSymbol) private sqs: SQS,
     @inject(IChunkSender) private queueService: QueueSender<RecordingChunk>,
     @multiInject(IDecoratorConsumer) private listeners: DecoratorConsumer<any>[]
@@ -25,8 +26,9 @@ export class SQSConsumerService implements NeedsInitialization {
   }
 
   private async registerListener<T>(topic: SQSInfo, handler: QueueMessageCallback<T>) {
-    const oldCallbacks = this.handlers.get(topic.queuePath);
-    this.handlers.set(topic.queuePath, (oldCallbacks || []).concat(handler));
+    const queuePath = this.config[topic.queuePath] as string;
+    const oldCallbacks = this.handlers.get(queuePath);
+    this.handlers.set(queuePath, (oldCallbacks || []).concat(handler));
   }
 
   private async listenQueue(queuePath: string) {
