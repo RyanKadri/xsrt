@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "build": "tsc -p ./tsconfig.build.json",
-    "start": "ts-node-dev ./src/index.ts"
+    "start": "ts-node-dev ./src/index.ts --project ./tsconfig.build.json"
   },
   "devDependencies": {
     "@types/amqplib": "^0.5.10",

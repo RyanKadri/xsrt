@@ -163,14 +163,15 @@ resource "aws_ecs_task_definition" "decorators-task" {
     [
       {
         "name": "decorators",
-        "image": "dummy",
+        "image": "decorators:latest",
         "essential": true,
         "logConfiguration": {
           "logDriver": "awslogs",
           "options": {
-            "awslogs-group": "/ecs/xsrt-decorators",
-            "awslogs-region": "us-east-1",
-            "awslogs-stream-prefix": "ecs"
+            "awslogs-group": "/xsrt/decorators",
+            "awslogs-region": "${data.aws_region.stack-region.name}",
+            "awslogs-stream-prefix": "decorators",
+            "awslogs-create-group": "true"
           }
         },
         "portMappings": [
@@ -178,6 +179,63 @@ resource "aws_ecs_task_definition" "decorators-task" {
             "hostPort": 8080,
             "protocol": "tcp",
             "containerPort": 8080
+          }
+        ],
+        "cpu": 0,
+        "environment": [
+          {
+            "name": "API_HOST",
+            "value": "https://${aws_route53_record.api.fqdn}"
+          },
+          {
+            "name": "ASSET_BUCKET",
+            "value": "${aws_s3_bucket.storage-bucket.bucket}"
+          },
+          {
+            "name": "AWS_REGION",
+            "value": "${data.aws_region.stack-region.name}"
+          },
+          {
+            "name": "CHROME_EXECUTABLE",
+            "value": "/usr/bin/chromium-browser"
+          },
+          {
+            "name": "DB_HOST",
+            "value": "${aws_route53_record.db-record.name}"
+          },
+          {
+            "name": "DB_USER",
+            "value": "xsrt"
+          },
+          {
+            "name": "ELASTIC_HOST",
+            "value": "https://${aws_elasticsearch_domain.xsrt-elastic.endpoint}"
+          },
+          {
+            "name": "RAW_CHUNK_QUEUE",
+            "value": "${aws_sqs_queue.raw-chunks-queue.id}"
+          },
+          {
+            "name":  "SNAPSHOT_QUEUE",
+            "value": "${aws_sqs_queue.snapshot-queue.id}"
+          },
+          {
+            "name": "ELASTIC_QUEUE",
+            "value": "${aws_sqs_queue.elastic-queue.id}"
+          },
+          {
+            "name": "USE_S3",
+            "value": "true"
+          },
+          {
+            "name": "USE_SQS",
+            "value": "true"
+          }
+        ],
+        "secrets": [
+          {
+            "name": "DB_PASSWORD",
+            "valueFrom": "${data.aws_ssm_parameter.db-pass.name}"
           }
         ]
       }
@@ -188,10 +246,14 @@ resource "aws_ecs_task_definition" "decorators-task" {
 resource "aws_ecs_service" "decorators-service" {
   name = "decorators"
   cluster = aws_ecs_cluster.background-cluster.id
-  task_definition = aws_ecs_task_definition.api-task.arn
+  task_definition = aws_ecs_task_definition.decorators-task.arn
   desired_count = 1
   deployment_minimum_healthy_percent = 100 // TODO - Update this in prod
   deployment_maximum_percent = 200
+  launch_type = "FARGATE"
+  deployment_controller {
+    type = "ECS"
+  }
 
   network_configuration {
     subnets = aws_subnet.xsrt-private.*.id

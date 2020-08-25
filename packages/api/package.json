@@ -6,7 +6,7 @@
   "license": "ISC",
   "private": true,
   "scripts": {
-    "start": "ts-node-dev ./src/api-server.ts",
+    "start": "ts-node-dev ./src/index.ts --project ./tsconfig.build.json -T",
     "build": "tsc --project tsconfig.build.json"
   },
   "dependencies": {

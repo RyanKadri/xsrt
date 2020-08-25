@@ -1,20 +1,12 @@
 locals {
   api-env = [
     {
-      name = "API_HOST",
-      value = "https://${aws_route53_record.api.fqdn}"
-    },
-    {
       name = "ASSET_BUCKET",
       value = aws_s3_bucket.storage-bucket.bucket
     },
     {
       name = "AWS_REGION",
       value = data.aws_region.stack-region.name
-    },
-    {
-      name = "CHROME_EXECUTABLE",
-      value = "/usr/bin/chromium-browser"
     },
     {
       name = "DB_HOST",
