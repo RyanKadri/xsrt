@@ -8,6 +8,7 @@
   "module": "lib/index.js",
   "main": "lib-cjs/index.js",
   "sideEffects": false,
+  "private": true,
   "directories": {
     "lib": "lib"
   },

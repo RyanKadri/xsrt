@@ -1,33 +1,31 @@
-import { createStyles, Dialog, DialogTitle, Theme, Typography, WithStyles, withStyles } from "@material-ui/core";
-import { NewSiteTarget, SiteTarget } from "../../../../common/src";
+import { createStyles, Dialog, DialogTitle, makeStyles } from "@material-ui/core";
 import React from "react";
+import { NewSiteTarget, SiteTarget } from "../../../../common/src";
 import { EditSiteForm } from "./edit-site-form";
 
-const styles = (theme: Theme) => createStyles({
-    siteId: {
-        display: "inline-block",
-        float: "right",
-        color: theme.palette.text.secondary
-    }
-});
+const useStyles = makeStyles(createStyles({
+  dialog: {
+    minWidth: 600
+  }
+}));
 
-const _EditSiteSettingsDialog = ({ onClose, site, open, onSubmit, classes, onDeleteSite }: Props) => (
-    <Dialog open={ open } scroll="body"
-            onClose={ onClose }>
-        <DialogTitle>
-            { site !== null ? `Edit Site: ${site.name}` : "Create Site" }
-            { site && <Typography className={ classes.siteId }>Site ID: { site.customerId }</Typography>}
-        </DialogTitle>
-        <EditSiteForm onSubmit={ onSubmit } site={ site } onDeleteSite={ onDeleteSite } />
+export function EditSiteSettingsDialog({ onClose, site, open, onSubmit, onDeleteSite }: Props) {
+  const classes = useStyles();
+  return (
+    <Dialog open={open} scroll="body"
+      onClose={onClose} classes={ { paper: classes.dialog } }>
+      <DialogTitle>
+        {site !== null ? `Edit Site: ${site.name}` : "Create Site"}
+      </DialogTitle>
+      <EditSiteForm onSubmit={onSubmit} site={site} onDeleteSite={onDeleteSite} />
     </Dialog>
-);
+  )
+}
 
-export const EditSiteSettingsDialog = withStyles(styles)(_EditSiteSettingsDialog);
-
-interface Props extends WithStyles<typeof styles> {
-    site: SiteTarget | null;
-    open: boolean;
-    onClose: () => void;
-    onSubmit: (site: SiteTarget | Pick<NewSiteTarget, "name">) => void;
-    onDeleteSite: () => void;
+interface Props {
+  site: SiteTarget | null;
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (site: SiteTarget | Pick<NewSiteTarget, "name">) => void;
+  onDeleteSite: () => void;
 }

@@ -1,23 +1,18 @@
 import DayjsUtils from "@date-io/dayjs";
-import { createStyles, MuiThemeProvider, withStyles } from "@material-ui/core";
+import { MuiThemeProvider } from "@material-ui/core";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import { LoggingService, SiteTarget } from "../../../../common/src";
-import { appTheme, useComponent, withDependencies } from "../../../../common-frontend/src";
 import { MuiPickersUtilsProvider } from "material-ui-pickers";
 import React, { useEffect, useReducer } from "react";
 import { BrowserRouter as Router, Redirect, Route, Switch } from "react-router-dom";
+import { appTheme, useComponent, withDependencies } from "../../../../common-frontend/src";
+import { LoggingService, SiteTarget } from "../../../../common/src";
 import { RecordingApiService } from "../../services/recording-service";
 import { TargetApiService } from "../../services/sites-api-service";
 import { OverallDashboardView } from "../dashboard/overall-dashboard";
 import { SiteDashboardView } from "../dashboard/site-dashboard";
 import { RecordingView } from "../viewer/recording-view";
-import { Sidebar } from "./side-bar/side-bar";
+import { SideBar } from "./side-bar/side-bar";
 import { TopNav } from "./top-nav/top-nav";
-
-const styles = createStyles({
-    root: {
-    }
-});
 
 const initState: AppState = {
     sidebarExpanded: false,
@@ -80,7 +75,7 @@ const _AppRoot = ({ targetApi }: AppProps) => {
                 <MuiThemeProvider theme={ appTheme }>
                     <MuiPickersUtilsProvider utils={ DayjsUtils }>
                         <TopNav onExpand={ () => dispatch(new ToggleSidebarAction(true)) } />
-                        <Sidebar
+                        <SideBar
                             expanded={ state.sidebarExpanded }
                             sites={ state.availableSites }
                             onClose={ () => dispatch(new ToggleSidebarAction(false)) }/>
@@ -109,10 +104,7 @@ const _AppRoot = ({ targetApi }: AppProps) => {
     );
 };
 
-export const AppRoot =
-    withStyles(styles)(
-        withDependencies(_AppRoot, { targetApi: TargetApiService })
-    );
+export const AppRoot = withDependencies(_AppRoot, { targetApi: TargetApiService })
 
 interface AppProps {
     targetApi: TargetApiService;

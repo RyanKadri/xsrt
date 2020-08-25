@@ -1,9 +1,9 @@
-import { createStyles, Drawer, List, ListSubheader, Theme, Typography, withStyles, WithStyles } from "@material-ui/core";
-import { SiteTarget } from "../../../../../common/src";
+import { createStyles, Drawer, List, ListItemText, ListSubheader, makeStyles, Theme, ListItem } from "@material-ui/core";
 import React from "react";
-import { LinkListItem } from "../../common/link-list-item";
+import { SiteTarget } from "../../../../../common/src";
+import { Link } from "react-router-dom";
 
-const styles = (theme: Theme) => createStyles({
+const useStyles = makeStyles((theme: Theme) => createStyles({
   nested: {
     paddingLeft: theme.spacing(2)
   },
@@ -11,35 +11,49 @@ const styles = (theme: Theme) => createStyles({
     color: theme.palette.text.primary,
     minWidth: 180
   }
-});
+}));
 
-const Link = (link: SidebarEntry, nestedClass: string, onClose: () => void) => (
-  link.type === "link"
-    ? (
-      <LinkListItem button to={link.to} key={link.to} onClick={onClose}>
-        <Typography variant="body1">{link.text}</Typography>
-      </LinkListItem>
-    ) : (
-      <List subheader={<ListSubheader component="div">{link.heading}</ListSubheader>}
-        key={link.heading} className={nestedClass}>
-        {link.children.map(child => Link(child, nestedClass, onClose))}
+interface SidebarEntryProps {
+  link: SidebarEntry;
+  className: string;
+  onClose(): void;
+}
+function SidebarEntryComp({ link, className, onClose }: SidebarEntryProps) {
+  return (
+    link.type === "link"
+      ? (
+        <ListItem button to={link.to} key={link.to} onClick={onClose} component={ Link }>
+          <ListItemText>{link.text}</ListItemText>
+        </ListItem>
+      ) : (
+        <List subheader={<ListSubheader component="div">{link.heading}</ListSubheader>}
+          key={link.heading} className={ className }>
+          { link.children.map((child, i) =>
+            <SidebarEntryComp key={ i } link={child} className={ className } onClose={ onClose } />
+          )}
+        </List>
+      )
+  )
+}
+
+export function SideBar({ expanded, sites, onClose }: SidebarProps) {
+  const classes = useStyles()
+  return (
+    <Drawer variant="temporary"
+      anchor="left"
+      open={expanded}
+      classes={{ paper: classes.sideBar }}
+      onClose={onClose}>
+      <List color="inherit" component="nav">
+        { sidebarLinks(sites).map((link, i) =>
+          <SidebarEntryComp key={i} link={link} className={ classes.nested } onClose={ onClose } />
+        )}
       </List>
-    )
-);
+    </Drawer>
+  );
+}
 
-const _SideBar = ({ expanded, sites, classes, onClose }: SidebarProps) => (
-  <Drawer variant="temporary"
-    anchor="left"
-    open={expanded}
-    classes={{ paper: classes.sideBar }}
-    onClose={onClose}>
-    <List color="inherit" component="nav">
-      {sidebarLinks(sites).map(link => Link(link, classes.nested, onClose))}
-    </List>
-  </Drawer>
-);
-
-const sidebarLinks = (sites: SiteTarget[]) => {
+function sidebarLinks (sites: SiteTarget[]) {
   return [
     { type: "link", to: "/dashboard", text: "Dashboard" },
     {
@@ -49,8 +63,6 @@ const sidebarLinks = (sites: SiteTarget[]) => {
     }
   ] as SidebarEntry[];
 };
-
-export const Sidebar = withStyles(styles, { withTheme: true })(_SideBar);
 
 type SidebarEntry = SidebarGroup | SidebarLink;
 
@@ -66,7 +78,7 @@ interface SidebarGroup {
   children: SidebarEntry[];
 }
 
-export interface SidebarProps extends WithStyles<typeof styles> {
+export interface SidebarProps {
   expanded: boolean;
   sites: SiteTarget[];
 

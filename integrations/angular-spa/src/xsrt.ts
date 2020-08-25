@@ -2,9 +2,9 @@ import { InjectionToken } from '@angular/core';
 import { RecordingController, XSRTConfig } from '@xsrt/recorder';
 
 export const xsrtConfig: XSRTConfig = {
-  backendUrl: 'https://api.xsrt-app.com/api',
+  backendUrl: 'https://api-dev.xsrt-app.com/api',
   debugMode: true,
-  site: '54dacfaa-aff6-48d2-9ba3-52ced8998326'
+  site: '4af5226a-e07c-4547-8eb5-0cf1b2692244'
 };
 
 export const XSRTToken = new InjectionToken<RecordingController>('xsrt_controller');
