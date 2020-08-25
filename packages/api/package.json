@@ -1,6 +1,6 @@
 {
   "name": "@xsrt/api",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "The server-side REST API for XSRT",
   "author": "Ryan Kadri <ryankadri1@gmail.com>",
   "license": "ISC",
@@ -10,16 +10,16 @@
     "build": "tsc --project tsconfig.build.json"
   },
   "dependencies": {
-    "got": "11.3.0",
+    "aws-sdk": "2.715.0",
     "body-parser": "^1.18.3",
     "cors": "^2.8.5",
     "express": "^4.16.4",
+    "got": "11.3.0",
     "inversify": "^5.0.1",
-    "ua-parser-js": "^0.7.19",
-    "typeorm": "0.2.25",
-    "uuid": "^8.2.0",
     "pg": "8.2.2",
-    "aws-sdk": "2.715.0"
+    "typeorm": "0.2.25",
+    "ua-parser-js": "^0.7.19",
+    "uuid": "^8.2.0"
   },
   "files": [
     "lib"

@@ -1,6 +1,6 @@
 {
   "name": "@xsrt/decorators",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "Backend services for post-processing recordings",
   "author": "Ryan Kadri <ryankadri1@gmail.com>",
   "license": "ISC",
@@ -17,17 +17,17 @@
     "@types/puppeteer": "^3.0.1"
   },
   "dependencies": {
+    "amqplib": "^0.5.3",
+    "aws-sdk": "2.715.0",
     "body-parser": "^1.18.3",
-    "got": "11.3.0",
-    "isomorphic-unfetch": "3.0.0",
     "cors": "^2.8.5",
     "express": "^4.16.4",
+    "got": "11.3.0",
     "inversify": "^5.0.1",
-    "puppeteer": "^3.3.0",
-    "amqplib": "^0.5.3",
-    "typeorm": "0.2.25",
+    "isomorphic-unfetch": "3.0.0",
     "pg": "8.2.2",
-    "aws-sdk": "2.715.0"
+    "puppeteer": "^3.3.0",
+    "typeorm": "0.2.25"
   },
   "gitHead": "179c318fa443265abd6af14cb92955b78681ab9c"
 }

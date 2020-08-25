@@ -1,6 +1,6 @@
 {
   "name": "@xsrt/extension",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "A chrome extension for testing XSRT on arbitrary sites",
   "author": "Ryan Kadri <ryankadri1@gmail.com>",
   "license": "ISC",
@@ -15,11 +15,11 @@
   },
   "private": true,
   "devDependencies": {
+    "@types/chrome": "^0.0.117",
     "@types/react": "16.8.24",
     "@types/react-dom": "16.0.5",
     "@types/react-router": "5.1.4",
-    "@types/react-router-dom": "^5.1.5",
-    "@types/chrome": "^0.0.117"
+    "@types/react-router-dom": "^5.1.5"
   },
   "dependencies": {
     "@material-ui/core": "^4.10.0",

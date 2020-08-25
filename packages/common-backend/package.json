@@ -1,6 +1,6 @@
 {
   "name": "@xsrt/common-backend",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "Shared code and types for backend XSRT services",
   "author": "Ryan Kadri <ryankadri1@gmail.com>",
   "license": "ISC",
@@ -10,20 +10,20 @@
   "sideEffects": false,
   "private": true,
   "devDependencies": {
+    "@types/amqplib": "^0.5.10",
     "@types/express": "^4.16.0",
     "@types/mongoose": "^5.3.1",
-    "@types/shortid": "0.0.29",
-    "@types/amqplib": "^0.5.10"
+    "@types/shortid": "0.0.29"
   },
   "dependencies": {
-    "got": "11.3.0",
+    "@elastic/elasticsearch": "^7.8",
+    "amqplib": "^0.5.3",
     "dotenv": "^8.2.0",
     "express": "^4.16.4",
+    "got": "11.3.0",
     "inversify": "^5.0.1",
     "mongoose": "^5.3.1",
     "shortid": "^2.2.14",
-    "amqplib": "^0.5.3",
-    "@elastic/elasticsearch": "^7.8",
     "typeorm": "0.2.25"
   },
   "gitHead": "179c318fa443265abd6af14cb92955b78681ab9c"
