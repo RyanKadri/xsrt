@@ -17,255 +17,255 @@ import { ViewerSettingsPopover } from "./viewer-settings";
 
 const backgroundGreyInd = 800;
 const styles = (theme: Theme) => createStyles({
-    recordingSpace: {
-        width: "100%",
-        flexGrow: 1,
-        display: "flex",
-        position: "relative",
-        backgroundColor: theme.palette.grey[backgroundGreyInd],
-        justifyContent: "center",
-        alignItems: "center"
-    },
-    progressSpinner: {
-        width: 80,
-        height: 80
-    }
+  recordingSpace: {
+    width: "100%",
+    flexGrow: 1,
+    display: "flex",
+    position: "relative",
+    backgroundColor: theme.palette.grey[backgroundGreyInd],
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  progressSpinner: {
+    width: 80,
+    height: 80
+  }
 });
 
 const DIRecordingPlayer = withDependencies(RecordingPlayer, { playbackManager: PlaybackManager });
 
 class _RecordingViewer extends React.PureComponent<ViewerProps, ViewerState> {
 
-    constructor(props: ViewerProps) {
-        super(props);
-        this.state = {
-            hasError: false,
-            playerTime: 0,
-            isPlaying: false,
-            showingAnnotations: false,
-            lastFrameTime: undefined,
-            waitingOnBuffer: false,
-            showingSettings: false,
-            settingsAnchor: null,
-            settings: props.uiConfig.loadViewerConfig()
-        };
-    }
+  constructor(props: ViewerProps) {
+    super(props);
+    this.state = {
+      hasError: false,
+      playerTime: 0,
+      isPlaying: false,
+      showingAnnotations: false,
+      lastFrameTime: undefined,
+      waitingOnBuffer: false,
+      showingSettings: false,
+      settingsAnchor: null,
+      settings: props.uiConfig.loadViewerConfig()
+    };
+  }
 
-    static getDerivedStateFromError(_: string | Error): Partial<ViewerState> {
-        return { hasError: true, isPlaying: false };
-    }
+  static getDerivedStateFromError(_: string | Error): Partial<ViewerState> {
+    return { hasError: true, isPlaying: false };
+  }
 
-    render() {
-        const { classes } = this.props;
-        const actionPrompt = this.formActionPrompt();
-        return <Fragment>
-                <div className={ classes.recordingSpace }>
-                    {
-                        this.props.snapshots.length === 0
-                            ? <CircularProgress color="secondary" className={ classes.progressSpinner } />
-                            : <Fragment>
-                                <DIRecordingPlayer
-                                    snapshots={ this.props.snapshots }
-                                    inputs={ this.props.inputs }
-                                    changes={ this.props.changes }
-                                    currentTime={ this.state.playerTime }
-                                    isPlaying={ this.state.isPlaying }
-                                    error={ this.state.hasError ? "Something went wrong" : undefined }
-                                    onError={ this.handleDownstreamError }
-                                    lockUI={ this.state.settings.blockViewerOnPause }
-                                />
-                                { actionPrompt
-                                    ? <ActionPrompt prompt={ actionPrompt.prompt }
-                                                    onPromptClicked={ actionPrompt.action } />
-                                    : null
-                                }
-                                <AnnotationSidebar
-                                    expanded={ this.state.showingAnnotations }
-                                    annotations={ this.pastAnnotations } />
-                            </Fragment>
-                    }
-                </div>
-                <RecordingControls
-                    duration={ this.props.duration }
-                    time={ this.state.playerTime }
-                    buffer={ this.props.bufferPos }
-                    isPlaying={ this.state.isPlaying }
-                    annotations={ this.props.annotations }
-                    regions={ this.props.regions }
-                    showRegions={ this.state.settings.showRegions }
-                    onPlay={ this.play }
-                    onPause={ this.stop }
-                    onSeek={ this.seek }
-                    onToggleAnnotations={ this.toggleAnnotations }
-                    onToggleSettings={ this.toggleSettings } />
-                <ViewerSettingsPopover
-                    open={this.state.showingSettings}
-                    settings={this.state.settings}
-                    onUpdate={this.updateSettings}
-                    onClose={this.closeSettings}
-                    anchor={this.state.settingsAnchor}
-                />
-            </Fragment>;
-    }
-
-    handleDownstreamError = () => {
-        this.setState({ hasError: true, isPlaying: false });
-    }
-
-    play = () => {
-        if (!this.state.isPlaying) {
-            this.setState({ isPlaying: true });
-            this.nextFrame();
+  render() {
+    const { classes } = this.props;
+    const actionPrompt = this.formActionPrompt();
+    return <Fragment>
+      <div className={classes.recordingSpace}>
+        {
+          this.props.snapshots.length === 0
+            ? <CircularProgress color="secondary" className={classes.progressSpinner} />
+            : <Fragment>
+              <DIRecordingPlayer
+                snapshots={this.props.snapshots}
+                inputs={this.props.inputs}
+                changes={this.props.changes}
+                currentTime={this.state.playerTime}
+                isPlaying={this.state.isPlaying}
+                error={this.state.hasError ? "Something went wrong" : undefined}
+                onError={this.handleDownstreamError}
+                lockUI={this.state.settings.blockViewerOnPause}
+              />
+              {actionPrompt
+                ? <ActionPrompt prompt={actionPrompt.prompt}
+                  onPromptClicked={actionPrompt.action} />
+                : null
+              }
+              <AnnotationSidebar
+                expanded={this.state.showingAnnotations}
+                annotations={this.pastAnnotations} />
+            </Fragment>
         }
-    }
+      </div>
+      <RecordingControls
+        duration={this.props.duration}
+        time={this.state.playerTime}
+        buffer={this.props.bufferPos}
+        isPlaying={this.state.isPlaying}
+        annotations={this.props.annotations}
+        regions={this.props.regions}
+        showRegions={this.state.settings.showRegions}
+        onPlay={this.play}
+        onPause={this.stop}
+        onSeek={this.seek}
+        onToggleAnnotations={this.toggleAnnotations}
+        onToggleSettings={this.toggleSettings} />
+      <ViewerSettingsPopover
+        open={this.state.showingSettings}
+        settings={this.state.settings}
+        onUpdate={this.updateSettings}
+        onClose={this.closeSettings}
+        anchor={this.state.settingsAnchor}
+      />
+    </Fragment>;
+  }
 
-    stop = () => {
+  handleDownstreamError = () => {
+    this.setState({ hasError: true, isPlaying: false });
+  }
+
+  play = () => {
+    if (!this.state.isPlaying) {
+      this.setState({ isPlaying: true });
+      this.nextFrame();
+    }
+  }
+
+  stop = () => {
+    if (this.state.isPlaying) {
+      this.setState({
+        isPlaying: false,
+        lastFrameTime: undefined
+      });
+    }
+  }
+
+  seek = (toTime: number) => {
+    this.updateTime(toTime);
+    this.setState({}, () => {
+      this.play();
+    });
+  }
+
+  toggleAnnotations = () => {
+    this.setState(oldState => ({
+      showingAnnotations: !oldState.showingAnnotations
+    }));
+  }
+
+  private nextFrame() {
+    requestAnimationFrame((curr) => {
+      let timeDiff = 0;
+      if (this.state.lastFrameTime) {
+        timeDiff = curr - this.state.lastFrameTime;
+      }
+      const duration = this.props.duration;
+      const currentTime = Math.min(this.state.playerTime + timeDiff, duration);
+      if (currentTime === duration) {
+        this.stop();
+        this.updateTime(this.props.duration);
+      } else {
         if (this.state.isPlaying) {
-            this.setState({
-                isPlaying: false,
-                lastFrameTime: undefined
-            });
+          this.updateTime(currentTime);
+          this.setState({
+            lastFrameTime: curr,
+          });
+          this.nextFrame();
         }
+      }
+    });
+  }
+
+  private updateTime(toTime: number) {
+    this.setState({
+      playerTime: toTime,
+    });
+    this.props.onUpdateTime(toTime);
+  }
+
+  componentDidUpdate() {
+    if (this.props.bufferPos <= this.state.playerTime
+      && !this.state.waitingOnBuffer
+      && this.state.isPlaying) {
+      this.stop();
+      this.setState({
+        waitingOnBuffer: true
+      });
+    } else if (this.props.bufferPos > this.state.playerTime
+      && this.state.waitingOnBuffer) {
+      this.play();
+      this.setState({
+        waitingOnBuffer: false
+      });
     }
+  }
 
-    seek = (toTime: number) => {
-        this.updateTime(toTime);
-        this.setState({ }, () => {
-            this.play();
-        });
-    }
+  get pastAnnotations() {
+    return this.props.annotations.filter(ann => ann.startTime < this.state.playerTime);
+  }
 
-    toggleAnnotations = () => {
-        this.setState(oldState => ({
-            showingAnnotations: !oldState.showingAnnotations
-        }));
-    }
+  formActionPrompt() {
+    const currRegion = this.props.regions.find(region =>
+      between(this.state.playerTime, region.start, region.end)
+    );
 
-    private nextFrame() {
-        requestAnimationFrame((curr) => {
-            let timeDiff = 0;
-            if (this.state.lastFrameTime) {
-                timeDiff = curr - this.state.lastFrameTime;
-            }
-            const duration = this.props.duration;
-            const currentTime = Math.min(this.state.playerTime + timeDiff, duration);
-            if (currentTime === duration) {
-                this.stop();
-                this.updateTime(this.props.duration);
-            } else {
-                if (this.state.isPlaying) {
-                    this.updateTime(currentTime);
-                    this.setState({
-                        lastFrameTime: curr,
-                    });
-                    this.nextFrame();
-                }
-            }
-        });
-    }
+    const regionLength = currRegion === undefined
+      ? 0
+      : currRegion.end - currRegion.start;
 
-    private updateTime(toTime: number) {
-        this.setState({
-            playerTime: toTime,
-        });
-        this.props.onUpdateTime(toTime);
-    }
+    const regionTooShort = regionLength < this.props.uiTweaks.minSkippableRegion;
 
-    componentDidUpdate() {
-        if (this.props.bufferPos <= this.state.playerTime
-            && !this.state.waitingOnBuffer
-            && this.state.isPlaying) {
-            this.stop();
-            this.setState({
-                waitingOnBuffer: true
-            });
-        } else if (this.props.bufferPos > this.state.playerTime
-            && this.state.waitingOnBuffer) {
-            this.play();
-            this.setState({
-                waitingOnBuffer: false
-            });
-        }
-    }
+    return (!currRegion || currRegion.type !== "idle" || regionTooShort)
+      ? null
+      : {
+        prompt: `Skip ${formatPlayerTime(currRegion.end - this.state.playerTime)} seconds idle time`,
+        action: () => { this.seek(currRegion.end); }
+      };
+  }
 
-    get pastAnnotations() {
-        return this.props.annotations.filter(ann => ann.startTime < this.state.playerTime);
-    }
+  closeSettings = () => {
+    this.setState({ showingSettings: false });
+  }
 
-    formActionPrompt() {
-        const currRegion = this.props.regions.find(region =>
-            between(this.state.playerTime, region.start, region.end)
-        );
+  toggleSettings = (evt: React.MouseEvent) => {
+    const target: HTMLElement = evt.currentTarget as HTMLElement;
+    this.setState(oldState => ({
+      showingSettings: !oldState.showingSettings,
+      settingsAnchor: target
+    }));
+  }
 
-        const regionLength = currRegion === undefined
-            ? 0
-            : currRegion.end - currRegion.start;
-
-        const regionTooShort = regionLength < this.props.uiTweaks.minSkippableRegion;
-
-        return (!currRegion || currRegion.type !== "idle" || regionTooShort)
-            ? null
-            : {
-                prompt: `Skip ${ formatPlayerTime(currRegion.end - this.state.playerTime) } seconds idle time`,
-                action: () => { this.seek( currRegion.end ); }
-             };
-    }
-
-    closeSettings = () => {
-        this.setState({ showingSettings: false });
-    }
-
-    toggleSettings = (evt: React.MouseEvent) => {
-        const target: HTMLElement = evt.currentTarget as HTMLElement;
-        this.setState(oldState => ({
-            showingSettings: !oldState.showingSettings,
-            settingsAnchor: target
-        }));
-    }
-
-    updateSettings = (settings: ViewerSettings) => {
-        this.props.uiConfig.saveViewerConfig(settings);
-        this.setState({
-            settings
-        });
-    }
+  updateSettings = (settings: ViewerSettings) => {
+    this.props.uiConfig.saveViewerConfig(settings);
+    this.setState({
+      settings
+    });
+  }
 }
 
 export const RecordingViewer = withStyles(styles)(
-    withDependencies(_RecordingViewer, {
-        uiConfig: UIConfigService,
-        uiTweaks: TweakableConfigs
-    }));
+  withDependencies(_RecordingViewer, {
+    uiConfig: UIConfigService,
+    uiTweaks: TweakableConfigs
+  }));
 
 interface ViewerProps extends WithStyles<typeof styles> {
-    uiConfig: UIConfigService;
-    uiTweaks: TweakableConfigs;
+  uiConfig: UIConfigService;
+  uiTweaks: TweakableConfigs;
 
-    snapshots: SnapshotChunk[];
-    inputs: UserInputGroup[];
-    changes: RecordedMutationGroup[];
-    annotations: RecordingAnnotation[];
-    regions: Region[];
+  snapshots: SnapshotChunk[];
+  inputs: UserInputGroup[];
+  changes: RecordedMutationGroup[];
+  annotations: RecordingAnnotation[];
+  regions: Region[];
 
-    duration: number;
+  duration: number;
 
-    bufferPos: number;
-    onUpdateTime: (newTime: number) => void;
+  bufferPos: number;
+  onUpdateTime: (newTime: number) => void;
 }
 
 interface ViewerState {
-    hasError: boolean;
-    playerTime: number;
-    lastFrameTime?: number;
-    isPlaying: boolean;
-    showingAnnotations: boolean;
-    showingSettings: boolean;
-    waitingOnBuffer: boolean;
-    settingsAnchor: HTMLElement | null;
-    settings: ViewerSettings;
+  hasError: boolean;
+  playerTime: number;
+  lastFrameTime?: number;
+  isPlaying: boolean;
+  showingAnnotations: boolean;
+  showingSettings: boolean;
+  waitingOnBuffer: boolean;
+  settingsAnchor: HTMLElement | null;
+  settings: ViewerSettings;
 }
 
 export interface ViewerSettings {
-    showRegions: boolean;
-    blockViewerOnPause: boolean;
+  showRegions: boolean;
+  blockViewerOnPause: boolean;
 }

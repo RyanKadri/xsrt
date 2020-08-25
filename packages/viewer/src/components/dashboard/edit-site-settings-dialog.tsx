@@ -9,6 +9,14 @@ const useStyles = makeStyles(createStyles({
   }
 }));
 
+interface Props {
+  site: SiteTarget | null;
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (site: SiteTarget | Pick<NewSiteTarget, "name">) => void;
+  onDeleteSite: () => void;
+}
+
 export function EditSiteSettingsDialog({ onClose, site, open, onSubmit, onDeleteSite }: Props) {
   const classes = useStyles();
   return (
@@ -20,12 +28,4 @@ export function EditSiteSettingsDialog({ onClose, site, open, onSubmit, onDelete
       <EditSiteForm onSubmit={onSubmit} site={site} onDeleteSite={onDeleteSite} />
     </Dialog>
   )
-}
-
-interface Props {
-  site: SiteTarget | null;
-  open: boolean;
-  onClose: () => void;
-  onSubmit: (site: SiteTarget | Pick<NewSiteTarget, "name">) => void;
-  onDeleteSite: () => void;
 }

@@ -4,6 +4,18 @@ import { PlaybackManager } from "../../../playback/playback-manager";
 import { UserInputGroup } from "../../utils/recording-data-utils";
 import { FrameViewport } from "./resizeable-frame";
 
+interface Props {
+  snapshots: SnapshotChunk[];
+  changes: RecordedMutationGroup[];
+  inputs: UserInputGroup[];
+  currentTime: number;
+  isPlaying: boolean;
+  error?: string;
+  onError: (err: any) => void;
+  playbackManager: PlaybackManager;
+  lockUI: boolean;
+}
+
 export function RecordingPlayer(props: Props) {
 
     const iframe = useRef<HTMLIFrameElement>(null);
@@ -56,16 +68,4 @@ export function RecordingPlayer(props: Props) {
 interface LastFrameInfo {
     time: number;
     wasPlaying: boolean;
-}
-
-interface Props {
-    snapshots: SnapshotChunk[];
-    changes: RecordedMutationGroup[];
-    inputs: UserInputGroup[];
-    currentTime: number;
-    isPlaying: boolean;
-    error?: string;
-    onError: (err: any) => void;
-    playbackManager: PlaybackManager;
-    lockUI: boolean;
 }

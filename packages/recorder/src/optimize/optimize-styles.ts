@@ -83,7 +83,7 @@ function extractSheet(styleEl: ScrapedHtmlElement) {
 
 function shouldIncludeSheet(styleEl: ScrapedHtmlElement) {
     const sheet = extractSheet(styleEl);
-    if (matchesMedia(sheet.media)) {
+    if (sheet && matchesMedia(sheet.media)) {
         try {
             // This line should throw if the sheet is cross-site
             return sheet.rules.length > 0;

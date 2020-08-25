@@ -22,14 +22,14 @@ function SidebarEntryComp({ link, className, onClose }: SidebarEntryProps) {
   return (
     link.type === "link"
       ? (
-        <ListItem button to={link.to} key={link.to} onClick={onClose} component={ Link }>
+        <ListItem button to={link.to} key={link.to} onClick={onClose} component={Link}>
           <ListItemText>{link.text}</ListItemText>
         </ListItem>
       ) : (
         <List subheader={<ListSubheader component="div">{link.heading}</ListSubheader>}
-          key={link.heading} className={ className }>
-          { link.children.map((child, i) =>
-            <SidebarEntryComp key={ i } link={child} className={ className } onClose={ onClose } />
+          key={link.heading} className={className}>
+          {link.children.map((child, i) =>
+            <SidebarEntryComp key={i} link={child} className={className} onClose={onClose} />
           )}
         </List>
       )
@@ -45,15 +45,15 @@ export function SideBar({ expanded, sites, onClose }: SidebarProps) {
       classes={{ paper: classes.sideBar }}
       onClose={onClose}>
       <List color="inherit" component="nav">
-        { sidebarLinks(sites).map((link, i) =>
-          <SidebarEntryComp key={i} link={link} className={ classes.nested } onClose={ onClose } />
+        {sidebarLinks(sites).map((link, i) =>
+          <SidebarEntryComp key={i} link={link} className={classes.nested} onClose={onClose} />
         )}
       </List>
     </Drawer>
   );
 }
 
-function sidebarLinks (sites: SiteTarget[]) {
+function sidebarLinks(sites: SiteTarget[]) {
   return [
     { type: "link", to: "/dashboard", text: "Dashboard" },
     {

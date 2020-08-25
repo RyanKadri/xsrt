@@ -74,9 +74,7 @@ const viewerDev = merge(frontendCommon, {
     historyApiFallback: true,
     hot: false,
     inline: false,
-    proxy: {
-      '/assets': process.env.STATIC_ASSET_SERVER,
-    },
+    contentBase: __dirname + "/storage"
   },
   mode: 'development'
 });

@@ -1,4 +1,4 @@
-import { createStyles, Paper, Table, TableBody, Theme, withStyles, WithStyles } from "@material-ui/core";
+import { createStyles, Paper, Table, TableBody, Theme, makeStyles } from "@material-ui/core";
 import { RecordingOverview } from "../../../../../common/src";
 import React, { useReducer, useState } from "react";
 import { UIConfigService } from "../../../services/ui-config-service";
@@ -10,11 +10,11 @@ import { RecordingRow } from "./recording-table-row";
 import { RecordingTableSettings } from "./recording-table-settings";
 import { RecordingTableToolbar } from "./recording-table-toolbar";
 
-const styles = (theme: Theme) => createStyles({
+const useStyles = makeStyles((theme: Theme) => createStyles({
   tableContainer: {
     marginTop: theme.spacing(2)
   }
-});
+}));
 
 function reducer(selected: RecordingOverview[], action: Action) {
   switch (action.type) {
@@ -30,15 +30,25 @@ function reducer(selected: RecordingOverview[], action: Action) {
 }
 
 const initFilter: RecordingTableFilter = {
-  target: undefined,
   before: undefined,
   after: undefined,
   url: ""
 };
 
-const _RecordingTable = (props: RecordingTableProps) => {
+interface Props {
+  uiConfigService: UIConfigService;
 
-  const { classes, onRefresh, onDeleteSelected, onPreview, uiConfigService } = props;
+  recordings: RecordingOverview[];
+
+  onPreview(recording: RecordingOverview): void;
+  onDeleteSelected(selected: RecordingOverview[]): Promise<void>;
+  onRefresh(filter: RecordingTableFilter): void;
+}
+
+export function RecordingTable(props: Props) {
+
+  const { onRefresh, onDeleteSelected, onPreview, uiConfigService } = props;
+  const classes = useStyles();
 
   const settingsDialog = useDialog(false);
   const filterDialog = useDialog(false);
@@ -109,18 +119,6 @@ const _RecordingTable = (props: RecordingTableProps) => {
   </Paper>;
 };
 
-interface RecordingTableProps extends WithStyles<typeof styles> {
-  uiConfigService: UIConfigService;
-
-  recordings: RecordingOverview[];
-
-  onPreview(recording: RecordingOverview): void;
-  onDeleteSelected(selected: RecordingOverview[]): Promise<void>;
-  onRefresh(filter: RecordingTableFilter): void;
-}
-
 type Action = { type: "toggle", recording: RecordingOverview } |
-{ type: "selectAll", recordings: RecordingOverview[] } |
-{ type: "deselectAll" };
-
-export const RecordingTable = withStyles(styles)(_RecordingTable);
+  { type: "selectAll", recordings: RecordingOverview[] } |
+  { type: "deselectAll" };

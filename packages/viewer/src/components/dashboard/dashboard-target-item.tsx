@@ -1,25 +1,22 @@
-import { createStyles, WithStyles, withStyles, ListItemText, ListItemIcon, ListItem } from "@material-ui/core";
+import { ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
+import SettingsIcon from "@material-ui/icons/Settings";
 import React from "react";
 import { SiteTarget } from "../../../../common/src";
-import SettingsIcon from "@material-ui/icons/Settings";
 
-const styles = createStyles({
-
-});
-
-const _DashboardTargetListItem = ({ site, onEditSite, onNavigate }: Props) => (
-    <ListItem button onClick={ () => onNavigate() }>
-        <ListItemIcon onClick={ (e) => { onEditSite(); e.stopPropagation(); } }>
-            <SettingsIcon />
-        </ListItemIcon>
-        <ListItemText primary={site.name} />
-    </ListItem>
-);
-
-export const DashboardTargetListItem = withStyles(styles)(_DashboardTargetListItem);
-
-interface Props extends WithStyles<typeof styles> {
-    site: SiteTarget;
-    onEditSite: () => void;
-    onNavigate: () => void;
+interface Props {
+  site: SiteTarget;
+  onEditSite: () => void;
+  onNavigate: () => void;
 }
+
+export function DashboardTargetListItem({ site, onEditSite, onNavigate }: Props) {
+  return (
+    <ListItem button onClick={() => onNavigate()}>
+      <ListItemIcon onClick={(e) => { onEditSite(); e.stopPropagation(); }}>
+        <SettingsIcon />
+      </ListItemIcon>
+      <ListItemText primary={site.name} />
+    </ListItem>
+  )
+};
+

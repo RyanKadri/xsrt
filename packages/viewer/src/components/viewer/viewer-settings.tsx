@@ -1,4 +1,4 @@
-import { Checkbox, List, ListItem, ListItemText, Popover, withStyles } from "@material-ui/core";
+import { Checkbox, List, ListItem, ListItemText, Popover } from "@material-ui/core";
 import React from "react";
 import { ViewerSettings } from "./recording-viewer";
 
@@ -7,11 +7,7 @@ const configItems: AvailableSettings[] = [
     { display: "Highlight Idle Sections", key: "showRegions" }
 ];
 
-const styles = {
-
-};
-
-function _ViewerSettingsPopover({ open, onUpdate, anchor, onClose, settings }: ViewerSettingsDialogProps) {
+export function ViewerSettingsPopover({ open, onUpdate, anchor, onClose, settings }: Props) {
     return (
         <Popover open={open} onClose={onClose} anchorEl={anchor}>
             <List dense={true}>{ configItems.map( config => (
@@ -25,9 +21,7 @@ function _ViewerSettingsPopover({ open, onUpdate, anchor, onClose, settings }: V
     );
 }
 
-export const ViewerSettingsPopover = withStyles(styles)(_ViewerSettingsPopover);
-
-export interface ViewerSettingsDialogProps {
+interface Props {
     open: boolean;
     settings: ViewerSettings;
     anchor: HTMLElement | null;

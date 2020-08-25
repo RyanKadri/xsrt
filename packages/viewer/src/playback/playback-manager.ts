@@ -10,59 +10,59 @@ const pausedClass = "__app-icu-paused";
 @injectable()
 export class PlaybackManager {
 
-    private lastSnapshot?: SnapshotChunk;
+  private lastSnapshot?: SnapshotChunk;
 
-    constructor(
-        private domManager: DomManager,
-        private mutationManager: MutationManager,
-        private userInputManager: UserInputPlaybackManager
-    ) {}
+  constructor(
+    private domManager: DomManager,
+    private mutationManager: MutationManager,
+    private userInputManager: UserInputPlaybackManager
+  ) { }
 
-    playUpdates(
-        snapshots: SnapshotChunk[],
-        allChanges: RecordedMutationGroup[],
-        allInputs: UserInputGroup[],
-        fromTime: number,
-        toTime: number,
-        doc: Document
-    ) {
-        const isRewind = fromTime > toTime;
+  playUpdates(
+    snapshots: SnapshotChunk[],
+    allChanges: RecordedMutationGroup[],
+    allInputs: UserInputGroup[],
+    fromTime: number,
+    toTime: number,
+    doc: Document
+  ) {
+    const isRewind = fromTime > toTime;
 
-        const newSnapshots = snapshots
-            .filter(snapshot =>
-                between(snapshot.startTime, isRewind ? 0 : fromTime, toTime)
-            );
+    const newSnapshots = snapshots
+      .filter(snapshot =>
+        between(snapshot.startTime, isRewind ? 0 : fromTime, toTime)
+      );
 
-        const newestSnapshot = newSnapshots[snapshots.length - 1];
+    const newestSnapshot = newSnapshots[snapshots.length - 1];
 
-        const adjustedPrevTime = newestSnapshot
-            ? newestSnapshot.startTime
-            : fromTime;
+    const adjustedPrevTime = newestSnapshot
+      ? newestSnapshot.startTime
+      : fromTime;
 
-        if (isRewind ||
-            (newestSnapshot !== undefined && newestSnapshot !== this.lastSnapshot)) {
-            this.reset(doc, newestSnapshot);
-            this.lastSnapshot = newestSnapshot;
-        }
-
-        const { inputs, changes } = eventsBetween(
-            allChanges, allInputs, adjustedPrevTime, toTime
-        );
-
-        this.mutationManager.applyChanges(changes);
-        this.userInputManager.simulateUserInputs(inputs);
+    if (isRewind ||
+      (newestSnapshot !== undefined && newestSnapshot !== this.lastSnapshot)) {
+      this.reset(doc, newestSnapshot);
+      this.lastSnapshot = newestSnapshot;
     }
 
-    togglePause(shouldPause: boolean) {
-        if (shouldPause) {
-            this.domManager.mutateDocument(document => document.body.classList.add(pausedClass));
-        } else {
-            this.domManager.mutateDocument(document => document.body.classList.remove(pausedClass));
-        }
-    }
+    const { inputs, changes } = eventsBetween(
+      allChanges, allInputs, adjustedPrevTime, toTime
+    );
 
-    reset(document: Document, data: SnapshotChunk) {
-        this.domManager.initialize(document);
-        this.domManager.createInitialDocument(data);
+    this.mutationManager.applyChanges(changes);
+    this.userInputManager.simulateUserInputs(inputs);
+  }
+
+  togglePause(shouldPause: boolean) {
+    if (shouldPause) {
+      this.domManager.mutateDocument(document => document.body.classList.add(pausedClass));
+    } else {
+      this.domManager.mutateDocument(document => document.body.classList.remove(pausedClass));
     }
+  }
+
+  reset(document: Document, data: SnapshotChunk) {
+    this.domManager.initialize(document);
+    this.domManager.createInitialDocument(data);
+  }
 }

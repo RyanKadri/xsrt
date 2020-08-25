@@ -1,9 +1,9 @@
-import { createStyles, IconButton, InputAdornment, Popover, TextField, Theme, Typography, WithStyles, withStyles } from "@material-ui/core";
+import { createStyles, IconButton, InputAdornment, makeStyles, Popover, TextField, Theme, Typography } from "@material-ui/core";
 import ClearIcon from "@material-ui/icons/Clear";
 import { DateTimePicker } from "material-ui-pickers";
 import React from "react";
 
-const styles = (theme: Theme) => createStyles({
+const useStyles = makeStyles((theme: Theme) => createStyles({
   root: {
     padding: theme.spacing(2),
     display: "flex",
@@ -14,9 +14,25 @@ const styles = (theme: Theme) => createStyles({
     width: "100%",
     marginBottom: theme.spacing(2)
   }
-});
+}));
 
-const _RecordingTableFilter = ({ open, onClose, anchor, filter, onUpdateFilter, classes }: Props) => {
+interface FilterState {
+  start?: number;
+  end?: number;
+  url?: string;
+}
+
+interface Props {
+  open: boolean;
+  onClose: () => void;
+  filter: RecordingTableFilter;
+  onUpdateFilter: (settings: RecordingTableFilter) => void;
+  anchor: HTMLElement | null;
+}
+
+export function RecordingTableFilterComp({ open, onClose, anchor, filter, onUpdateFilter }: Props) {
+
+  const classes = useStyles();
 
   const updateFilter = (field: keyof FilterState, val: any) => {
     onUpdateFilter({
@@ -69,24 +85,7 @@ const InputClearAdornment = ({ onClick }: { onClick: () => void }) => {
   );
 };
 
-export const RecordingTableFilterComp = withStyles(styles)(_RecordingTableFilter);
-
-interface FilterState {
-  start?: number;
-  end?: number;
-  url?: string;
-}
-
-interface Props extends WithStyles<typeof styles> {
-  open: boolean;
-  onClose: () => void;
-  filter: RecordingTableFilter;
-  onUpdateFilter: (settings: RecordingTableFilter) => void;
-  anchor: HTMLElement | null;
-}
-
 export interface RecordingTableFilter {
-  target?: string;
   before?: number;
   after?: number;
   url?: string;

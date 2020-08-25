@@ -14,19 +14,19 @@ import { ResizeAnnotator } from "./services/annotation/resize-annotator";
 import { UnloadAnnotator } from "./services/annotation/unload-annotator";
 
 export const diConfig: DIDefinition[] = [
-    constant(ScraperConfigToken, { debugMode: false, backendUrl: process.env.API_HOST }),
-    constantWithDeps(DomManager, [LoggingService], (logger: LoggingService) => new DomManager(logger)),
-    constant(FetchSymbol, window.fetch.bind(window)),
-    constant(LocalStorageSymbol, localStorage),
-    dependencyGroup(IInterpolationHelper, [ MouseInterpolationHelper ]),
-    dependencyGroup(IPlaybackHandler, [
-        MouseEventPlayer, ScrollEventPlayer, InputChangePlayer,
-        FocusPlayer
-    ]),
-    dependencyGroup(IInputAnnotator, [
-        ResizeAnnotator, InputEventAnnotator, UnloadAnnotator
-    ]),
-    apiDef(chunkApiSymbol, chunkEndpointMetadata, { baseUrl: process.env.API_HOST + "/api" }),
-    apiDef(siteTargetApiSymbol, siteTargetEndpoint, { baseUrl: process.env.API_HOST + "/api" }),
-    apiDef(recordingApiSymbol, recordingEndpoint, { baseUrl: process.env.API_HOST + "/api" })
+  constant(ScraperConfigToken, { debugMode: false, backendUrl: process.env.API_HOST }),
+  constantWithDeps(DomManager, [LoggingService], (logger: LoggingService) => new DomManager(logger)),
+  constant(FetchSymbol, window.fetch.bind(window)),
+  constant(LocalStorageSymbol, localStorage),
+  dependencyGroup(IInterpolationHelper, [MouseInterpolationHelper]),
+  dependencyGroup(IPlaybackHandler, [
+    MouseEventPlayer, ScrollEventPlayer, InputChangePlayer,
+    FocusPlayer
+  ]),
+  dependencyGroup(IInputAnnotator, [
+    ResizeAnnotator, InputEventAnnotator, UnloadAnnotator
+  ]),
+  apiDef(chunkApiSymbol, chunkEndpointMetadata, { baseUrl: process.env.API_HOST + "/api" }),
+  apiDef(siteTargetApiSymbol, siteTargetEndpoint, { baseUrl: process.env.API_HOST + "/api" }),
+  apiDef(recordingApiSymbol, recordingEndpoint, { baseUrl: process.env.API_HOST + "/api" })
 ];

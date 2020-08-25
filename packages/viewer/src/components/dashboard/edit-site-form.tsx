@@ -34,6 +34,12 @@ const initForm: Pick<NewSiteTarget, "name"> = {
 
 const useStyles = makeStyles(styles);
 
+interface Props {
+  site: SiteTarget | null;
+  onSubmit: (site: SiteTarget | Pick<NewSiteTarget, "name">) => void;
+  onDeleteSite: () => void;
+}
+
 export function EditSiteForm({ site, onSubmit, onDeleteSite }: Props) {
   const classes = useStyles();
 
@@ -65,13 +71,3 @@ export function EditSiteForm({ site, onSubmit, onDeleteSite }: Props) {
     </form>
   );
 };
-
-interface Props {
-  site: SiteTarget | null;
-  onSubmit: (site: SiteTarget | Pick<NewSiteTarget, "name">) => void;
-  onDeleteSite: () => void;
-}
-
-export interface AddSiteFormState {
-  newSite: NewSiteTarget;
-}

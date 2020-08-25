@@ -7,12 +7,12 @@ import { AppRoot } from "./components/app-root/app-root";
 import { diConfig } from "./di.player";
 
 (async () => {
-    const injector = await initializeApp(diConfig);
+  const injector = await initializeApp(diConfig);
 
-    ReactDOM.render(
-        <DependencyContext.Provider value={injector}>
-            <AppRoot />
-        </DependencyContext.Provider>,
-        document.getElementById("app-root")
-    );
+  ReactDOM.render(
+    <DependencyContext.Provider value={injector}>
+      <AppRoot />
+    </DependencyContext.Provider>,
+    document.getElementById("app-root")
+  );
 })();
