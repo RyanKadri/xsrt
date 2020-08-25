@@ -1,12 +1,20 @@
 locals {
   api-env = [
     {
+      name = "API_HOST",
+      value = "https://${aws_route53_record.api.fqdn}"
+    },
+    {
       name = "ASSET_BUCKET",
       value = aws_s3_bucket.storage-bucket.bucket
     },
     {
       name = "AWS_REGION",
       value = data.aws_region.stack-region.name
+    },
+    {
+      name = "CHROME_EXECUTABLE",
+      value = "/usr/bin/chromium-browser"
     },
     {
       name = "DB_HOST",
@@ -219,6 +227,21 @@ resource "aws_codebuild_project" "xsrt-decorators-build" {
       name = "TASK_CONTAINER_NAME"
       value = "decorators"
     }
+    environment_variable {
+      name = "PRIVATE_SUBNETS"
+      value = jsonencode(aws_subnet.xsrt-private.*.id)
+    }
+    environment_variable {
+      name = "API_SECURITY_GROUPS"
+      value = jsonencode([aws_security_group.xsrt-services.id])
+    }
+    dynamic "environment_variable" {
+      for_each = local.api-env
+      content {
+        name = environment_variable.value.name
+        value = environment_variable.value.value
+      }
+    }
   }
 
 }
@@ -381,6 +404,18 @@ resource "aws_codepipeline" "xsrt-api" {
         ProjectName = aws_codebuild_project.xsrt-viewer-build.name
       }
     }
+    action {
+      category = "Build"
+      name = "BuildDecorators"
+      owner = "AWS"
+      provider = "CodeBuild"
+      input_artifacts = ["source_output"]
+      output_artifacts = ["decorators_output"]
+      version = "1"
+      configuration = {
+        ProjectName = aws_codebuild_project.xsrt-decorators-build.name
+      }
+    }
   }
   stage {
     name = "Deploy"
@@ -400,6 +435,19 @@ resource "aws_codepipeline" "xsrt-api" {
         AppSpecTemplatePath = "api-appspec.yml"
         Image1ArtifactName = "build_output"
         Image1ContainerName = "API_IMAGE_NAME"
+      }
+    }
+    action {
+      category = "Deploy"
+      name = "DeployDecorators"
+      owner = "AWS"
+      provider = "ECS"
+      version = "1"
+      input_artifacts = ["decorators_output"]
+      configuration = {
+        ClusterName = aws_ecs_cluster.background-cluster.name
+        ServiceName = aws_ecs_service.decorators-service.name
+        FileName = "imagedefinitions.json"
       }
     }
     action {

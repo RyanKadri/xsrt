@@ -7,15 +7,15 @@
   "status": "ACTIVE",
   "containerDefinitions": [
     {
-      "name": "api",
+      "name": "decorators",
       "image": "<API_IMAGE_NAME>",
       "essential": true,
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "/xsrt/api",
+          "awslogs-group": "/xsrt/decorators",
           "awslogs-region": "${AWS_REGION}",
-          "awslogs-stream-prefix": "api",
+          "awslogs-stream-prefix": "decorators",
           "awslogs-create-group": "true"
         }
       },
@@ -29,12 +29,20 @@
       "cpu": 0,
       "environment": [
         {
+          "name": "API_HOST",
+          "value": "${API_HOST}"
+        },
+        {
           "name": "ASSET_BUCKET",
           "value": "${ASSET_BUCKET}"
         },
         {
           "name": "AWS_REGION",
           "value": "${AWS_REGION}"
+        },
+        {
+          "name": "CHROME_EXECUTABLE",
+          "value": "${CHROME_EXECUTABLE}"
         },
         {
           "name": "DB_HOST",
@@ -77,7 +85,7 @@
       ]
     }
   ],
-  "memory": "1024",
+  "memory": "2048",
   "compatibilities": [
     "EC2",
     "FARGATE"
