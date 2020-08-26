@@ -5,7 +5,6 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 const merge = require('webpack-merge');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const nodeExternals = require("webpack-node-externals");
 const DotEnv = require("dotenv-webpack");
 const webpack = require("webpack");
 
@@ -45,6 +44,7 @@ const common = (output, tsconfig) => ({
 const frontendCommon = merge(common('dist/web', "packages/viewer/tsconfig.json"), {
   entry: {
     viewer: './packages/viewer/src/index.tsx',
+    ['screenshot-bootstrap']: './packages/viewer/src/bootstrap/bootstrap-screenshot.ts',
   },
   output: {
     filename: '[name].[hash].bundle.js',
@@ -55,11 +55,21 @@ const frontendCommon = merge(common('dist/web', "packages/viewer/tsconfig.json")
   plugins: [
     new HtmlWebpackPlugin({
       template: './packages/viewer/src/index.html',
+      chunks: ["viewer"],
       meta: {
         charset: "UTF-8",
         viewport: "minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
       },
 
+      hash: true
+    }),
+    new HtmlWebpackPlugin({
+      chunks: ["screenshot-bootstrap"],
+      filename: "screenshot.html",
+      meta: {
+        charset: "UTF-8",
+        viewport: "minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
+      },
       hash: true
     })
   ]
@@ -76,7 +86,7 @@ const viewerDev = merge(frontendCommon, {
     inline: false,
     contentBase: __dirname + "/storage"
   },
-  mode: 'development'
+  mode: 'production'
 });
 
 const viewerProd = merge(frontendCommon, {
@@ -98,33 +108,12 @@ const recordingClient = merge(common('packages/recorder/lib', "packages/recorder
   },
   plugins: [
     new BundleAnalyzerPlugin({ analyzerMode: "disabled" }), // Or just give no args for bundle analyzer
-    new DotEnv()
   ],
   entry: {
     ['recorder']: './packages/recorder/src/index.ts'
   },
   mode: 'production'
 })
-
-const bootstrapScripts = merge(common('dist/bootstrap', "packages/viewer/tsconfig.json"), {
-  name: 'bootstrap-scripts',
-  entry: {
-    ['screenshot-bootstrap']: './packages/viewer/src/bootstrap/bootstrap-screenshot.ts',
-  },
-  resolve: {
-    extensions: ['.tsx'],
-  },
-  plugins: [
-    new HtmlWebpackPlugin({
-      meta: {
-        charset: "UTF-8",
-        viewport: "minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
-      },
-      hash: true
-    })
-  ],
-  mode: 'production'
-});
 
 const compileExtension = merge(common('packages/extension/dist', 'packages/extension/tsconfig.json'), {
   name: 'compile-extension',
@@ -163,7 +152,6 @@ const compileBackend = merge(common("dist/backend", "packages/api/tsconfig.build
 module.exports = [
   viewerDev,
   viewerProd,
-  bootstrapScripts,
   compileExtension,
   recordingClient,
   compileBackend,

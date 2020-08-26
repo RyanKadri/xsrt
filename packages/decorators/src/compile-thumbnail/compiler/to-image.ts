@@ -44,9 +44,7 @@ export class ThumbnailCompiler {
 
       // Note - This URL must contain the protocol or it will break headless chrome. Also keep this as
       // localhost because this currently assumes the decorator service will serve the screenshot static page
-      const hostPart = `http://localhost:${this.decoratorConfig.port}`;
-      const screenshotPage = `static/screenshot/index.html`;
-      await page.goto(`${hostPart}/${screenshotPage}?chunk=${forChunk}`);
+      await page.goto(`${this.decoratorConfig.frontendHost}/screenshot.html?chunk=${forChunk}`);
       await page.waitForFunction(`window['targetViewport']`, { polling: 100 });
 
       const targetViewport = await page.evaluate(`window['targetViewport']`) as ViewportSize;

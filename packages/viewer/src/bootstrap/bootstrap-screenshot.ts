@@ -11,7 +11,7 @@ import { DomManager } from "../playback/dom-manager";
         const domManager = new DomManager(createLogger());
         domManager.initialize(document);
 
-        const initChunk = await fetch(`/api/thumbnails/${urlMatch[1]}/data`)
+        const initChunk = await fetch(`${process.env.API_HOST}/api/chunks/${urlMatch[1]}`)
             .then(resp => resp.json());
         await domManager.createInitialDocument(initChunk);
         const { viewportHeight, viewportWidth } = initChunk.snapshot.documentMetadata;

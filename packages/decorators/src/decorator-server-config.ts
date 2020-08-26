@@ -16,7 +16,8 @@ export const decoratorConfig: DecoratorConfig = {
   rawChunkUrl: process.env.RAW_CHUNK_QUEUE,
   elasticQueueUrl: process.env.ELASTIC_QUEUE,
   snapshotQueueUrl: process.env.SNAPSHOT_QUEUE,
-  assetBucket: process.env.ASSET_BUCKET
+  assetBucket: process.env.ASSET_BUCKET,
+  frontendHost: assertExists(process.env.FRONTEND_HOST)
 }
 
 export interface DecoratorConfig extends ServerConfig {
@@ -25,6 +26,7 @@ export interface DecoratorConfig extends ServerConfig {
   rabbitHost: string;
   elasticUrl: string;
   proxyHost: string;
+  frontendHost: string;
 }
 
 @injectable()

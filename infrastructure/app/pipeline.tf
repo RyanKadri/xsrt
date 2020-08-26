@@ -21,6 +21,10 @@ locals {
       value = "https://${aws_elasticsearch_domain.xsrt-elastic.endpoint}"
     },
     {
+      name = "FRONTEND_HOST"
+      value = "https://${aws_route53_record.viewer-frontend.fqdn}"
+    },
+    {
       name = "RAW_CHUNK_QUEUE",
       value = aws_sqs_queue.raw-chunks-queue.id
     },
