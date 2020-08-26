@@ -5,108 +5,119 @@ import { OptimizationContext } from "./optimization-context";
 import { extractUrls } from "../transform/transform-styles";
 
 export function optimizeStyle(styleEl: ScrapedHtmlElement, context: OptimizationContext): OptimizedHtmlElementInfo {
-    if (isLinkStylesheet(styleEl) || !shouldIncludeSheet(styleEl)) {
-        return inertPlaceholder(styleEl, context);
-    } else {
-        const parsedRules = extractStyleInfo(extractSheet(styleEl));
-        return {
-            ...styleEl,
-            tag: "style",
-            children: stripChildText(styleEl.children as ScrapedTextElement[]),
-            rules: replaceUrlsInRules(parsedRules, context).map(trimRule),
-        } as OptimizedStyleElement;
-    }
+  if (isLinkStylesheet(styleEl) || !shouldIncludeSheet(styleEl)) {
+    return inertPlaceholder(styleEl, context);
+  } else {
+    const parsedRules = extractStyleInfo(extractSheet(styleEl));
+    return {
+      ...styleEl,
+      tag: "style",
+      children: stripChildText(styleEl.children as ScrapedTextElement[]),
+      rules: replaceUrlsInRules(parsedRules, context).map(trimRule),
+    } as OptimizedStyleElement;
+  }
 
 }
 
 function inertPlaceholder(styleEl: ScrapedHtmlElement, context: OptimizationContext) {
-    return {
-        ...styleEl,
-        attributes: replaceHref(styleEl, context),
-        children: [],
-        rules: []
-    };
+  return {
+    ...styleEl,
+    attributes: replaceHref(styleEl, context),
+    children: [],
+    rules: []
+  };
 }
 
 function replaceHref(el: ScrapedHtmlElement, context: OptimizationContext): ScrapedAttribute[] {
-    if (el.tag === "link" && el.attributes.some(attr => attr.name === "rel" && attr.value === "stylesheet")) {
-        return el.attributes.map(attr => {
-            if (attr.name === "href") {
-                // Side effects in map are not the best. Feel free to rewrite.
-                const id = context.registerAsset(attr.value);
-                return { name: attr.name, value: formatAssetRef(id), references: [id] };
-            } else {
-                return attr;
-            }
-        });
-    } else {
-        return el.attributes;
-    }
+  if (el.tag === "link" && el.attributes.some(attr => attr.name === "rel" && attr.value === "stylesheet")) {
+    return el.attributes.map(attr => {
+      if (attr.name === "href") {
+        // Side effects in map are not the best. Feel free to rewrite.
+        const id = context.registerAsset(attr.value);
+        return { name: attr.name, value: formatAssetRef(id), references: [id] };
+      } else {
+        return attr;
+      }
+    });
+  } else {
+    return el.attributes;
+  }
 }
 
 function stripChildText(children: ScrapedTextElement[]) {
-    if (children.length > 0) {
-        children[0].content = "";
-    }
-    return children;
+  if (children.length > 0) {
+    children[0].content = "";
+  }
+  return children;
 }
 
 function trimRule(rule: OptimizedStyleRule): OptimizedStyleRule {
-    return {
-        text: rule.text,
-        references: rule.references && rule.references.length > 0
-            ? rule.references
-            : undefined
-    };
+  return {
+    text: rule.text,
+    references: rule.references && rule.references.length > 0
+      ? rule.references
+      : undefined
+  };
 }
 
 function replaceUrlsInRules(rules: ScrapedStyleRule[], context: OptimizationContext): OptimizedStyleRule[] {
-    return rules.map(rule => replaceUrls(rule, context));
+  return rules.map(rule => replaceUrls(rule, context));
 }
 
 function replaceUrls(rule: ScrapedStyleRule, context: OptimizationContext): OptimizedStyleRule {
-    const urls = extractUrls(rule.text);
-    let text = rule.text;
-    const references: number[] = [];
-    for (const url of urls) {
-        const absUrl = toAbsoluteUrl(url, rule.source);
-        const id = context.registerAsset(absUrl);
-        text = text.replace(url, formatAssetRef(id));
-        references.push(id);
-    }
-    return { text, references };
+  const urls = extractUrls(rule.text);
+  let text = rule.text;
+  const references: number[] = [];
+  for (const url of urls) {
+    const absUrl = toAbsoluteUrl(url, rule.source);
+    const id = context.registerAsset(absUrl);
+    text = text.replace(url, formatAssetRef(id));
+    references.push(id);
+  }
+  return { text, references };
 }
 
 function extractSheet(styleEl: ScrapedHtmlElement) {
-    return (styleEl.domElement as HTMLStyleElement).sheet as CSSStyleSheet;
+  const origEl = styleEl.domElement as HTMLStyleElement
+  const sheet = origEl.sheet;
+  if(sheet) {
+    return sheet;
+  } else {
+    const tempRemount = document.createElement("style");
+    tempRemount.innerText = origEl.innerText;
+    document.body.appendChild(tempRemount);
+    const replacementSheet = tempRemount.sheet;
+    tempRemount.remove();
+    return replacementSheet!;
+  }
 }
 
 function shouldIncludeSheet(styleEl: ScrapedHtmlElement) {
-    const sheet = extractSheet(styleEl);
-    if (sheet && matchesMedia(sheet.media)) {
-        try {
-            // This line should throw if the sheet is cross-site
-            return sheet.rules.length > 0;
-        } catch {
-            return false;
-        }
-    } else {
-        return false;
+  const sheet = extractSheet(styleEl);
+  if (matchesMedia(sheet.media)) {
+    try {
+      // This line should throw if the sheet is cross-site
+      return sheet.rules.length > 0;
+    } catch {
+      return false;
     }
+  } else {
+    return false;
+  }
 }
 
 function isLinkStylesheet(styleEl: ScrapedHtmlElement) {
-    return styleEl.tag === "link" &&
-                !styleEl.attributes.some(attr => attr.name === "rel" && attr.value === "stylesheet");
+  return styleEl.tag === "link" &&
+    !styleEl.attributes.some(attr => attr.name === "rel" && attr.value === "stylesheet");
 }
 
 // TODO - Speaking of normalizing, we should probably normalize relative paths for deduping as well...
 function toAbsoluteUrl(url: string, source?: string) {
-    return urlIsAbsolute(url) || source === undefined
-        ? url
-        : source.replace(/\/[^\/]*?$/, "/" + url);
+  return urlIsAbsolute(url) || source === undefined
+    ? url
+    : source.replace(/\/[^\/]*?$/, "/" + url);
 }
 
 function urlIsAbsolute(url: string) {
-    return url.startsWith("/") || url.startsWith("http://") || url.startsWith("https://");
+  return url.startsWith("/") || url.startsWith("http://") || url.startsWith("https://");
 }

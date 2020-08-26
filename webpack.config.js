@@ -103,7 +103,7 @@ const recordingClient = merge(common('packages/recorder/lib', "packages/recorder
   entry: {
     ['recorder']: './packages/recorder/src/index.ts'
   },
-  mode: 'development'
+  mode: 'production'
 })
 
 const bootstrapScripts = merge(common('dist/bootstrap', "packages/viewer/tsconfig.json"), {

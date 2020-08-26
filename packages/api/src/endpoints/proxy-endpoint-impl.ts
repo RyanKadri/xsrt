@@ -19,7 +19,7 @@ export class AssetEndpoint implements AssetEndpointType {
   fetchAsset: AssetEndpointType["fetchAsset"] = async ({ assetId }) => {
     const asset = await this.assetRepo.findOne(assetId);
     if (asset) {
-      return downloadResponse(asset.proxyPath, asset.headers);
+      return downloadResponse(process.env.STORAGE_LOCATION + "/" + asset.proxyPath, asset.headers);
     } else {
       return errorNotFound(`Could not find asset ${assetId}`);
     }

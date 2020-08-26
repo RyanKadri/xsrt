@@ -1,4 +1,4 @@
-import { convertMapToGroups, mergeGroups, pluck, Recording, SnapshotChunk, sortAsc } from "../../../../common/src";
+import { convertMapToGroups, mergeGroups, pluck, Recording, SnapshotChunk, sortAsc, Asset } from "../../../../common/src";
 import { RecordingViewAction, RecordingViewState } from "./recording-view";
 
 const sortByTimestamp = sortAsc(pluck("timestamp"));
@@ -17,6 +17,7 @@ export function recordingViewReducer(state: RecordingViewState, action: Recordin
       const retrievedChunks = state.retrievedChunks.concat(action.chunk.uuid);
       return {
         ...state,
+        assets: mergeAssets(state.assets, action.chunk.assets),
         snapshots: state.snapshots
           .concat(action.chunk.chunkType === "snapshot" ? action.chunk as SnapshotChunk : [])
           .sort(sortSnapshot),
@@ -52,4 +53,12 @@ function calcBuffer(retrievedChunks: string[], recording: Recording) {
     .filter(start => start < minStopNotFetched)
   );
   return maxReady;
+}
+
+function mergeAssets(oldAssets: Asset[], newAssets: Asset[]) {
+  const assetIds = new Set(oldAssets.map(asset => asset.id));
+  return [
+    ...oldAssets,
+    ...newAssets.filter(asset => !assetIds.has(asset.id))
+  ];
 }

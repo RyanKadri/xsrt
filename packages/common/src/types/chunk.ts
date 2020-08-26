@@ -40,6 +40,9 @@ export class ChunkEntity {
 
   @ManyToMany(() => AssetEntity, { cascade: ["insert", "update", "remove"] })
   @JoinTable({ name: "chunk_assets", joinColumn: { name: "chunk_id" }, inverseJoinColumn: { name: "asset_id" } })
-  assets: AssetEntity[]
+  assets: AssetEntity[];
+
+  @Column({ name: "asset_order", type: "integer", array: true })
+  assetOrder: number[];
 
 }

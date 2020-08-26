@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-dotenv.config({ debug: true })
+dotenv.config({ })
 import { DatabaseInitializer, RabbitInitializer, rawChunkQueueInfo, elasticQueueInfo, initSnapshotQueueInfo } from "../packages/common-backend/src";
 import { ApiServerConfig } from "../packages/api/src/api-server-conf"
 import { LoggingService, AssetEntity, ChunkEntity, RecordingEntity, TargetEntity } from "../packages/common/src";

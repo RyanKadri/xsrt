@@ -6,85 +6,85 @@ import { extractInlineStyle, optimizeNode } from "./optimize-dom";
 @injectable()
 export class RecordingOptimizer {
 
-    // Use the same optimization context as long as you are in the same JS execution context
-    private context = new OptimizationContext();
+  // Use the same optimization context as long as you are in the same JS execution context
+  private context = new OptimizationContext();
 
-    optimize(data: Omit<UnoptimizedSnapshotChunk, "uuid">): PendingSnapshotChunk;
-    optimize(data: PendingDiffChunk): PendingDiffChunk;
-    optimize(data: Omit<UnoptimizedSnapshotChunk, "uuid"> | PendingDiffChunk): any {
-        let snapshot: RootSnapshot | {} = {};
-        if (data.chunkType === "snapshot") {
-            const root = this.optimizeSubtree(data.snapshot.root) as OptimizedHtmlElementInfo;
-            snapshot = {
-                documentMetadata: data.snapshot!.documentMetadata,
-                root
-            };
-        }
-        const changes = data.changes.map(change => {
-            return {
-                ...change,
-                mutations: change.mutations.map((mutation: any) => mutation.type === "children"
-                    ? this.optimizeChildrenMutation(mutation)
-                    : mutation.type === "attribute"
-                        ? this.optimizeAttributeMutation(mutation)
-                        : mutation
-                )
-            };
-        });
-
-        return {
-            ...data,
-            snapshot,
-            changes,
-            assets: this.context.getAssets().map(asset => ({ origUrl: this.resolveFullRequestUrl(asset)})),
-        } as RecordingChunk;
+  optimize(data: Omit<UnoptimizedSnapshotChunk, "uuid">): PendingSnapshotChunk;
+  optimize(data: PendingDiffChunk): PendingDiffChunk;
+  optimize(data: Omit<UnoptimizedSnapshotChunk, "uuid"> | PendingDiffChunk): any {
+    let snapshot: RootSnapshot | {} = {};
+    if (data.chunkType === "snapshot") {
+      const root = this.optimizeSubtree(data.snapshot.root) as OptimizedHtmlElementInfo;
+      snapshot = {
+        documentMetadata: data.snapshot!.documentMetadata,
+        root
+      };
     }
+    const changes = data.changes.map(change => {
+      return {
+        ...change,
+        mutations: change.mutations.map((mutation: any) => mutation.type === "children"
+          ? this.optimizeChildrenMutation(mutation)
+          : mutation.type === "attribute"
+            ? this.optimizeAttributeMutation(mutation)
+            : mutation
+        )
+      };
+    });
 
-    private optimizeAttributeMutation(mutation: AttributeMutation) {
-        if (mutation.attribute.name === "style") {
-            const attribute = extractInlineStyle(mutation.attribute, this.context);
-            return { ...mutation, attribute };
-        } else {
-            return mutation;
-        }
+    return {
+      ...data,
+      snapshot,
+      changes,
+      assets: this.context.getAssets().map(asset => ({ origUrl: this.resolveFullRequestUrl(asset) })),
+    } as RecordingChunk;
+  }
+
+  private optimizeAttributeMutation(mutation: AttributeMutation) {
+    if (mutation.attribute.name === "style") {
+      const attribute = extractInlineStyle(mutation.attribute, this.context);
+      return { ...mutation, attribute };
+    } else {
+      return mutation;
     }
+  }
 
-    private optimizeChildrenMutation(mutation: OptimizedChildrenMutation) {
-        return {
-            ...mutation,
-            additions: (mutation.additions || []).map(addition => ({
-                ...addition,
-                data: this.optimizeSubtree(addition.data)
-            }))
-        };
+  private optimizeChildrenMutation(mutation: OptimizedChildrenMutation) {
+    return {
+      ...mutation,
+      additions: (mutation.additions || []).map(addition => ({
+        ...addition,
+        data: this.optimizeSubtree(addition.data)
+      }))
+    };
+  }
+
+  // context holds multable state (assets URLs discovered over time);
+  private optimizeSubtree = (root: ScrapedElement): OptimizedElement => {
+    const node = optimizeNode(root, this.context);
+
+    if (node.type === "element") {
+      const childTasks: OptimizedElement[] = [];
+      for (const child of (root as ScrapedHtmlElement).children) {
+        const optimizationResult = this.optimizeSubtree(child);
+        childTasks.push(optimizationResult);
+      }
+      return {
+        ...node,
+        children: childTasks
+      };
+    } else {
+      return node;
     }
+  }
 
-    // context holds multable state (assets URLs discovered over time);
-    private optimizeSubtree = (root: ScrapedElement): OptimizedElement => {
-        const node = optimizeNode(root, this.context);
-
-        if (node.type === "element") {
-            const childTasks: OptimizedElement[] = [];
-            for (const child of (root as ScrapedHtmlElement).children) {
-                const optimizationResult = this.optimizeSubtree(child);
-                childTasks.push(optimizationResult);
-            }
-            return {
-                ...node,
-                children: childTasks
-            };
-        } else {
-            return node;
-        }
-    }
-
-    private resolveFullRequestUrl(forAsset: string) {
-        const testLink = document.createElement("a");
-        testLink.href = forAsset;
-        return testLink.href;
-    }
+  private resolveFullRequestUrl(forAsset: string) {
+    const testLink = document.createElement("a");
+    testLink.href = forAsset;
+    return testLink.href;
+  }
 }
 
 export interface OptimizationResult {
-    root: Promise<OptimizedElement>;
+  root: Promise<OptimizedElement>;
 }

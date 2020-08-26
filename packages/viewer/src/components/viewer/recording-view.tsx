@@ -1,7 +1,7 @@
 import { makeStyles, Theme, Typography } from "@material-ui/core";
 import React, { useEffect, useReducer } from "react";
 import { withDependencies } from "../../../../common-frontend/src";
-import { Group, RecordedMutationGroup, RecordedUserInput, Recording, RecordingChunk, SnapshotChunk } from "../../../../common/src";
+import { Group, RecordedMutationGroup, RecordedUserInput, Recording, RecordingChunk, SnapshotChunk, Asset } from "../../../../common/src";
 import { DomPreviewService } from "../../playback/dom-preview-service";
 import { AnnotationService, RecordingAnnotation } from "../../services/annotation/annotation-service";
 import { ChunkApiService } from "../../services/chunk-api-service";
@@ -29,6 +29,7 @@ const initState: RecordingViewState = {
   retrievedChunks: [],
 
   snapshots: [],
+  assets: [],
   changes: [],
   inputs: [],
   annotations: [],
@@ -49,6 +50,7 @@ export interface RecordingViewState {
   recording: Recording | null;
   snapshots: SnapshotChunk[];
   changes: RecordedMutationGroup[];
+  assets: Asset[];
   inputs: Group<RecordedUserInput>[];
   annotations: RecordingAnnotation[];
   regions: Region[];
@@ -117,6 +119,7 @@ function _RecordingView({
         changes={state.changes}
         inputs={state.inputs}
         snapshots={state.snapshots}
+        assets={state.assets}
 
         annotations={state.annotations}
         regions={state.regions}

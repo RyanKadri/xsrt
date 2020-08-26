@@ -1,4 +1,4 @@
-import { chunkEndpointMetadata, DBConnectionSymbol, DiffChunk, SnapshotChunk, RecordingChunk, ChunkEntity, RecordingEntity } from "../../../common/src";
+import { chunkEndpointMetadata, DBConnectionSymbol, DiffChunk, SnapshotChunk, RecordingChunk, ChunkEntity, RecordingEntity, AssetEntity } from "../../../common/src";
 import { errorNotFound, RouteImplementation, QueueSender, IChunkSender, rawChunkQueueInfo, AssetResolver } from "../../../common-backend/src";
 import { inject, injectable } from "inversify";
 import { Connection, Repository } from "typeorm";
@@ -35,6 +35,7 @@ export class ChunkEndpoint implements ChunkEndpointType {
           uuid: chunkUuid,
           recording: recording,
           assets,
+          assetOrder: assets.map(asset => asset.id),
           startTime: new Date(chunk.startTime),
           endTime: new Date(chunk.endTime)
         });
@@ -51,8 +52,11 @@ export class ChunkEndpoint implements ChunkEndpointType {
   fetchChunk: ChunkEndpointType["fetchChunk"] = (async ({ chunkId }) => {
     const res = await this.chunkRepo.findOne({ where: { uuid: chunkId }, relations: ["assets"] });
     if (res) {
+      const origAssets = res.assets;
+
       return {
         ...res,
+        assets: reorderAssets(origAssets, res.assetOrder),
         startTime: res.startTime.getTime(),
         endTime: res.endTime.getTime()
       } as SnapshotChunk | DiffChunk;
@@ -60,4 +64,10 @@ export class ChunkEndpoint implements ChunkEndpointType {
       return errorNotFound(`Could not find chunk ${chunkId}`);
     }
   });
+}
+
+function reorderAssets(assets: AssetEntity[], idOrder: number[]) {
+  const assetMap = new Map<number, AssetEntity>();
+  assets.forEach(asset => assetMap.set(asset.id, asset));
+  return idOrder.map(id => assetMap.get(id));
 }

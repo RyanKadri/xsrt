@@ -1,6 +1,6 @@
 // tslint:disable-next-line:no-implicit-dependencies
 import defaultStyles from "!raw-loader!./default-styles.css";
-import { formatAssetRef, Interface, LoggingService, OptimizedElement, OptimizedHtmlElementInfo, OptimizedStyleElement, OptimizedStyleRule, OptimizedTextElementInfo, ScrapedAttribute, SnapshotChunk } from "../../../common/src";
+import { formatAssetRef, Interface, LoggingService, OptimizedElement, OptimizedHtmlElementInfo, OptimizedStyleElement, OptimizedStyleRule, OptimizedTextElementInfo, ScrapedAttribute, SnapshotChunk, Asset } from "../../../common/src";
 
 // TODO - Maybe in the process of refactoring, this can track a virtual-dom type thing
 // (for testability and separation of concerns)
@@ -14,7 +14,7 @@ export class DomManager {
   private _document?: Document;
 
   private nodeMapping = new Map<number, Node>();
-  private assets: string[] = [];
+  private assets: Asset[] = [];
 
   initialize(document: Document) {
     this._document = document;
@@ -31,7 +31,7 @@ export class DomManager {
 
   createInitialDocument(data: SnapshotChunk) {
     this.logger.debug("Initialized playback iframe");
-    this.assets = data.assets.map(asset => asset.origUrl);
+    this.setAssets(data.assets);
 
     const docType = `<!DOCTYPE ${data.snapshot.documentMetadata.docType}>`;
     this.document.write(docType + "\n<html></html>");
@@ -48,6 +48,10 @@ export class DomManager {
       });
     }
     this._serializeToElement(this.document, data.snapshot.root);
+  }
+
+  setAssets(assets: Asset[]) {
+    this.assets = assets
   }
 
   serializeToElement(parent: number, node: OptimizedElement, before: number | null = null) {
@@ -198,7 +202,7 @@ export class DomManager {
 
   private replaceReferences(valWithRefs: string, references: number[]) {
     references.forEach(ref => {
-      valWithRefs = valWithRefs.replace(formatAssetRef(ref), this.assets[ref]);
+      valWithRefs = valWithRefs.replace(formatAssetRef(ref), `${process.env.API_HOST}/api/proxy/${this.assets[ref].id}`);
     });
     return valWithRefs;
   }

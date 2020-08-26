@@ -30,6 +30,7 @@ CREATE TABLE public.chunk
 (
     id serial,
     uuid uuid,
+    asset_order integer[] NOT NULL default '{}',
     chunk_type chunk_type NOT NULL,
     start_time timestamp with time zone NOT NULL,
     end_time timestamp with time zone NOT NULL,

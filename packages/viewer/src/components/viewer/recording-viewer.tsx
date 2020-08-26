@@ -1,9 +1,7 @@
 import { CircularProgress, createStyles, Theme, withStyles, WithStyles } from "@material-ui/core";
-import { between, formatPlayerTime, RecordedMutationGroup, SnapshotChunk } from "../../../../common/src";
+import { between, formatPlayerTime, RecordedMutationGroup, SnapshotChunk, Asset } from "../../../../common/src";
 import { withDependencies } from "../../../../common-frontend/src";
 import * as React from "react";
-import { Fragment } from "react";
-import { PlaybackManager } from "../../playback/playback-manager";
 import { RecordingAnnotation } from "../../services/annotation/annotation-service";
 import { Region } from "../../services/regions-service";
 import { UIConfigService } from "../../services/ui-config-service";
@@ -32,8 +30,6 @@ const styles = (theme: Theme) => createStyles({
   }
 });
 
-const DIRecordingPlayer = withDependencies(RecordingPlayer, { playbackManager: PlaybackManager });
-
 class _RecordingViewer extends React.PureComponent<ViewerProps, ViewerState> {
 
   constructor(props: ViewerProps) {
@@ -58,16 +54,17 @@ class _RecordingViewer extends React.PureComponent<ViewerProps, ViewerState> {
   render() {
     const { classes } = this.props;
     const actionPrompt = this.formActionPrompt();
-    return <Fragment>
+    return <>
       <div className={classes.recordingSpace}>
         {
           this.props.snapshots.length === 0
             ? <CircularProgress color="secondary" className={classes.progressSpinner} />
-            : <Fragment>
-              <DIRecordingPlayer
+            : <>
+              <RecordingPlayer
                 snapshots={this.props.snapshots}
                 inputs={this.props.inputs}
                 changes={this.props.changes}
+                assets={this.props.assets}
                 currentTime={this.state.playerTime}
                 isPlaying={this.state.isPlaying}
                 error={this.state.hasError ? "Something went wrong" : undefined}
@@ -82,7 +79,7 @@ class _RecordingViewer extends React.PureComponent<ViewerProps, ViewerState> {
               <AnnotationSidebar
                 expanded={this.state.showingAnnotations}
                 annotations={this.pastAnnotations} />
-            </Fragment>
+            </>
         }
       </div>
       <RecordingControls
@@ -105,7 +102,7 @@ class _RecordingViewer extends React.PureComponent<ViewerProps, ViewerState> {
         onClose={this.closeSettings}
         anchor={this.state.settingsAnchor}
       />
-    </Fragment>;
+    </>;
   }
 
   handleDownstreamError = () => {
@@ -245,6 +242,7 @@ interface ViewerProps extends WithStyles<typeof styles> {
   inputs: UserInputGroup[];
   changes: RecordedMutationGroup[];
   annotations: RecordingAnnotation[];
+  assets: Asset[];
   regions: Region[];
 
   duration: number;

@@ -1,4 +1,4 @@
-import { between, RecordedMutationGroup, SnapshotChunk } from "../../../common/src";
+import { between, RecordedMutationGroup, SnapshotChunk, Asset } from "../../../common/src";
 import { injectable } from "inversify";
 import { eventsBetween, UserInputGroup } from "../components/utils/recording-data-utils";
 import { DomManager } from "./dom-manager";
@@ -22,6 +22,7 @@ export class PlaybackManager {
     snapshots: SnapshotChunk[],
     allChanges: RecordedMutationGroup[],
     allInputs: UserInputGroup[],
+    assets: Asset[],
     fromTime: number,
     toTime: number,
     doc: Document
@@ -49,6 +50,7 @@ export class PlaybackManager {
       allChanges, allInputs, adjustedPrevTime, toTime
     );
 
+    this.domManager.setAssets(assets);
     this.mutationManager.applyChanges(changes);
     this.userInputManager.simulateUserInputs(inputs);
   }
