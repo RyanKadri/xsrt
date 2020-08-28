@@ -25,6 +25,10 @@ locals {
       value = "https://${aws_route53_record.viewer-frontend.fqdn}"
     },
     {
+      name = "STATIC_HOST"
+      value = "https://${aws_route53_record.storage-dist.fqdn}"
+    },
+    {
       name = "RAW_CHUNK_QUEUE",
       value = aws_sqs_queue.raw-chunks-queue.id
     },

@@ -53,6 +53,7 @@ CREATE TABLE public.asset
     proxy_path text,
     hash text,
     headers json,
+    hosted_path text,
     PRIMARY KEY (id)
 );
 

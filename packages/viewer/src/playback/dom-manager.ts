@@ -204,7 +204,7 @@ export class DomManager {
     references.forEach(ref => {
       const proxyAsset = this.assets[ref];
       const proxyUrl = `${process.env.API_HOST}/api/proxy/${proxyAsset.id}`;
-      valWithRefs = valWithRefs.replace(formatAssetRef(ref), proxyUrl ?? proxyAsset.origUrl);
+      valWithRefs = valWithRefs.replace(formatAssetRef(ref), proxyAsset.hostedPath ?? proxyUrl ?? proxyAsset.origUrl);
     });
     return valWithRefs;
   }

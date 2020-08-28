@@ -20,6 +20,9 @@ export class AssetEntity {
   @Column({ name: "headers", type: "json" })
   headers: ProxyHeader[];
 
+  @Column({ name: "hosted_path" })
+  hostedPath: string;
+
 }
 
 export interface ProxyHeader {

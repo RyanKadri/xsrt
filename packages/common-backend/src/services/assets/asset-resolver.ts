@@ -6,6 +6,8 @@ import { Connection, Repository } from "typeorm";
 import { Asset, AssetEntity, DBConnectionSymbol, GotSymbol } from "../../../../common/src";
 import { IAssetStorageService, AssetStorageService } from "./asset-storage-service";
 import { IncomingHttpHeaders } from "http";
+import { IServerConfig } from "../../server/express-server";
+import { ApiServerConfig } from "../../../../api/src/api-server-conf";
 
 const headerBlocklist = new Set(["content-encoding"])
 
@@ -16,7 +18,8 @@ export class AssetResolver {
   constructor(
     @inject(IAssetStorageService) private storageService: AssetStorageService,
     @inject(GotSymbol) private got: Got,
-    @inject(DBConnectionSymbol) connection: Connection
+    @inject(DBConnectionSymbol) connection: Connection,
+    @inject(IServerConfig) private config: ApiServerConfig
   ) {
     this.assetRepo = connection.getRepository(AssetEntity)
   }
@@ -54,6 +57,7 @@ export class AssetResolver {
           ...asset,
           hash,
           proxyPath: saveLocation,
+          hostedPath: this.config.storageHost + "/" + saveLocation, // TODO - Be less lazy here
           headers: this.extractHeaders(resp.headers)
         })
       } else {

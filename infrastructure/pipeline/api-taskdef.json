@@ -67,6 +67,10 @@
         {
           "name": "USE_SQS",
           "value": "${USE_SQS}"
+        },
+        {
+          "name": "STATIC_HOST",
+          "value": "${STATIC_HOST}"
         }
       ],
       "secrets": [

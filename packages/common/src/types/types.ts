@@ -113,7 +113,7 @@ export interface DiffChunk extends BaseSnapshotWithAssets {
   chunkType: "diff";
 }
 
-export type Asset = Pick<AssetEntity, "id" | "origUrl" | "proxyPath">
+export type Asset = Pick<AssetEntity, "id" | "origUrl" | "proxyPath" | "hostedPath">
 
 export interface BaseSnapshotWithAssets extends BaseSnapshot {
   assets: Asset[];
