@@ -24,5 +24,5 @@ export class AssetEntity {
 
 export interface ProxyHeader {
     name: string;
-    value: string;
+    value: string | string[];
 }

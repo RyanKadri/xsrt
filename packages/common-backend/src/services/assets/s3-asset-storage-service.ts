@@ -4,6 +4,7 @@ import { AssetStorageService } from "./asset-storage-service";
 import { IServerConfig } from "../../../../common-backend/src";
 import { S3ClientSymbol } from "./s3-initializer";
 import { ServerConfig } from "../../server/express-server";
+import { AssetEntity } from "../../../../common/src";
 
 @injectable()
 export class S3StorageService implements AssetStorageService {
@@ -18,5 +19,14 @@ export class S3StorageService implements AssetStorageService {
     await this.s3.putObject({
       Bucket: this.config.assetBucket!, Key: savePath, Body: data
     }).promise()
+  }
+
+  async fetchAsset(asset: AssetEntity): Promise<Buffer> {
+    return this.s3.getObject({
+      Bucket: this.config.assetBucket!,
+      Key: asset.proxyPath
+    }).promise().then(resp => {
+      return resp.Body as Buffer
+    })
   }
 }

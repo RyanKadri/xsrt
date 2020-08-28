@@ -29,17 +29,17 @@ export interface ErrorResponse {
     headers: ResponseHeader[];
 }
 
-export interface DownloadResponse {
-    type: "download";
-    data: any;
+export interface BufferResponse {
+    type: "buffer";
+    data: Buffer;
     headers?: ResponseHeader[];
 }
 
 export class ExplicitResponse<C> {
-    constructor(public response: SuccessResponse<C> | ErrorResponse | DownloadResponse) {}
+    constructor(public response: SuccessResponse<C> | ErrorResponse | BufferResponse) {}
 }
 
 export interface ResponseHeader {
     name: string;
-    value: string;
+    value: string | string[];
 }

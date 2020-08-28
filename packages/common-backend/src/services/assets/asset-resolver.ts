@@ -50,7 +50,8 @@ export class AssetResolver {
         return this.assetRepo.save({
           ...asset,
           hash,
-          proxyPath: saveLocation
+          proxyPath: saveLocation,
+          headers: Object.entries(resp.headers).map(([name, value]) => ({ name, value }))
         })
       } else {
         return existingAsset;

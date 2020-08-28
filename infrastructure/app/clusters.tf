@@ -113,6 +113,9 @@ resource "aws_alb_listener" "api-listener" {
 }
 
 resource "aws_alb_listener_rule" "api-rule" {
+  lifecycle {
+    ignore_changes = [action[0].target_group_arn]
+  }
   listener_arn = aws_alb_listener.api-listener.arn
   action {
     type = "forward"
@@ -150,7 +153,7 @@ resource "aws_ecs_service" "api-service" {
   network_configuration {
     subnets = aws_subnet.xsrt-private.*.id
     assign_public_ip = false
-    security_groups = [aws_security_group.xsrt-services.id]
+    security_groups = [aws_security_group.xsrt-public-api.id]
   }
 }
 
@@ -227,6 +230,10 @@ resource "aws_ecs_task_definition" "decorators-task" {
             "value": "${aws_sqs_queue.elastic-queue.id}"
           },
           {
+            "name": "FRONTEND_HOST",
+            "value": "https://${aws_route53_record.viewer-frontend.fqdn}"
+          },
+          {
             "name": "USE_S3",
             "value": "true"
           },
@@ -247,9 +254,6 @@ resource "aws_ecs_task_definition" "decorators-task" {
 }
 
 resource "aws_ecs_service" "decorators-service" {
-  lifecycle {
-    ignore_changes = [task_definition]
-  }
   name = "decorators"
   cluster = aws_ecs_cluster.background-cluster.id
   task_definition = aws_ecs_task_definition.decorators-task.arn
