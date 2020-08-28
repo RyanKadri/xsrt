@@ -52,13 +52,14 @@ export class AssetResolver {
       if(!existingAsset) {
         const safeHash = hash.replace(/[\/+=-]/g, "_");
         const saveLocation = join("assets", url.hostname, `${safeHash}-${baseName}`);
-        await this.storageService.saveAsset(resp.rawBody, saveLocation);
+        const savedHeaders = this.extractHeaders(resp.headers);
+        await this.storageService.saveAsset(resp.rawBody, saveLocation, resp.headers);
         return this.assetRepo.save({
           ...asset,
           hash,
           proxyPath: saveLocation,
-          hostedPath: this.config.storageHost + "/" + saveLocation, // TODO - Be less lazy here
-          headers: this.extractHeaders(resp.headers)
+          hostedPath: this.config.staticHost + "/" + saveLocation, // TODO - Be less lazy here
+          headers: savedHeaders
         })
       } else {
         return existingAsset;
@@ -74,6 +75,6 @@ export class AssetResolver {
   private extractHeaders(headers: IncomingHttpHeaders) {
     return Object.entries(headers)
       .filter(([name]) => !headerBlocklist.has(name))
-      .map(([name, value]) => ({ name, value }))
+      .map(([name, value]) => ({ name, value: value as string | string[] }))
   }
 }

@@ -15,7 +15,7 @@ export class ApiServerConfig implements ServerConfig {
   readonly elasticQueueUrl = process.env.ELASTIC_QUEUE;
   readonly snapshotQueueUrl = process.env.SNAPSHOT_QUEUE;
   readonly assetBucket = process.env.ASSET_BUCKET;
-  readonly hostedPath = process.env.STATIC_HOST
+  readonly staticHost = process.env.STATIC_HOST
 }
 
 // TODO - Refactoring this out to a common module will simplify dependencies and reduce duplication

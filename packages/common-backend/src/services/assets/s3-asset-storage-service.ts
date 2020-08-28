@@ -5,6 +5,7 @@ import { IServerConfig } from "../../../../common-backend/src";
 import { S3ClientSymbol } from "./s3-initializer";
 import { ServerConfig } from "../../server/express-server";
 import { AssetEntity } from "../../../../common/src";
+import { IncomingHttpHeaders } from "http";
 
 @injectable()
 export class S3StorageService implements AssetStorageService {
@@ -15,9 +16,11 @@ export class S3StorageService implements AssetStorageService {
   ) { }
 
   // Can we stream this? Is there a good way to use headers to avoid doing the hashing process all the time?
-  async saveAsset(data: Buffer, savePath: string): Promise<void> {
+  async saveAsset(data: Buffer, savePath: string, headers?: IncomingHttpHeaders): Promise<void> {
     await this.s3.putObject({
-      Bucket: this.config.assetBucket!, Key: savePath, Body: data
+      Bucket: this.config.assetBucket!,
+      Key: savePath, Body: data,
+      ContentType: headers?.["content-type"]
     }).promise()
   }
 
