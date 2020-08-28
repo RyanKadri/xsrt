@@ -5,6 +5,9 @@ import { join } from "path";
 import { Connection, Repository } from "typeorm";
 import { Asset, AssetEntity, DBConnectionSymbol, GotSymbol } from "../../../../common/src";
 import { IAssetStorageService, AssetStorageService } from "./asset-storage-service";
+import { IncomingHttpHeaders } from "http";
+
+const headerBlocklist = new Set(["content-encoding"])
 
 @injectable()
 export class AssetResolver {
@@ -51,15 +54,22 @@ export class AssetResolver {
           ...asset,
           hash,
           proxyPath: saveLocation,
-          headers: Object.entries(resp.headers).map(([name, value]) => ({ name, value }))
+          headers: this.extractHeaders(resp.headers)
         })
       } else {
         return existingAsset;
       }
     } catch (e) {
+      console.error("Failed to download asset: ", e);
       const placeholderAsset = await this.assetRepo.findOne({ where: { origUrl: asset.origUrl, proxyPath: null } })
       return placeholderAsset
         ?? this.assetRepo.save(asset);
     }
+  }
+
+  private extractHeaders(headers: IncomingHttpHeaders) {
+    return Object.entries(headers)
+      .filter(([name]) => !headerBlocklist.has(name))
+      .map(([name, value]) => ({ name, value }))
   }
 }

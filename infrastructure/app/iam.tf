@@ -508,3 +508,20 @@ resource "aws_iam_role_policy_attachment" "xsrt-pipeline-secrets" {
   policy_arn = aws_iam_policy.xsrt-secrets.arn
   role = aws_iam_role.xsrt-builder.name
 }
+
+resource "aws_iam_user" "xsrt-local-user" {
+  count = var.env == "prod" ? 0 : 1
+  name = "xsrt-${var.env}"
+}
+
+resource "aws_iam_user_policy_attachment" "xsrt-local-user-storage" {
+  count = var.env == "prod" ? 0 : 1
+  policy_arn = aws_iam_policy.xsrt-storage.arn
+  user = aws_iam_user.xsrt-local-user[0].name
+}
+
+resource "aws_iam_user_policy_attachment" "xsrt-local-user-queues" {
+  count = var.env == "prod" ? 0 : 1
+  policy_arn = aws_iam_policy.xsrt-queues.arn
+  user = aws_iam_user.xsrt-local-user[0].name
+}

@@ -254,6 +254,9 @@ resource "aws_ecs_task_definition" "decorators-task" {
 }
 
 resource "aws_ecs_service" "decorators-service" {
+  lifecycle {
+    ignore_changes = [task_definition]
+  }
   name = "decorators"
   cluster = aws_ecs_cluster.background-cluster.id
   task_definition = aws_ecs_task_definition.decorators-task.arn
